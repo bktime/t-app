@@ -1,0 +1,1470 @@
+<!DOCTYPE html>
+<html lang="th-TH">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="description" content="สมัครสมาชิกระบบลงเวลาปฏิบัติงาน">
+  <title>สมัครสมาชิก | ระบบลงเวลาปฏิบัติงาน</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --surface: #111118;
+      --surface2: #18181f;
+      --surface3: #1e1e28;
+      --border: rgba(255,255,255,0.07);
+      --border-active: rgba(99,102,241,0.6);
+      --text-primary: #f0f0f5;
+      --text-secondary: #7a7a8a;
+      --text-muted: #3d3d50;
+      --accent: #6366f1;
+      --accent-hover: #4f52e0;
+      --accent-glow: rgba(99,102,241,0.25);
+      --accent2: #22d3ee;
+      --accent2-glow: rgba(34,211,238,0.15);
+      --green: #10b981;
+      --green-glow: rgba(16,185,129,0.2);
+      --red: #f43f5e;
+      --line-green: #06c755;
+      --telegram-blue: #2AABEE;
+      --radius: 16px;
+      --radius-sm: 10px;
+      --radius-lg: 24px;
+      --transition: 0.2s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Noto Sans Thai', sans-serif;
+      background: var(--bg);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Background Effects */
+    .bg-effects {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+    .bg-orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.12;
+    }
+    .bg-orb-1 {
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, #6366f1, transparent);
+      top: -150px; left: -100px;
+      animation: orbFloat 12s ease-in-out infinite;
+    }
+    .bg-orb-2 {
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, #22d3ee, transparent);
+      bottom: -100px; right: -80px;
+      animation: orbFloat 15s ease-in-out infinite reverse;
+    }
+    .bg-orb-3 {
+      width: 300px; height: 300px;
+      background: radial-gradient(circle, #a855f7, transparent);
+      top: 50%; left: 60%;
+      animation: orbFloat 10s ease-in-out infinite 3s;
+    }
+    .bg-grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+      background-size: 60px 60px;
+    }
+    @keyframes orbFloat {
+      0%, 100% { transform: translate(0,0) scale(1); }
+      33% { transform: translate(30px,-20px) scale(1.05); }
+      66% { transform: translate(-20px,15px) scale(0.97); }
+    }
+
+    /* Main Container */
+    .wrapper {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 620px;
+    }
+
+    /* Logo/Brand */
+    .brand {
+      text-align: center;
+      margin-bottom: 2rem;
+      animation: fadeSlideDown 0.6s ease both;
+    }
+    .brand-icon {
+      width: 56px; height: 56px;
+      background: linear-gradient(135deg, var(--accent), #a855f7);
+      border-radius: 16px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      color: white;
+      margin-bottom: 0.75rem;
+      box-shadow: 0 0 30px var(--accent-glow);
+    }
+    .brand-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      letter-spacing: -0.02em;
+    }
+    .brand-sub {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      margin-top: 2px;
+    }
+
+    /* Card */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      animation: fadeSlideUp 0.6s ease 0.1s both;
+      box-shadow:
+        0 0 0 1px rgba(255,255,255,0.04),
+        0 40px 80px rgba(0,0,0,0.5),
+        inset 0 1px 0 rgba(255,255,255,0.06);
+    }
+
+    /* Step Progress */
+    .step-track {
+      padding: 1.5rem 1.75rem 0;
+      background: var(--surface2);
+      border-bottom: 1px solid var(--border);
+    }
+    .step-labels {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+    .step-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      flex: 1;
+      position: relative;
+    }
+    .step-item::after {
+      content: '';
+      position: absolute;
+      top: 14px;
+      left: calc(50% + 14px);
+      right: calc(-50% + 14px);
+      height: 1px;
+      background: var(--border);
+      transition: background var(--transition);
+    }
+    .step-item:last-child::after { display: none; }
+    .step-item.s-completed::after { background: var(--accent); }
+
+    .step-dot {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      border: 1.5px solid var(--border);
+      background: var(--surface3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      transition: all var(--transition);
+      font-family: 'Syne', sans-serif;
+      position: relative;
+      z-index: 1;
+    }
+    .step-item.s-active .step-dot {
+      border-color: var(--accent);
+      background: var(--accent);
+      color: white;
+      box-shadow: 0 0 0 4px var(--accent-glow);
+    }
+    .step-item.s-completed .step-dot {
+      border-color: var(--green);
+      background: var(--green);
+      color: white;
+    }
+    .step-name {
+      font-size: 0.6rem;
+      color: var(--text-muted);
+      white-space: nowrap;
+      transition: color var(--transition);
+    }
+    .step-item.s-active .step-name { color: var(--accent); font-weight: 600; }
+    .step-item.s-completed .step-name { color: var(--green); }
+
+    /* Progress Bar */
+    .progress-bar-wrap {
+      height: 2px;
+      background: var(--surface3);
+      margin: 0 -1.75rem;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), #a855f7);
+      transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
+      box-shadow: 0 0 8px var(--accent-glow);
+    }
+
+    /* Form Body */
+    .form-body {
+      padding: 2rem 1.75rem;
+      min-height: 440px;
+    }
+
+    .form-step {
+      display: none;
+    }
+    .form-step.active-step {
+      display: block;
+      animation: stepEnter 0.35s cubic-bezier(0.4,0,0.2,1) both;
+    }
+
+    @keyframes stepEnter {
+      from { opacity: 0; transform: translateX(12px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    /* Step Header */
+    .step-header {
+      margin-bottom: 1.75rem;
+    }
+    .step-header h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      letter-spacing: -0.03em;
+      margin-bottom: 4px;
+    }
+    .step-header p {
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    /* Social Buttons */
+    .social-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    .social-btn {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 1rem 1.25rem;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background: var(--surface2);
+      cursor: pointer;
+      transition: all var(--transition);
+      position: relative;
+      overflow: hidden;
+      user-select: none;
+    }
+    .social-btn::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      transition: opacity var(--transition);
+    }
+    .social-btn:hover { transform: translateY(-2px); }
+    .social-btn.google:hover { border-color: rgba(234,67,53,0.4); box-shadow: 0 8px 24px rgba(234,67,53,0.12); }
+    .social-btn.line-btn:hover { border-color: rgba(6,199,85,0.4); box-shadow: 0 8px 24px rgba(6,199,85,0.12); }
+    .social-btn.telegram:hover { border-color: rgba(42,171,238,0.4); box-shadow: 0 8px 24px rgba(42,171,238,0.12); }
+
+    .social-btn-icon {
+      width: 40px; height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      flex-shrink: 0;
+    }
+    .google .social-btn-icon { background: rgba(234,67,53,0.12); color: #ea4335; }
+    .line-btn .social-btn-icon { background: rgba(6,199,85,0.12); color: #06c755; }
+    .telegram .social-btn-icon { background: rgba(42,171,238,0.12); color: #2AABEE; }
+
+    .social-btn-text { flex: 1; }
+    .social-btn-text strong {
+      display: block;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 2px;
+    }
+    .social-btn-text span {
+      font-size: 0.72rem;
+      color: var(--text-secondary);
+    }
+    .social-btn-arrow {
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      transition: transform var(--transition);
+    }
+    .social-btn:hover .social-btn-arrow { transform: translateX(3px); color: var(--text-secondary); }
+
+    /* Connected State */
+    .social-connected-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(16,185,129,0.1);
+      border: 1px solid rgba(16,185,129,0.3);
+      color: var(--green);
+      border-radius: 99px;
+      padding: 4px 10px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      margin-top: 1rem;
+    }
+
+    /* Form Groups */
+    .form-group {
+      margin-bottom: 1.1rem;
+    }
+    .form-group label {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .required-mark { color: var(--red); }
+
+    .form-control {
+      width: 100%;
+      padding: 0.7rem 0.9rem;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text-primary);
+      font-family: 'Noto Sans Thai', sans-serif;
+      font-size: 0.875rem;
+      transition: all var(--transition);
+      /* -webkit-appearance: none; */
+    }
+    .form-control::placeholder { color: var(--text-muted); }
+    .form-control:focus {
+      outline: none;
+      border-color: var(--accent);
+      background: var(--surface3);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+    select.form-control { cursor: pointer; }
+    select.form-control option { background: var(--surface2); }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.85rem;
+    }
+
+    /* ID Card input */
+    .input-group {
+      position: relative;
+    }
+    .input-group .form-control { padding-left: 2.5rem; }
+    .input-icon {
+      position: absolute;
+      left: 0.9rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+
+    /* Signature */
+    .sig-wrap {
+      border: 1px dashed var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      background: var(--surface2);
+      text-align: center;
+    }
+    .sig-canvas-wrap {
+      position: relative;
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      border: 1px solid var(--border);
+      margin-bottom: 1rem;
+      background: #fff;
+    }
+    canvas#sigCanvas {
+      display: block;
+      width: 100%;
+      height: 180px;
+      cursor: crosshair;
+      touch-action: none;
+    }
+    .sig-hint {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      font-size: 0.8rem;
+      color: #ccc;
+      gap: 6px;
+      opacity: 0.5;
+    }
+    .sig-btns {
+      display: flex;
+      gap: 0.6rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .sig-status {
+      margin-top: 0.75rem;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+    }
+    .sig-status.saved { color: var(--green); }
+
+    /* Image Upload */
+    .img-preview-wrap {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 1.25rem;
+    }
+    .img-avatar {
+      width: 100px; height: 100px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid var(--border);
+      box-shadow: 0 0 0 4px var(--surface2);
+    }
+    .upload-zone {
+      border: 1.5px dashed var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all var(--transition);
+      background: var(--surface2);
+    }
+    .upload-zone:hover {
+      border-color: var(--accent);
+      background: rgba(99,102,241,0.05);
+    }
+    .upload-zone i { font-size: 1.75rem; color: var(--text-muted); margin-bottom: 0.5rem; }
+    .upload-zone p { font-size: 0.82rem; color: var(--text-secondary); }
+    .upload-zone small { font-size: 0.7rem; color: var(--text-muted); }
+
+    /* Related persons */
+    .related-card {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem;
+      margin-bottom: 0.85rem;
+    }
+    .related-card-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.6rem;
+    }
+    .related-card-label .badge {
+      width: 20px; height: 20px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.6rem;
+    }
+    .badge-blue { background: rgba(99,102,241,0.15); color: var(--accent); }
+    .badge-teal { background: rgba(34,211,238,0.12); color: var(--accent2); }
+    .badge-green { background: rgba(16,185,129,0.12); color: var(--green); }
+
+    /* Confirm Summary */
+    .confirm-grid {
+      display: grid;
+      gap: 0;
+    }
+    .confirm-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      padding: 0.7rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .confirm-row:last-child { border-bottom: none; }
+    .confirm-key {
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-secondary);
+      min-width: 110px;
+      padding-top: 2px;
+    }
+    .confirm-val {
+      font-size: 0.85rem;
+      color: var(--text-primary);
+      flex: 1;
+      line-height: 1.5;
+    }
+    .badge-ok {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: rgba(16,185,129,0.1);
+      color: var(--green);
+      border-radius: 6px;
+      padding: 2px 8px;
+      font-size: 0.72rem;
+      font-weight: 600;
+    }
+    .badge-skip {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: var(--surface3);
+      color: var(--text-muted);
+      border-radius: 6px;
+      padding: 2px 8px;
+      font-size: 0.72rem;
+    }
+
+    /* Section chip for confirm */
+    .confirm-section-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(99,102,241,0.08);
+      border: 1px solid rgba(99,102,241,0.15);
+      color: var(--accent);
+      border-radius: 8px;
+      padding: 4px 10px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 0.6rem;
+      margin-top: 1rem;
+    }
+    .confirm-section-chip:first-child { margin-top: 0; }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      padding: 0.65rem 1.25rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      font-weight: 600;
+      font-family: 'Noto Sans Thai', sans-serif;
+      cursor: pointer;
+      transition: all var(--transition);
+      border: none;
+      white-space: nowrap;
+      user-select: none;
+    }
+    .btn-primary {
+      background: var(--accent);
+      color: white;
+    }
+    .btn-primary:hover:not(:disabled) {
+      background: var(--accent-hover);
+      box-shadow: 0 6px 20px var(--accent-glow);
+      transform: translateY(-1px);
+    }
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-secondary);
+      border: 1px solid var(--border);
+    }
+    .btn-ghost:hover { background: var(--surface3); color: var(--text-primary); }
+    .btn-success {
+      background: var(--green);
+      color: white;
+      width: 100%;
+      padding: 0.9rem;
+      font-size: 0.95rem;
+      border-radius: var(--radius);
+    }
+    .btn-success:hover:not(:disabled) {
+      background: #0da572;
+      box-shadow: 0 8px 24px var(--green-glow);
+      transform: translateY(-1px);
+    }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
+    .btn-sm { padding: 0.5rem 1rem; font-size: 0.78rem; }
+    .btn-link {
+      background: none;
+      border: none;
+      color: var(--accent);
+      font-size: 0.78rem;
+      font-weight: 500;
+      cursor: pointer;
+      font-family: inherit;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+    .btn-link:hover { color: #a5b4fc; }
+
+    /* Footer */
+    .form-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.25rem 1.75rem;
+      background: var(--surface2);
+      border-top: 1px solid var(--border);
+    }
+    .footer-left { min-width: 100px; }
+    .footer-center {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+    }
+    .footer-right { min-width: 100px; display: flex; justify-content: flex-end; }
+
+    /* Skip hint */
+    .skip-hint {
+      text-align: center;
+      margin-top: 1.5rem;
+    }
+
+    /* Notify bar */
+    .notify-bar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0.75rem 1rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.8rem;
+      margin-bottom: 1rem;
+    }
+    .notify-bar.info { background: rgba(99,102,241,0.08); border: 1px solid rgba(99,102,241,0.2); color: #a5b4fc; }
+    .notify-bar.success { background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.2); color: var(--green); }
+
+    /* Divider */
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin: 1.25rem 0;
+      color: var(--text-muted);
+      font-size: 0.72rem;
+    }
+    .divider::before, .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* Security note */
+    .security-note {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      margin-top: 1.5rem;
+    }
+
+    /* Animations */
+    @keyframes fadeSlideDown {
+      from { opacity: 0; transform: translateY(-12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeSlideUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .fa-spin { animation: spin 0.8s linear infinite; }
+
+    /* Responsive */
+    @media (max-width: 560px) {
+      .form-row { grid-template-columns: 1fr; }
+      .form-body { padding: 1.5rem 1.25rem; }
+      .step-track { padding: 1.25rem 1.25rem 0; }
+      .form-footer { padding: 1rem 1.25rem; }
+      .step-name { display: none; }
+      .step-item::after { top: 14px; }
+      .brand-title { font-size: 1rem; }
+      body { padding: 1.5rem 0.75rem; }
+    }
+
+    /* SweetAlert2 dark theme */
+    .swal2-popup {
+      background: var(--surface) !important;
+      color: var(--text-primary) !important;
+      border: 1px solid var(--border) !important;
+      border-radius: var(--radius-lg) !important;
+    }
+    .swal2-title { color: var(--text-primary) !important; }
+    .swal2-html-container { color: var(--text-secondary) !important; }
+    .swal2-confirm {
+      background: var(--accent) !important;
+      border-radius: var(--radius-sm) !important;
+    }
+    .swal2-cancel {
+      background: var(--surface3) !important;
+      color: var(--text-primary) !important;
+      border-radius: var(--radius-sm) !important;
+    }
+  </style>
+</head>
+<body>
+
+<div class="bg-effects">
+  <div class="bg-grid"></div>
+  <div class="bg-orb bg-orb-1"></div>
+  <div class="bg-orb bg-orb-2"></div>
+  <div class="bg-orb bg-orb-3"></div>
+</div>
+
+<div class="wrapper">
+  <!-- Brand -->
+  <div class="brand">
+    <div class="brand-icon"><i class="fas fa-clock-rotate-left"></i></div>
+    <div class="brand-title">ระบบลงเวลาปฏิบัติงาน</div>
+    <div class="brand-sub">Time & Attendance Management System</div>
+  </div>
+
+  <div class="card">
+    <!-- Step Progress -->
+    <div class="step-track">
+      <div class="step-labels">
+        <div class="step-item s-active" id="si-1">
+          <div class="step-dot" id="sd-1">1</div>
+          <div class="step-name">บัญชี</div>
+        </div>
+        <div class="step-item" id="si-2">
+          <div class="step-dot" id="sd-2">2</div>
+          <div class="step-name">ข้อมูล</div>
+        </div>
+        <div class="step-item" id="si-3">
+          <div class="step-dot" id="sd-3">3</div>
+          <div class="step-name">ลายเซ็น</div>
+        </div>
+        <div class="step-item" id="si-4">
+          <div class="step-dot" id="sd-4">4</div>
+          <div class="step-name">รูปภาพ</div>
+        </div>
+        <div class="step-item" id="si-5">
+          <div class="step-dot" id="sd-5">5</div>
+          <div class="step-name">ผู้เกี่ยวข้อง</div>
+        </div>
+        <div class="step-item" id="si-6">
+          <div class="step-dot" id="sd-6">6</div>
+          <div class="step-name">ยืนยัน</div>
+        </div>
+      </div>
+      <div class="progress-bar-wrap">
+        <div class="progress-bar-fill" id="progressBar" style="width: 16.6%;"></div>
+      </div>
+    </div>
+
+    <!-- Form Body -->
+    <div class="form-body">
+
+      <!-- STEP 1: Social Connect -->
+      <div class="form-step active-step" id="step1">
+        <div class="step-header">
+          <h2>เชื่อมต่อบัญชีของคุณ</h2>
+          <p>เลือกผู้ให้บริการเพื่อเริ่มต้นสมัครสมาชิก ข้อมูลจะถูกดึงมาโดยอัตโนมัติ</p>
+        </div>
+
+        <div id="loginStatus"></div>
+
+        <div class="social-grid">
+          <div class="social-btn google" onclick="loginWithGoogle()">
+            <div class="social-btn-icon"><i class="fab fa-google"></i></div>
+            <div class="social-btn-text">
+              <strong>สมัครด้วย Google</strong>
+              <span>ใช้บัญชี Gmail หรือ Google Workspace</span>
+            </div>
+            <i class="fas fa-chevron-right social-btn-arrow"></i>
+          </div>
+
+          <div class="social-btn line-btn" id="lineLoginBtn">
+            <div class="social-btn-icon"><i class="fab fa-line"></i></div>
+            <div class="social-btn-text">
+              <strong>สมัครด้วย LINE</strong>
+              <span>เชื่อมต่อกับแอป LINE ของคุณ</span>
+            </div>
+            <i class="fas fa-chevron-right social-btn-arrow"></i>
+          </div>
+
+          <div class="social-btn telegram" onclick="loginWithTelegram()">
+            <div class="social-btn-icon"><i class="fab fa-telegram"></i></div>
+            <div class="social-btn-text">
+              <strong>สมัครด้วย Telegram</strong>
+              <span>เชื่อมต่อกับบัญชี Telegram ของคุณ</span>
+            </div>
+            <i class="fas fa-chevron-right social-btn-arrow"></i>
+          </div>
+        </div>
+
+        <div class="security-note">
+          <i class="fas fa-lock"></i>
+          ข้อมูลของคุณได้รับการเข้ารหัสและเก็บเป็นความลับ
+        </div>
+      </div>
+
+      <!-- STEP 2: Personal Info -->
+      <div class="form-step" id="step2">
+        <div class="step-header">
+          <h2>ข้อมูลส่วนตัว</h2>
+          <p>กรอกข้อมูลส่วนตัวของคุณให้ครบถ้วน เพื่อการยืนยันตัวตน</p>
+        </div>
+
+        <div class="form-group">
+          <label>สังกัด <span class="required-mark">*</span></label>
+          <select id="affiliation" class="form-control">
+            <option value="">เลือกสังกัด</option>
+            <option value="สำนักงานสาธารณสุขจังหวัด">สำนักงานสาธารณสุขจังหวัด</option>
+            <option value="โรงพยาบาลศูนย์">โรงพยาบาลศูนย์</option>
+            <option value="โรงพยาบาลทั่วไป">โรงพยาบาลทั่วไป</option>
+            <option value="โรงพยาบาลชุมชน">โรงพยาบาลชุมชน</option>
+            <option value="สำนักงานสาธารณสุขอำเภอ">สำนักงานสาธารณสุขอำเภอ</option>
+            <option value="อื่นๆ">อื่นๆ</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>หน่วยงาน / กลุ่มงาน <span class="required-mark">*</span></label>
+          <input type="text" id="department" class="form-control" placeholder="เช่น กลุ่มงานเวชกรรมสังคม">
+        </div>
+
+        <div class="form-group">
+          <label>เลขบัตรประจำตัวประชาชน <span class="required-mark">*</span></label>
+          <div class="input-group">
+            <i class="fas fa-id-card input-icon"></i>
+            <input type="text" id="idCard" class="form-control" maxlength="13" placeholder="X-XXXX-XXXXX-XX-X"
+              oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>คำนำหน้า <span class="required-mark">*</span></label>
+            <select id="prefix" class="form-control">
+              <option value="">เลือก</option>
+              <option value="นาย">นาย</option>
+              <option value="นาง">นาง</option>
+              <option value="นางสาว">นางสาว</option>
+              <option value="แพทย์หญิง">แพทย์หญิง</option>
+              <option value="แพทย์ชาย">แพทย์ชาย</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>ชื่อ <span class="required-mark">*</span></label>
+            <input type="text" id="firstName" class="form-control" placeholder="ชื่อจริง">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>นามสกุล <span class="required-mark">*</span></label>
+            <input type="text" id="lastName" class="form-control" placeholder="นามสกุล">
+          </div>
+          <div class="form-group">
+            <label>ตำแหน่ง <span class="required-mark">*</span></label>
+            <input type="text" id="position" class="form-control" placeholder="เช่น พยาบาลวิชาชีพ">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>ประเภทบุคลากร <span class="required-mark">*</span></label>
+          <select id="personnelType" class="form-control">
+            <option value="">เลือกประเภท</option>
+            <option value="ข้าราชการ">ข้าราชการ</option>
+            <option value="ลูกจ้างประจำ">ลูกจ้างประจำ</option>
+            <option value="พนักงานราชการ">พนักงานราชการ</option>
+            <option value="พนักงานกระทรวงสาธารณสุข">พนักงานกระทรวงสาธารณสุข</option>
+            <option value="พนักงานส่วนท้องถิ่น">พนักงานส่วนท้องถิ่น</option>
+            <option value="อาสาสมัคร">อาสาสมัคร</option>
+            <option value="อื่นๆ">อื่นๆ</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- STEP 3: Signature -->
+      <div class="form-step" id="step3">
+        <div class="step-header">
+          <h2>ลายเซ็นอิเล็กทรอนิกส์</h2>
+          <p>เซ็นชื่อบนพื้นที่ด้านล่าง ใช้เมาส์หรือนิ้วสัมผัสบนอุปกรณ์มือถือ</p>
+        </div>
+
+        <div class="notify-bar info">
+          <i class="fas fa-circle-info"></i>
+          ลายเซ็นจะถูกใช้ในเอกสารราชการ กรุณาเซ็นให้ชัดเจน
+        </div>
+
+        <div class="sig-wrap">
+          <div class="sig-canvas-wrap">
+            <canvas id="sigCanvas"></canvas>
+            <div class="sig-hint" id="sigHint"><i class="fas fa-pen-nib"></i> เซ็นชื่อที่นี่</div>
+          </div>
+          <div class="sig-btns">
+            <button class="btn btn-ghost btn-sm" onclick="clearSignature()">
+              <i class="fas fa-rotate-left"></i> ล้างใหม่
+            </button>
+            <button class="btn btn-primary btn-sm" onclick="saveSignature()">
+              <i class="fas fa-check"></i> บันทึกลายเซ็น
+            </button>
+          </div>
+          <div class="sig-status" id="sigStatus">
+            <i class="fas fa-circle-dot"></i> ยังไม่ได้บันทึก
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 4: Profile Image -->
+      <div class="form-step" id="step4">
+        <div class="step-header">
+          <h2>รูปภาพโปรไฟล์</h2>
+          <p>อัพโหลดรูปภาพบุคคลของคุณ หรือข้ามหากยังไม่พร้อม</p>
+        </div>
+
+        <div class="img-preview-wrap">
+          <img id="profilePreview" class="img-avatar"
+            src="https://ui-avatars.com/api/?background=6366f1&color=fff&size=100&bold=true&name=U" alt="Preview">
+        </div>
+
+        <div class="upload-zone" onclick="document.getElementById('profileImageInput').click()">
+          <i class="fas fa-cloud-arrow-up"></i>
+          <p>คลิกหรือลากไฟล์มาวางที่นี่</p>
+          <small>รองรับ JPG, PNG, WEBP ขนาดไม่เกิน 2MB</small>
+        </div>
+        <input type="file" id="profileImageInput" accept="image/*" style="display:none;" onchange="previewImage(this)">
+
+        <div class="skip-hint">
+          <button class="btn-link" onclick="goNext()">ข้ามขั้นตอนนี้ →</button>
+        </div>
+      </div>
+
+      <!-- STEP 5: Related Persons -->
+      <div class="form-step" id="step5">
+        <div class="step-header">
+          <h2>ผู้เกี่ยวข้องในระบบ</h2>
+          <p>เลือกผู้บังคับบัญชาและผู้รับผิดชอบ สามารถตั้งค่าภายหลังได้</p>
+        </div>
+
+        <div class="related-card">
+          <div class="related-card-label">
+            <div class="badge badge-blue"><i class="fas fa-crown" style="font-size:0.55rem"></i></div>
+            ผู้บริหาร / หัวหน้า
+          </div>
+          <select id="supervisor" class="form-control"><option value="">-- ไม่ระบุ --</option></select>
+        </div>
+
+        <div class="related-card">
+          <div class="related-card-label">
+            <div class="badge badge-teal"><i class="fas fa-user-check" style="font-size:0.55rem"></i></div>
+            ผู้รับรองการทำงาน
+          </div>
+          <select id="approver" class="form-control"><option value="">-- ไม่ระบุ --</option></select>
+        </div>
+
+        <div class="related-card">
+          <div class="related-card-label">
+            <div class="badge badge-green"><i class="fas fa-coins" style="font-size:0.55rem"></i></div>
+            ผู้จ่ายเงิน / การเงิน
+          </div>
+          <select id="payer" class="form-control"><option value="">-- ไม่ระบุ --</option></select>
+        </div>
+
+        <div class="skip-hint">
+          <button class="btn-link" onclick="saveRelatedAndNext()">ข้ามและดำเนินการต่อ →</button>
+        </div>
+      </div>
+
+      <!-- STEP 6: Confirmation -->
+      <div class="form-step" id="step6">
+        <div class="step-header">
+          <h2>ยืนยันข้อมูล</h2>
+          <p>ตรวจสอบความถูกต้องก่อนบันทึก สามารถย้อนกลับเพื่อแก้ไขได้</p>
+        </div>
+
+        <div id="confirmData" class="confirm-grid" style="margin-bottom: 1.5rem;"></div>
+
+        <button class="btn btn-success" onclick="submitRegistration()">
+          <i class="fas fa-paper-plane"></i> ยืนยันการสมัครสมาชิก
+        </button>
+      </div>
+
+    </div><!-- /form-body -->
+
+    <!-- Footer -->
+    <div class="form-footer">
+      <div class="footer-left">
+        <button class="btn btn-ghost btn-sm" id="prevBtn" onclick="prevStep()" style="display:none;">
+          <i class="fas fa-chevron-left"></i> ย้อนกลับ
+        </button>
+      </div>
+      <div class="footer-center" id="stepCounter">ขั้นตอนที่ 1 จาก 6</div>
+      <div class="footer-right">
+        <button class="btn btn-primary btn-sm" id="nextBtn" onclick="nextStep()">
+          ถัดไป <i class="fas fa-chevron-right"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ==================== Global State ====================
+let currentStep = 1;
+const TOTAL_STEPS = 6;
+let signatureSaved = false;
+let canvas, ctx, drawing = false;
+
+const LINE_CHANNEL_ID   = '1654797991';
+const LINE_REDIRECT_URI = window.location.origin + '/line-callback.html';
+const TELEGRAM_BOT_ID   = 'YOUR_BOT_ID';
+
+let userData = {
+  uuid: null, social_id: null, social_type: null,
+  name: null, email: null, picture: null,
+  affiliation: '', department: '', idCard: '',
+  prefix: '', firstName: '', lastName: '',
+  position: '', personnelType: '',
+  signature: null, profileImage: null,
+  supervisor: '', approver: '', payer: ''
+};
+
+// ==================== Init ====================
+document.addEventListener('DOMContentLoaded', () => {
+  initSignatureCanvas();
+  loadStaffOptions();
+  initLineLogin();
+  checkTelegramCallback();
+  updateUI();
+});
+
+// ==================== Signature Canvas ====================
+function initSignatureCanvas() {
+  canvas = document.getElementById('sigCanvas');
+  ctx = canvas.getContext('2d');
+  resizeCanvas();
+  ctx.strokeStyle = '#1a1a2e';
+  ctx.lineWidth = 2.5;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+
+  canvas.addEventListener('mousedown', startDraw);
+  canvas.addEventListener('mousemove', drawSig);
+  canvas.addEventListener('mouseup', stopDraw);
+  canvas.addEventListener('mouseleave', stopDraw);
+  canvas.addEventListener('touchstart', startDrawTouch, { passive: false });
+  canvas.addEventListener('touchmove', drawSigTouch, { passive: false });
+  canvas.addEventListener('touchend', stopDraw);
+}
+
+function resizeCanvas() {
+  const rect = canvas.getBoundingClientRect();
+  canvas.width = rect.width || 500;
+  canvas.height = 180;
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+}
+
+function getPos(e) {
+  const rect = canvas.getBoundingClientRect();
+  const scaleX = canvas.width / rect.width;
+  const scaleY = canvas.height / rect.height;
+  return {
+    x: (e.clientX - rect.left) * scaleX,
+    y: (e.clientY - rect.top) * scaleY
+  };
+}
+
+function startDraw(e) {
+  drawing = true;
+  document.getElementById('sigHint').style.display = 'none';
+  const p = getPos(e);
+  ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p.x, p.y); ctx.stroke();
+}
+function drawSig(e) {
+  if (!drawing) return;
+  const p = getPos(e);
+  ctx.lineTo(p.x, p.y); ctx.stroke(); ctx.beginPath(); ctx.moveTo(p.x, p.y);
+}
+function startDrawTouch(e) {
+  e.preventDefault(); drawing = true;
+  document.getElementById('sigHint').style.display = 'none';
+  const t = e.touches[0];
+  const p = { clientX: t.clientX, clientY: t.clientY };
+  startDraw(p);
+}
+function drawSigTouch(e) {
+  e.preventDefault();
+  if (!drawing) return;
+  const t = e.touches[0];
+  drawSig({ clientX: t.clientX, clientY: t.clientY });
+}
+function stopDraw() { drawing = false; ctx.beginPath(); }
+
+function clearSignature() {
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  signatureSaved = false;
+  userData.signature = null;
+  document.getElementById('sigHint').style.display = 'flex';
+  const s = document.getElementById('sigStatus');
+  s.className = 'sig-status';
+  s.innerHTML = '<i class="fas fa-circle-dot"></i> ยังไม่ได้บันทึก';
+}
+
+function saveSignature() {
+  userData.signature = canvas.toDataURL('image/png');
+  signatureSaved = true;
+  const s = document.getElementById('sigStatus');
+  s.className = 'sig-status saved';
+  s.innerHTML = '<i class="fas fa-circle-check"></i> บันทึกลายเซ็นเรียบร้อยแล้ว';
+}
+
+// ==================== Social Login ====================
+function loginWithGoogle() {
+  google.accounts.id.initialize({
+    client_id: 'YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com',
+    callback: handleGoogleCredential,
+    auto_select: false
+  });
+  google.accounts.id.prompt();
+}
+
+function handleGoogleCredential(response) {
+  const decoded = JSON.parse(atob(response.credential.split('.')[1]));
+  userData.social_id = decoded.sub;
+  userData.social_type = 'google';
+  userData.name = decoded.name;
+  userData.email = decoded.email;
+  userData.picture = decoded.picture;
+  userData.uuid = generateUUID();
+  showConnectedStatus('Google', decoded.name, decoded.picture);
+  checkAndProceed();
+}
+
+function initLineLogin() {
+  document.getElementById('lineLoginBtn').onclick = () => {
+    // state = "register|<random>" เพื่อให้ callback รู้ว่าต้องกลับหน้า register
+    const state = 'register|' + Math.random().toString(36).slice(2);
+    window.location.href = 'https://access.line.me/oauth2/v2.1/authorize'
+      + '?response_type=code'
+      + `&client_id=${LINE_CHANNEL_ID}`
+      + `&redirect_uri=${encodeURIComponent(LINE_REDIRECT_URI)}`
+      + `&state=${encodeURIComponent(state)}`
+      + '&scope=profile%20openid%20email';
+  };
+}
+
+// รองรับ redirect mode จาก line-callback.html
+(function detectLineCallbackOnLoad() {
+  const p = new URLSearchParams(window.location.search);
+  if (p.get('line') === 'callback') {
+    const userId = p.get('userId'), name = p.get('displayName');
+    if (userId && name) {
+      window.handleLineCallback({ userId, displayName: name, email: p.get('email')||null, pictureUrl: p.get('pictureUrl')||null });
+      history.replaceState({}, '', window.location.pathname);
+    }
+  } else if (p.get('line_code')) {
+    // บอก user ว่าต้องการ backend
+    const el = document.getElementById('loginStatus');
+    if (el) el.innerHTML = '<div class="notify-bar" style="background:rgba(244,63,94,0.08);border:1px solid rgba(244,63,94,0.2);color:#fb7185;margin-bottom:1rem;"><i class="fas fa-triangle-exclamation"></i> LINE Login ต้องการ Backend API สำหรับ token exchange</div>';
+    history.replaceState({}, '', window.location.pathname);
+  }
+})();
+
+window.handleLineCallback = function(u) {
+  userData.social_id = u.userId;
+  userData.social_type = 'line';
+  userData.name = u.displayName;
+  userData.email = u.email || `${u.userId}@line.com`;
+  userData.picture = u.pictureUrl;
+  userData.uuid = generateUUID();
+  showConnectedStatus('LINE', u.displayName, u.pictureUrl);
+  checkAndProceed();
+};
+
+function loginWithTelegram() {
+  const popup = window.open(`https://oauth.telegram.org/auth?bot_id=${TELEGRAM_BOT_ID}&origin=${encodeURIComponent(window.location.origin)}&embed=1&request_access=write`, 'TG', 'width=600,height=500');
+  window.telegramCallback = (user) => {
+    popup.close();
+    userData.social_id = user.id.toString();
+    userData.social_type = 'telegram';
+    userData.name = `${user.first_name} ${user.last_name || ''}`.trim();
+    userData.email = `${user.id}@telegram.com`;
+    userData.picture = user.photo_url || null;
+    userData.uuid = generateUUID();
+    showConnectedStatus('Telegram', userData.name, userData.picture);
+    checkAndProceed();
+  };
+}
+
+function checkTelegramCallback() {
+  const params = new URLSearchParams(window.location.hash.substring(1));
+  const tg = params.get('tgUser');
+  if (tg) { try { window.telegramCallback?.(JSON.parse(decodeURIComponent(tg))); } catch(e){} }
+}
+
+function showConnectedStatus(provider, name, picture) {
+  const el = document.getElementById('loginStatus');
+  el.innerHTML = `
+    <div class="notify-bar success" style="margin-bottom:1rem;">
+      <i class="fas fa-circle-check"></i>
+      <div>เชื่อมต่อ <strong>${provider}</strong> สำเร็จ — ${escapeHtml(name)}</div>
+    </div>`;
+  if (picture) {
+    document.getElementById('profilePreview').src = picture;
+    userData.picture = picture;
+  }
+  const initials = name.split(' ').map(w => w[0]).slice(0,2).join('');
+  document.getElementById('profilePreview').src = picture || `https://ui-avatars.com/api/?background=6366f1&color=fff&size=100&bold=true&name=${encodeURIComponent(initials)}`;
+}
+
+async function checkAndProceed() {
+  const exists = await checkSocialIdExists(userData.social_id, userData.social_type);
+  if (exists) {
+    Swal.fire({ icon: 'warning', title: 'บัญชีนี้ลงทะเบียนแล้ว', text: 'กรุณาเข้าสู่ระบบแทนการสมัครสมาชิก', confirmButtonText: 'ตกลง' });
+  } else {
+    setTimeout(() => goNext(), 600);
+  }
+}
+
+// ==================== API ====================
+async function checkSocialIdExists(socialId, socialType) {
+  try {
+    const r = await fetch('/api/user/check-social', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({social_id:socialId, social_type:socialType}) });
+    return (await r.json()).exists;
+  } catch { return false; }
+}
+async function checkIdCardExists(idCard) {
+  try {
+    const r = await fetch('/api/user/check-idcard', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({id_card:idCard}) });
+    return (await r.json()).exists;
+  } catch { return false; }
+}
+async function loadStaffOptions() {
+  const mockStaff = [
+    { id:'1', name:'ดร.สมชาย ใจดี', position:'ผู้อำนวยการ' },
+    { id:'2', name:'นางสาวกมลชนก วัฒนา', position:'หัวหน้าฝ่ายการพยาบาล' },
+    { id:'3', name:'นายวิชัย ทรัพย์เจริญ', position:'หัวหน้ากลุ่มงานเวชกรรมสังคม' }
+  ];
+  let staff = mockStaff;
+  try {
+    const r = await fetch('/api/user/staff-list');
+    if (r.ok) staff = await r.json();
+  } catch {}
+  ['supervisor','approver','payer'].forEach(id => {
+    const sel = document.getElementById(id);
+    sel.innerHTML = '<option value="">-- ไม่ระบุ --</option>';
+    staff.forEach(s => { sel.innerHTML += `<option value="${s.id}">${s.name} (${s.position})</option>`; });
+  });
+}
+
+// ==================== Image ====================
+function previewImage(input) {
+  if (input.files?.[0]) {
+    const reader = new FileReader();
+    reader.onload = e => { document.getElementById('profilePreview').src = e.target.result; userData.profileImage = e.target.result; };
+    reader.readAsDataURL(input.files[0]);
+  }
+}
+
+// ==================== Step Navigation ====================
+function validateStep(step) {
+  if (step === 1) {
+    if (!userData.social_id) { Swal.fire({ icon:'warning', title:'กรุณาเชื่อมต่อบัญชีก่อน', text:'เลือกช่องทางใดช่องทางหนึ่งด้านบน' }); return false; }
+    return true;
+  }
+  if (step === 2) {
+    const fields = ['affiliation','department','idCard','prefix','firstName','lastName','position','personnelType'];
+    for (const f of fields) {
+      if (!document.getElementById(f).value.trim()) { Swal.fire({ icon:'warning', title:'กรอกข้อมูลไม่ครบ', text:'กรุณากรอกข้อมูลที่มีเครื่องหมาย * ให้ครบถ้วน' }); return false; }
+    }
+    if (document.getElementById('idCard').value.length !== 13) { Swal.fire({ icon:'error', title:'เลขบัตรประชาชนไม่ถูกต้อง', text:'ต้องมี 13 หลัก' }); return false; }
+    userData.affiliation = document.getElementById('affiliation').value;
+    userData.department = document.getElementById('department').value;
+    userData.idCard = document.getElementById('idCard').value;
+    userData.prefix = document.getElementById('prefix').value;
+    userData.firstName = document.getElementById('firstName').value.trim();
+    userData.lastName = document.getElementById('lastName').value.trim();
+    userData.position = document.getElementById('position').value.trim();
+    userData.personnelType = document.getElementById('personnelType').value;
+    return true;
+  }
+  if (step === 3) {
+    if (!signatureSaved) { Swal.fire({ icon:'warning', title:'กรุณาบันทึกลายเซ็น', text:'เซ็นชื่อแล้วกดปุ่ม "บันทึกลายเซ็น"' }); return false; }
+    return true;
+  }
+  return true;
+}
+
+function goNext() {
+  if (currentStep < TOTAL_STEPS) {
+    currentStep++;
+    updateUI();
+  }
+}
+
+function nextStep() {
+  if (!validateStep(currentStep)) return;
+  if (currentStep === TOTAL_STEPS) { submitRegistration(); return; }
+  goNext();
+}
+
+function prevStep() {
+  if (currentStep > 1) { currentStep--; updateUI(); }
+}
+
+function saveRelatedAndNext() {
+  userData.supervisor = document.getElementById('supervisor').value;
+  userData.approver = document.getElementById('approver').value;
+  userData.payer = document.getElementById('payer').value;
+  goNext();
+}
+
+function updateUI() {
+  // Steps
+  for (let i = 1; i <= TOTAL_STEPS; i++) {
+    const si = document.getElementById(`si-${i}`);
+    const fs = document.getElementById(`step${i}`);
+    si.className = 'step-item';
+    fs.classList.remove('active-step');
+    const sd = document.getElementById(`sd-${i}`);
+    sd.innerHTML = i < currentStep ? '<i class="fas fa-check" style="font-size:0.65rem"></i>' : i;
+    if (i === currentStep) { si.classList.add('s-active'); fs.classList.add('active-step'); }
+    else if (i < currentStep) si.classList.add('s-completed');
+  }
+  // Progress bar
+  document.getElementById('progressBar').style.width = `${(currentStep / TOTAL_STEPS) * 100}%`;
+  // Buttons
+  document.getElementById('prevBtn').style.display = currentStep === 1 ? 'none' : 'inline-flex';
+  const nb = document.getElementById('nextBtn');
+  if (currentStep === TOTAL_STEPS) { nb.innerHTML = '<i class="fas fa-paper-plane"></i> ส่ง'; }
+  else if (currentStep === 5) { nb.innerHTML = 'บันทึกและถัดไป <i class="fas fa-chevron-right"></i>'; }
+  else { nb.innerHTML = 'ถัดไป <i class="fas fa-chevron-right"></i>'; }
+  // Hide next on last step (use button in step)
+  nb.style.display = currentStep === TOTAL_STEPS ? 'none' : 'inline-flex';
+  // Counter
+  document.getElementById('stepCounter').textContent = `ขั้นตอนที่ ${currentStep} จาก ${TOTAL_STEPS}`;
+  // Confirm data
+  if (currentStep === 6) buildConfirmData();
+}
+
+function buildConfirmData() {
+  const el = document.getElementById('confirmData');
+  const row = (key, val) => `<div class="confirm-row"><div class="confirm-key">${key}</div><div class="confirm-val">${val}</div></div>`;
+  const ok = (t) => `<span class="badge-ok"><i class="fas fa-check"></i>${t}</span>`;
+  const skip = (t) => `<span class="badge-skip">${t}</span>`;
+
+  el.innerHTML = `
+    <div class="confirm-section-chip"><i class="fas fa-share-nodes"></i> บัญชีที่เชื่อมต่อ</div>
+    ${row('ช่องทาง', { google:'Google', line:'LINE', telegram:'Telegram' }[userData.social_type] || '-')}
+    ${row('ชื่อบัญชี', escapeHtml(userData.name || '-'))}
+    ${row('อีเมล', escapeHtml(userData.email || '-'))}
+    <div class="confirm-section-chip"><i class="fas fa-id-badge"></i> ข้อมูลส่วนตัว</div>
+    ${row('สังกัด', escapeHtml(userData.affiliation || '-'))}
+    ${row('หน่วยงาน', escapeHtml(userData.department || '-'))}
+    ${row('บัตรประชาชน', userData.idCard ? '***' + userData.idCard.slice(-4) : '-')}
+    ${row('ชื่อ-สกุล', escapeHtml(`${userData.prefix} ${userData.firstName} ${userData.lastName}`.trim() || '-'))}
+    ${row('ตำแหน่ง', escapeHtml(userData.position || '-'))}
+    ${row('ประเภท', escapeHtml(userData.personnelType || '-'))}
+    <div class="confirm-section-chip"><i class="fas fa-paperclip"></i> ไฟล์แนบ</div>
+    ${row('ลายเซ็น', userData.signature ? ok('บันทึกแล้ว') : skip('ไม่มี'))}
+    ${row('รูปโปรไฟล์', (userData.profileImage || userData.picture) ? ok('พร้อมแล้ว') : skip('ข้าม'))}
+    ${row('ผู้บังคับบัญชา', userData.supervisor ? ok('เลือกแล้ว') : skip('ไม่ระบุ'))}
+  `;
+}
+
+// ==================== Submit ====================
+async function submitRegistration() {
+  const btn = document.querySelector('#step6 .btn-success');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> กำลังบันทึก...';
+
+  const idExists = await checkIdCardExists(userData.idCard);
+  if (idExists) {
+    Swal.fire({ icon:'error', title:'เลขบัตรประชาชนซ้ำ', text:'หมายเลขนี้มีในระบบแล้ว' });
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-paper-plane"></i> ยืนยันการสมัครสมาชิก';
+    return;
+  }
+
+  try {
+    const r = await fetch('/api/user/register', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(userData) });
+    const result = await r.json();
+    if (result.success) {
+      Swal.fire({ icon:'success', title:'สมัครสมาชิกสำเร็จ!', text:'กำลังนำคุณไปยังหน้าเข้าสู่ระบบ', timer:2000, showConfirmButton:false })
+        .then(() => window.location.href = 'login.html');
+    } else {
+      Swal.fire({ icon:'error', title:'เกิดข้อผิดพลาด', text: result.message || 'กรุณาลองอีกครั้ง' });
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-paper-plane"></i> ยืนยันการสมัครสมาชิก';
+    }
+  } catch {
+    Swal.fire({ icon:'error', title:'ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์', text:'กรุณาตรวจสอบการเชื่อมต่ออินเทอร์เน็ต' });
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-paper-plane"></i> ยืนยันการสมัครสมาชิก';
+  }
+}
+
+// ==================== Utility ====================
+function generateUUID() {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+    const r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+    return v.toString(16);
+  });
+}
+function escapeHtml(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+</script>
+</body>
+</html>

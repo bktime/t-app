@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="th-TH">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LINE Login — กำลังยืนยัน</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;600&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --surface: #111118;
+      --border: rgba(255,255,255,0.07);
+      --text-primary: #f0f0f5;
+      --text-secondary: #7a7a8a;
+      --text-muted: #3d3d50;
+      --accent: #6366f1;
+      --accent-glow: rgba(99,102,241,0.25);
+      --green: #06c755;
+      --green-glow: rgba(6,199,85,0.2);
+      --red: #f43f5e;
+      --red-glow: rgba(244,63,94,0.2);
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Noto Sans Thai', sans-serif;
+      background: var(--bg);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    /* Background */
+    .bg {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .bg-orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.1;
+    }
+    .o1 { width:400px;height:400px;background:radial-gradient(circle,#06c755,transparent);top:-100px;left:-100px;animation:of 12s ease-in-out infinite; }
+    .o2 { width:300px;height:300px;background:radial-gradient(circle,#6366f1,transparent);bottom:-80px;right:-60px;animation:of 10s ease-in-out infinite 2s reverse; }
+    @keyframes of { 0%,100%{transform:translate(0,0)} 50%{transform:translate(20px,-20px)} }
+
+    .bg-grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.018) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.018) 1px, transparent 1px);
+      background-size: 56px 56px;
+    }
+
+    /* Card */
+    .card {
+      position: relative;
+      z-index: 1;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 2.5rem 2rem;
+      width: 100%;
+      max-width: 360px;
+      text-align: center;
+      box-shadow: 0 40px 80px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05);
+      animation: cardIn 0.5s cubic-bezier(0.4,0,0.2,1) both;
+    }
+    @keyframes cardIn { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+
+    /* LINE icon ring */
+    .icon-ring {
+      width: 72px; height: 72px;
+      border-radius: 50%;
+      margin: 0 auto 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      position: relative;
+      transition: all 0.4s ease;
+    }
+    .icon-ring.loading {
+      background: rgba(6,199,85,0.1);
+      border: 2px solid rgba(6,199,85,0.2);
+      color: var(--green);
+    }
+    .icon-ring.loading::before {
+      content: '';
+      position: absolute;
+      inset: -4px;
+      border-radius: 50%;
+      border: 2px solid transparent;
+      border-top-color: var(--green);
+      border-right-color: rgba(6,199,85,0.3);
+      animation: spin 0.9s linear infinite;
+    }
+    .icon-ring.success {
+      background: rgba(6,199,85,0.12);
+      border: 2px solid rgba(6,199,85,0.35);
+      color: var(--green);
+      box-shadow: 0 0 30px var(--green-glow);
+    }
+    .icon-ring.error {
+      background: rgba(244,63,94,0.1);
+      border: 2px solid rgba(244,63,94,0.25);
+      color: var(--red);
+      box-shadow: 0 0 30px var(--red-glow);
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      letter-spacing: -0.03em;
+      margin-bottom: 6px;
+    }
+    .sub {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      min-height: 2.5em;
+    }
+
+    /* Progress dots */
+    .progress-dots {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      margin: 1.5rem 0;
+    }
+    .dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--text-muted);
+      transition: all 0.3s ease;
+    }
+    .dot.active { background: var(--green); box-shadow: 0 0 8px var(--green-glow); transform: scale(1.3); }
+    .dot.done   { background: rgba(6,199,85,0.4); }
+
+    /* Steps */
+    .steps {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+      text-align: left;
+    }
+    .step-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0.6rem 0.75rem;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.02);
+      transition: all 0.3s ease;
+    }
+    .step-row.s-active { background: rgba(6,199,85,0.06); }
+    .step-row.s-done   { background: transparent; }
+    .step-icon {
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.6rem;
+      flex-shrink: 0;
+      transition: all 0.3s ease;
+    }
+    .step-row.s-pending .step-icon { background: var(--bg); border: 1px solid var(--border); color: var(--text-muted); }
+    .step-row.s-active  .step-icon { background: rgba(6,199,85,0.15); border: 1px solid rgba(6,199,85,0.3); color: var(--green); animation: pulseSoft 1.5s ease-in-out infinite; }
+    .step-row.s-done    .step-icon { background: rgba(6,199,85,0.15); border: 1px solid rgba(6,199,85,0.3); color: var(--green); }
+    .step-row.s-error   .step-icon { background: rgba(244,63,94,0.1); border: 1px solid rgba(244,63,94,0.2); color: var(--red); }
+    @keyframes pulseSoft { 0%,100%{box-shadow:0 0 0 0 var(--green-glow)} 50%{box-shadow:0 0 0 4px transparent} }
+    .step-label { font-size: 0.78rem; color: var(--text-secondary); flex: 1; }
+    .step-row.s-active .step-label { color: var(--text-primary); font-weight: 500; }
+    .step-row.s-done   .step-label { color: var(--text-muted); text-decoration: line-through; }
+
+    /* Action button */
+    .btn {
+      display: none;
+      width: 100%;
+      padding: 0.85rem;
+      border: none;
+      border-radius: 12px;
+      font-family: 'Noto Sans Thai', sans-serif;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      margin-top: 0.25rem;
+    }
+    .btn.visible { display: flex; animation: fadeUp 0.3s ease both; }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+    .btn-retry {
+      background: rgba(244,63,94,0.1);
+      color: var(--red);
+      border: 1px solid rgba(244,63,94,0.2);
+    }
+    .btn-retry:hover { background: rgba(244,63,94,0.15); }
+    .btn-close {
+      background: rgba(255,255,255,0.05);
+      color: var(--text-secondary);
+      border: 1px solid var(--border);
+    }
+    .btn-close:hover { background: rgba(255,255,255,0.08); color: var(--text-primary); }
+
+    /* Timer bar */
+    .timer-bar-wrap {
+      height: 2px;
+      background: rgba(255,255,255,0.04);
+      border-radius: 99px;
+      margin-top: 1.25rem;
+      overflow: hidden;
+    }
+    .timer-bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--green), rgba(6,199,85,0.4));
+      border-radius: 99px;
+      width: 100%;
+      transition: width 0.1s linear;
+    }
+
+    /* Brand */
+    .brand {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 1.75rem;
+    }
+    .brand-icon {
+      width: 30px; height: 30px;
+      background: linear-gradient(135deg, var(--accent), #a855f7);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.8rem; color: white;
+    }
+    .brand-name {
+      font-family: 'Syne', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--text-secondary);
+    }
+  </style>
+</head>
+<body>
+
+<div class="bg">
+  <div class="bg-grid"></div>
+  <div class="bg-orb o1"></div>
+  <div class="bg-orb o2"></div>
+</div>
+
+<div class="card">
+  <div class="brand">
+    <div class="brand-icon"><i class="fas fa-clock-rotate-left"></i></div>
+    <div class="brand-name">ระบบลงเวลาปฏิบัติงาน</div>
+  </div>
+
+  <div class="icon-ring loading" id="iconRing">
+    <i class="fab fa-line"></i>
+  </div>
+
+  <h2 id="mainTitle">กำลังยืนยันตัวตน</h2>
+  <p class="sub" id="mainSub">กรุณารอสักครู่ กำลังติดต่อ LINE Server...</p>
+
+  <div class="progress-dots" id="dots">
+    <div class="dot active" id="dot0"></div>
+    <div class="dot" id="dot1"></div>
+    <div class="dot" id="dot2"></div>
+  </div>
+
+  <div class="steps" id="stepsArea">
+    <div class="step-row s-active" id="sr0">
+      <div class="step-icon"><i class="fas fa-circle-notch fa-spin"></i></div>
+      <div class="step-label">รับ Authorization Code</div>
+    </div>
+    <div class="step-row s-pending" id="sr1">
+      <div class="step-icon"><i class="fas fa-ellipsis"></i></div>
+      <div class="step-label">แลกเปลี่ยน Access Token</div>
+    </div>
+    <div class="step-row s-pending" id="sr2">
+      <div class="step-icon"><i class="fas fa-ellipsis"></i></div>
+      <div class="step-label">โหลดข้อมูลโปรไฟล์</div>
+    </div>
+  </div>
+
+  <button class="btn btn-retry" id="btnRetry" onclick="retryLogin()">
+    <i class="fas fa-rotate-right"></i> ลองอีกครั้ง
+  </button>
+  <button class="btn btn-close" id="btnClose" onclick="safeClose()">
+    <i class="fas fa-xmark"></i> ปิดหน้าต่างนี้
+  </button>
+
+  <div class="timer-bar-wrap" id="timerWrap" style="display:none;">
+    <div class="timer-bar" id="timerBar"></div>
+  </div>
+</div>
+
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<script>
+// ================================================================
+// LINE CONFIG
+// ================================================================
+const LINE_CHANNEL_ID  = '1654797991';
+const LINE_REDIRECT_URI = window.location.origin + '/line-callback.html';
+
+// API endpoint - ต้องตรงกับ route ใน Cloudflare Workers
+// จาก callback.js ที่เป็น export async function onRequestPost
+// จะถูกเรียกเมื่อ request ไปที่ /api/line/callback
+const API_ENDPOINT = '/api/line/callback';
+
+// ==================== UI Helpers ====================
+function setStep(idx, state, iconHtml) {
+  const el = document.getElementById(`sr${idx}`);
+  if (!el) return;
+  el.className = `step-row s-${state}`;
+  const iconEl = el.querySelector('.step-icon');
+  if (iconEl) iconEl.innerHTML = iconHtml;
+}
+function activateDot(idx) {
+  [0,1,2].forEach(i => {
+    const d = document.getElementById(`dot${i}`);
+    if (d) d.className = 'dot' + (i < idx ? ' done' : i === idx ? ' active' : '');
+  });
+}
+function setIcon(state) { 
+  const ring = document.getElementById('iconRing');
+  if (ring) ring.className = `icon-ring ${state}`;
+}
+function setTitle(title, sub) {
+  const titleEl = document.getElementById('mainTitle');
+  const subEl = document.getElementById('mainSub');
+  if (titleEl) titleEl.textContent = title;
+  if (subEl) subEl.textContent = sub;
+}
+function showBtn(id) { 
+  const btn = document.getElementById(id);
+  if (btn) btn.classList.add('visible');
+}
+
+function startCloseTimer(seconds) {
+  const total = seconds;
+  const wrap = document.getElementById('timerWrap');
+  const bar  = document.getElementById('timerBar');
+  if (!wrap || !bar) return;
+  wrap.style.display = 'block';
+  bar.style.width = '100%';
+  const iv = setInterval(() => {
+    seconds -= 0.1;
+    bar.style.width = Math.max(0, (seconds / total) * 100) + '%';
+    if (seconds <= 0) { clearInterval(iv); safeClose(); }
+  }, 100);
+}
+
+function setStepError(message) {
+  [0,1,2].forEach(i => setStep(i, 'error', '<i class="fas fa-xmark"></i>'));
+  setIcon('error');
+  setTitle('เกิดข้อผิดพลาด', message);
+  showBtn('btnRetry');
+  showBtn('btnClose');
+}
+
+function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+// ==================== Parse URL params ====================
+const urlParams = new URLSearchParams(window.location.search);
+const code      = urlParams.get('code');
+const stateBack = urlParams.get('state');
+const errParam  = urlParams.get('error');
+const errDesc   = urlParams.get('error_description');
+
+// ==================== Detect source page ====================
+function getSourcePage() {
+  if (!stateBack) return 'login.html';
+  const prefix = stateBack.split('|')[0];
+  if (prefix === 'register') return 'register.html';
+  return 'login.html';
+}
+
+// ==================== Token Exchange (via backend) ====================
+async function exchangeToken(authCode) {
+  console.log('[LINE] Exchanging token via:', API_ENDPOINT);
+  
+  const response = await fetch(API_ENDPOINT, {
+    method: 'POST',
+    headers: { 
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    },
+    body: JSON.stringify({
+      code: authCode,
+      redirect_uri: LINE_REDIRECT_URI,
+    }),
+  });
+
+  if (!response.ok) {
+    let errorMessage = `HTTP ${response.status}`;
+    try {
+      const errorData = await response.json();
+      errorMessage = errorData.message || errorMessage;
+    } catch (e) {
+      // ignore
+    }
+    throw new Error(errorMessage);
+  }
+
+  const data = await response.json();
+  console.log('[LINE] Token exchange response:', data);
+  
+  if (!data.success) {
+    throw new Error(data.message || 'Token exchange failed');
+  }
+  
+  return data; // { success: true, user: { userId, displayName, ... } }
+}
+
+// ==================== Main Flow ====================
+async function handleCallback() {
+  console.log('[LINE] Callback started, code:', code ? 'present' : 'missing');
+  
+  if (errParam) {
+    const msg = errDesc ? decodeURIComponent(errDesc) : errParam;
+    setStepError(`LINE ปฏิเสธการเข้าสู่ระบบ: ${msg}`);
+    return;
+  }
+  if (!code) {
+    setStepError('ไม่พบ Authorization Code กรุณาลองอีกครั้ง');
+    return;
+  }
+
+  // Step 0: รับ code ✅
+  await delay(350);
+  setStep(0, 'done', '<i class="fas fa-check"></i>');
+  setStep(1, 'active', '<i class="fas fa-circle-notch fa-spin"></i>');
+  activateDot(1);
+  setTitle('กำลังยืนยัน Token', 'กำลังประมวลผล Authorization Code...');
+
+  let tokenResult;
+  try {
+    tokenResult = await exchangeToken(code);
+  } catch (err) {
+    console.error('[LINE] token exchange error:', err);
+    setStepError(`ไม่สามารถแลกเปลี่ยน Token ได้: ${err.message}`);
+    return;
+  }
+
+  await delay(300);
+
+  // ── ตรวจสอบผลจาก backend ──
+  if (!tokenResult.success || !tokenResult.user) {
+    setStepError(tokenResult.message || 'เกิดข้อผิดพลาดจากเซิร์ฟเวอร์');
+    return;
+  }
+
+  const user = tokenResult.user; // { userId, displayName, pictureUrl, email }
+
+  // Step 1 done → Step 2 active
+  setStep(1, 'done', '<i class="fas fa-check"></i>');
+  setStep(2, 'active', '<i class="fas fa-circle-notch fa-spin"></i>');
+  activateDot(2);
+  setTitle('โหลดโปรไฟล์สำเร็จ', `ยินดีต้อนรับ, ${user.displayName}`);
+
+  await delay(500);
+
+  // Step 2 done
+  setStep(2, 'done', '<i class="fas fa-check"></i>');
+  setIcon('success');
+  setTitle('ยืนยันตัวตนสำเร็จ', 'กำลังส่งข้อมูลกลับ...');
+
+  // ส่งข้อมูลกลับหน้าต้นทาง
+  if (window.opener && typeof window.opener.handleLineCallback === 'function') {
+    window.opener.handleLineCallback(user);
+    startCloseTimer(2.5);
+  } else {
+    // Redirect mode (กรณีไม่ได้เปิดเป็น popup)
+    const src = getSourcePage();
+    const qs  = new URLSearchParams({
+      line:        'callback',
+      userId:      user.userId,
+      displayName: user.displayName,
+      email:       user.email        || '',
+      pictureUrl:  user.pictureUrl   || '',
+    });
+    setTimeout(() => window.location.href = `${src}?${qs}`, 600);
+  }
+}
+
+// ==================== Actions ====================
+function retryLogin() {
+  const src = getSourcePage();
+  window.location.href = src;
+}
+
+function safeClose() {
+  if (window.opener) window.close();
+  else window.location.href = getSourcePage();
+}
+
+// ==================== Run ====================
+handleCallback();
+</script>
+</body>
+</html>
