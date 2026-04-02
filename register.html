@@ -13,6 +13,7 @@
   <script src="https://accounts.google.com/gsi/client" async defer></script>
 
   <style>
+    /* (CSS เดิมทั้งหมด保持不变) */
     :root {
       --bg: #0a0a0f;
       --surface: #111118;
@@ -377,7 +378,6 @@
       font-family: 'Noto Sans Thai', sans-serif;
       font-size: 0.875rem;
       transition: all var(--transition);
-      /* -webkit-appearance: none; */
     }
     .form-control::placeholder { color: var(--text-muted); }
     .form-control:focus {
@@ -1058,15 +1058,16 @@
 </div>
 
 <script>
+// ==================== Configuration ====================
+const LINE_CHANNEL_ID = '2000472605';
+const LINE_REDIRECT_URI = window.location.origin + '/line-callback.html';
+const TELEGRAM_BOT_ID = 'YOUR_BOT_ID';
+
 // ==================== Global State ====================
 let currentStep = 1;
 const TOTAL_STEPS = 6;
 let signatureSaved = false;
 let canvas, ctx, drawing = false;
-
-const LINE_CHANNEL_ID   = '2000472605';
-const LINE_REDIRECT_URI = window.location.origin + '/line-callback.html';
-const TELEGRAM_BOT_ID   = 'YOUR_BOT_ID';
 
 let userData = {
   uuid: null, social_id: null, social_type: null,
@@ -1078,14 +1079,176 @@ let userData = {
   supervisor: '', approver: '', payer: ''
 };
 
-// ==================== Init ====================
-document.addEventListener('DOMContentLoaded', () => {
-  initSignatureCanvas();
-  // loadStaffOptions();
-  initLineLogin();
-  checkTelegramCallback();
-  updateUI();
-});
+// ==================== Utility Functions ====================
+function generateUUID() {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+    const r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+    return v.toString(16);
+  });
+}
+
+function escapeHtml(str) {
+  if (!str) return '';
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ==================== LINE Callback Handler (GLOBAL - ต้องประกาศก่อนถูกเรียก) ====================
+window.handleLineCallback = function(u) {
+  console.log('[Register] handleLineCallback called with:', u);
+  
+  userData.social_id = u.userId;
+  userData.social_type = 'line';
+  userData.name = u.displayName;
+  userData.email = u.email || `${u.userId}@line.com`;
+  userData.picture = u.pictureUrl;
+  userData.uuid = generateUUID();
+  
+  showConnectedStatus('LINE', u.displayName, u.pictureUrl);
+  checkAndProceed();
+};
+
+// ==================== Social Login Functions ====================
+function loginWithGoogle() {
+  google.accounts.id.initialize({
+    client_id: 'YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com',
+    callback: handleGoogleCredential,
+    auto_select: false
+  });
+  google.accounts.id.prompt();
+}
+
+function handleGoogleCredential(response) {
+  const decoded = JSON.parse(atob(response.credential.split('.')[1]));
+  userData.social_id = decoded.sub;
+  userData.social_type = 'google';
+  userData.name = decoded.name;
+  userData.email = decoded.email;
+  userData.picture = decoded.picture;
+  userData.uuid = generateUUID();
+  showConnectedStatus('Google', decoded.name, decoded.picture);
+  checkAndProceed();
+}
+
+function initLineLogin() {
+  document.getElementById('lineLoginBtn').onclick = () => {
+    const state = 'register|' + Math.random().toString(36).slice(2);
+    window.location.href = 'https://access.line.me/oauth2/v2.1/authorize'
+      + '?response_type=code'
+      + `&client_id=${LINE_CHANNEL_ID}`
+      + `&redirect_uri=${encodeURIComponent(LINE_REDIRECT_URI)}`
+      + `&state=${encodeURIComponent(state)}`
+      + '&scope=profile%20openid%20email';
+  };
+}
+
+function loginWithTelegram() {
+  const popup = window.open(`https://oauth.telegram.org/auth?bot_id=${TELEGRAM_BOT_ID}&origin=${encodeURIComponent(window.location.origin)}&embed=1&request_access=write`, 'TG', 'width=600,height=500');
+  window.telegramCallback = (user) => {
+    popup.close();
+    userData.social_id = user.id.toString();
+    userData.social_type = 'telegram';
+    userData.name = `${user.first_name} ${user.last_name || ''}`.trim();
+    userData.email = `${user.id}@telegram.com`;
+    userData.picture = user.photo_url || null;
+    userData.uuid = generateUUID();
+    showConnectedStatus('Telegram', userData.name, userData.picture);
+    checkAndProceed();
+  };
+}
+
+function checkTelegramCallback() {
+  const params = new URLSearchParams(window.location.hash.substring(1));
+  const tg = params.get('tgUser');
+  if (tg) { 
+    try { 
+      window.telegramCallback?.(JSON.parse(decodeURIComponent(tg))); 
+    } catch(e) { console.error('Telegram callback error:', e); }
+  }
+}
+
+function showConnectedStatus(provider, name, picture) {
+  const el = document.getElementById('loginStatus');
+  if (el) {
+    el.innerHTML = `
+      <div class="notify-bar success" style="margin-bottom:1rem;">
+        <i class="fas fa-circle-check"></i>
+        <div>เชื่อมต่อ <strong>${provider}</strong> สำเร็จ — ${escapeHtml(name)}</div>
+      </div>`;
+  }
+  
+  if (picture) {
+    document.getElementById('profilePreview').src = picture;
+    userData.picture = picture;
+  } else {
+    const initials = (name || 'U').split(' ').map(w => w[0]).slice(0, 2).join('');
+    document.getElementById('profilePreview').src = `https://ui-avatars.com/api/?background=6366f1&color=fff&size=100&bold=true&name=${encodeURIComponent(initials)}`;
+  }
+}
+
+async function checkAndProceed() {
+  try {
+    const exists = await checkSocialIdExists(userData.social_id, userData.social_type);
+    if (exists) {
+      Swal.fire({ 
+        icon: 'warning', 
+        title: 'บัญชีนี้ลงทะเบียนแล้ว', 
+        text: 'กรุณาเข้าสู่ระบบแทนการสมัครสมาชิก', 
+        confirmButtonText: 'ตกลง' 
+      });
+    } else {
+      setTimeout(() => goNext(), 600);
+    }
+  } catch (err) {
+    console.log('[Register] checkAndProceed - API not ready, proceeding anyway');
+    setTimeout(() => goNext(), 600);
+  }
+}
+
+async function checkSocialIdExists(socialId, socialType) {
+  try {
+    const r = await fetch('/api/user/check-social', { 
+      method: 'POST', 
+      headers: { 'Content-Type': 'application/json' }, 
+      body: JSON.stringify({ social_id: socialId, social_type: socialType }) 
+    });
+    const data = await r.json();
+    return data.exists || false;
+  } catch (err) {
+    console.log('[Register] checkSocialIdExists API not ready, returning false');
+    return false;
+  }
+}
+
+async function loadStaffOptions() {
+  try {
+    const mockStaff = [
+      { id: '1', name: 'ดร.สมชาย ใจดี', position: 'ผู้อำนวยการ' },
+      { id: '2', name: 'นางสาวกมลชนก วัฒนา', position: 'หัวหน้าฝ่ายการพยาบาล' },
+      { id: '3', name: 'นายวิชัย ทรัพย์เจริญ', position: 'หัวหน้ากลุ่มงานเวชกรรมสังคม' }
+    ];
+    
+    let staff = mockStaff;
+    
+    try {
+      const r = await fetch('/api/user/staff-list');
+      if (r.ok) staff = await r.json();
+    } catch (e) {
+      console.log('[Register] Using mock staff data');
+    }
+    
+    ['supervisor', 'approver', 'payer'].forEach(id => {
+      const sel = document.getElementById(id);
+      if (sel) {
+        sel.innerHTML = '<option value="">-- ไม่ระบุ --</option>';
+        staff.forEach(s => {
+          sel.innerHTML += `<option value="${s.id}">${escapeHtml(s.name)} (${escapeHtml(s.position)})</option>`;
+        });
+      }
+    });
+  } catch (err) {
+    console.error('[Register] loadStaffOptions error:', err);
+  }
+}
 
 // ==================== Signature Canvas ====================
 function initSignatureCanvas() {
@@ -1126,193 +1289,71 @@ function getPos(e) {
 
 function startDraw(e) {
   drawing = true;
-  document.getElementById('sigHint').style.display = 'none';
+  const hint = document.getElementById('sigHint');
+  if (hint) hint.style.display = 'none';
   const p = getPos(e);
   ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p.x, p.y); ctx.stroke();
 }
+
 function drawSig(e) {
   if (!drawing) return;
   const p = getPos(e);
   ctx.lineTo(p.x, p.y); ctx.stroke(); ctx.beginPath(); ctx.moveTo(p.x, p.y);
 }
+
 function startDrawTouch(e) {
-  e.preventDefault(); drawing = true;
-  document.getElementById('sigHint').style.display = 'none';
+  e.preventDefault(); 
+  drawing = true;
+  const hint = document.getElementById('sigHint');
+  if (hint) hint.style.display = 'none';
   const t = e.touches[0];
-  const p = { clientX: t.clientX, clientY: t.clientY };
-  startDraw(p);
+  startDraw({ clientX: t.clientX, clientY: t.clientY });
 }
+
 function drawSigTouch(e) {
   e.preventDefault();
   if (!drawing) return;
   const t = e.touches[0];
   drawSig({ clientX: t.clientX, clientY: t.clientY });
 }
-function stopDraw() { drawing = false; ctx.beginPath(); }
+
+function stopDraw() { 
+  drawing = false; 
+  ctx.beginPath(); 
+}
 
 function clearSignature() {
   ctx.fillStyle = '#ffffff';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
   signatureSaved = false;
   userData.signature = null;
-  document.getElementById('sigHint').style.display = 'flex';
-  const s = document.getElementById('sigStatus');
-  s.className = 'sig-status';
-  s.innerHTML = '<i class="fas fa-circle-dot"></i> ยังไม่ได้บันทึก';
+  const hint = document.getElementById('sigHint');
+  if (hint) hint.style.display = 'flex';
+  const status = document.getElementById('sigStatus');
+  if (status) {
+    status.className = 'sig-status';
+    status.innerHTML = '<i class="fas fa-circle-dot"></i> ยังไม่ได้บันทึก';
+  }
 }
 
 function saveSignature() {
   userData.signature = canvas.toDataURL('image/png');
   signatureSaved = true;
-  const s = document.getElementById('sigStatus');
-  s.className = 'sig-status saved';
-  s.innerHTML = '<i class="fas fa-circle-check"></i> บันทึกลายเซ็นเรียบร้อยแล้ว';
-}
-
-// ==================== Social Login ====================
-function loginWithGoogle() {
-  google.accounts.id.initialize({
-    client_id: 'YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com',
-    callback: handleGoogleCredential,
-    auto_select: false
-  });
-  google.accounts.id.prompt();
-}
-
-function handleGoogleCredential(response) {
-  const decoded = JSON.parse(atob(response.credential.split('.')[1]));
-  userData.social_id = decoded.sub;
-  userData.social_type = 'google';
-  userData.name = decoded.name;
-  userData.email = decoded.email;
-  userData.picture = decoded.picture;
-  userData.uuid = generateUUID();
-  showConnectedStatus('Google', decoded.name, decoded.picture);
-  checkAndProceed();
-}
-
-function initLineLogin() {
-  document.getElementById('lineLoginBtn').onclick = () => {
-    // state = "register|<random>" เพื่อให้ callback รู้ว่าต้องกลับหน้า register
-    const state = 'register|' + Math.random().toString(36).slice(2);
-    window.location.href = 'https://access.line.me/oauth2/v2.1/authorize'
-      + '?response_type=code'
-      + `&client_id=${LINE_CHANNEL_ID}`
-      + `&redirect_uri=${encodeURIComponent(LINE_REDIRECT_URI)}`
-      + `&state=${encodeURIComponent(state)}`
-      + '&scope=profile%20openid%20email';
-  };
-}
-
-// รองรับ redirect mode จาก line-callback.html
-(function detectLineCallbackOnLoad() {
-  const p = new URLSearchParams(window.location.search);
-  if (p.get('line') === 'callback') {
-    const userId = p.get('userId'), name = p.get('displayName');
-    if (userId && name) {
-      window.handleLineCallback({ userId, displayName: name, email: p.get('email')||null, pictureUrl: p.get('pictureUrl')||null });
-      history.replaceState({}, '', window.location.pathname);
-    }
-  } else if (p.get('line_code')) {
-    // บอก user ว่าต้องการ backend
-    const el = document.getElementById('loginStatus');
-    if (el) el.innerHTML = '<div class="notify-bar" style="background:rgba(244,63,94,0.08);border:1px solid rgba(244,63,94,0.2);color:#fb7185;margin-bottom:1rem;"><i class="fas fa-triangle-exclamation"></i> LINE Login ต้องการ Backend API สำหรับ token exchange</div>';
-    history.replaceState({}, '', window.location.pathname);
-  }
-})();
-
-window.handleLineCallback = function(u) {
-  userData.social_id = u.userId;
-  userData.social_type = 'line';
-  userData.name = u.displayName;
-  userData.email = u.email || `${u.userId}@line.com`;
-  userData.picture = u.pictureUrl;
-  userData.uuid = generateUUID();
-  showConnectedStatus('LINE', u.displayName, u.pictureUrl);
-  checkAndProceed();
-};
-
-function loginWithTelegram() {
-  const popup = window.open(`https://oauth.telegram.org/auth?bot_id=${TELEGRAM_BOT_ID}&origin=${encodeURIComponent(window.location.origin)}&embed=1&request_access=write`, 'TG', 'width=600,height=500');
-  window.telegramCallback = (user) => {
-    popup.close();
-    userData.social_id = user.id.toString();
-    userData.social_type = 'telegram';
-    userData.name = `${user.first_name} ${user.last_name || ''}`.trim();
-    userData.email = `${user.id}@telegram.com`;
-    userData.picture = user.photo_url || null;
-    userData.uuid = generateUUID();
-    showConnectedStatus('Telegram', userData.name, userData.picture);
-    checkAndProceed();
-  };
-}
-
-function checkTelegramCallback() {
-  const params = new URLSearchParams(window.location.hash.substring(1));
-  const tg = params.get('tgUser');
-  if (tg) { try { window.telegramCallback?.(JSON.parse(decodeURIComponent(tg))); } catch(e){} }
-}
-
-function showConnectedStatus(provider, name, picture) {
-  const el = document.getElementById('loginStatus');
-  el.innerHTML = `
-    <div class="notify-bar success" style="margin-bottom:1rem;">
-      <i class="fas fa-circle-check"></i>
-      <div>เชื่อมต่อ <strong>${provider}</strong> สำเร็จ — ${escapeHtml(name)}</div>
-    </div>`;
-  if (picture) {
-    document.getElementById('profilePreview').src = picture;
-    userData.picture = picture;
-  }
-  const initials = name.split(' ').map(w => w[0]).slice(0,2).join('');
-  document.getElementById('profilePreview').src = picture || `https://ui-avatars.com/api/?background=6366f1&color=fff&size=100&bold=true&name=${encodeURIComponent(initials)}`;
-}
-
-async function checkAndProceed() {
-  const exists = await checkSocialIdExists(userData.social_id, userData.social_type);
-  if (exists) {
-    Swal.fire({ icon: 'warning', title: 'บัญชีนี้ลงทะเบียนแล้ว', text: 'กรุณาเข้าสู่ระบบแทนการสมัครสมาชิก', confirmButtonText: 'ตกลง' });
-  } else {
-    setTimeout(() => goNext(), 600);
+  const status = document.getElementById('sigStatus');
+  if (status) {
+    status.className = 'sig-status saved';
+    status.innerHTML = '<i class="fas fa-circle-check"></i> บันทึกลายเซ็นเรียบร้อยแล้ว';
   }
 }
 
-// ==================== API ====================
-async function checkSocialIdExists(socialId, socialType) {
-  try {
-    const r = await fetch('/api/user/check-social', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({social_id:socialId, social_type:socialType}) });
-    return (await r.json()).exists;
-  } catch { return false; }
-}
-async function checkIdCardExists(idCard) {
-  try {
-    const r = await fetch('/api/user/check-idcard', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({id_card:idCard}) });
-    return (await r.json()).exists;
-  } catch { return false; }
-}
-async function loadStaffOptions() {
-  const mockStaff = [
-    { id:'1', name:'ดร.สมชาย ใจดี', position:'ผู้อำนวยการ' },
-    { id:'2', name:'นางสาวกมลชนก วัฒนา', position:'หัวหน้าฝ่ายการพยาบาล' },
-    { id:'3', name:'นายวิชัย ทรัพย์เจริญ', position:'หัวหน้ากลุ่มงานเวชกรรมสังคม' }
-  ];
-  let staff = mockStaff;
-  try {
-    const r = await fetch('/api/user/staff-list');
-    if (r.ok) staff = await r.json();
-  } catch {}
-  ['supervisor','approver','payer'].forEach(id => {
-    const sel = document.getElementById(id);
-    sel.innerHTML = '<option value="">-- ไม่ระบุ --</option>';
-    staff.forEach(s => { sel.innerHTML += `<option value="${s.id}">${s.name} (${s.position})</option>`; });
-  });
-}
-
-// ==================== Image ====================
+// ==================== Image Upload ====================
 function previewImage(input) {
   if (input.files?.[0]) {
     const reader = new FileReader();
-    reader.onload = e => { document.getElementById('profilePreview').src = e.target.result; userData.profileImage = e.target.result; };
+    reader.onload = e => { 
+      document.getElementById('profilePreview').src = e.target.result; 
+      userData.profileImage = e.target.result; 
+    };
     reader.readAsDataURL(input.files[0]);
   }
 }
@@ -1320,15 +1361,25 @@ function previewImage(input) {
 // ==================== Step Navigation ====================
 function validateStep(step) {
   if (step === 1) {
-    if (!userData.social_id) { Swal.fire({ icon:'warning', title:'กรุณาเชื่อมต่อบัญชีก่อน', text:'เลือกช่องทางใดช่องทางหนึ่งด้านบน' }); return false; }
+    if (!userData.social_id) { 
+      Swal.fire({ icon:'warning', title:'กรุณาเชื่อมต่อบัญชีก่อน', text:'เลือกช่องทางใดช่องทางหนึ่งด้านบน' }); 
+      return false; 
+    }
     return true;
   }
   if (step === 2) {
     const fields = ['affiliation','department','idCard','prefix','firstName','lastName','position','personnelType'];
     for (const f of fields) {
-      if (!document.getElementById(f).value.trim()) { Swal.fire({ icon:'warning', title:'กรอกข้อมูลไม่ครบ', text:'กรุณากรอกข้อมูลที่มีเครื่องหมาย * ให้ครบถ้วน' }); return false; }
+      const val = document.getElementById(f).value.trim();
+      if (!val) { 
+        Swal.fire({ icon:'warning', title:'กรอกข้อมูลไม่ครบ', text:'กรุณากรอกข้อมูลที่มีเครื่องหมาย * ให้ครบถ้วน' }); 
+        return false; 
+      }
     }
-    if (document.getElementById('idCard').value.length !== 13) { Swal.fire({ icon:'error', title:'เลขบัตรประชาชนไม่ถูกต้อง', text:'ต้องมี 13 หลัก' }); return false; }
+    if (document.getElementById('idCard').value.length !== 13) { 
+      Swal.fire({ icon:'error', title:'เลขบัตรประชาชนไม่ถูกต้อง', text:'ต้องมี 13 หลัก' }); 
+      return false; 
+    }
     userData.affiliation = document.getElementById('affiliation').value;
     userData.department = document.getElementById('department').value;
     userData.idCard = document.getElementById('idCard').value;
@@ -1340,7 +1391,10 @@ function validateStep(step) {
     return true;
   }
   if (step === 3) {
-    if (!signatureSaved) { Swal.fire({ icon:'warning', title:'กรุณาบันทึกลายเซ็น', text:'เซ็นชื่อแล้วกดปุ่ม "บันทึกลายเซ็น"' }); return false; }
+    if (!signatureSaved) { 
+      Swal.fire({ icon:'warning', title:'กรุณาบันทึกลายเซ็น', text:'เซ็นชื่อแล้วกดปุ่ม "บันทึกลายเซ็น"' }); 
+      return false; 
+    }
     return true;
   }
   return true;
@@ -1355,12 +1409,18 @@ function goNext() {
 
 function nextStep() {
   if (!validateStep(currentStep)) return;
-  if (currentStep === TOTAL_STEPS) { submitRegistration(); return; }
+  if (currentStep === TOTAL_STEPS) { 
+    submitRegistration(); 
+    return; 
+  }
   goNext();
 }
 
 function prevStep() {
-  if (currentStep > 1) { currentStep--; updateUI(); }
+  if (currentStep > 1) { 
+    currentStep--; 
+    updateUI(); 
+  }
 }
 
 function saveRelatedAndNext() {
@@ -1371,42 +1431,67 @@ function saveRelatedAndNext() {
 }
 
 function updateUI() {
-  // Steps
+  // Update step indicators
   for (let i = 1; i <= TOTAL_STEPS; i++) {
     const si = document.getElementById(`si-${i}`);
     const fs = document.getElementById(`step${i}`);
-    si.className = 'step-item';
-    fs.classList.remove('active-step');
+    if (si) si.className = 'step-item';
+    if (fs) fs.classList.remove('active-step');
     const sd = document.getElementById(`sd-${i}`);
-    sd.innerHTML = i < currentStep ? '<i class="fas fa-check" style="font-size:0.65rem"></i>' : i;
-    if (i === currentStep) { si.classList.add('s-active'); fs.classList.add('active-step'); }
-    else if (i < currentStep) si.classList.add('s-completed');
+    if (sd) sd.innerHTML = i < currentStep ? '<i class="fas fa-check" style="font-size:0.65rem"></i>' : i;
+    if (i === currentStep) {
+      if (si) si.classList.add('s-active');
+      if (fs) fs.classList.add('active-step');
+    } else if (i < currentStep) {
+      if (si) si.classList.add('s-completed');
+    }
   }
+  
   // Progress bar
-  document.getElementById('progressBar').style.width = `${(currentStep / TOTAL_STEPS) * 100}%`;
+  const progressBar = document.getElementById('progressBar');
+  if (progressBar) {
+    progressBar.style.width = `${(currentStep / TOTAL_STEPS) * 100}%`;
+  }
+  
   // Buttons
-  document.getElementById('prevBtn').style.display = currentStep === 1 ? 'none' : 'inline-flex';
-  const nb = document.getElementById('nextBtn');
-  if (currentStep === TOTAL_STEPS) { nb.innerHTML = '<i class="fas fa-paper-plane"></i> ส่ง'; }
-  else if (currentStep === 5) { nb.innerHTML = 'บันทึกและถัดไป <i class="fas fa-chevron-right"></i>'; }
-  else { nb.innerHTML = 'ถัดไป <i class="fas fa-chevron-right"></i>'; }
-  // Hide next on last step (use button in step)
-  nb.style.display = currentStep === TOTAL_STEPS ? 'none' : 'inline-flex';
-  // Counter
-  document.getElementById('stepCounter').textContent = `ขั้นตอนที่ ${currentStep} จาก ${TOTAL_STEPS}`;
-  // Confirm data
+  const prevBtn = document.getElementById('prevBtn');
+  if (prevBtn) prevBtn.style.display = currentStep === 1 ? 'none' : 'inline-flex';
+  
+  const nextBtn = document.getElementById('nextBtn');
+  if (nextBtn) {
+    if (currentStep === TOTAL_STEPS) { 
+      nextBtn.innerHTML = '<i class="fas fa-paper-plane"></i> ส่ง'; 
+      nextBtn.style.display = 'none';
+    } else if (currentStep === 5) { 
+      nextBtn.innerHTML = 'บันทึกและถัดไป <i class="fas fa-chevron-right"></i>';
+      nextBtn.style.display = 'inline-flex';
+    } else { 
+      nextBtn.innerHTML = 'ถัดไป <i class="fas fa-chevron-right"></i>';
+      nextBtn.style.display = 'inline-flex';
+    }
+  }
+  
+  // Step counter
+  const stepCounter = document.getElementById('stepCounter');
+  if (stepCounter) stepCounter.textContent = `ขั้นตอนที่ ${currentStep} จาก ${TOTAL_STEPS}`;
+  
+  // Build confirm data for step 6
   if (currentStep === 6) buildConfirmData();
 }
 
 function buildConfirmData() {
   const el = document.getElementById('confirmData');
-  const row = (key, val) => `<div class="confirm-row"><div class="confirm-key">${key}</div><div class="confirm-val">${val}</div></div>`;
-  const ok = (t) => `<span class="badge-ok"><i class="fas fa-check"></i>${t}</span>`;
+  if (!el) return;
+  
+  const row = (key, val) => `<div class="confirm-row"><div class="confirm-key">${key}</div><div class="confirm-val">${val || '-'}</div></div>`;
+  const ok = (t) => `<span class="badge-ok"><i class="fas fa-check"></i> ${t}</span>`;
   const skip = (t) => `<span class="badge-skip">${t}</span>`;
-
+  
+  const providerName = { google: 'Google', line: 'LINE', telegram: 'Telegram' }[userData.social_type] || '-';
+  
   el.innerHTML = `
     <div class="confirm-section-chip"><i class="fas fa-share-nodes"></i> บัญชีที่เชื่อมต่อ</div>
-    ${row('ช่องทาง', { google:'Google', line:'LINE', telegram:'Telegram' }[userData.social_type] || '-')}
+    ${row('ช่องทาง', providerName)}
     ${row('ชื่อบัญชี', escapeHtml(userData.name || '-'))}
     ${row('อีเมล', escapeHtml(userData.email || '-'))}
     <div class="confirm-section-chip"><i class="fas fa-id-badge"></i> ข้อมูลส่วนตัว</div>
@@ -1423,48 +1508,89 @@ function buildConfirmData() {
   `;
 }
 
-// ==================== Submit ====================
+// ==================== Submit Registration ====================
 async function submitRegistration() {
   const btn = document.querySelector('#step6 .btn-success');
-  btn.disabled = true;
-  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> กำลังบันทึก...';
-
-  const idExists = await checkIdCardExists(userData.idCard);
-  if (idExists) {
-    Swal.fire({ icon:'error', title:'เลขบัตรประชาชนซ้ำ', text:'หมายเลขนี้มีในระบบแล้ว' });
-    btn.disabled = false;
-    btn.innerHTML = '<i class="fas fa-paper-plane"></i> ยืนยันการสมัครสมาชิก';
-    return;
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> กำลังบันทึก...';
   }
 
   try {
-    const r = await fetch('/api/user/register', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(userData) });
+    const r = await fetch('/api/user/register', { 
+      method: 'POST', 
+      headers: { 'Content-Type': 'application/json' }, 
+      body: JSON.stringify(userData) 
+    });
     const result = await r.json();
     if (result.success) {
-      Swal.fire({ icon:'success', title:'สมัครสมาชิกสำเร็จ!', text:'กำลังนำคุณไปยังหน้าเข้าสู่ระบบ', timer:2000, showConfirmButton:false })
+      Swal.fire({ icon: 'success', title: 'สมัครสมาชิกสำเร็จ!', text: 'กำลังนำคุณไปยังหน้าเข้าสู่ระบบ', timer: 2000, showConfirmButton: false })
         .then(() => window.location.href = 'login.html');
     } else {
-      Swal.fire({ icon:'error', title:'เกิดข้อผิดพลาด', text: result.message || 'กรุณาลองอีกครั้ง' });
+      Swal.fire({ icon: 'error', title: 'เกิดข้อผิดพลาด', text: result.message || 'กรุณาลองอีกครั้ง' });
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-paper-plane"></i> ยืนยันการสมัครสมาชิก';
+      }
+    }
+  } catch (err) {
+    console.error('Submit error:', err);
+    Swal.fire({ icon: 'error', title: 'ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์', text: 'กรุณาตรวจสอบการเชื่อมต่ออินเทอร์เน็ต' });
+    if (btn) {
       btn.disabled = false;
       btn.innerHTML = '<i class="fas fa-paper-plane"></i> ยืนยันการสมัครสมาชิก';
     }
-  } catch {
-    Swal.fire({ icon:'error', title:'ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์', text:'กรุณาตรวจสอบการเชื่อมต่ออินเทอร์เน็ต' });
-    btn.disabled = false;
-    btn.innerHTML = '<i class="fas fa-paper-plane"></i> ยืนยันการสมัครสมาชิก';
   }
 }
 
-// ==================== Utility ====================
-function generateUUID() {
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
-    const r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
-    return v.toString(16);
+// ==================== Detect LINE Callback from URL ====================
+function detectLineCallbackOnLoad() {
+  const p = new URLSearchParams(window.location.search);
+  console.log('[Register] detectLineCallbackOnLoad - URL params:', window.location.search);
+  
+  if (p.get('line') === 'callback') {
+    const userId = p.get('userId');
+    const displayName = p.get('displayName');
+    const email = p.get('email');
+    const pictureUrl = p.get('pictureUrl');
+    
+    console.log('[Register] LINE callback detected:', { userId, displayName });
+    
+    if (userId && displayName) {
+      window.handleLineCallback({ 
+        userId: userId, 
+        displayName: displayName, 
+        email: email || null, 
+        pictureUrl: pictureUrl || null 
+      });
+      history.replaceState({}, '', window.location.pathname);
+    }
+  }
+}
+
+// ==================== Initialization ====================
+document.addEventListener('DOMContentLoaded', () => {
+  console.log('[Register] DOM loaded, initializing...');
+  
+  initSignatureCanvas();
+  loadStaffOptions();
+  initLineLogin();
+  checkTelegramCallback();
+  detectLineCallbackOnLoad();
+  updateUI();
+  
+  // Auto-resize canvas on window resize
+  window.addEventListener('resize', () => {
+    if (currentStep === 3) {
+      resizeCanvas();
+      if (userData.signature) {
+        const img = new Image();
+        img.onload = () => ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        img.src = userData.signature;
+      }
+    }
   });
-}
-function escapeHtml(str) {
-  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
+});
 </script>
 </body>
 </html>
