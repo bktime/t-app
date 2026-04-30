@@ -13,7 +13,6 @@
   <script src="https://accounts.google.com/gsi/client" async defer></script>
 
   <style>
-    /* (CSS เดิมทั้งหมด保持不变) */
     :root {
       --bg: #0a0a0f;
       --surface: #111118;
@@ -41,7 +40,6 @@
     }
 
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-
     html { scroll-behavior: smooth; }
 
     body {
@@ -57,671 +55,156 @@
     }
 
     /* Background Effects */
-    .bg-effects {
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      z-index: 0;
-      overflow: hidden;
-    }
-    .bg-orb {
-      position: absolute;
-      border-radius: 50%;
-      filter: blur(80px);
-      opacity: 0.12;
-    }
-    .bg-orb-1 {
-      width: 500px; height: 500px;
-      background: radial-gradient(circle, #6366f1, transparent);
-      top: -150px; left: -100px;
-      animation: orbFloat 12s ease-in-out infinite;
-    }
-    .bg-orb-2 {
-      width: 400px; height: 400px;
-      background: radial-gradient(circle, #22d3ee, transparent);
-      bottom: -100px; right: -80px;
-      animation: orbFloat 15s ease-in-out infinite reverse;
-    }
-    .bg-orb-3 {
-      width: 300px; height: 300px;
-      background: radial-gradient(circle, #a855f7, transparent);
-      top: 50%; left: 60%;
-      animation: orbFloat 10s ease-in-out infinite 3s;
-    }
-    .bg-grid {
-      position: absolute;
-      inset: 0;
-      background-image:
-        linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
-      background-size: 60px 60px;
-    }
-    @keyframes orbFloat {
-      0%, 100% { transform: translate(0,0) scale(1); }
-      33% { transform: translate(30px,-20px) scale(1.05); }
-      66% { transform: translate(-20px,15px) scale(0.97); }
-    }
+    .bg-effects { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+    .bg-orb { position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.12; }
+    .bg-orb-1 { width: 500px; height: 500px; background: radial-gradient(circle, #6366f1, transparent); top: -150px; left: -100px; animation: orbFloat 12s ease-in-out infinite; }
+    .bg-orb-2 { width: 400px; height: 400px; background: radial-gradient(circle, #22d3ee, transparent); bottom: -100px; right: -80px; animation: orbFloat 15s ease-in-out infinite reverse; }
+    .bg-orb-3 { width: 300px; height: 300px; background: radial-gradient(circle, #a855f7, transparent); top: 50%; left: 60%; animation: orbFloat 10s ease-in-out infinite 3s; }
+    .bg-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px); background-size: 60px 60px; }
+    @keyframes orbFloat { 0%, 100% { transform: translate(0,0) scale(1); } 33% { transform: translate(30px,-20px) scale(1.05); } 66% { transform: translate(-20px,15px) scale(0.97); } }
 
-    /* Main Container */
-    .wrapper {
-      position: relative;
-      z-index: 1;
-      width: 100%;
-      max-width: 620px;
-    }
+    /* Wrapper */
+    .wrapper { position: relative; z-index: 1; width: 100%; max-width: 620px; }
 
-    /* Logo/Brand */
-    .brand {
-      text-align: center;
-      margin-bottom: 2rem;
-      animation: fadeSlideDown 0.6s ease both;
-    }
-    .brand-icon {
-      width: 56px; height: 56px;
-      background: linear-gradient(135deg, var(--accent), #a855f7);
-      border-radius: 16px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.5rem;
-      color: white;
-      margin-bottom: 0.75rem;
-      box-shadow: 0 0 30px var(--accent-glow);
-    }
-    .brand-title {
-      font-family: 'Syne', sans-serif;
-      font-size: 1.1rem;
-      font-weight: 600;
-      color: var(--text-primary);
-      letter-spacing: -0.02em;
-    }
-    .brand-sub {
-      font-size: 0.75rem;
-      color: var(--text-secondary);
-      margin-top: 2px;
-    }
+    /* Brand */
+    .brand { text-align: center; margin-bottom: 2rem; animation: fadeSlideDown 0.6s ease both; }
+    .brand-icon { width: 56px; height: 56px; background: linear-gradient(135deg, var(--accent), #a855f7); border-radius: 16px; display: inline-flex; align-items: center; justify-content: center; font-size: 1.5rem; color: white; margin-bottom: 0.75rem; box-shadow: 0 0 30px var(--accent-glow); }
+    .brand-title { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 600; color: var(--text-primary); letter-spacing: -0.02em; }
+    .brand-sub { font-size: 0.75rem; color: var(--text-secondary); margin-top: 2px; }
 
     /* Card */
-    .card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      overflow: hidden;
-      animation: fadeSlideUp 0.6s ease 0.1s both;
-      box-shadow:
-        0 0 0 1px rgba(255,255,255,0.04),
-        0 40px 80px rgba(0,0,0,0.5),
-        inset 0 1px 0 rgba(255,255,255,0.06);
-    }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; animation: fadeSlideUp 0.6s ease 0.1s both; box-shadow: 0 0 0 1px rgba(255,255,255,0.04), 0 40px 80px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.06); }
 
-    /* Step Progress */
-    .step-track {
-      padding: 1.5rem 1.75rem 0;
-      background: var(--surface2);
-      border-bottom: 1px solid var(--border);
-    }
-    .step-labels {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 1rem;
-    }
-    .step-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 6px;
-      flex: 1;
-      position: relative;
-    }
-    .step-item::after {
-      content: '';
-      position: absolute;
-      top: 14px;
-      left: calc(50% + 14px);
-      right: calc(-50% + 14px);
-      height: 1px;
-      background: var(--border);
-      transition: background var(--transition);
-    }
+    /* Step Track */
+    .step-track { padding: 1.5rem 1.75rem 0; background: var(--surface2); border-bottom: 1px solid var(--border); }
+    .step-labels { display: flex; justify-content: space-between; margin-bottom: 1rem; }
+    .step-item { display: flex; flex-direction: column; align-items: center; gap: 6px; flex: 1; position: relative; }
+    .step-item::after { content: ''; position: absolute; top: 14px; left: calc(50% + 14px); right: calc(-50% + 14px); height: 1px; background: var(--border); transition: background var(--transition); }
     .step-item:last-child::after { display: none; }
     .step-item.s-completed::after { background: var(--accent); }
-
-    .step-dot {
-      width: 28px; height: 28px;
-      border-radius: 50%;
-      border: 1.5px solid var(--border);
-      background: var(--surface3);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.7rem;
-      font-weight: 700;
-      color: var(--text-muted);
-      transition: all var(--transition);
-      font-family: 'Syne', sans-serif;
-      position: relative;
-      z-index: 1;
-    }
-    .step-item.s-active .step-dot {
-      border-color: var(--accent);
-      background: var(--accent);
-      color: white;
-      box-shadow: 0 0 0 4px var(--accent-glow);
-    }
-    .step-item.s-completed .step-dot {
-      border-color: var(--green);
-      background: var(--green);
-      color: white;
-    }
-    .step-name {
-      font-size: 0.6rem;
-      color: var(--text-muted);
-      white-space: nowrap;
-      transition: color var(--transition);
-    }
+    .step-dot { width: 28px; height: 28px; border-radius: 50%; border: 1.5px solid var(--border); background: var(--surface3); display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 700; color: var(--text-muted); transition: all var(--transition); font-family: 'Syne', sans-serif; position: relative; z-index: 1; }
+    .step-item.s-active .step-dot { border-color: var(--accent); background: var(--accent); color: white; box-shadow: 0 0 0 4px var(--accent-glow); }
+    .step-item.s-completed .step-dot { border-color: var(--green); background: var(--green); color: white; }
+    .step-name { font-size: 0.6rem; color: var(--text-muted); white-space: nowrap; transition: color var(--transition); }
     .step-item.s-active .step-name { color: var(--accent); font-weight: 600; }
     .step-item.s-completed .step-name { color: var(--green); }
-
-    /* Progress Bar */
-    .progress-bar-wrap {
-      height: 2px;
-      background: var(--surface3);
-      margin: 0 -1.75rem;
-    }
-    .progress-bar-fill {
-      height: 100%;
-      background: linear-gradient(90deg, var(--accent), #a855f7);
-      transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
-      box-shadow: 0 0 8px var(--accent-glow);
-    }
+    .progress-bar-wrap { height: 2px; background: var(--surface3); margin: 0 -1.75rem; }
+    .progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent), #a855f7); transition: width 0.5s cubic-bezier(0.4,0,0.2,1); box-shadow: 0 0 8px var(--accent-glow); }
 
     /* Form Body */
-    .form-body {
-      padding: 2rem 1.75rem;
-      min-height: 440px;
-    }
-
-    .form-step {
-      display: none;
-    }
-    .form-step.active-step {
-      display: block;
-      animation: stepEnter 0.35s cubic-bezier(0.4,0,0.2,1) both;
-    }
-
-    @keyframes stepEnter {
-      from { opacity: 0; transform: translateX(12px); }
-      to { opacity: 1; transform: translateX(0); }
-    }
+    .form-body { padding: 2rem 1.75rem; min-height: 440px; }
+    .form-step { display: none; }
+    .form-step.active-step { display: block; animation: stepEnter 0.35s cubic-bezier(0.4,0,0.2,1) both; }
+    @keyframes stepEnter { from { opacity: 0; transform: translateX(12px); } to { opacity: 1; transform: translateX(0); } }
 
     /* Step Header */
-    .step-header {
-      margin-bottom: 1.75rem;
-    }
-    .step-header h2 {
-      font-family: 'Syne', sans-serif;
-      font-size: 1.4rem;
-      font-weight: 700;
-      color: var(--text-primary);
-      letter-spacing: -0.03em;
-      margin-bottom: 4px;
-    }
-    .step-header p {
-      font-size: 0.82rem;
-      color: var(--text-secondary);
-      line-height: 1.6;
-    }
+    .step-header { margin-bottom: 1.75rem; }
+    .step-header h2 { font-family: 'Syne', sans-serif; font-size: 1.4rem; font-weight: 700; color: var(--text-primary); letter-spacing: -0.03em; margin-bottom: 4px; }
+    .step-header p { font-size: 0.82rem; color: var(--text-secondary); line-height: 1.6; }
 
     /* Social Buttons */
-    .social-grid {
-      display: flex;
-      flex-direction: column;
-      gap: 0.75rem;
-    }
-    .social-btn {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      padding: 1rem 1.25rem;
-      border-radius: var(--radius);
-      border: 1px solid var(--border);
-      background: var(--surface2);
-      cursor: pointer;
-      transition: all var(--transition);
-      position: relative;
-      overflow: hidden;
-      user-select: none;
-    }
-    .social-btn::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      opacity: 0;
-      transition: opacity var(--transition);
-    }
+    .social-grid { display: flex; flex-direction: column; gap: 0.75rem; }
+    .social-btn { display: flex; align-items: center; gap: 14px; padding: 1rem 1.25rem; border-radius: var(--radius); border: 1px solid var(--border); background: var(--surface2); cursor: pointer; transition: all var(--transition); position: relative; overflow: hidden; user-select: none; }
     .social-btn:hover { transform: translateY(-2px); }
     .social-btn.google:hover { border-color: rgba(234,67,53,0.4); box-shadow: 0 8px 24px rgba(234,67,53,0.12); }
     .social-btn.line-btn:hover { border-color: rgba(6,199,85,0.4); box-shadow: 0 8px 24px rgba(6,199,85,0.12); }
     .social-btn.telegram:hover { border-color: rgba(42,171,238,0.4); box-shadow: 0 8px 24px rgba(42,171,238,0.12); }
-
-    .social-btn-icon {
-      width: 40px; height: 40px;
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.2rem;
-      flex-shrink: 0;
-    }
+    .social-btn.disabled { opacity: 0.5; cursor: not-allowed; pointer-events: none; }
+    .social-btn-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0; }
     .google .social-btn-icon { background: rgba(234,67,53,0.12); color: #ea4335; }
     .line-btn .social-btn-icon { background: rgba(6,199,85,0.12); color: #06c755; }
     .telegram .social-btn-icon { background: rgba(42,171,238,0.12); color: #2AABEE; }
-
     .social-btn-text { flex: 1; }
-    .social-btn-text strong {
-      display: block;
-      font-size: 0.9rem;
-      font-weight: 600;
-      color: var(--text-primary);
-      margin-bottom: 2px;
-    }
-    .social-btn-text span {
-      font-size: 0.72rem;
-      color: var(--text-secondary);
-    }
-    .social-btn-arrow {
-      color: var(--text-muted);
-      font-size: 0.8rem;
-      transition: transform var(--transition);
-    }
+    .social-btn-text strong { display: block; font-size: 0.9rem; font-weight: 600; color: var(--text-primary); margin-bottom: 2px; }
+    .social-btn-text span { font-size: 0.72rem; color: var(--text-secondary); }
+    .social-btn-arrow { color: var(--text-muted); font-size: 0.8rem; transition: transform var(--transition); }
     .social-btn:hover .social-btn-arrow { transform: translateX(3px); color: var(--text-secondary); }
 
-    /* Connected State */
-    .social-connected-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: rgba(16,185,129,0.1);
-      border: 1px solid rgba(16,185,129,0.3);
-      color: var(--green);
-      border-radius: 99px;
-      padding: 4px 10px;
-      font-size: 0.72rem;
-      font-weight: 600;
-      margin-top: 1rem;
-    }
-
-    /* Form Groups */
-    .form-group {
-      margin-bottom: 1.1rem;
-    }
-    .form-group label {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      font-size: 0.78rem;
-      font-weight: 600;
-      color: var(--text-secondary);
-      margin-bottom: 6px;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-    }
+    /* Form Controls */
+    .form-group { margin-bottom: 1.1rem; }
+    .form-group label { display: flex; align-items: center; gap: 4px; font-size: 0.78rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.04em; }
     .required-mark { color: var(--red); }
-
-    .form-control {
-      width: 100%;
-      padding: 0.7rem 0.9rem;
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      color: var(--text-primary);
-      font-family: 'Noto Sans Thai', sans-serif;
-      font-size: 0.875rem;
-      transition: all var(--transition);
-    }
+    .form-control { width: 100%; padding: 0.7rem 0.9rem; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text-primary); font-family: 'Noto Sans Thai', sans-serif; font-size: 0.875rem; transition: all var(--transition); }
     .form-control::placeholder { color: var(--text-muted); }
-    .form-control:focus {
-      outline: none;
-      border-color: var(--accent);
-      background: var(--surface3);
-      box-shadow: 0 0 0 3px var(--accent-glow);
-    }
+    .form-control:focus { outline: none; border-color: var(--accent); background: var(--surface3); box-shadow: 0 0 0 3px var(--accent-glow); }
     select.form-control { cursor: pointer; }
     select.form-control option { background: var(--surface2); }
-
-    .form-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0.85rem;
-    }
-
-    /* ID Card input */
-    .input-group {
-      position: relative;
-    }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.85rem; }
+    .input-group { position: relative; }
     .input-group .form-control { padding-left: 2.5rem; }
-    .input-icon {
-      position: absolute;
-      left: 0.9rem;
-      top: 50%;
-      transform: translateY(-50%);
-      color: var(--text-muted);
-      font-size: 0.85rem;
-    }
+    .input-icon { position: absolute; left: 0.9rem; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 0.85rem; }
 
     /* Signature */
-    .sig-wrap {
-      border: 1px dashed var(--border);
-      border-radius: var(--radius);
-      padding: 1.25rem;
-      background: var(--surface2);
-      text-align: center;
-    }
-    .sig-canvas-wrap {
-      position: relative;
-      border-radius: var(--radius-sm);
-      overflow: hidden;
-      border: 1px solid var(--border);
-      margin-bottom: 1rem;
-      background: #fff;
-    }
-    canvas#sigCanvas {
-      display: block;
-      width: 100%;
-      height: 180px;
-      cursor: crosshair;
-      touch-action: none;
-    }
-    .sig-hint {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      pointer-events: none;
-      font-size: 0.8rem;
-      color: #ccc;
-      gap: 6px;
-      opacity: 0.5;
-    }
-    .sig-btns {
-      display: flex;
-      gap: 0.6rem;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
-    .sig-status {
-      margin-top: 0.75rem;
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 5px;
-    }
+    .sig-wrap { border: 1px dashed var(--border); border-radius: var(--radius); padding: 1.25rem; background: var(--surface2); text-align: center; }
+    .sig-canvas-wrap { position: relative; border-radius: var(--radius-sm); overflow: hidden; border: 1px solid var(--border); margin-bottom: 1rem; background: #fff; }
+    canvas#sigCanvas { display: block; width: 100%; height: 180px; cursor: crosshair; touch-action: none; }
+    .sig-hint { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; pointer-events: none; font-size: 0.8rem; color: #ccc; gap: 6px; opacity: 0.5; }
+    .sig-btns { display: flex; gap: 0.6rem; justify-content: center; flex-wrap: wrap; }
+    .sig-status { margin-top: 0.75rem; font-size: 0.75rem; color: var(--text-muted); display: flex; align-items: center; justify-content: center; gap: 5px; }
     .sig-status.saved { color: var(--green); }
 
     /* Image Upload */
-    .img-preview-wrap {
-      display: flex;
-      justify-content: center;
-      margin-bottom: 1.25rem;
-    }
-    .img-avatar {
-      width: 100px; height: 100px;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 2px solid var(--border);
-      box-shadow: 0 0 0 4px var(--surface2);
-    }
-    .upload-zone {
-      border: 1.5px dashed var(--border);
-      border-radius: var(--radius);
-      padding: 1.5rem;
-      text-align: center;
-      cursor: pointer;
-      transition: all var(--transition);
-      background: var(--surface2);
-    }
-    .upload-zone:hover {
-      border-color: var(--accent);
-      background: rgba(99,102,241,0.05);
-    }
+    .img-preview-wrap { display: flex; justify-content: center; margin-bottom: 1.25rem; }
+    .img-avatar { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 2px solid var(--border); box-shadow: 0 0 0 4px var(--surface2); }
+    .upload-zone { border: 1.5px dashed var(--border); border-radius: var(--radius); padding: 1.5rem; text-align: center; cursor: pointer; transition: all var(--transition); background: var(--surface2); }
+    .upload-zone:hover { border-color: var(--accent); background: rgba(99,102,241,0.05); }
     .upload-zone i { font-size: 1.75rem; color: var(--text-muted); margin-bottom: 0.5rem; }
     .upload-zone p { font-size: 0.82rem; color: var(--text-secondary); }
     .upload-zone small { font-size: 0.7rem; color: var(--text-muted); }
 
-    /* Related persons */
-    .related-card {
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 1rem;
-      margin-bottom: 0.85rem;
-    }
-    .related-card-label {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 0.75rem;
-      font-weight: 600;
-      color: var(--text-secondary);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      margin-bottom: 0.6rem;
-    }
-    .related-card-label .badge {
-      width: 20px; height: 20px;
-      border-radius: 6px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.6rem;
-    }
-    .badge-blue { background: rgba(99,102,241,0.15); color: var(--accent); }
-    .badge-teal { background: rgba(34,211,238,0.12); color: var(--accent2); }
-    .badge-green { background: rgba(16,185,129,0.12); color: var(--green); }
+    /* Related Cards */
+    .related-card { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem; margin-bottom: 0.85rem; }
+    .related-card-label { display: flex; align-items: center; gap: 8px; font-size: 0.78rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 0.6rem; }
+    .badge { width: 20px; height: 20px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 0.6rem; color: white; }
+    .badge-blue { background: rgba(99,102,241,0.3); color: #a5b4fc; }
+    .badge-teal { background: rgba(34,211,238,0.2); color: #67e8f9; }
+    .badge-green { background: rgba(16,185,129,0.2); color: #6ee7b7; }
 
-    /* Confirm Summary */
-    .confirm-grid {
-      display: grid;
-      gap: 0;
-    }
-    .confirm-row {
-      display: flex;
-      align-items: flex-start;
-      gap: 1rem;
-      padding: 0.7rem 0;
-      border-bottom: 1px solid var(--border);
-    }
+    /* Confirm */
+    .confirm-grid { display: flex; flex-direction: column; gap: 0; }
+    .confirm-row { display: flex; justify-content: space-between; padding: 0.55rem 0; border-bottom: 1px solid var(--border); font-size: 0.8rem; }
     .confirm-row:last-child { border-bottom: none; }
-    .confirm-key {
-      font-size: 0.72rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-      color: var(--text-secondary);
-      min-width: 110px;
-      padding-top: 2px;
-    }
-    .confirm-val {
-      font-size: 0.85rem;
-      color: var(--text-primary);
-      flex: 1;
-      line-height: 1.5;
-    }
-    .badge-ok {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      background: rgba(16,185,129,0.1);
-      color: var(--green);
-      border-radius: 6px;
-      padding: 2px 8px;
-      font-size: 0.72rem;
-      font-weight: 600;
-    }
-    .badge-skip {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      background: var(--surface3);
-      color: var(--text-muted);
-      border-radius: 6px;
-      padding: 2px 8px;
-      font-size: 0.72rem;
-    }
-
-    /* Section chip for confirm */
-    .confirm-section-chip {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: rgba(99,102,241,0.08);
-      border: 1px solid rgba(99,102,241,0.15);
-      color: var(--accent);
-      border-radius: 8px;
-      padding: 4px 10px;
-      font-size: 0.7rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      margin-bottom: 0.6rem;
-      margin-top: 1rem;
-    }
-    .confirm-section-chip:first-child { margin-top: 0; }
+    .confirm-key { color: var(--text-secondary); }
+    .confirm-val { color: var(--text-primary); font-weight: 500; text-align: right; }
+    .confirm-section-chip { font-size: 0.7rem; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 0.08em; padding: 0.75rem 0 0.25rem; display: flex; align-items: center; gap: 6px; }
+    .badge-ok { background: rgba(16,185,129,0.12); color: var(--green); border: 1px solid rgba(16,185,129,0.25); border-radius: 99px; padding: 2px 8px; font-size: 0.7rem; }
+    .badge-skip { background: var(--surface3); color: var(--text-muted); border: 1px solid var(--border); border-radius: 99px; padding: 2px 8px; font-size: 0.7rem; }
 
     /* Buttons */
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 7px;
-      padding: 0.65rem 1.25rem;
-      border-radius: var(--radius-sm);
-      font-size: 0.85rem;
-      font-weight: 600;
-      font-family: 'Noto Sans Thai', sans-serif;
-      cursor: pointer;
-      transition: all var(--transition);
-      border: none;
-      white-space: nowrap;
-      user-select: none;
-    }
-    .btn-primary {
-      background: var(--accent);
-      color: white;
-    }
-    .btn-primary:hover:not(:disabled) {
-      background: var(--accent-hover);
-      box-shadow: 0 6px 20px var(--accent-glow);
-      transform: translateY(-1px);
-    }
-    .btn-ghost {
-      background: transparent;
-      color: var(--text-secondary);
-      border: 1px solid var(--border);
-    }
-    .btn-ghost:hover { background: var(--surface3); color: var(--text-primary); }
-    .btn-success {
-      background: var(--green);
-      color: white;
-      width: 100%;
-      padding: 0.9rem;
-      font-size: 0.95rem;
-      border-radius: var(--radius);
-    }
-    .btn-success:hover:not(:disabled) {
-      background: #0da572;
-      box-shadow: 0 8px 24px var(--green-glow);
-      transform: translateY(-1px);
-    }
-    .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
-    .btn-sm { padding: 0.5rem 1rem; font-size: 0.78rem; }
-    .btn-link {
-      background: none;
-      border: none;
-      color: var(--accent);
-      font-size: 0.78rem;
-      font-weight: 500;
-      cursor: pointer;
-      font-family: inherit;
-      text-decoration: underline;
-      text-underline-offset: 2px;
-    }
+    .btn { display: inline-flex; align-items: center; gap: 6px; padding: 0.65rem 1.25rem; border-radius: var(--radius-sm); font-size: 0.875rem; font-weight: 600; cursor: pointer; border: none; transition: all var(--transition); font-family: 'Noto Sans Thai', sans-serif; }
+    .btn-primary { background: var(--accent); color: white; }
+    .btn-primary:hover { background: var(--accent-hover); transform: translateY(-1px); box-shadow: 0 4px 16px var(--accent-glow); }
+    .btn-ghost { background: transparent; color: var(--text-secondary); border: 1px solid var(--border); }
+    .btn-ghost:hover { background: var(--surface2); color: var(--text-primary); }
+    .btn-success { background: var(--green); color: white; width: 100%; justify-content: center; padding: 0.9rem; font-size: 1rem; border-radius: var(--radius); }
+    .btn-success:hover { background: #0da271; transform: translateY(-1px); box-shadow: 0 4px 16px var(--green-glow); }
+    .btn-sm { padding: 0.5rem 1rem; font-size: 0.8rem; }
+    .btn-link { background: none; border: none; cursor: pointer; color: var(--accent); font-size: 0.8rem; font-family: inherit; text-decoration: underline; text-underline-offset: 2px; }
     .btn-link:hover { color: #a5b4fc; }
+    .btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none !important; }
 
     /* Footer */
-    .form-footer {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 1.25rem 1.75rem;
-      background: var(--surface2);
-      border-top: 1px solid var(--border);
-    }
+    .form-footer { display: flex; justify-content: space-between; align-items: center; padding: 1.25rem 1.75rem; background: var(--surface2); border-top: 1px solid var(--border); }
     .footer-left { min-width: 100px; }
-    .footer-center {
-      font-size: 0.7rem;
-      color: var(--text-muted);
-    }
+    .footer-center { font-size: 0.7rem; color: var(--text-muted); }
     .footer-right { min-width: 100px; display: flex; justify-content: flex-end; }
 
-    /* Skip hint */
-    .skip-hint {
-      text-align: center;
-      margin-top: 1.5rem;
-    }
-
     /* Notify bar */
-    .notify-bar {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 0.75rem 1rem;
-      border-radius: var(--radius-sm);
-      font-size: 0.8rem;
-      margin-bottom: 1rem;
-    }
+    .notify-bar { display: flex; align-items: center; gap: 10px; padding: 0.75rem 1rem; border-radius: var(--radius-sm); font-size: 0.8rem; margin-bottom: 1rem; }
     .notify-bar.info { background: rgba(99,102,241,0.08); border: 1px solid rgba(99,102,241,0.2); color: #a5b4fc; }
     .notify-bar.success { background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.2); color: var(--green); }
 
     /* Divider */
-    .divider {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      margin: 1.25rem 0;
-      color: var(--text-muted);
-      font-size: 0.72rem;
-    }
-    .divider::before, .divider::after {
-      content: '';
-      flex: 1;
-      height: 1px;
-      background: var(--border);
-    }
+    .divider { display: flex; align-items: center; gap: 0.75rem; margin: 1.25rem 0; color: var(--text-muted); font-size: 0.72rem; }
+    .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
 
-    /* Security note */
-    .security-note {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      font-size: 0.7rem;
-      color: var(--text-muted);
-      margin-top: 1.5rem;
-    }
+    /* Skip / Security */
+    .skip-hint { text-align: center; margin-top: 1.5rem; }
+    .security-note { display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 0.7rem; color: var(--text-muted); margin-top: 1.5rem; }
 
     /* Animations */
-    @keyframes fadeSlideDown {
-      from { opacity: 0; transform: translateY(-12px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes fadeSlideUp {
-      from { opacity: 0; transform: translateY(16px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
+    @keyframes fadeSlideDown { from { opacity: 0; transform: translateY(-12px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeSlideUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
     @keyframes spin { to { transform: rotate(360deg); } }
     .fa-spin { animation: spin 0.8s linear infinite; }
 
@@ -732,29 +215,19 @@
       .step-track { padding: 1.25rem 1.25rem 0; }
       .form-footer { padding: 1rem 1.25rem; }
       .step-name { display: none; }
-      .step-item::after { top: 14px; }
       .brand-title { font-size: 1rem; }
       body { padding: 1.5rem 0.75rem; }
     }
 
-    /* SweetAlert2 dark theme */
-    .swal2-popup {
-      background: var(--surface) !important;
-      color: var(--text-primary) !important;
-      border: 1px solid var(--border) !important;
-      border-radius: var(--radius-lg) !important;
-    }
+    /* SweetAlert dark theme */
+    .swal2-popup { background: var(--surface) !important; color: var(--text-primary) !important; border: 1px solid var(--border) !important; border-radius: var(--radius-lg) !important; }
     .swal2-title { color: var(--text-primary) !important; }
     .swal2-html-container { color: var(--text-secondary) !important; }
-    .swal2-confirm {
-      background: var(--accent) !important;
-      border-radius: var(--radius-sm) !important;
-    }
-    .swal2-cancel {
-      background: var(--surface3) !important;
-      color: var(--text-primary) !important;
-      border-radius: var(--radius-sm) !important;
-    }
+    .swal2-confirm { background: var(--accent) !important; border-radius: var(--radius-sm) !important; }
+    .swal2-cancel { background: var(--surface3) !important; color: var(--text-primary) !important; border-radius: var(--radius-sm) !important; }
+
+    /* Loading */
+    .loading-select { opacity: 0.7; cursor: wait; }
   </style>
 </head>
 <body>
@@ -767,7 +240,6 @@
 </div>
 
 <div class="wrapper">
-  <!-- Brand -->
   <div class="brand">
     <div class="brand-icon"><i class="fas fa-clock-rotate-left"></i></div>
     <div class="brand-title">ระบบลงเวลาปฏิบัติงาน</div>
@@ -778,33 +250,16 @@
     <!-- Step Progress -->
     <div class="step-track">
       <div class="step-labels">
-        <div class="step-item s-active" id="si-1">
-          <div class="step-dot" id="sd-1">1</div>
-          <div class="step-name">บัญชี</div>
-        </div>
-        <div class="step-item" id="si-2">
-          <div class="step-dot" id="sd-2">2</div>
-          <div class="step-name">ข้อมูล</div>
-        </div>
-        <div class="step-item" id="si-3">
-          <div class="step-dot" id="sd-3">3</div>
-          <div class="step-name">ลายเซ็น</div>
-        </div>
-        <div class="step-item" id="si-4">
-          <div class="step-dot" id="sd-4">4</div>
-          <div class="step-name">รูปภาพ</div>
-        </div>
-        <div class="step-item" id="si-5">
-          <div class="step-dot" id="sd-5">5</div>
-          <div class="step-name">ผู้เกี่ยวข้อง</div>
-        </div>
-        <div class="step-item" id="si-6">
-          <div class="step-dot" id="sd-6">6</div>
-          <div class="step-name">ยืนยัน</div>
-        </div>
+        <div class="step-item s-active" id="si-1"><div class="step-dot" id="sd-1">1</div><div class="step-name">บัญชี</div></div>
+        <div class="step-item" id="si-2"><div class="step-dot" id="sd-2">2</div><div class="step-name">ข้อมูล</div></div>
+        <div class="step-item" id="si-3"><div class="step-dot" id="sd-3">3</div><div class="step-name">ลายเซ็น</div></div>
+        <div class="step-item" id="si-4"><div class="step-dot" id="sd-4">4</div><div class="step-name">รูปภาพ</div></div>
+        <div class="step-item" id="si-5"><div class="step-dot" id="sd-5">5</div><div class="step-name">ผู้เกี่ยวข้อง</div></div>
+        <div class="step-item" id="si-6"><div class="step-dot" id="sd-6">6</div><div class="step-name">โอที</div></div>
+        <div class="step-item" id="si-7"><div class="step-dot" id="sd-7">7</div><div class="step-name">ยืนยัน</div></div>
       </div>
       <div class="progress-bar-wrap">
-        <div class="progress-bar-fill" id="progressBar" style="width: 16.6%;"></div>
+        <div class="progress-bar-fill" id="progressBar" style="width: 14.28%;"></div>
       </div>
     </div>
 
@@ -839,7 +294,7 @@
             <i class="fas fa-chevron-right social-btn-arrow"></i>
           </div>
 
-          <div class="social-btn telegram" onclick="loginWithTelegram()">
+          <div class="social-btn telegram" id="telegramLoginBtn" onclick="loginWithTelegram()">
             <div class="social-btn-icon"><i class="fab fa-telegram"></i></div>
             <div class="social-btn-text">
               <strong>สมัครด้วย Telegram</strong>
@@ -848,6 +303,8 @@
             <i class="fas fa-chevron-right social-btn-arrow"></i>
           </div>
         </div>
+
+        <div id="telegramWidgetContainer" style="display:none; margin-top:1rem; text-align:center;"></div>
 
         <div class="security-note">
           <i class="fas fa-lock"></i>
@@ -865,19 +322,15 @@
         <div class="form-group">
           <label>สังกัด <span class="required-mark">*</span></label>
           <select id="affiliation" class="form-control">
-            <option value="">เลือกสังกัด</option>
-            <option value="สำนักงานสาธารณสุขจังหวัด">สำนักงานสาธารณสุขจังหวัด</option>
-            <option value="โรงพยาบาลศูนย์">โรงพยาบาลศูนย์</option>
-            <option value="โรงพยาบาลทั่วไป">โรงพยาบาลทั่วไป</option>
-            <option value="โรงพยาบาลชุมชน">โรงพยาบาลชุมชน</option>
-            <option value="สำนักงานสาธารณสุขอำเภอ">สำนักงานสาธารณสุขอำเภอ</option>
-            <option value="อื่นๆ">อื่นๆ</option>
+            <option value="">กำลังโหลดข้อมูลสังกัด...</option>
           </select>
         </div>
 
         <div class="form-group">
           <label>หน่วยงาน / กลุ่มงาน <span class="required-mark">*</span></label>
-          <input type="text" id="department" class="form-control" placeholder="เช่น กลุ่มงานเวชกรรมสังคม">
+          <select id="department" class="form-control">
+            <option value="">เลือกสังกัดก่อน</option>
+          </select>
         </div>
 
         <div class="form-group">
@@ -897,8 +350,6 @@
               <option value="นาย">นาย</option>
               <option value="นาง">นาง</option>
               <option value="นางสาว">นางสาว</option>
-              <option value="แพทย์หญิง">แพทย์หญิง</option>
-              <option value="แพทย์ชาย">แพทย์ชาย</option>
             </select>
           </div>
           <div class="form-group">
@@ -939,28 +390,20 @@
           <h2>ลายเซ็นอิเล็กทรอนิกส์</h2>
           <p>เซ็นชื่อบนพื้นที่ด้านล่าง ใช้เมาส์หรือนิ้วสัมผัสบนอุปกรณ์มือถือ</p>
         </div>
-
         <div class="notify-bar info">
           <i class="fas fa-circle-info"></i>
           ลายเซ็นจะถูกใช้ในเอกสารราชการ กรุณาเซ็นให้ชัดเจน
         </div>
-
         <div class="sig-wrap">
           <div class="sig-canvas-wrap">
             <canvas id="sigCanvas"></canvas>
             <div class="sig-hint" id="sigHint"><i class="fas fa-pen-nib"></i> เซ็นชื่อที่นี่</div>
           </div>
           <div class="sig-btns">
-            <button class="btn btn-ghost btn-sm" onclick="clearSignature()">
-              <i class="fas fa-rotate-left"></i> ล้างใหม่
-            </button>
-            <button class="btn btn-primary btn-sm" onclick="saveSignature()">
-              <i class="fas fa-check"></i> บันทึกลายเซ็น
-            </button>
+            <button class="btn btn-ghost btn-sm" onclick="clearSignature()"><i class="fas fa-rotate-left"></i> ล้างใหม่</button>
+            <button class="btn btn-primary btn-sm" onclick="saveSignature()"><i class="fas fa-check"></i> บันทึกลายเซ็น</button>
           </div>
-          <div class="sig-status" id="sigStatus">
-            <i class="fas fa-circle-dot"></i> ยังไม่ได้บันทึก
-          </div>
+          <div class="sig-status" id="sigStatus"><i class="fas fa-circle-dot"></i> ยังไม่ได้บันทึก</div>
         </div>
       </div>
 
@@ -970,19 +413,16 @@
           <h2>รูปภาพโปรไฟล์</h2>
           <p>อัพโหลดรูปภาพบุคคลของคุณ หรือข้ามหากยังไม่พร้อม</p>
         </div>
-
         <div class="img-preview-wrap">
           <img id="profilePreview" class="img-avatar"
             src="https://ui-avatars.com/api/?background=6366f1&color=fff&size=100&bold=true&name=U" alt="Preview">
         </div>
-
         <div class="upload-zone" onclick="document.getElementById('profileImageInput').click()">
           <i class="fas fa-cloud-arrow-up"></i>
           <p>คลิกหรือลากไฟล์มาวางที่นี่</p>
           <small>รองรับ JPG, PNG, WEBP ขนาดไม่เกิน 2MB</small>
         </div>
         <input type="file" id="profileImageInput" accept="image/*" style="display:none;" onchange="previewImage(this)">
-
         <div class="skip-hint">
           <button class="btn-link" onclick="goNext()">ข้ามขั้นตอนนี้ →</button>
         </div>
@@ -994,45 +434,89 @@
           <h2>ผู้เกี่ยวข้องในระบบ</h2>
           <p>เลือกผู้บังคับบัญชาและผู้รับผิดชอบ สามารถตั้งค่าภายหลังได้</p>
         </div>
-
         <div class="related-card">
-          <div class="related-card-label">
-            <div class="badge badge-blue"><i class="fas fa-crown" style="font-size:0.55rem"></i></div>
-            ผู้บริหาร / หัวหน้า
-          </div>
+          <div class="related-card-label"><div class="badge badge-blue"><i class="fas fa-crown" style="font-size:0.55rem"></i></div> ผู้บริหาร / หัวหน้า</div>
           <select id="supervisor" class="form-control"><option value="">-- ไม่ระบุ --</option></select>
         </div>
-
         <div class="related-card">
-          <div class="related-card-label">
-            <div class="badge badge-teal"><i class="fas fa-user-check" style="font-size:0.55rem"></i></div>
-            ผู้รับรองการทำงาน
-          </div>
+          <div class="related-card-label"><div class="badge badge-teal"><i class="fas fa-user-check" style="font-size:0.55rem"></i></div> ผู้รับรอง / ผู้ควบคุม</div>
           <select id="approver" class="form-control"><option value="">-- ไม่ระบุ --</option></select>
         </div>
-
         <div class="related-card">
-          <div class="related-card-label">
-            <div class="badge badge-green"><i class="fas fa-coins" style="font-size:0.55rem"></i></div>
-            ผู้จ่ายเงิน / การเงิน
-          </div>
+          <div class="related-card-label"><div class="badge badge-green"><i class="fas fa-coins" style="font-size:0.55rem"></i></div> ผู้จ่ายเงิน / การเงิน</div>
           <select id="payer" class="form-control"><option value="">-- ไม่ระบุ --</option></select>
         </div>
-
         <div class="skip-hint">
           <button class="btn-link" onclick="saveRelatedAndNext()">ข้ามและดำเนินการต่อ →</button>
         </div>
       </div>
 
-      <!-- STEP 6: Confirmation -->
+      <!-- STEP 6: OT Settings -->
       <div class="form-step" id="step6">
+        <div class="step-header">
+          <h2>ข้อมูลการทำงานล่วงเวลา (โอที)</h2>
+          <p>กรอกข้อมูลอัตราค่าตอบแทนและบัญชีธนาคาร สามารถข้ามและตั้งค่าภายหลังได้</p>
+        </div>
+
+        <div class="notify-bar info">
+          <i class="fas fa-circle-info"></i>
+          ข้อมูลนี้ใช้สำหรับคำนวณค่าตอบแทนการทำงานล่วงเวลาโดยอัตโนมัติ
+        </div>
+
+        <div class="form-group">
+          <label><i class="fas fa-file-alt" style="margin-right:4px;opacity:0.6"></i> เลขที่หนังสือ</label>
+          <div class="input-group">
+            <i class="fas fa-hashtag input-icon"></i>
+            <input type="text" id="otDocNumber" class="form-control" placeholder="เช่น บก0233(2)/">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label><i class="fas fa-calendar-day" style="margin-right:4px;opacity:0.6"></i> อัตราต่อวัน</label>
+            <div class="input-group">
+              <i class="fas fa-baht-sign input-icon"></i>
+              <input type="number" id="otRatePerDay" class="form-control" placeholder="0.00" min="0" step="0.01">
+            </div>
+          </div>
+          <div class="form-group">
+            <label><i class="fas fa-clock" style="margin-right:4px;opacity:0.6"></i> อัตราต่อชั่วโมง</label>
+            <div class="input-group">
+              <i class="fas fa-baht-sign input-icon"></i>
+              <input type="number" id="otRatePerHour" class="form-control" placeholder="0.00" min="0" step="0.01">
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label><i class="fas fa-hourglass-half" style="margin-right:4px;opacity:0.6"></i> จำกัดชั่วโมงต่อวัน <span style="font-size:0.7rem;color:var(--text-muted);font-weight:400;text-transform:none">(สำหรับบวกเวลา)</span></label>
+          <div class="input-group">
+            <i class="fas fa-stopwatch input-icon"></i>
+            <input type="number" id="otMaxHoursPerDay" class="form-control" placeholder="เช่น 8" min="1" max="24" step="1">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label><i class="fas fa-building-columns" style="margin-right:4px;opacity:0.6"></i> เลขบัญชี ธ.กรุงไทย</label>
+          <div class="input-group">
+            <i class="fas fa-credit-card input-icon"></i>
+            <input type="text" id="otBankAccount" class="form-control" maxlength="10" placeholder="XXX-X-XXXXX-X"
+              oninput="this.value = this.value.replace(/[^0-9\-]/g, '')">
+          </div>
+        </div>
+
+        <div class="skip-hint">
+          <button class="btn-link" onclick="saveOtAndNext()">ข้ามขั้นตอนนี้ →</button>
+        </div>
+      </div>
+
+      <!-- STEP 7: Confirmation -->
+      <div class="form-step" id="step7">
         <div class="step-header">
           <h2>ยืนยันข้อมูล</h2>
           <p>ตรวจสอบความถูกต้องก่อนบันทึก สามารถย้อนกลับเพื่อแก้ไขได้</p>
         </div>
-
         <div id="confirmData" class="confirm-grid" style="margin-bottom: 1.5rem;"></div>
-
         <button class="btn btn-success" onclick="submitRegistration()">
           <i class="fas fa-paper-plane"></i> ยืนยันการสมัครสมาชิก
         </button>
@@ -1059,80 +543,457 @@
 
 <script>
 // ==================== Configuration ====================
-const LINE_CHANNEL_ID = '2000472605';
-const LINE_REDIRECT_URI = window.location.origin + '/line-callback.html';
-const TELEGRAM_BOT_ID = 'YOUR_BOT_ID';
+const LINE_CHANNEL_ID    = '2000472605';
+const LINE_REDIRECT_URI  = window.location.origin + '/line-callback.html';
+const TELEGRAM_BOT_USERNAME = 'wisanusenhombot';
 
 // ==================== Global State ====================
-let currentStep = 1;
-const TOTAL_STEPS = 6;
+let currentStep   = 1;
+const TOTAL_STEPS = 7;
 let signatureSaved = false;
 let canvas, ctx, drawing = false;
+let telegramPopup = null;
+let telegramPollTimer = null;
+let croppedImageBase64 = null;
+
+// เก็บข้อมูลองค์กรทั้งหมดจาก API
+let organizationsData = [];
 
 let userData = {
-  uuid: null, social_id: null, social_type: null,
-  name: null, email: null, picture: null,
-  affiliation: '', department: '', idCard: '',
-  prefix: '', firstName: '', lastName: '',
-  position: '', personnelType: '',
-  signature: null, profileImage: null,
-  supervisor: '', approver: '', payer: ''
+  uuid: null,
+  social_id: null,
+  social_id_google: null,
+  social_id_line: null,
+  social_id_telegram: null,
+  social_type: null,
+  name: null,
+  email: null,
+  picture: null,
+  status: 'Active',
+  role: 'user',
+  affiliation: '',
+  aff_code: '', 
+  department: '',
+  dep_code: '',  
+  idCard: '',
+  prefix: '',
+  firstName: '',
+  lastName: '',
+  position: '',
+  personnelType: '',
+  signature: null,
+  profileImage: null,
+  supervisor: '',
+  approver: '',
+  payer: '',
+  supervisor_code: '',
+  approver_code: '',
+  payer_code: '',
+  ot_doc_number: '',
+  ot_rate_per_day: '',
+  ot_rate_per_hour: '',
+  ot_max_hours_per_day: '',
+  ot_bank_account: ''
 };
 
-// ==================== Utility Functions ====================
-function generateUUID() {
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
-    const r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
-    return v.toString(16);
+// ==================== Load Organizations from API ====================
+// แก้ไขฟังก์ชัน loadOrganizations
+async function loadOrganizations() {
+  try {
+    const response = await fetch('/api/organizations');
+    const result = await response.json();
+    
+    // ตามโครงสร้างที่คุณให้มาในตัวอย่าง API /api/user/me
+    // response จะอยู่ในรูป { success: true, data: [...] }
+    if (result.success && Array.isArray(result.data)) {
+      organizationsData = result.data;  // ดึง array ออกมา
+    } else {
+      organizationsData = [];
+    }
+    
+    populateAffiliationSelect();
+  } catch (error) {
+    console.error('Error loading organizations:', error);
+    organizationsData = [];
+    populateAffiliationSelect();
+  }
+}
+
+
+function populateAffiliationSelect() {
+  const affiliationSelect = document.getElementById('affiliation');
+  if (!affiliationSelect) return;
+  
+  // ดึงสังกัดที่ไม่ซ้ำกัน พร้อมเก็บ affiliation_code
+  const affiliationMap = new Map();
+  organizationsData.forEach(org => {
+    if (org.affiliation && !affiliationMap.has(org.affiliation)) {
+      affiliationMap.set(org.affiliation, org.affiliation_code || '');
+    }
   });
+  
+  affiliationSelect.innerHTML = '<option value="">เลือกสังกัด</option>';
+  affiliationMap.forEach((code, aff) => {
+    const option = document.createElement('option');
+    option.value = aff;
+    option.setAttribute('data-code', code || '');
+    option.textContent = aff;
+    affiliationSelect.appendChild(option);
+  });
+}
+
+// ==================== แก้ไขฟังก์ชัน saveRelatedAndNext ====================
+function saveRelatedAndNext() {
+  const supervisorSelect = document.getElementById('supervisor');
+  const approverSelect = document.getElementById('approver');
+  const payerSelect = document.getElementById('payer');
+  
+  // เก็บข้อมูลจาก select พร้อม code
+  if (supervisorSelect) {
+    const selectedOption = supervisorSelect.options[supervisorSelect.selectedIndex];
+    userData.supervisor = selectedOption?.text || '';
+    userData.supervisor_code = supervisorSelect.value || '';
+  }
+  
+  if (approverSelect) {
+    const selectedOption = approverSelect.options[approverSelect.selectedIndex];
+    userData.approver = selectedOption?.text || '';
+    userData.approver_code = approverSelect.value || '';
+  }
+  
+  if (payerSelect) {
+    const selectedOption = payerSelect.options[payerSelect.selectedIndex];
+    userData.payer = selectedOption?.text || '';
+    userData.payer_code = payerSelect.value || '';
+  }
+  
+  console.log('Saved related data:', {
+    supervisor: userData.supervisor,
+    supervisor_code: userData.supervisor_code,
+    approver: userData.approver,
+    approver_code: userData.approver_code,
+    payer: userData.payer,
+    payer_code: userData.payer_code
+  });
+  
+  goNext();
+}
+
+// ==================== เพิ่มฟังก์ชัน bindRelatedEvents ====================
+function bindRelatedEvents() {
+  const supervisorSelect = document.getElementById('supervisor');
+  if (supervisorSelect) {
+    supervisorSelect.addEventListener('change', function() {
+      const selectedOption = this.options[this.selectedIndex];
+      userData.supervisor = selectedOption?.text || '';
+      userData.supervisor_code = this.value || '';
+      console.log('Supervisor changed:', userData.supervisor_code, userData.supervisor);
+    });
+  }
+
+  const approverSelect = document.getElementById('approver');
+  if (approverSelect) {
+    approverSelect.addEventListener('change', function() {
+      const selectedOption = this.options[this.selectedIndex];
+      userData.approver = selectedOption?.text || '';
+      userData.approver_code = this.value || '';
+      console.log('Approver changed:', userData.approver_code, userData.approver);
+    });
+  }
+
+  const payerSelect = document.getElementById('payer');
+  if (payerSelect) {
+    payerSelect.addEventListener('change', function() {
+      const selectedOption = this.options[this.selectedIndex];
+      userData.payer = selectedOption?.text || '';
+      userData.payer_code = this.value || '';
+      console.log('Payer changed:', userData.payer_code, userData.payer);
+    });
+  }
+}
+
+// ==================== แก้ไขฟังก์ชัน nextStep ให้บันทึกข้อมูลขั้นตอนที่ 5 ====================
+function nextStep() {
+  if (!validateStep(currentStep)) return;
+  
+  // ถ้าขั้นตอนที่ 5 ให้บันทึกข้อมูลผู้เกี่ยวข้องก่อนไปขั้นตอนถัดไป
+  if (currentStep === 5) {
+    const supervisorSelect = document.getElementById('supervisor');
+    const approverSelect = document.getElementById('approver');
+    const payerSelect = document.getElementById('payer');
+    
+    if (supervisorSelect) {
+      const selectedOption = supervisorSelect.options[supervisorSelect.selectedIndex];
+      userData.supervisor = selectedOption?.text || '';
+      userData.supervisor_code = supervisorSelect.value || '';
+    }
+    if (approverSelect) {
+      const selectedOption = approverSelect.options[approverSelect.selectedIndex];
+      userData.approver = selectedOption?.text || '';
+      userData.approver_code = approverSelect.value || '';
+    }
+    if (payerSelect) {
+      const selectedOption = payerSelect.options[payerSelect.selectedIndex];
+      userData.payer = selectedOption?.text || '';
+      userData.payer_code = payerSelect.value || '';
+    }
+  }
+  
+  if (currentStep === TOTAL_STEPS) { 
+    submitRegistration(); 
+    return; 
+  }
+  goNext();
+}
+
+// ==================== แก้ไข init ====================
+document.addEventListener('DOMContentLoaded', async () => {
+  await loadOrganizations();
+  bindOrganizationEvents();
+  
+  initSignatureCanvas();
+  await loadStaffOptions();
+  bindRelatedEvents();  // ✅ เพิ่มบรรทัดนี้
+  
+  initLineLogin();
+  detectLineCallbackOnLoad();
+  updateUI();
+
+  window.addEventListener('resize', () => {
+    if (currentStep === 3) {
+      resizeCanvas();
+      if (userData.signature) {
+        const img = new Image();
+        img.onload = () => ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        img.src = userData.signature;
+      }
+    }
+  });
+});
+
+// Populate department dropdown based on selected affiliation
+function populateDepartmentSelect(selectedAffiliation) {
+  const departmentSelect = document.getElementById('department');
+  if (!departmentSelect) return;
+  
+  // กรองหน่วยงานตามสังกัดที่เลือก
+  const departments = organizationsData.filter(org => org.affiliation === selectedAffiliation);
+  
+  if (departments.length === 0) {
+    departmentSelect.innerHTML = '<option value="">ไม่พบข้อมูลหน่วยงาน</option>';
+    departmentSelect.disabled = true;
+    return;
+  }
+  
+  departmentSelect.disabled = false;
+  departmentSelect.innerHTML = '<option value="">เลือกหน่วยงาน</option>';
+  
+  departments.forEach(dept => {
+    const option = document.createElement('option');
+    option.value = dept.department;
+    option.setAttribute('data-code', dept.department_code || '');
+    option.textContent = dept.department;
+    departmentSelect.appendChild(option);
+  });
+}
+
+// ==================== Utilities ====================
+// function generateUUID() {
+//   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+//     const r = Math.random() * 16 | 0;
+//     return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+//   });
+// }
+
+function generateShortId(length = 8) {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  const charsLen = chars.length;
+  const maxValid = Math.floor(256 / charsLen) * charsLen;
+
+  let id = '';
+  while (id.length < length) {
+    const bytes = new Uint8Array(1);
+    crypto.getRandomValues(bytes);
+    const value = bytes[0];
+
+    if (value < maxValid) {
+      id += chars[value % charsLen];
+    }
+  }
+  return id;
 }
 
 function escapeHtml(str) {
   if (!str) return '';
-  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  return String(str)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
-// ==================== LINE Callback Handler (GLOBAL - ต้องประกาศก่อนถูกเรียก) ====================
+// ==================== LINE Callback ====================
 window.handleLineCallback = function(u) {
-  console.log('[Register] handleLineCallback called with:', u);
-  
-  userData.social_id = u.userId;
-  userData.social_type = 'line';
-  userData.name = u.displayName;
-  userData.email = u.email || `${u.userId}@line.com`;
-  userData.picture = u.pictureUrl;
-  userData.uuid = generateUUID();
-  
+  console.log('[Register] handleLineCallback:', u);
+  userData.social_id       = u.userId;
+  userData.social_id_line  = u.userId;
+  userData.social_type     = 'line';
+  userData.name            = u.displayName;
+  userData.email           = u.email || `${u.userId}@line.com`;
+  userData.picture         = u.pictureUrl;
+  // userData.uuid            = generateUUID();
+  userData.uuid            = generateShortId();
   showConnectedStatus('LINE', u.displayName, u.pictureUrl);
   checkAndProceed();
 };
 
-// ==================== Social Login Functions ====================
+// ==================== Telegram Login ====================
+function loginWithTelegram() {
+  const btn = document.getElementById('telegramLoginBtn');
+  btn.classList.add('disabled');
+  btn.querySelector('.social-btn-text span').textContent = 'กำลังเปิด Telegram...';
+
+  const popupUrl  = `/telegram-callback.html?bot=${encodeURIComponent(TELEGRAM_BOT_USERNAME)}&origin=${encodeURIComponent(window.location.origin)}`;
+  const popupOpts = 'width=480,height=600,scrollbars=no,resizable=no,status=no,location=no,toolbar=no,menubar=no';
+  telegramPopup   = window.open(popupUrl, 'TelegramLogin', popupOpts);
+
+  if (!telegramPopup || telegramPopup.closed) {
+    btn.classList.remove('disabled');
+    btn.querySelector('.social-btn-text span').textContent = 'เชื่อมต่อกับบัญชี Telegram ของคุณ';
+    Swal.fire({
+      icon: 'warning',
+      title: 'Popup ถูกบล็อก',
+      text: 'กรุณาอนุญาต popup สำหรับเว็บไซต์นี้แล้วลองใหม่',
+      confirmButtonText: 'ตกลง'
+    });
+    return;
+  }
+
+  telegramPollTimer = setInterval(() => {
+    if (telegramPopup && telegramPopup.closed) {
+      clearInterval(telegramPollTimer);
+      telegramPollTimer = null;
+      btn.classList.remove('disabled');
+      btn.querySelector('.social-btn-text span').textContent = 'เชื่อมต่อกับบัญชี Telegram ของคุณ';
+    }
+  }, 500);
+}
+
+window.handleTelegramCallback = function(tgUser) {
+  console.log('[Register] Telegram callback received:', tgUser);
+
+  if (telegramPopup && !telegramPopup.closed) telegramPopup.close();
+  if (telegramPollTimer) { clearInterval(telegramPollTimer); telegramPollTimer = null; }
+
+  if (!tgUser || !tgUser.id) {
+    Swal.fire({ icon: 'error', title: 'ข้อมูล Telegram ไม่สมบูรณ์', text: 'กรุณาลองใหม่อีกครั้ง' });
+    resetTelegramBtn();
+    return;
+  }
+
+  const name = [tgUser.first_name, tgUser.last_name].filter(Boolean).join(' ')
+             || tgUser.username
+             || 'Telegram User';
+
+  userData.social_id          = tgUser.id.toString();
+  userData.social_id_telegram = tgUser.id.toString();
+  userData.social_type        = 'telegram';
+  userData.name               = name;
+  userData.email              = null;
+  userData.picture            = tgUser.photo_url || null;
+  userData.uuid               = generateShortId();
+
+  showConnectedStatus('Telegram', name, tgUser.photo_url);
+
+  Swal.fire({
+    icon: 'success',
+    title: 'เชื่อมต่อ Telegram สำเร็จ',
+    html: `ยินดีต้อนรับ <strong>${escapeHtml(name)}</strong>`,
+    timer: 1500,
+    showConfirmButton: false
+  }).then(() => checkAndProceed());
+};
+
+window.addEventListener('message', function(event) {
+  if (event.origin !== window.location.origin) return;
+  const msg = event.data;
+  if (!msg || msg.type !== 'TELEGRAM_LOGIN_SUCCESS') return;
+  window.handleTelegramCallback(msg.user);
+}, false);
+
+function resetTelegramBtn() {
+  const btn = document.getElementById('telegramLoginBtn');
+  if (btn) {
+    btn.classList.remove('disabled');
+    btn.querySelector('.social-btn-text span').textContent = 'เชื่อมต่อกับบัญชี Telegram ของคุณ';
+  }
+}
+
+// ==================== Google Login ====================
 function loginWithGoogle() {
+  if (typeof google === 'undefined') {
+    Swal.fire({ icon: 'error', title: 'ไม่สามารถโหลด Google Login', text: 'กรุณาตรวจสอบการเชื่อมต่ออินเทอร์เน็ต' });
+    return;
+  }
   google.accounts.id.initialize({
-    client_id: 'YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com',
+    client_id: '6897615091-r2tuo13f7gnf9irjqbbtt3u1icighmsv.apps.googleusercontent.com',
     callback: handleGoogleCredential,
     auto_select: false
   });
   google.accounts.id.prompt();
 }
 
-function handleGoogleCredential(response) {
-  const decoded = JSON.parse(atob(response.credential.split('.')[1]));
-  userData.social_id = decoded.sub;
-  userData.social_type = 'google';
-  userData.name = decoded.name;
-  userData.email = decoded.email;
-  userData.picture = decoded.picture;
-  userData.uuid = generateUUID();
-  showConnectedStatus('Google', decoded.name, decoded.picture);
-  checkAndProceed();
+function parseJwt(token) {
+  const base64Url = token.split('.')[1];
+  const base64 = base64Url
+    .replace(/-/g, '+')
+    .replace(/_/g, '/')
+    .padEnd(Math.ceil(base64Url.length / 4) * 4, '=');
+
+  const jsonPayload = decodeURIComponent(
+    atob(base64)
+      .split('')
+      .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+      .join('')
+  );
+
+  return JSON.parse(jsonPayload);
 }
 
+function handleGoogleCredential(response) {
+  try {
+    const payload = parseJwt(response.credential);
+    
+    function fixThaiText(str) {
+      if (!str) return str;
+      try {
+        return decodeURIComponent(escape(str));
+      } catch(e) {
+        return str;
+      }
+    }
+    
+    userData.social_id        = payload.sub;
+    userData.social_id_google = payload.sub;
+    userData.social_type      = 'google';
+    userData.name             = fixThaiText(payload.name);
+    userData.email            = payload.email;
+    userData.picture          = payload.picture;
+    userData.uuid             = generateShortId();
+    
+    showConnectedStatus('Google', userData.name, userData.picture);
+    checkAndProceed();
+  } catch (e) {
+    console.error('[Register] Google credential parse error:', e);
+    Swal.fire({ icon: 'error', title: 'เกิดข้อผิดพลาด', text: 'ไม่สามารถอ่านข้อมูลจาก Google ได้' });
+  }
+}
+
+// ==================== LINE Login ====================
 function initLineLogin() {
   document.getElementById('lineLoginBtn').onclick = () => {
     const state = 'register|' + Math.random().toString(36).slice(2);
-    window.location.href = 'https://access.line.me/oauth2/v2.1/authorize'
+    sessionStorage.setItem('line_state', state);
+    window.location.href =
+      'https://access.line.me/oauth2/v2.1/authorize'
       + '?response_type=code'
       + `&client_id=${LINE_CHANNEL_ID}`
       + `&redirect_uri=${encodeURIComponent(LINE_REDIRECT_URI)}`
@@ -1141,31 +1002,22 @@ function initLineLogin() {
   };
 }
 
-function loginWithTelegram() {
-  const popup = window.open(`https://oauth.telegram.org/auth?bot_id=${TELEGRAM_BOT_ID}&origin=${encodeURIComponent(window.location.origin)}&embed=1&request_access=write`, 'TG', 'width=600,height=500');
-  window.telegramCallback = (user) => {
-    popup.close();
-    userData.social_id = user.id.toString();
-    userData.social_type = 'telegram';
-    userData.name = `${user.first_name} ${user.last_name || ''}`.trim();
-    userData.email = `${user.id}@telegram.com`;
-    userData.picture = user.photo_url || null;
-    userData.uuid = generateUUID();
-    showConnectedStatus('Telegram', userData.name, userData.picture);
-    checkAndProceed();
-  };
-}
+function detectLineCallbackOnLoad() {
+  const p = new URLSearchParams(window.location.search);
+  if (p.get('line') !== 'callback') return;
 
-function checkTelegramCallback() {
-  const params = new URLSearchParams(window.location.hash.substring(1));
-  const tg = params.get('tgUser');
-  if (tg) { 
-    try { 
-      window.telegramCallback?.(JSON.parse(decodeURIComponent(tg))); 
-    } catch(e) { console.error('Telegram callback error:', e); }
+  const userId      = p.get('userId');
+  const displayName = p.get('displayName');
+  const email       = p.get('email');
+  const pictureUrl  = p.get('pictureUrl');
+
+  if (userId && displayName) {
+    window.handleLineCallback({ userId, displayName, email: email || null, pictureUrl: pictureUrl || null });
+    history.replaceState({}, '', window.location.pathname);
   }
 }
 
+// ==================== Show Connected Status ====================
 function showConnectedStatus(provider, name, picture) {
   const el = document.getElementById('loginStatus');
   if (el) {
@@ -1175,115 +1027,115 @@ function showConnectedStatus(provider, name, picture) {
         <div>เชื่อมต่อ <strong>${provider}</strong> สำเร็จ — ${escapeHtml(name)}</div>
       </div>`;
   }
-  
-  if (picture) {
-    document.getElementById('profilePreview').src = picture;
-    userData.picture = picture;
-  } else {
-    const initials = (name || 'U').split(' ').map(w => w[0]).slice(0, 2).join('');
-    document.getElementById('profilePreview').src = `https://ui-avatars.com/api/?background=6366f1&color=fff&size=100&bold=true&name=${encodeURIComponent(initials)}`;
+  const preview = document.getElementById('profilePreview');
+  if (preview) {
+    preview.src = picture || `https://ui-avatars.com/api/?background=6366f1&color=fff&size=100&bold=true&name=${encodeURIComponent((name||'U').slice(0,2))}`;
+    userData.picture = preview.src;
   }
 }
 
+// ==================== Check & Proceed ====================
 async function checkAndProceed() {
   try {
     const exists = await checkSocialIdExists(userData.social_id, userData.social_type);
     if (exists) {
-      Swal.fire({ 
-        icon: 'warning', 
-        title: 'บัญชีนี้ลงทะเบียนแล้ว', 
-        text: 'กรุณาเข้าสู่ระบบแทนการสมัครสมาชิก', 
-        confirmButtonText: 'ตกลง' 
-      });
+      Swal.fire({
+        icon: 'warning',
+        title: 'บัญชีนี้ลงทะเบียนแล้ว',
+        text: 'กรุณาเข้าสู่ระบบแทนการสมัครสมาชิก',
+        confirmButtonText: 'ไปหน้าเข้าสู่ระบบ',
+        showCancelButton: false,
+        allowOutsideClick: false
+      }).then(r => { if (r.isConfirmed) window.location.href = 'login.html'; });
     } else {
       setTimeout(() => goNext(), 600);
     }
-  } catch (err) {
-    console.log('[Register] checkAndProceed - API not ready, proceeding anyway');
+  } catch {
     setTimeout(() => goNext(), 600);
   }
 }
 
 async function checkSocialIdExists(socialId, socialType) {
   try {
-    const r = await fetch('/api/user/check-social', { 
-      method: 'POST', 
-      headers: { 'Content-Type': 'application/json' }, 
-      body: JSON.stringify({ social_id: socialId, social_type: socialType }) 
+    const r = await fetch('/api/user/check-social', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ social_id: socialId, social_type: socialType })
     });
-    const data = await r.json();
-    return data.exists || false;
-  } catch (err) {
-    console.log('[Register] checkSocialIdExists API not ready, returning false');
+    const d = await r.json();
+    return d.exists || false;
+  } catch {
     return false;
   }
 }
 
-async function loadStaffOptions() {
+// ==================== Staff Options ====================
+async function loadStaffOptions(aff_code) {
+  let staff = [];
   try {
-    const mockStaff = [
-      { id: '1', name: 'ดร.สมชาย ใจดี', position: 'ผู้อำนวยการ' },
-      { id: '2', name: 'นางสาวกมลชนก วัฒนา', position: 'หัวหน้าฝ่ายการพยาบาล' },
-      { id: '3', name: 'นายวิชัย ทรัพย์เจริญ', position: 'หัวหน้ากลุ่มงานเวชกรรมสังคม' }
-    ];
-    
-    let staff = mockStaff;
-    
-    try {
-      const r = await fetch('/api/user/staff-list');
-      if (r.ok) staff = await r.json();
-    } catch (e) {
-      console.log('[Register] Using mock staff data');
+    // ส่ง aff_code ไปด้วยถ้ามี
+    let url = '/api/user/staff-list';
+    if (aff_code && aff_code.trim() !== '') {
+      url += `?aff_code=${encodeURIComponent(aff_code)}`;
     }
     
-    ['supervisor', 'approver', 'payer'].forEach(id => {
-      const sel = document.getElementById(id);
-      if (sel) {
-        sel.innerHTML = '<option value="">-- ไม่ระบุ --</option>';
-        staff.forEach(s => {
-          sel.innerHTML += `<option value="${s.id}">${escapeHtml(s.name)} (${escapeHtml(s.position)})</option>`;
-        });
+    const response = await fetch(url);
+    if (response.ok) {
+      const result = await response.json();
+      if (result.success && Array.isArray(result.data)) {
+        staff = result.data;
+      } else if (Array.isArray(result)) {
+        staff = result;
       }
-    });
-  } catch (err) {
-    console.error('[Register] loadStaffOptions error:', err);
+    }
+  } catch (error) {
+    console.error('Error loading staff:', error);
   }
+  
+  // สร้าง dropdown options โดยเก็บ value เป็น uuid หรือ id
+  ['supervisor', 'approver', 'payer'].forEach(selectId => {
+    const sel = document.getElementById(selectId);
+    if (!sel) return;
+    sel.innerHTML = '<option value="">-- ไม่ระบุ --</option>';
+    staff.forEach(s => {
+      const value = s.uuid || s.id;
+      const name = s.name || '';
+      const position = s.position ? ` (${s.position})` : '';
+      const department = s.department ? ` - ${s.department}` : '';
+      sel.innerHTML += `<option value="${value}">${escapeHtml(name)}${position}${department}</option>`;
+    });
+  });
 }
 
 // ==================== Signature Canvas ====================
 function initSignatureCanvas() {
   canvas = document.getElementById('sigCanvas');
-  ctx = canvas.getContext('2d');
+  ctx    = canvas.getContext('2d');
   resizeCanvas();
-  ctx.strokeStyle = '#1a1a2e';
-  ctx.lineWidth = 2.5;
-  ctx.lineCap = 'round';
-  ctx.lineJoin = 'round';
-
-  canvas.addEventListener('mousedown', startDraw);
-  canvas.addEventListener('mousemove', drawSig);
-  canvas.addEventListener('mouseup', stopDraw);
+  ctx.strokeStyle = '#000000';
+  ctx.lineWidth   = 2.5;
+  ctx.lineCap     = 'round';
+  ctx.lineJoin    = 'round';
+  canvas.addEventListener('mousedown',  startDraw);
+  canvas.addEventListener('mousemove',  drawSig);
+  canvas.addEventListener('mouseup',    stopDraw);
   canvas.addEventListener('mouseleave', stopDraw);
   canvas.addEventListener('touchstart', startDrawTouch, { passive: false });
-  canvas.addEventListener('touchmove', drawSigTouch, { passive: false });
-  canvas.addEventListener('touchend', stopDraw);
+  canvas.addEventListener('touchmove',  drawSigTouch,   { passive: false });
+  canvas.addEventListener('touchend',   stopDraw);
 }
 
 function resizeCanvas() {
   const rect = canvas.getBoundingClientRect();
-  canvas.width = rect.width || 500;
+  canvas.width  = rect.width || 500;
   canvas.height = 180;
-  ctx.fillStyle = '#ffffff';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
 }
 
 function getPos(e) {
   const rect = canvas.getBoundingClientRect();
-  const scaleX = canvas.width / rect.width;
-  const scaleY = canvas.height / rect.height;
   return {
-    x: (e.clientX - rect.left) * scaleX,
-    y: (e.clientY - rect.top) * scaleY
+    x: (e.clientX - rect.left) * (canvas.width  / rect.width),
+    y: (e.clientY - rect.top)  * (canvas.height / rect.height)
   };
 }
 
@@ -1302,7 +1154,7 @@ function drawSig(e) {
 }
 
 function startDrawTouch(e) {
-  e.preventDefault(); 
+  e.preventDefault();
   drawing = true;
   const hint = document.getElementById('sigHint');
   if (hint) hint.style.display = 'none';
@@ -1317,14 +1169,10 @@ function drawSigTouch(e) {
   drawSig({ clientX: t.clientX, clientY: t.clientY });
 }
 
-function stopDraw() { 
-  drawing = false; 
-  ctx.beginPath(); 
-}
+function stopDraw() { drawing = false; ctx.beginPath(); }
 
 function clearSignature() {
-  ctx.fillStyle = '#ffffff';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
   signatureSaved = false;
   userData.signature = null;
   const hint = document.getElementById('sigHint');
@@ -1337,63 +1185,169 @@ function clearSignature() {
 }
 
 function saveSignature() {
-  userData.signature = canvas.toDataURL('image/png');
+  const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  const data = imgData.data;
+
+  let top = canvas.height, left = canvas.width, right = 0, bottom = 0;
+
+  for (let y = 0; y < canvas.height; y++) {
+    for (let x = 0; x < canvas.width; x++) {
+      const i = (y * canvas.width + x) * 4;
+      if (data[i + 3] > 0) {
+        if (x < left) left = x;
+        if (x > right) right = x;
+        if (y < top) top = y;
+        if (y > bottom) bottom = y;
+      }
+    }
+  }
+
+  if (right <= left || bottom <= top) {
+    alert("กรุณาเซ็นก่อนบันทึก");
+    return;
+  }
+
+  const padding = 10;
+  const w = right - left + padding * 2;
+  const h = bottom - top + padding * 2;
+
+  const cropCanvas = document.createElement('canvas');
+  const cropCtx = cropCanvas.getContext('2d');
+
+  let scale = 1.0;
+  let finalDataUrl = '';
+
+  while (scale > 0.2) {
+    cropCanvas.width = w * scale;
+    cropCanvas.height = h * scale;
+
+    cropCtx.clearRect(0, 0, cropCanvas.width, cropCanvas.height);
+    cropCtx.drawImage(
+      canvas,
+      left - padding,
+      top - padding,
+      w,
+      h,
+      0,
+      0,
+      cropCanvas.width,
+      cropCanvas.height
+    );
+
+    finalDataUrl = cropCanvas.toDataURL('image/png');
+    const sizeKB = Math.round((finalDataUrl.length * 3) / 4 / 1024);
+
+    if (sizeKB <= 20) break;
+    scale -= 0.1;
+  }
+
+  console.log("ขนาดไฟล์:", Math.round((finalDataUrl.length * 3) / 4 / 1024), "KB");
+
+  userData.signature = finalDataUrl;
   signatureSaved = true;
+
   const status = document.getElementById('sigStatus');
   if (status) {
     status.className = 'sig-status saved';
-    status.innerHTML = '<i class="fas fa-circle-check"></i> บันทึกลายเซ็นเรียบร้อยแล้ว';
+    status.innerHTML = '<i class="fas fa-circle-check"></i> บันทึกลายเซ็น ≤ 20KB เรียบร้อย';
   }
 }
 
 // ==================== Image Upload ====================
 function previewImage(input) {
-  if (input.files?.[0]) {
-    const reader = new FileReader();
-    reader.onload = e => { 
-      document.getElementById('profilePreview').src = e.target.result; 
-      userData.profileImage = e.target.result; 
+  const file = input.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+
+  reader.onload = function(e) {
+    const img = new Image();
+    img.onload = function() {
+      const size = Math.min(img.width, img.height);
+      const sx = (img.width - size) / 2;
+      const sy = (img.height - size) / 2;
+
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+
+      const targetSize = 200;
+      canvas.width = targetSize;
+      canvas.height = targetSize;
+
+      ctx.drawImage(
+        img,
+        sx, sy, size, size,
+        0, 0, targetSize, targetSize
+      );
+
+      let quality = 0.9;
+      let base64 = canvas.toDataURL('image/jpeg', quality);
+
+      while (base64.length > 20000 && quality > 0.1) {
+        quality -= 0.05;
+        base64 = canvas.toDataURL('image/jpeg', quality);
+      }
+
+      document.getElementById('profilePreview').src = base64;
+      croppedImageBase64 = base64;
+      userData.profileImage = base64;
+
+      console.log('Image size:', Math.round(base64.length / 1024), 'KB');
     };
-    reader.readAsDataURL(input.files[0]);
-  }
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
 }
 
 // ==================== Step Navigation ====================
 function validateStep(step) {
   if (step === 1) {
-    if (!userData.social_id) { 
-      Swal.fire({ icon:'warning', title:'กรุณาเชื่อมต่อบัญชีก่อน', text:'เลือกช่องทางใดช่องทางหนึ่งด้านบน' }); 
-      return false; 
+    if (!userData.social_id) {
+      Swal.fire({ icon: 'warning', title: 'กรุณาเชื่อมต่อบัญชีก่อน', text: 'เลือกช่องทางใดช่องทางหนึ่งด้านบน' });
+      return false;
     }
     return true;
   }
   if (step === 2) {
-    const fields = ['affiliation','department','idCard','prefix','firstName','lastName','position','personnelType'];
+    const affiliation = document.getElementById('affiliation').value;
+    const department = document.getElementById('department').value;
+
+    if (!affiliation) {
+      Swal.fire({ icon: 'warning', title: 'กรุณาเลือกสังกัด', text: 'สังกัดเป็นข้อมูลที่จำเป็น' });
+      return false;
+    }
+    if (!department) {
+      Swal.fire({ icon: 'warning', title: 'กรุณาเลือกหน่วยงาน', text: 'หน่วยงาน/กลุ่มงานเป็นข้อมูลที่จำเป็น' });
+      return false;
+    }
+    
+    const fields = ['idCard','prefix','firstName','lastName','position','personnelType'];
     for (const f of fields) {
-      const val = document.getElementById(f).value.trim();
-      if (!val) { 
-        Swal.fire({ icon:'warning', title:'กรอกข้อมูลไม่ครบ', text:'กรุณากรอกข้อมูลที่มีเครื่องหมาย * ให้ครบถ้วน' }); 
-        return false; 
+      if (!document.getElementById(f).value.trim()) {
+        Swal.fire({ icon: 'warning', title: 'กรอกข้อมูลไม่ครบ', text: 'กรุณากรอกข้อมูลที่มีเครื่องหมาย * ให้ครบถ้วน' });
+        return false;
       }
     }
-    if (document.getElementById('idCard').value.length !== 13) { 
-      Swal.fire({ icon:'error', title:'เลขบัตรประชาชนไม่ถูกต้อง', text:'ต้องมี 13 หลัก' }); 
-      return false; 
+    if (document.getElementById('idCard').value.length !== 13) {
+      Swal.fire({ icon: 'error', title: 'เลขบัตรประชาชนไม่ถูกต้อง', text: 'ต้องมี 13 หลัก' });
+      return false;
     }
-    userData.affiliation = document.getElementById('affiliation').value;
-    userData.department = document.getElementById('department').value;
-    userData.idCard = document.getElementById('idCard').value;
+    
+    userData.affiliation = affiliation;
+    userData.department = department;
+    userData.idCard = document.getElementById('idCard').value.trim();
     userData.prefix = document.getElementById('prefix').value;
     userData.firstName = document.getElementById('firstName').value.trim();
     userData.lastName = document.getElementById('lastName').value.trim();
     userData.position = document.getElementById('position').value.trim();
     userData.personnelType = document.getElementById('personnelType').value;
+    
     return true;
   }
   if (step === 3) {
-    if (!signatureSaved) { 
-      Swal.fire({ icon:'warning', title:'กรุณาบันทึกลายเซ็น', text:'เซ็นชื่อแล้วกดปุ่ม "บันทึกลายเซ็น"' }); 
-      return false; 
+    if (!signatureSaved) {
+      Swal.fire({ icon: 'warning', title: 'กรุณาบันทึกลายเซ็น', text: 'เซ็นชื่อแล้วกดปุ่ม "บันทึกลายเซ็น"' });
+      return false;
     }
     return true;
   }
@@ -1401,14 +1355,44 @@ function validateStep(step) {
 }
 
 function goNext() {
-  if (currentStep < TOTAL_STEPS) {
-    currentStep++;
-    updateUI();
-  }
+  if (currentStep < TOTAL_STEPS) { currentStep++; updateUI(); }
 }
 
 function nextStep() {
   if (!validateStep(currentStep)) return;
+  
+  // ถ้าขั้นตอนที่ 5 ให้บันทึกข้อมูลผู้เกี่ยวข้องก่อนไปขั้นตอนถัดไป
+  if (currentStep === 5) {
+    const supervisorSelect = document.getElementById('supervisor');
+    const approverSelect = document.getElementById('approver');
+    const payerSelect = document.getElementById('payer');
+    
+    if (supervisorSelect) {
+      const selectedOption = supervisorSelect.options[supervisorSelect.selectedIndex];
+      userData.supervisor = selectedOption?.text || '';
+      userData.supervisor_code = supervisorSelect.value || '';
+    }
+    if (approverSelect) {
+      const selectedOption = approverSelect.options[approverSelect.selectedIndex];
+      userData.approver = selectedOption?.text || '';
+      userData.approver_code = approverSelect.value || '';
+    }
+    if (payerSelect) {
+      const selectedOption = payerSelect.options[payerSelect.selectedIndex];
+      userData.payer = selectedOption?.text || '';
+      userData.payer_code = payerSelect.value || '';
+    }
+  }
+
+  // บันทึกข้อมูลโอทีในขั้นตอน 6
+  if (currentStep === 6) {
+    userData.ot_doc_number        = document.getElementById('otDocNumber').value.trim();
+    userData.ot_rate_per_day      = document.getElementById('otRatePerDay').value.trim();
+    userData.ot_rate_per_hour     = document.getElementById('otRatePerHour').value.trim();
+    userData.ot_max_hours_per_day = document.getElementById('otMaxHoursPerDay').value.trim();
+    userData.ot_bank_account      = document.getElementById('otBankAccount').value.trim();
+  }
+  
   if (currentStep === TOTAL_STEPS) { 
     submitRegistration(); 
     return; 
@@ -1417,27 +1401,32 @@ function nextStep() {
 }
 
 function prevStep() {
-  if (currentStep > 1) { 
-    currentStep--; 
-    updateUI(); 
-  }
+  if (currentStep > 1) { currentStep--; updateUI(); }
 }
 
 function saveRelatedAndNext() {
   userData.supervisor = document.getElementById('supervisor').value;
-  userData.approver = document.getElementById('approver').value;
-  userData.payer = document.getElementById('payer').value;
+  userData.approver   = document.getElementById('approver').value;
+  userData.payer      = document.getElementById('payer').value;
+  goNext();
+}
+
+function saveOtAndNext() {
+  userData.ot_doc_number       = document.getElementById('otDocNumber').value.trim();
+  userData.ot_rate_per_day     = document.getElementById('otRatePerDay').value.trim();
+  userData.ot_rate_per_hour    = document.getElementById('otRatePerHour').value.trim();
+  userData.ot_max_hours_per_day = document.getElementById('otMaxHoursPerDay').value.trim();
+  userData.ot_bank_account     = document.getElementById('otBankAccount').value.trim();
   goNext();
 }
 
 function updateUI() {
-  // Update step indicators
   for (let i = 1; i <= TOTAL_STEPS; i++) {
     const si = document.getElementById(`si-${i}`);
     const fs = document.getElementById(`step${i}`);
+    const sd = document.getElementById(`sd-${i}`);
     if (si) si.className = 'step-item';
     if (fs) fs.classList.remove('active-step');
-    const sd = document.getElementById(`sd-${i}`);
     if (sd) sd.innerHTML = i < currentStep ? '<i class="fas fa-check" style="font-size:0.65rem"></i>' : i;
     if (i === currentStep) {
       if (si) si.classList.add('s-active');
@@ -1446,54 +1435,49 @@ function updateUI() {
       if (si) si.classList.add('s-completed');
     }
   }
-  
-  // Progress bar
+
   const progressBar = document.getElementById('progressBar');
-  if (progressBar) {
-    progressBar.style.width = `${(currentStep / TOTAL_STEPS) * 100}%`;
-  }
-  
-  // Buttons
+  if (progressBar) progressBar.style.width = `${(currentStep / TOTAL_STEPS) * 100}%`;
+
   const prevBtn = document.getElementById('prevBtn');
   if (prevBtn) prevBtn.style.display = currentStep === 1 ? 'none' : 'inline-flex';
-  
+
   const nextBtn = document.getElementById('nextBtn');
   if (nextBtn) {
-    if (currentStep === TOTAL_STEPS) { 
-      nextBtn.innerHTML = '<i class="fas fa-paper-plane"></i> ส่ง'; 
+    if (currentStep === TOTAL_STEPS) {
+      nextBtn.innerHTML = '<i class="fas fa-paper-plane"></i> ส่ง';
       nextBtn.style.display = 'none';
-    } else if (currentStep === 5) { 
+    } else if (currentStep === 5) {
       nextBtn.innerHTML = 'บันทึกและถัดไป <i class="fas fa-chevron-right"></i>';
       nextBtn.style.display = 'inline-flex';
-    } else { 
+    } else if (currentStep === 6) {
+      nextBtn.innerHTML = 'บันทึกและถัดไป <i class="fas fa-chevron-right"></i>';
+      nextBtn.style.display = 'inline-flex';
+    } else {
       nextBtn.innerHTML = 'ถัดไป <i class="fas fa-chevron-right"></i>';
       nextBtn.style.display = 'inline-flex';
     }
   }
-  
-  // Step counter
+
   const stepCounter = document.getElementById('stepCounter');
   if (stepCounter) stepCounter.textContent = `ขั้นตอนที่ ${currentStep} จาก ${TOTAL_STEPS}`;
-  
-  // Build confirm data for step 6
-  if (currentStep === 6) buildConfirmData();
+
+  if (currentStep === 7) buildConfirmData();
 }
 
+// ==================== Confirm Data ====================
 function buildConfirmData() {
   const el = document.getElementById('confirmData');
   if (!el) return;
-  
-  const row = (key, val) => `<div class="confirm-row"><div class="confirm-key">${key}</div><div class="confirm-val">${val || '-'}</div></div>`;
-  const ok = (t) => `<span class="badge-ok"><i class="fas fa-check"></i> ${t}</span>`;
+  const row  = (k, v) => `<div class="confirm-row"><div class="confirm-key">${k}</div><div class="confirm-val">${v||'-'}</div></div>`;
+  const ok   = (t) => `<span class="badge-ok"><i class="fas fa-check"></i> ${t}</span>`;
   const skip = (t) => `<span class="badge-skip">${t}</span>`;
-  
   const providerName = { google: 'Google', line: 'LINE', telegram: 'Telegram' }[userData.social_type] || '-';
-  
   el.innerHTML = `
     <div class="confirm-section-chip"><i class="fas fa-share-nodes"></i> บัญชีที่เชื่อมต่อ</div>
     ${row('ช่องทาง', providerName)}
     ${row('ชื่อบัญชี', escapeHtml(userData.name || '-'))}
-    ${row('อีเมล', escapeHtml(userData.email || '-'))}
+    ${row('อีเมล', escapeHtml(userData.email || 'ไม่มี (Telegram)'))}
     <div class="confirm-section-chip"><i class="fas fa-id-badge"></i> ข้อมูลส่วนตัว</div>
     ${row('สังกัด', escapeHtml(userData.affiliation || '-'))}
     ${row('หน่วยงาน', escapeHtml(userData.department || '-'))}
@@ -1505,81 +1489,133 @@ function buildConfirmData() {
     ${row('ลายเซ็น', userData.signature ? ok('บันทึกแล้ว') : skip('ไม่มี'))}
     ${row('รูปโปรไฟล์', (userData.profileImage || userData.picture) ? ok('พร้อมแล้ว') : skip('ข้าม'))}
     ${row('ผู้บังคับบัญชา', userData.supervisor ? ok('เลือกแล้ว') : skip('ไม่ระบุ'))}
+    <div class="confirm-section-chip"><i class="fas fa-clock"></i> ข้อมูลโอที</div>
+    ${row('เลขที่หนังสือ', escapeHtml(userData.ot_doc_number || '-'))}
+    ${row('อัตราต่อวัน', userData.ot_rate_per_day ? userData.ot_rate_per_day + ' บาท' : skip('ไม่ระบุ'))}
+    ${row('อัตราต่อชั่วโมง', userData.ot_rate_per_hour ? userData.ot_rate_per_hour + ' บาท' : skip('ไม่ระบุ'))}
+    ${row('จำกัดชั่วโมง/วัน', userData.ot_max_hours_per_day ? userData.ot_max_hours_per_day + ' ชม.' : skip('ไม่ระบุ'))}
+    ${row('เลขบัญชีกรุงไทย', userData.ot_bank_account ? '***' + userData.ot_bank_account.slice(-4) : skip('ไม่ระบุ'))}
   `;
 }
 
-// ==================== Submit Registration ====================
+// ==================== Submit ====================
 async function submitRegistration() {
-  const btn = document.querySelector('#step6 .btn-success');
-  if (btn) {
-    btn.disabled = true;
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> กำลังบันทึก...';
+  const btn = document.querySelector('#step7 .btn-success');
+  if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> กำลังบันทึก...'; }
+
+  if (!userData.email && userData.social_type !== 'telegram' && userData.social_type !== 'line') {
+    Swal.fire({ icon: 'warning', title: 'ไม่มีอีเมล', text: 'ระบบไม่ได้รับอีเมลจากผู้ให้บริการ กรุณาลองเชื่อมต่อใหม่', confirmButtonText: 'ตกลง' });
+    if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-paper-plane"></i> ยืนยันการสมัครสมาชิก'; }
+    return;
   }
 
+    const payload = { 
+    ...userData, 
+    aff_code: userData.aff_code,
+    dep_code: userData.dep_code,
+    ot_doc_number: userData.ot_doc_number || null,
+    ot_rate_per_day: userData.ot_rate_per_day ? parseFloat(userData.ot_rate_per_day) : null,
+    ot_rate_per_hour: userData.ot_rate_per_hour ? parseFloat(userData.ot_rate_per_hour) : null,
+    ot_max_hours_per_day: userData.ot_max_hours_per_day ? parseInt(userData.ot_max_hours_per_day) : null,
+    ot_bank_account: userData.ot_bank_account || null,
+    status: 'Active', 
+    role: 'user', 
+    registered_at: new Date().toISOString() 
+  };
+
   try {
-    const r = await fetch('/api/user/register', { 
-      method: 'POST', 
-      headers: { 'Content-Type': 'application/json' }, 
-      body: JSON.stringify(userData) 
-    });
+    const r      = await fetch('/api/user/register', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
     const result = await r.json();
     if (result.success) {
       Swal.fire({ icon: 'success', title: 'สมัครสมาชิกสำเร็จ!', text: 'กำลังนำคุณไปยังหน้าเข้าสู่ระบบ', timer: 2000, showConfirmButton: false })
         .then(() => window.location.href = 'login.html');
     } else {
-      Swal.fire({ icon: 'error', title: 'เกิดข้อผิดพลาด', text: result.message || 'กรุณาลองอีกครั้ง' });
-      if (btn) {
-        btn.disabled = false;
-        btn.innerHTML = '<i class="fas fa-paper-plane"></i> ยืนยันการสมัครสมาชิก';
-      }
+  let showLoginBtn = false;
+
+  // เช็คข้อความจาก backend
+  if (result.message?.includes('ลงทะเบียนแล้ว')) {
+    showLoginBtn = true;
+  }
+
+  Swal.fire({
+    icon: 'error',
+    title: 'เกิดข้อผิดพลาด',
+    text: result.message || 'กรุณาลองอีกครั้ง',
+    showCancelButton: showLoginBtn,
+    confirmButtonText: showLoginBtn ? 'เข้าสู่ระบบ' : 'ตกลง',
+    cancelButtonText: 'ปิด'
+  }).then((res) => {
+    if (res.isConfirmed && showLoginBtn) {
+      // 👉 ไปหน้า login
+      window.location.href = '/login'; 
+      // หรือเปิด modal login ก็ได้
     }
+  });
+
+  if (btn) {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-paper-plane"></i> ยืนยันการสมัครสมาชิก';
+  }
+}
   } catch (err) {
-    console.error('Submit error:', err);
+    console.error('[Register] Submit error:', err);
     Swal.fire({ icon: 'error', title: 'ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์', text: 'กรุณาตรวจสอบการเชื่อมต่ออินเทอร์เน็ต' });
-    if (btn) {
-      btn.disabled = false;
-      btn.innerHTML = '<i class="fas fa-paper-plane"></i> ยืนยันการสมัครสมาชิก';
-    }
+    if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-paper-plane"></i> ยืนยันการสมัครสมาชิก'; }
   }
 }
 
-// ==================== Detect LINE Callback from URL ====================
-function detectLineCallbackOnLoad() {
-  const p = new URLSearchParams(window.location.search);
-  console.log('[Register] detectLineCallbackOnLoad - URL params:', window.location.search);
+// ==================== Event Listeners for Organization Selection ====================
+function bindOrganizationEvents() {
+  const affiliationSelect = document.getElementById('affiliation');
+  if (affiliationSelect) {
+    affiliationSelect.addEventListener('change', async function() {
+      const selectedAffiliation = this.value;
+      const selectedOption = this.options[this.selectedIndex];
+      // บันทึก affiliation_code
+      const aff_code = selectedOption.getAttribute('data-code') || '';
+      userData.aff_code = aff_code;
+
+      if (selectedAffiliation) {
+        populateDepartmentSelect(selectedAffiliation);
+        userData.department = '';
+        userData.dep_code = '';
+        
+        // ✅ โหลดรายชื่อผู้เกี่ยวข้องตาม aff_code
+        await loadStaffOptions(aff_code);
+      } else {
+        const departmentSelect = document.getElementById('department');
+        if (departmentSelect) {
+          departmentSelect.innerHTML = '<option value="">เลือกสังกัดก่อน</option>';
+          departmentSelect.disabled = true;
+        }
+        // โหลดรายชื่อทั้งหมด (ไม่กรอง)
+        await loadStaffOptions('');
+      }
+    });
+  }
   
-  if (p.get('line') === 'callback') {
-    const userId = p.get('userId');
-    const displayName = p.get('displayName');
-    const email = p.get('email');
-    const pictureUrl = p.get('pictureUrl');
-    
-    console.log('[Register] LINE callback detected:', { userId, displayName });
-    
-    if (userId && displayName) {
-      window.handleLineCallback({ 
-        userId: userId, 
-        displayName: displayName, 
-        email: email || null, 
-        pictureUrl: pictureUrl || null 
-      });
-      history.replaceState({}, '', window.location.pathname);
-    }
+  const departmentSelect = document.getElementById('department');
+  if (departmentSelect) {
+    departmentSelect.addEventListener('change', function() {
+      const selectedOption = this.options[this.selectedIndex];
+      userData.department = this.value;
+      userData.dep_code = selectedOption.getAttribute('data-code') || '';
+    });
   }
 }
 
-// ==================== Initialization ====================
-document.addEventListener('DOMContentLoaded', () => {
-  console.log('[Register] DOM loaded, initializing...');
+// ==================== Init ====================
+document.addEventListener('DOMContentLoaded', async () => {
+  // Load organizations first
+  await loadOrganizations();
+  bindOrganizationEvents();
   
   initSignatureCanvas();
   loadStaffOptions();
   initLineLogin();
-  checkTelegramCallback();
   detectLineCallbackOnLoad();
   updateUI();
-  
-  // Auto-resize canvas on window resize
+
   window.addEventListener('resize', () => {
     if (currentStep === 3) {
       resizeCanvas();

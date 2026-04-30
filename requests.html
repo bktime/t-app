@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="th-TH">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>จัดการคำขอ | ระบบบันทึกเวลาปฏิบัติงาน</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=K2D:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <style>
+    :root{--bg:#f0f2f5;--sur:#fff;--sur2:#f8f9fb;--bd:#e4e8ef;--tx:#1a1d23;--sub:#6b7280;--mt:#9ca3af;
+      --grn:#059669;--gbg:#ecfdf5;--gbd:#6ee7b7;--red:#dc2626;--rbg:#fef2f2;--rbd:#fca5a5;
+      --ora:#d97706;--obg:#fffbeb;--obd:#fcd34d;--blu:#2563eb;--bbg:#eff6ff;--bbd:#93c5fd;
+      --pri:#1d4ed8;--prih:#1e40af;--nh:60px;--r:12px;
+      --sh:0 1px 3px rgba(0,0,0,.08),0 4px 16px rgba(0,0,0,.04);
+      --shm:0 4px 12px rgba(0,0,0,.10),0 12px 32px rgba(0,0,0,.06)}
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;padding-top:var(--nh)}
+    nav{position:fixed;top:0;left:0;right:0;z-index:200;height:var(--nh);background:#fff;border-bottom:1px solid var(--bd);display:flex;align-items:center;padding:0 1.25rem;gap:10px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+    .nb{display:flex;align-items:center;gap:6px;text-decoration:none;color:var(--sub);font-size:.85rem;padding:6px 10px;border-radius:8px;transition:background .15s}
+    .nb:hover{background:var(--bg);color:var(--tx)}
+    .nt{font-family:'K2D',sans-serif;font-size:1rem;font-weight:700;flex:1}
+    .nr{font-size:.72rem;padding:3px 10px;border-radius:20px;font-weight:600;background:var(--bbg);color:var(--blu);border:1px solid var(--bbd)}
+    .nav-av{width:34px;height:34px;border-radius:50%;object-fit:cover;border:2px solid var(--bd)}
+    .wrap{max-width:900px;margin:0 auto;padding:1.25rem 1rem 4rem}
+    .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:.75rem;margin-bottom:1.25rem}
+    .sc{background:var(--sur);border:1px solid var(--bd);border-radius:var(--r);padding:.9rem 1rem;display:flex;align-items:center;gap:10px;cursor:pointer;transition:box-shadow .15s,border-color .15s}
+    .sc:hover{box-shadow:var(--sh)}.sc.active{border-color:var(--pri);box-shadow:0 0 0 3px rgba(29,78,216,.1)}
+    .si{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0}
+    .sia{background:#f1f5f9;color:#475569}.sip{background:var(--obg);color:var(--ora)}.siap{background:var(--gbg);color:var(--grn)}.sir{background:var(--rbg);color:var(--red)}
+    .sv{font-family:'K2D',sans-serif;font-size:1.3rem;font-weight:800;line-height:1}.sl{font-size:.72rem;color:var(--sub);margin-top:2px}
+    .tb{background:var(--sur);border:1px solid var(--bd);border-radius:var(--r);padding:.75rem 1rem;display:flex;gap:.6rem;flex-wrap:wrap;align-items:center;margin-bottom:1rem}
+    .sw{flex:1;min-width:160px;position:relative;display:flex;align-items:center}
+    .sw i{position:absolute;left:10px;color:var(--mt);font-size:.82rem}
+    .sw input{width:100%;padding:.5rem .75rem .5rem 2rem;border:1px solid var(--bd);border-radius:8px;font-size:.85rem;font-family:'Sarabun',sans-serif;background:var(--sur2);outline:none;transition:border-color .15s}
+    .sw input:focus{border-color:var(--pri);background:#fff}
+    .tbb{display:flex;align-items:center;gap:5px;padding:.48rem .85rem;border-radius:8px;font-size:.82rem;font-weight:600;font-family:'Sarabun',sans-serif;cursor:pointer;border:1px solid var(--bd);background:var(--sur2);color:var(--sub);transition:all .15s;white-space:nowrap}
+    .tbb:hover{background:var(--bg);color:var(--tx)}.tbb.pri{background:var(--pri);color:#fff;border-color:var(--pri)}.tbb.pri:hover{background:var(--prih)}
+    .cbadge{font-size:.68rem;padding:1px 6px;border-radius:20px;background:var(--ora);color:#fff;font-weight:700;line-height:1.4}
+    .rl{display:flex;flex-direction:column;gap:.75rem}
+    .rc{background:var(--sur);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden;box-shadow:var(--sh);transition:box-shadow .15s;animation:fu .22s ease both}
+    .rc:hover{box-shadow:var(--shm)}.rc.pending{border-left:4px solid var(--ora)}.rc.approved{border-left:4px solid var(--grn)}.rc.rejected{border-left:4px solid var(--red)}
+    .rh{display:flex;align-items:flex-start;gap:12px;padding:1rem 1.1rem .75rem}
+    .rav{width:42px;height:42px;border-radius:50%;object-fit:cover;border:2px solid var(--bd);flex-shrink:0}
+    .rm{flex:1;min-width:0}.rn{font-weight:600;font-size:.95rem}.rd{font-size:.75rem;color:var(--sub);margin-top:1px}
+    .rtb{display:inline-flex;align-items:center;gap:4px;font-size:.72rem;padding:2px 9px;border-radius:20px;font-weight:600;margin-top:5px;background:#f1f5f9;color:#475569;border:1px solid #e2e8f0}
+    .rr{flex-shrink:0;text-align:right}
+    .sp{display:inline-flex;align-items:center;gap:4px;font-size:.72rem;padding:3px 10px;border-radius:20px;font-weight:700}
+    .spp{background:var(--obg);color:var(--ora);border:1px solid var(--obd)}.spa{background:var(--gbg);color:var(--grn);border:1px solid var(--gbd)}.spr{background:var(--rbg);color:var(--red);border:1px solid var(--rbd)}
+    .rref{font-size:.67rem;color:var(--mt);margin-top:4px;font-family:monospace}.rag{font-size:.7rem;color:var(--mt);margin-top:2px}
+    .rbody{padding:.65rem 1.1rem;border-top:1px solid var(--bd);background:var(--sur2)}
+    .rrow{display:flex;gap:1.5rem;flex-wrap:wrap;margin-bottom:.45rem}
+    .rfl label{font-size:.68rem;color:var(--mt);text-transform:uppercase;letter-spacing:.04em;display:block}.rfl span{font-size:.85rem;font-weight:500}
+    .rrea{font-size:.82rem;color:var(--sub);background:#fff;border:1px solid var(--bd);border-radius:8px;padding:.5rem .75rem;margin-top:.5rem;line-height:1.6}
+    .tlc{display:flex;gap:.45rem;flex-wrap:wrap;margin-top:.5rem}
+    .tlch{display:inline-flex;align-items:center;gap:4px;font-size:.7rem;padding:3px 8px;border-radius:20px;border:1px solid var(--bd);background:#fff;font-weight:500;color:var(--sub)}
+    .tlch.in{border-color:var(--gbd);color:var(--grn);background:var(--gbg)}.tlch.oa{border-color:var(--obd);color:var(--ora);background:var(--obg)}.tlch.om{border-color:var(--bbd);color:var(--blu);background:var(--bbg)}
+    .tln{font-size:.75rem;color:var(--mt);font-style:italic}
+    .rnote{margin-top:.5rem;font-size:.78rem;padding:.4rem .7rem;border-radius:8px;border-left:3px solid var(--bd);background:#fff;color:var(--sub)}
+    .rnote.approved{border-color:var(--grn)}.rnote.rejected{border-color:var(--red)}
+    .rf{padding:.7rem 1.1rem;border-top:1px solid var(--bd);display:flex;align-items:center;justify-content:flex-end;gap:.5rem}
+    .act{display:inline-flex;align-items:center;gap:5px;padding:.45rem .9rem;border-radius:8px;font-size:.82rem;font-weight:600;font-family:'Sarabun',sans-serif;cursor:pointer;border:none;transition:all .15s}
+    .act.app{background:var(--gbg);color:var(--grn);border:1px solid var(--gbd)}.act.app:hover{background:var(--grn);color:#fff}
+    .act.rej{background:var(--rbg);color:var(--red);border:1px solid var(--rbd)}.act.rej:hover{background:var(--red);color:#fff}
+    .dl{font-size:.75rem;color:var(--mt);display:flex;align-items:center;gap:4px}
+    .pg{display:flex;justify-content:center;align-items:center;gap:.5rem;margin-top:1.25rem;flex-wrap:wrap}
+    .pb{padding:.42rem .85rem;border-radius:8px;border:1px solid var(--bd);background:var(--sur);font-size:.82rem;cursor:pointer;font-family:'Sarabun',sans-serif;transition:all .15s}
+    .pb:hover:not(:disabled){background:var(--pri);color:#fff;border-color:var(--pri)}.pb:disabled{opacity:.4;cursor:not-allowed}.pb.cur{background:var(--pri);color:#fff;border-color:var(--pri)}
+    .pi{font-size:.78rem;color:var(--sub);padding:0 .5rem}
+    .empty{text-align:center;padding:3rem 1rem;color:var(--mt);font-size:.9rem}.empty i{font-size:2.8rem;display:block;margin-bottom:.75rem;opacity:.35}
+    .loading{text-align:center;padding:2rem;color:var(--sub)}
+    .swal2-popup{border-radius:16px!important;font-family:'Sarabun',sans-serif!important}.swal2-confirm,.swal2-cancel{border-radius:8px!important}
+    @media(max-width:640px){.stats-row{grid-template-columns:repeat(2,1fr)}.nr{display:none}.rrow{gap:.75rem}}
+    .spin{animation:sp .7s linear infinite}
+    @keyframes sp{to{transform:rotate(360deg)}}
+    @keyframes fu{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+  </style>
+</head>
+<body>
+<nav>
+  <a href="attendance.html" class="nb"><i class="fas fa-arrow-left"></i> กลับ</a>
+  <div class="nt"><i class="fas fa-inbox" style="color:var(--pri);margin-right:6px"></i>จัดการคำขอ</div>
+  <span class="nr" id="navRole">—</span>
+  <img class="nav-av" id="navAv" src="https://ui-avatars.com/api/?background=2563eb&color=fff&size=68&bold=true&name=A" alt="">
+</nav>
+
+<div class="wrap">
+  <div class="stats-row">
+    <div class="sc active" id="sc-all"     onclick="filterSt('all')">    <div class="si sia"><i class="fas fa-list"></i></div>     <div><div class="sv" id="cnt-all">—</div><div class="sl">ทั้งหมด</div></div></div>
+    <div class="sc"        id="sc-pending"  onclick="filterSt('pending')"> <div class="si sip"><i class="fas fa-hourglass-half"></i></div><div><div class="sv" id="cnt-pending">—</div><div class="sl">รอดำเนินการ</div></div></div>
+    <div class="sc"        id="sc-approved" onclick="filterSt('approved')"><div class="si siap"><i class="fas fa-circle-check"></i></div><div><div class="sv" id="cnt-approved">—</div><div class="sl">อนุมัติแล้ว</div></div></div>
+    <div class="sc"        id="sc-rejected" onclick="filterSt('rejected')"><div class="si sir"><i class="fas fa-circle-xmark"></i></div><div><div class="sv" id="cnt-rejected">—</div><div class="sl">ปฏิเสธแล้ว</div></div></div>
+  </div>
+  <div class="tb">
+    <div class="sw"><i class="fas fa-magnifying-glass"></i><input type="text" id="si" placeholder="ค้นหาชื่อ, เลขอ้างอิง, ประเภท..." oninput="debS()"></div>
+    <button class="tbb" onclick="load(true)"><i class="fas fa-rotate-right"></i> รีเฟรช</button>
+    <button class="tbb pri" id="batchBtn" style="display:none" onclick="batchApp()">
+      <i class="fas fa-check-double"></i> อนุมัติที่เลือก <span class="cbadge" id="batchCnt">0</span>
+    </button>
+  </div>
+  <div class="rl" id="rl"><div class="loading"><i class="fas fa-spinner spin"></i> กำลังโหลด...</div></div>
+  <div class="pg" id="pg"></div>
+</div>
+
+<script>
+'use strict';
+const API='/api/attendance';
+const AH=()=>{const t=localStorage.getItem('auth_token');return t?{'Authorization':'Bearer '+t}:{}};
+let curSt='all',curPg=0,LIMIT=20,total=0,stTimer=null,sel=new Set();
+
+function gUD(){try{return JSON.parse(localStorage.getItem('user_data')||'null')}catch{return null}}
+function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function fmtD(iso){if(!iso)return'—';try{return new Date(iso).toLocaleDateString('th-TH',{year:'numeric',month:'long',day:'numeric'})}catch{return iso}}
+function fmtS(s){if(!s)return'—';try{return new Date(s+'T00:00:00').toLocaleDateString('th-TH',{day:'numeric',month:'short',year:'numeric'})}catch{return s}}
+function ago(iso){if(!iso)return'';const d=(Date.now()-new Date(iso))/1000;if(d<60)return'เมื่อกี้';if(d<3600)return Math.floor(d/60)+' นาทีที่แล้ว';if(d<86400)return Math.floor(d/3600)+' ชม.ที่แล้ว';if(d<604800)return Math.floor(d/86400)+' วันที่แล้ว';return fmtD(iso)}
+
+function initUser(){
+  const ud=gUD();
+  if(!ud?.uuid){location.href='login.html';return}
+  const name=ud.name||((ud.prefix||'')+(ud.firstName||'')+' '+(ud.lastName||'')).trim()||'—';
+  const role=ud.role||'user';
+  document.getElementById('navRole').textContent={admin:'ผู้ดูแลระบบ',supervisor:'ผู้บังคับบัญชา',approver:'ผู้รับรอง'}[role]||role;
+  const pic=ud.profileImage||ud.picture||'https://ui-avatars.com/api/?background=2563eb&color=fff&size=68&bold=true&name='+encodeURIComponent(name.charAt(0));
+  document.getElementById('navAv').src=pic;
+  if(!['admin','supervisor','approver'].includes(role))
+    Swal.fire({icon:'error',title:'ไม่มีสิทธิ์',text:'หน้านี้สำหรับผู้ดูแลระบบเท่านั้น',confirmButtonColor:'#dc2626'}).then(()=>location.href='tm.html');
+}
+
+async function load(reset=false){
+  if(reset){curPg=0;sel.clear();updBatch()}
+  const rl=document.getElementById('rl');
+  rl.innerHTML='<div class="loading"><i class="fas fa-spinner spin"></i> กำลังโหลด...</div>';
+  const q=document.getElementById('si').value.trim();
+  const p=new URLSearchParams({status:curSt,limit:LIMIT,offset:curPg*LIMIT,...(q?{search:q}:{})});
+  try{
+    const res=await fetch(`${API}/request-manage?${p}`,{headers:AH()});
+    if(res.status===401){location.href='login.html';return}
+    if(res.status===403){rl.innerHTML='<div class="empty"><i class="fas fa-lock"></i>ไม่มีสิทธิ์เข้าถึง</div>';return}
+    const data=await res.json();
+    if(!data.success)throw new Error(data.message);
+    total=data.total;renderList(data.data);renderPg();loadCounts();
+  }catch(err){rl.innerHTML=`<div class="empty"><i class="fas fa-triangle-exclamation"></i>${esc(err.message)}</div>`}
+}
+
+async function loadCounts(){
+  const [a,p,ap,r]=await Promise.all(['all','pending','approved','rejected'].map(s=>
+    fetch(`${API}/request-manage?status=${s}&limit=1`,{headers:AH()}).then(r=>r.json()).then(d=>d.total||0).catch(()=>0)
+  ));
+  document.getElementById('cnt-all').textContent=a;
+  document.getElementById('cnt-pending').textContent=p;
+  document.getElementById('cnt-approved').textContent=ap;
+  document.getElementById('cnt-rejected').textContent=r;
+}
+
+const TICO={'ลืมลงเวลาเข้า':'fa-clock','ลืมลงเวลาออก':'fa-clock-rotate-left','แก้ไขเวลาเข้า':'fa-pen-to-square','แก้ไขเวลาออก':'fa-pen-to-square','ขอลาป่วย':'fa-kit-medical','ขอลากิจ':'fa-calendar-xmark','ขอลาพักร้อน':'fa-umbrella-beach','อื่นๆ':'fa-ellipsis'};
+const SPIC={pending:'fa-hourglass-half',approved:'fa-circle-check',rejected:'fa-circle-xmark'};
+const SPLB={pending:'รอดำเนินการ',approved:'อนุมัติ',rejected:'ปฏิเสธ'};
+const SPCL={pending:'spp',approved:'spa',rejected:'spr'};
+
+function renderTL(tls){
+  if(!tls?.length)return'<span class="tln">ไม่มีข้อมูลบันทึกเวลาวันนั้น</span>';
+  return tls.map(t=>{
+    if(t.action==='checkin')return`<span class="tlch in"><i class="fas fa-play" style="font-size:.58rem"></i> เข้า ${esc(t.time_str)}</span>`;
+    const cl=t.checkout_type==='auto'?'oa':'om',lb=t.checkout_type==='auto'?'ออก Auto':'ออก Manual';
+    return`<span class="tlch ${cl}"><i class="fas fa-stop" style="font-size:.58rem"></i> ${lb} ${esc(t.time_str)}</span>`;
+  }).join('');
+}
+
+function avSrc(it){return it.profileImage||it.picture||'https://ui-avatars.com/api/?background=6366f1&color=fff&size=84&bold=true&name='+encodeURIComponent((it.name||'U').charAt(0))}
+
+function renderList(items){
+  const rl=document.getElementById('rl');
+  if(!items.length){rl.innerHTML='<div class="empty"><i class="fas fa-folder-open"></i>ไม่มีคำขอในหมวดนี้</div>';return}
+  rl.innerHTML=items.map((it,i)=>`
+    <div class="rc ${it.status}" style="animation-delay:${i*.04}s" id="card-${esc(it.reference)}">
+      <div class="rh">
+        ${it.status==='pending'?`<input type="checkbox" style="margin-top:11px;flex-shrink:0;width:15px;height:15px;cursor:pointer;accent-color:var(--pri)"
+          ${sel.has(it.reference)?'checked':''} onchange="togSel('${esc(it.reference)}',this.checked)">`:''}
+        <img class="rav" src="${esc(avSrc(it))}" alt="" onerror="this.src='https://ui-avatars.com/api/?background=6366f1&color=fff&size=84&bold=true&name=U'">
+        <div class="rm">
+          <div class="rn">${esc(it.name||'—')}</div>
+          <div class="rd">${esc(it.department||'')}${it.affiliation?' · '+esc(it.affiliation):''}</div>
+          <span class="rtb"><i class="fas ${TICO[it.request_type]||'fa-ellipsis'}"></i> ${esc(it.request_type)}</span>
+        </div>
+        <div class="rr">
+          <span class="sp ${SPCL[it.status]||'spp'}"><i class="fas ${SPIC[it.status]||'fa-question'}" style="font-size:.65rem"></i> ${SPLB[it.status]||it.status}</span>
+          <div class="rref">${esc(it.reference)}</div>
+          <div class="rag">${ago(it.submitted_at)}</div>
+        </div>
+      </div>
+      <div class="rbody">
+        <div class="rrow">
+          <div class="rfl"><label>วันที่ขอ</label><span>${fmtS(it.req_date)}</span></div>
+          ${it.req_time?`<div class="rfl"><label>เวลา</label><span>${esc(it.req_time)}</span></div>`:''}
+          ${it.position?`<div class="rfl"><label>ตำแหน่ง</label><span>${esc(it.position)}</span></div>`:''}
+          ${it.supervisor?`<div class="rfl"><label>ผู้บังคับบัญชา</label><span>${esc(it.supervisor)}</span></div>`:''}
+        </div>
+        <div class="rrea">${esc(it.reason)}</div>
+        <div style="margin-top:.5rem">
+          <span style="font-size:.68rem;color:var(--mt);text-transform:uppercase;letter-spacing:.04em">ข้อมูลบันทึกเวลาวันนั้น</span>
+          <div class="tlc">${renderTL(it.attendance)}</div>
+        </div>
+        ${it.reviewed_at?`<div class="rnote ${it.status}"><i class="fas ${it.status==='approved'?'fa-circle-check':'fa-circle-xmark'}" style="margin-right:4px"></i>
+          ${it.status==='approved'?'อนุมัติเมื่อ':'ปฏิเสธเมื่อ'} ${fmtD(it.reviewed_at)}${it.reviewer_note?' — <em>'+esc(it.reviewer_note)+'</em>':''}</div>`:''}
+      </div>
+      <div class="rf">
+        ${it.status==='pending'
+          ?`<button class="act rej" onclick="review('${esc(it.reference)}','reject')"><i class="fas fa-xmark"></i> ปฏิเสธ</button>
+             <button class="act app" onclick="review('${esc(it.reference)}','approve')"><i class="fas fa-check"></i> อนุมัติ</button>`
+          :`<span class="dl"><i class="fas ${it.status==='approved'?'fa-circle-check':'fa-circle-xmark'}"></i> ดำเนินการแล้ว ${it.reviewed_at?fmtD(it.reviewed_at):''}</span>`}
+      </div>
+    </div>`).join('');
+}
+
+function renderPg(){
+  const pages=Math.ceil(total/LIMIT),pg=document.getElementById('pg');
+  if(pages<=1){pg.innerHTML='';return}
+  let h=`<button class="pb" onclick="goP(${curPg-1})" ${curPg===0?'disabled':''}><i class="fas fa-chevron-left"></i></button>`;
+  for(let i=0;i<pages;i++){
+    if(pages>7&&Math.abs(i-curPg)>2&&i!==0&&i!==pages-1){if(i===1||i===pages-2)h+='<span class="pi">…</span>';continue}
+    h+=`<button class="pb${i===curPg?' cur':''}" onclick="goP(${i})">${i+1}</button>`;
+  }
+  h+=`<button class="pb" onclick="goP(${curPg+1})" ${curPg>=pages-1?'disabled':''}><i class="fas fa-chevron-right"></i></button>`;
+  h+=`<span class="pi">${total} รายการ</span>`;
+  pg.innerHTML=h;
+}
+function goP(n){curPg=n;load(false);scrollTo({top:0,behavior:'smooth'})}
+
+function filterSt(s){curSt=s;document.querySelectorAll('.sc').forEach(c=>c.classList.remove('active'));document.getElementById('sc-'+s)?.classList.add('active');load(true)}
+function debS(){clearTimeout(stTimer);stTimer=setTimeout(()=>load(true),380)}
+
+function togSel(ref,checked){if(checked)sel.add(ref);else sel.delete(ref);updBatch()}
+function updBatch(){const b=document.getElementById('batchBtn'),c=document.getElementById('batchCnt');b.style.display=sel.size>0?'flex':'none';c.textContent=sel.size}
+
+async function batchApp(){
+  if(!sel.size)return;
+  const r=await Swal.fire({icon:'question',title:'อนุมัติ '+sel.size+' คำขอ?',text:'การดำเนินการนี้ไม่สามารถย้อนกลับได้',showCancelButton:true,confirmButtonText:'<i class="fas fa-check-double"></i> อนุมัติทั้งหมด',cancelButtonText:'ยกเลิก',confirmButtonColor:'#059669',cancelButtonColor:'#6b7280'});
+  if(!r.isConfirmed)return;
+  Swal.fire({title:'กำลังดำเนินการ...',allowOutsideClick:false,didOpen:()=>Swal.showLoading()});
+  let ok=0,fail=0;
+  for(const ref of sel){
+    try{const res=await fetch(`${API}/request-manage`,{method:'PATCH',headers:{'Content-Type':'application/json',...AH()},body:JSON.stringify({reference:ref,action:'approve'})});const d=await res.json();if(d.success)ok++;else fail++;}catch{fail++}
+  }
+  sel.clear();updBatch();
+  Swal.fire({icon:fail>0?'warning':'success',title:'เสร็จสิ้น: อนุมัติ '+ok+(fail>0?' ล้มเหลว '+fail:'')+' รายการ',timer:2500,showConfirmButton:false}).then(()=>load(true));
+}
+
+async function review(reference,action){
+  const isA=action==='approve';
+  const r=await Swal.fire({
+    title:isA?'<i class="fas fa-circle-check" style="color:#059669"></i> ยืนยันอนุมัติ':'<i class="fas fa-circle-xmark" style="color:#dc2626"></i> ยืนยันปฏิเสธ',
+    html:`<p style="font-size:.88rem;color:#6b7280;margin-bottom:12px">${isA?'คำขอจะถูกอนุมัติ และระบบจะปรับเวลาลงเวลาให้อัตโนมัติ (กรณีคำขอเกี่ยวกับเวลา)':'คำขอจะถูกปฏิเสธ'}</p>
+      <label style="display:block;text-align:left;font-size:.82rem;color:#6b7280;margin-bottom:4px">หมายเหตุ (ไม่บังคับ)</label>
+      <textarea id="ni" rows="2" placeholder="ระบุหมายเหตุ..." style="width:100%;padding:8px 10px;border:1px solid #e4e8ef;border-radius:8px;font-size:.88rem;font-family:Sarabun,sans-serif;resize:vertical;outline:none"></textarea>`,
+    showCancelButton:true,confirmButtonText:isA?'<i class="fas fa-check"></i> อนุมัติ':'<i class="fas fa-xmark"></i> ปฏิเสธ',
+    cancelButtonText:'ยกเลิก',confirmButtonColor:isA?'#059669':'#dc2626',cancelButtonColor:'#6b7280',
+    preConfirm:()=>document.getElementById('ni').value.trim()
+  });
+  if(!r.isConfirmed)return;
+  Swal.fire({title:'กำลังดำเนินการ...',allowOutsideClick:false,didOpen:()=>Swal.showLoading()});
+  try{
+    const res=await fetch(`${API}/request-manage`,{method:'PATCH',headers:{'Content-Type':'application/json',...AH()},body:JSON.stringify({reference,action,reviewer_note:r.value||null})});
+    const data=await res.json();
+    if(res.status===409){Swal.fire({icon:'warning',title:'ดำเนินการไปแล้ว',text:data.message,confirmButtonColor:'#6b7280'});load(false);return}
+    if(!data.success)throw new Error(data.message||'เกิดข้อผิดพลาด');
+    const card=document.getElementById('card-'+reference);
+    if(card){
+      const ns=isA?'approved':'rejected';
+      card.className='rc '+ns;
+      const pill=card.querySelector('.sp');if(pill){pill.className='sp '+(isA?'spa':'spr');pill.innerHTML=isA?'<i class="fas fa-circle-check" style="font-size:.65rem"></i> อนุมัติ':'<i class="fas fa-circle-xmark" style="font-size:.65rem"></i> ปฏิเสธ'}
+      const foot=card.querySelector('.rf');if(foot)foot.innerHTML=`<span class="dl"><i class="fas ${isA?'fa-circle-check':'fa-circle-xmark'}"></i> ดำเนินการแล้ว</span>`;
+      const cb=card.querySelector('input[type=checkbox]');if(cb)cb.remove();
+    }
+    await loadCounts();
+    Swal.fire({icon:'success',title:isA?'อนุมัติสำเร็จ':'ปฏิเสธสำเร็จ',html:`<code style="font-size:.82rem">${esc(reference)}</code>`,timer:2000,showConfirmButton:false});
+  }catch(err){Swal.fire({icon:'error',title:'เกิดข้อผิดพลาด',text:err.message,confirmButtonColor:'#dc2626'})}
+}
+
+document.addEventListener('DOMContentLoaded',()=>{initUser();load(true)});
+</script>
+</body>
+</html>

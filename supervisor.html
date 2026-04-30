@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="th-TH">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>รับรองการลงเวลา | ระบบบันทึกเวลาปฏิบัติงาน</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=K2D:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <style>
+    :root{--bg:#f0f2f5;--sur:#fff;--sur2:#f8f9fb;--bd:#e4e8ef;--tx:#1a1d23;--sub:#6b7280;--mt:#9ca3af;
+      --grn:#059669;--gbg:#ecfdf5;--gbd:#6ee7b7;--red:#dc2626;--rbg:#fef2f2;--rbd:#fca5a5;
+      --ora:#d97706;--obg:#fffbeb;--obd:#fcd34d;--blu:#2563eb;--bbg:#eff6ff;--bbd:#93c5fd;
+      --pri:#1d4ed8;--prih:#1e40af;--nh:60px;--r:12px;
+      --sh:0 1px 3px rgba(0,0,0,.08),0 4px 16px rgba(0,0,0,.04);
+      --shm:0 4px 12px rgba(0,0,0,.10),0 12px 32px rgba(0,0,0,.06)}
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;padding-top:var(--nh)}
+    nav{position:fixed;top:0;left:0;right:0;z-index:200;height:var(--nh);background:#fff;border-bottom:1px solid var(--bd);
+      display:flex;align-items:center;padding:0 1.25rem;gap:10px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+    .nb{display:flex;align-items:center;gap:6px;text-decoration:none;color:var(--sub);font-size:.85rem;padding:6px 10px;border-radius:8px;transition:background .15s}
+    .nb:hover{background:var(--bg);color:var(--tx)}
+    .nt{font-family:'K2D',sans-serif;font-size:1rem;font-weight:700;flex:1}
+    .nr{font-size:.72rem;padding:3px 10px;border-radius:20px;font-weight:600;background:var(--bbg);color:var(--blu);border:1px solid var(--bbd)}
+    .nav-av{width:34px;height:34px;border-radius:50%;object-fit:cover;border:2px solid var(--bd)}
+    .wrap{max-width:900px;margin:0 auto;padding:1.25rem 1rem 4rem}
+    /* Stats */
+    .stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem;margin-bottom:1.25rem}
+    .sc{background:var(--sur);border:1px solid var(--bd);border-radius:var(--r);padding:.9rem 1rem;display:flex;align-items:center;gap:10px;cursor:pointer;transition:box-shadow .15s,border-color .15s}
+    .sc:hover{box-shadow:var(--sh)}.sc.active{border-color:var(--pri);box-shadow:0 0 0 3px rgba(29,78,216,.1)}
+    .si{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0}
+    .sip{background:var(--obg);color:var(--ora)}.siap{background:var(--gbg);color:var(--grn)}.sir{background:var(--rbg);color:var(--red)}
+    .sv{font-family:'K2D',sans-serif;font-size:1.3rem;font-weight:800;line-height:1}.sl{font-size:.72rem;color:var(--sub);margin-top:2px}
+    /* Toolbar */
+    .tb{background:var(--sur);border:1px solid var(--bd);border-radius:var(--r);padding:.75rem 1rem;display:flex;gap:.6rem;flex-wrap:wrap;align-items:center;margin-bottom:1rem}
+    .sw{flex:1;min-width:160px;position:relative;display:flex;align-items:center}
+    .sw i{position:absolute;left:10px;color:var(--mt);font-size:.82rem}
+    .sw input{width:100%;padding:.5rem .75rem .5rem 2rem;border:1px solid var(--bd);border-radius:8px;font-size:.85rem;font-family:'Sarabun',sans-serif;background:var(--sur2);outline:none;transition:border-color .15s}
+    .sw input:focus{border-color:var(--pri);background:#fff}
+    .tbb{display:flex;align-items:center;gap:5px;padding:.48rem .85rem;border-radius:8px;font-size:.82rem;font-weight:600;
+      font-family:'Sarabun',sans-serif;cursor:pointer;border:1px solid var(--bd);background:var(--sur2);color:var(--sub);transition:all .15s;white-space:nowrap}
+    .tbb:hover{background:var(--bg);color:var(--tx)}.tbb.pri{background:var(--pri);color:#fff;border-color:var(--pri)}.tbb.pri:hover{background:var(--prih)}
+    .cbadge{font-size:.68rem;padding:1px 6px;border-radius:20px;background:var(--ora);color:#fff;font-weight:700;line-height:1.4}
+    /* Date range */
+    .dr{display:flex;align-items:center;gap:6px;font-size:.82rem;color:var(--sub)}
+    .dr input{padding:.4rem .65rem;border:1px solid var(--bd);border-radius:8px;font-size:.82rem;font-family:'Sarabun',sans-serif;background:var(--sur2);outline:none;color:var(--tx)}
+    .dr input:focus{border-color:var(--pri)}
+    /* Cards */
+    .rl{display:flex;flex-direction:column;gap:.75rem}
+    .rc{background:var(--sur);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden;box-shadow:var(--sh);transition:box-shadow .15s;animation:fu .22s ease both}
+    .rc:hover{box-shadow:var(--shm)}
+    .rc.pending{border-left:4px solid var(--ora)}.rc.approved{border-left:4px solid var(--grn)}.rc.rejected{border-left:4px solid var(--red)}
+    /* Card header */
+    .rh{display:flex;align-items:flex-start;gap:12px;padding:1rem 1.1rem .75rem}
+    .rav{width:42px;height:42px;border-radius:50%;object-fit:cover;border:2px solid var(--bd);flex-shrink:0}
+    .rm{flex:1;min-width:0}.rn{font-weight:600;font-size:.95rem}.rd{font-size:.75rem;color:var(--sub);margin-top:1px}
+    .rr{flex-shrink:0;text-align:right}
+    .sp{display:inline-flex;align-items:center;gap:4px;font-size:.72rem;padding:3px 10px;border-radius:20px;font-weight:700}
+    .spp{background:var(--obg);color:var(--ora);border:1px solid var(--obd)}
+    .spa{background:var(--gbg);color:var(--grn);border:1px solid var(--gbd)}
+    .spr{background:var(--rbg);color:var(--red);border:1px solid var(--rbd)}
+    .rref{font-size:.67rem;color:var(--mt);margin-top:4px;font-family:monospace}
+    .rag{font-size:.7rem;color:var(--mt);margin-top:2px}
+    /* Card body */
+    .rbody{padding:.65rem 1.1rem;border-top:1px solid var(--bd);background:var(--sur2)}
+    .rrow{display:flex;gap:1.5rem;flex-wrap:wrap;margin-bottom:.5rem}
+    .rfl label{font-size:.68rem;color:var(--mt);text-transform:uppercase;letter-spacing:.04em;display:block}
+    .rfl span{font-size:.85rem;font-weight:500}
+    /* Time chips */
+    .tlc{display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.5rem}
+    .tlch{display:inline-flex;align-items:center;gap:4px;font-size:.78rem;padding:4px 10px;border-radius:20px;border:1px solid var(--bd);background:#fff;font-weight:600}
+    .tlch.in{border-color:var(--gbd);color:var(--grn);background:var(--gbg)}
+    .tlch.oa{border-color:var(--obd);color:var(--ora);background:var(--obg)}
+    .tlch.om{border-color:var(--bbd);color:var(--blu);background:var(--bbg)}
+    /* Distance badge */
+    .dist{display:inline-flex;align-items:center;gap:4px;font-size:.72rem;padding:2px 8px;border-radius:20px;border:1px solid var(--bd);background:#f8f9fb;color:var(--sub)}
+    .dist.ok{border-color:var(--gbd);color:var(--grn);background:var(--gbg)}
+    .dist.out{border-color:var(--rbd);color:var(--red);background:var(--rbg)}
+    /* Request info */
+    .req-info{background:var(--obg);border:1px solid var(--obd);border-radius:8px;padding:.55rem .8rem;margin-top:.5rem;font-size:.8rem;color:#92400e}
+    /* Reviewer note */
+    .rnote{margin-top:.5rem;font-size:.78rem;padding:.4rem .7rem;border-radius:8px;border-left:3px solid var(--bd);background:#fff;color:var(--sub)}
+    .rnote.approved{border-color:var(--grn)}.rnote.rejected{border-color:var(--red)}
+    /* Card footer */
+    .rf{display:flex;justify-content:flex-end;gap:.5rem;padding:.6rem 1.1rem;border-top:1px solid var(--bd);background:#fff}
+    .act{display:inline-flex;align-items:center;gap:5px;padding:.42rem .9rem;border-radius:8px;font-size:.82rem;font-weight:600;
+      font-family:'Sarabun',sans-serif;cursor:pointer;border:1px solid transparent;transition:all .15s}
+    .act.app{background:var(--gbg);color:var(--grn);border:1px solid var(--gbd)}.act.app:hover{background:var(--grn);color:#fff}
+    .act.rej{background:var(--rbg);color:var(--red);border:1px solid var(--rbd)}.act.rej:hover{background:var(--red);color:#fff}
+    .dl{font-size:.75rem;color:var(--mt);display:flex;align-items:center;gap:4px}
+    /* Pagination */
+    .pg{display:flex;justify-content:center;align-items:center;gap:.5rem;margin-top:1.25rem;flex-wrap:wrap}
+    .pb{padding:.42rem .85rem;border-radius:8px;border:1px solid var(--bd);background:var(--sur);font-size:.82rem;cursor:pointer;font-family:'Sarabun',sans-serif;transition:all .15s}
+    .pb:hover:not(:disabled){background:var(--pri);color:#fff;border-color:var(--pri)}.pb:disabled{opacity:.4;cursor:not-allowed}.pb.cur{background:var(--pri);color:#fff;border-color:var(--pri)}
+    .pi{font-size:.78rem;color:var(--sub);padding:0 .5rem}
+    .empty{text-align:center;padding:3rem 1rem;color:var(--mt);font-size:.9rem}.empty i{font-size:2.8rem;display:block;margin-bottom:.75rem;opacity:.35}
+    .loading{text-align:center;padding:2rem;color:var(--sub)}
+    .swal2-popup{border-radius:16px!important;font-family:'Sarabun',sans-serif!important}.swal2-confirm,.swal2-cancel{border-radius:8px!important}
+    @media(max-width:640px){.stats-row{grid-template-columns:repeat(3,1fr)}.nr{display:none}.rrow{gap:.75rem}.dr{flex-wrap:wrap}}
+    .spin{animation:sp .7s linear infinite}
+    @keyframes sp{to{transform:rotate(360deg)}}
+    @keyframes fu{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+  </style>
+</head>
+<body>
+<nav>
+  <a href="attendance.html" class="nb"><i class="fas fa-arrow-left"></i> กลับ</a>
+  <div class="nt"><i class="fas fa-shield-halved" style="color:var(--pri);margin-right:6px"></i>รับรองการลงเวลา</div>
+  <span class="nr" id="navRole">—</span>
+  <img class="nav-av" id="navAv" src="https://ui-avatars.com/api/?background=1d4ed8&color=fff&size=68&bold=true&name=S" alt="">
+</nav>
+
+<div class="wrap">
+  <!-- Stats -->
+  <div class="stats-row">
+    <div class="sc active" id="sc-pending"  onclick="filterSt('pending')">
+      <div class="si sip"><i class="fas fa-hourglass-half"></i></div>
+      <div><div class="sv" id="cnt-pending">—</div><div class="sl">รอรับรอง</div></div>
+    </div>
+    <div class="sc" id="sc-approved" onclick="filterSt('approved')">
+      <div class="si siap"><i class="fas fa-shield-check"></i></div>
+      <div><div class="sv" id="cnt-approved">—</div><div class="sl">รับรองแล้ว</div></div>
+    </div>
+    <div class="sc" id="sc-rejected" onclick="filterSt('rejected')">
+      <div class="si sir"><i class="fas fa-shield-xmark"></i></div>
+      <div><div class="sv" id="cnt-rejected">—</div><div class="sl">ไม่รับรอง</div></div>
+    </div>
+  </div>
+
+  <!-- Toolbar -->
+  <div class="tb">
+    <div class="sw">
+      <i class="fas fa-magnifying-glass"></i>
+      <input type="text" id="si" placeholder="ค้นหาชื่อ..." oninput="debS()">
+    </div>
+    <div class="dr">
+      <i class="fas fa-calendar" style="font-size:.8rem"></i>
+      <input type="date" id="df" onchange="load(true)" title="ตั้งแต่วันที่">
+      <span>—</span>
+      <input type="date" id="dt" onchange="load(true)" title="ถึงวันที่">
+    </div>
+    <button class="tbb" onclick="load(true)"><i class="fas fa-rotate-right"></i> รีเฟรช</button>
+    <button class="tbb pri" id="batchBtn" style="display:none" onclick="batchApprove()">
+      <i class="fas fa-shield-check"></i> รับรองที่เลือก <span class="cbadge" id="batchCnt">0</span>
+    </button>
+  </div>
+
+  <div class="rl" id="rl"><div class="loading"><i class="fas fa-spinner spin"></i> กำลังโหลด...</div></div>
+  <div class="pg" id="pg"></div>
+</div>
+
+<script>
+'use strict';
+const API  = '/api/attendance';
+const AH   = () => { const t = localStorage.getItem('auth_token'); return t ? { 'Authorization': 'Bearer ' + t } : {}; };
+let curSt  = 'pending', curPg = 0, LIMIT = 20, total = 0, stTimer = null, sel = new Set();
+
+function gUD() { try { return JSON.parse(localStorage.getItem('user_data') || 'null'); } catch { return null; } }
+function esc(s) { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function fmtD(iso) { if (!iso) return '—'; try { return new Date(iso).toLocaleDateString('th-TH', { year:'numeric', month:'long', day:'numeric' }); } catch { return iso; } }
+function fmtS(s)   { if (!s)   return '—'; try { return new Date(s+'T00:00:00').toLocaleDateString('th-TH', { day:'numeric', month:'short', year:'numeric' }); } catch { return s; } }
+function ago(iso)  { if (!iso) return ''; const d = (Date.now() - new Date(iso)) / 1000; if (d < 60) return 'เมื่อกี้'; if (d < 3600) return Math.floor(d/60)+' นาทีที่แล้ว'; if (d < 86400) return Math.floor(d/3600)+' ชม.ที่แล้ว'; return Math.floor(d/86400)+' วันที่แล้ว'; }
+function distFmt(m, inRange) {
+  if (m == null) return '';
+  const s = m >= 1000 ? (m/1000).toFixed(1)+' กม.' : m+' ม.';
+  return `<span class="dist ${inRange ? 'ok' : 'out'}"><i class="fas ${inRange ? 'fa-circle-check' : 'fa-triangle-exclamation'}" style="font-size:.6rem"></i> ${s}</span>`;
+}
+
+function initUser() {
+  const ud = gUD();
+  if (!ud?.uuid) { location.href = 'login.html'; return; }
+  const name = ud.name || ((ud.prefix||'')+(ud.firstName||'')+' '+(ud.lastName||'')).trim() || '—';
+  const role = ud.role || 'user';
+  document.getElementById('navRole').textContent = { admin:'ผู้ดูแลระบบ', supervisor:'ผู้บังคับบัญชา', approver:'ผู้รับรอง' }[role] || role;
+  const pic = ud.profileImage || ud.picture || 'https://ui-avatars.com/api/?background=1d4ed8&color=fff&size=68&bold=true&name=' + encodeURIComponent(name.charAt(0));
+  document.getElementById('navAv').src = pic;
+}
+
+async function load(reset = false) {
+  if (reset) { curPg = 0; sel.clear(); updBatch(); }
+  const rl = document.getElementById('rl');
+  rl.innerHTML = '<div class="loading"><i class="fas fa-spinner spin"></i> กำลังโหลด...</div>';
+  const q  = document.getElementById('si').value.trim();
+  const df = document.getElementById('df').value;
+  const dt = document.getElementById('dt').value;
+  const p  = new URLSearchParams({ status: curSt, limit: LIMIT, offset: curPg * LIMIT, ...(q?{search:q}:{}), ...(df?{date_from:df}:{}), ...(dt?{date_to:dt}:{}) });
+  try {
+    const res  = await fetch(`${API}/supervisor-pending?${p}`, { headers: AH() });
+    if (res.status === 401) { location.href = 'login.html'; return; }
+    const data = await res.json();
+    if (!data.success) throw new Error(data.message);
+    total = data.total;
+    renderList(data.data);
+    renderPg();
+    loadCounts();
+  } catch (err) {
+    rl.innerHTML = `<div class="empty"><i class="fas fa-triangle-exclamation"></i>${esc(err.message)}</div>`;
+  }
+}
+
+async function loadCounts() {
+  const [p, a, r] = await Promise.all(['pending','approved','rejected'].map(s =>
+    fetch(`${API}/supervisor-pending?status=${s}&limit=1`, { headers: AH() })
+      .then(r => r.json()).then(d => d.total || 0).catch(() => 0)
+  ));
+  document.getElementById('cnt-pending').textContent  = p;
+  document.getElementById('cnt-approved').textContent = a;
+  document.getElementById('cnt-rejected').textContent = r;
+}
+
+function avSrc(it) {
+  return it.profileImage || it.picture ||
+    'https://ui-avatars.com/api/?background=1d4ed8&color=fff&size=84&bold=true&name=' + encodeURIComponent((it.name||'U').charAt(0));
+}
+
+function renderList(items) {
+  const rl = document.getElementById('rl');
+  if (!items.length) { rl.innerHTML = '<div class="empty"><i class="fas fa-shield-halved"></i>ไม่มีรายการในหมวดนี้</div>'; return; }
+
+  const SPCL = { pending:'spp', approved:'spa', rejected:'spr' };
+  const SPLB = { pending:'รอรับรอง', approved:'รับรองแล้ว', rejected:'ไม่รับรอง' };
+  const SPIC = { pending:'fa-hourglass-half', approved:'fa-shield-check', rejected:'fa-shield-xmark' };
+
+  rl.innerHTML = items.map((it, i) => {
+    const st     = it.supervisor_status || 'pending';
+    const ciTime = it.checkin_time  || '—';
+    const coTime = it.checkout_time || '—';
+    const coType = it.checkout_type === 'auto' ? 'oa' : 'om';
+    const coLbl  = it.checkout_type === 'auto' ? 'Auto ⚙️' : 'Manual ✋';
+    const dist   = distFmt(it.checkin_distance_m, it.checkin_in_range);
+    const reqInfo = it.request_type
+      ? `<div class="req-info"><i class="fas fa-file-pen" style="font-size:.75rem;margin-right:4px"></i>
+          <b>คำขอ:</b> ${esc(it.request_type)}
+          ${it.request_reason ? `<span style="color:#a16207;font-size:.78rem"> — ${esc(it.request_reason)}</span>` : ''}
+        </div>` : '';
+
+    return `
+    <div class="rc ${st}" style="animation-delay:${i*.04}s" id="card-${it.id}">
+      <div class="rh">
+        ${st === 'pending' ? `<input type="checkbox" style="margin-top:11px;flex-shrink:0;width:15px;height:15px;cursor:pointer;accent-color:var(--pri)"
+          ${sel.has(it.id) ? 'checked' : ''} onchange="togSel(${it.id},'${esc(it.uuid)}','${esc(it.date)}',this.checked)">` : ''}
+        <img class="rav" src="${esc(avSrc(it))}" alt="" onerror="this.src='https://ui-avatars.com/api/?background=1d4ed8&color=fff&size=84&bold=true&name=U'">
+        <div class="rm">
+          <div class="rn">${esc(it.name || (it.firstName ? (it.prefix||'')+(it.firstName||'')+' '+(it.lastName||'') : '—'))}</div>
+          <div class="rd">${esc(it.position||'')}${it.affiliation?' · '+esc(it.affiliation):''}</div>
+        </div>
+        <div class="rr">
+          <span class="sp ${SPCL[st]}">
+            <i class="fas ${SPIC[st]}" style="font-size:.65rem"></i> ${SPLB[st]}
+          </span>
+          <div class="rref">${fmtS(it.date)}</div>
+          <div class="rag">${ago(it.checkin_at||it.created_at)}</div>
+        </div>
+      </div>
+      <div class="rbody">
+        <!-- เวลาลงเวลา -->
+        <div class="tlc">
+          ${it.checkin_time  ? `<span class="tlch in"><i class="fas fa-right-to-bracket" style="font-size:.65rem"></i> เข้า ${esc(ciTime)}</span>` : `<span class="tlch" style="color:var(--mt)"><i class="fas fa-clock" style="font-size:.6rem"></i> ยังไม่เช็คอิน</span>`}
+          ${it.checkout_time ? `<span class="tlch ${coType}"><i class="fas fa-right-from-bracket" style="font-size:.65rem"></i> ออก ${esc(coTime)} ${coLbl}</span>` : ''}
+          ${dist}
+        </div>
+        <!-- ข้อมูลอื่น -->
+        <div class="rrow" style="margin-top:.6rem">
+          ${it.checkin_work_type ? `<div class="rfl"><label>ประเภทงาน</label><span>${esc(it.checkin_work_type)}</span></div>` : ''}
+          ${it.dep_code ? `<div class="rfl"><label>หน่วยงาน</label><span>${esc(it.dep_code)}</span></div>` : ''}
+        </div>
+        ${it.checkin_note ? `<div style="font-size:.8rem;color:var(--sub);margin-top:.35rem"><i class="fas fa-note-sticky" style="font-size:.65rem;margin-right:3px"></i>${esc(it.checkin_note)}</div>` : ''}
+        ${reqInfo}
+        ${it.reviewed_at ? `<div class="rnote ${st}">
+          <i class="fas ${st === 'approved' ? 'fa-shield-check' : 'fa-shield-xmark'}" style="margin-right:4px"></i>
+          ${st === 'approved' ? 'รับรองเมื่อ' : 'ไม่รับรองเมื่อ'} ${fmtD(it.reviewed_at)}
+          ${it.supervisor_note ? ` — <em>${esc(it.supervisor_note)}</em>` : ''}
+        </div>` : ''}
+      </div>
+      <div class="rf">
+        ${st === 'pending'
+          ? `<button class="act rej" onclick="review(${it.id},'${esc(it.uuid)}','${esc(it.date)}','reject')">
+               <i class="fas fa-shield-xmark"></i> ไม่รับรอง
+             </button>
+             <button class="act app" onclick="review(${it.id},'${esc(it.uuid)}','${esc(it.date)}','approve')">
+               <i class="fas fa-shield-check"></i> รับรอง
+             </button>`
+          : `<span class="dl"><i class="fas ${st==='approved'?'fa-shield-check':'fa-shield-xmark'}"></i> ดำเนินการแล้ว ${it.reviewed_at?fmtD(it.reviewed_at):''}</span>`
+        }
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderPg() {
+  const pages = Math.ceil(total / LIMIT), pg = document.getElementById('pg');
+  if (pages <= 1) { pg.innerHTML = ''; return; }
+  let h = `<button class="pb" onclick="goP(${curPg-1})" ${curPg===0?'disabled':''}><i class="fas fa-chevron-left"></i></button>`;
+  for (let i = 0; i < pages; i++) {
+    if (pages > 7 && Math.abs(i-curPg) > 2 && i !== 0 && i !== pages-1) { if (i===1||i===pages-2) h+='<span class="pi">…</span>'; continue; }
+    h += `<button class="pb${i===curPg?' cur':''}" onclick="goP(${i})">${i+1}</button>`;
+  }
+  h += `<button class="pb" onclick="goP(${curPg+1})" ${curPg>=pages-1?'disabled':''}><i class="fas fa-chevron-right"></i></button>`;
+  h += `<span class="pi">${total} รายการ</span>`;
+  pg.innerHTML = h;
+}
+function goP(n) { curPg = n; load(false); scrollTo({ top:0, behavior:'smooth' }); }
+function filterSt(s) { curSt = s; document.querySelectorAll('.sc').forEach(c => c.classList.remove('active')); document.getElementById('sc-'+s)?.classList.add('active'); load(true); }
+function debS() { clearTimeout(stTimer); stTimer = setTimeout(() => load(true), 380); }
+
+// ── Batch ────────────────────────────────────────────────────────────
+let selData = {};
+function togSel(id, uuid, date, checked) {
+  if (checked) { sel.add(id); selData[id] = { uuid, date }; }
+  else { sel.delete(id); delete selData[id]; }
+  updBatch();
+}
+function updBatch() {
+  const b = document.getElementById('batchBtn'), c = document.getElementById('batchCnt');
+  b.style.display = sel.size > 0 ? 'flex' : 'none';
+  c.textContent   = sel.size;
+}
+
+async function batchApprove() {
+  if (!sel.size) return;
+  const r = await Swal.fire({
+    icon: 'question', title: 'รับรอง ' + sel.size + ' รายการ?',
+    text: 'การดำเนินการนี้ไม่สามารถย้อนกลับได้',
+    showCancelButton: true,
+    confirmButtonText: '<i class="fas fa-shield-check"></i> รับรองทั้งหมด',
+    cancelButtonText:  'ยกเลิก',
+    confirmButtonColor: '#059669', cancelButtonColor: '#6b7280',
+  });
+  if (!r.isConfirmed) return;
+  Swal.fire({ title: 'กำลังดำเนินการ...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+  let ok = 0, fail = 0;
+  for (const id of sel) {
+    const { uuid, date } = selData[id] || {};
+    if (!uuid || !date) { fail++; continue; }
+    try {
+      const res  = await fetch(`${API}/supervisor-review`, {
+        method: 'PATCH', headers: { 'Content-Type': 'application/json', ...AH() },
+        body: JSON.stringify({ uuid, date, action: 'approve' }),
+      });
+      const d = await res.json();
+      if (d.success) ok++; else fail++;
+    } catch { fail++; }
+  }
+  sel.clear(); selData = {}; updBatch();
+  Swal.fire({
+    icon: fail > 0 ? 'warning' : 'success',
+    title: 'เสร็จสิ้น: รับรอง ' + ok + (fail > 0 ? ' ล้มเหลว ' + fail : '') + ' รายการ',
+    timer: 2500, showConfirmButton: false,
+  }).then(() => load(true));
+}
+
+// ── รับรอง / ไม่รับรอง รายการเดียว ─────────────────────────────────
+async function review(id, uuid, date, action) {
+  const isA = action === 'approve';
+  const r = await Swal.fire({
+    title: isA
+      ? '<i class="fas fa-shield-check" style="color:#059669"></i> ยืนยันรับรองการลงเวลา'
+      : '<i class="fas fa-shield-xmark" style="color:#dc2626"></i> ยืนยันไม่รับรอง',
+    html: `<label style="display:block;text-align:left;font-size:.82rem;color:#6b7280;margin-bottom:4px">หมายเหตุ (ไม่บังคับ)</label>
+      <textarea id="ni" rows="2" placeholder="ระบุหมายเหตุ..."
+        style="width:100%;padding:8px 10px;border:1px solid #e4e8ef;border-radius:8px;font-size:.88rem;font-family:Sarabun,sans-serif;resize:vertical;outline:none"></textarea>`,
+    showCancelButton: true,
+    confirmButtonText: isA ? '<i class="fas fa-shield-check"></i> รับรอง' : '<i class="fas fa-shield-xmark"></i> ไม่รับรอง',
+    cancelButtonText:  'ยกเลิก',
+    confirmButtonColor: isA ? '#059669' : '#dc2626',
+    cancelButtonColor:  '#6b7280',
+    preConfirm: () => document.getElementById('ni').value.trim(),
+  });
+  if (!r.isConfirmed) return;
+
+  Swal.fire({ title: 'กำลังบันทึก...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+  try {
+    const res  = await fetch(`${API}/supervisor-review`, {
+      method: 'PATCH', headers: { 'Content-Type': 'application/json', ...AH() },
+      body: JSON.stringify({ uuid, date, action, supervisor_note: r.value || null }),
+    });
+    const data = await res.json();
+    if (res.status === 409) { Swal.fire({ icon: 'warning', title: 'ดำเนินการไปแล้ว', text: data.message }); load(false); return; }
+    if (!data.success) throw new Error(data.message || 'เกิดข้อผิดพลาด');
+
+    // อัปเดต card แบบ in-place
+    const card = document.getElementById('card-' + id);
+    if (card) {
+      const ns = isA ? 'approved' : 'rejected';
+      card.className = 'rc ' + ns;
+      const pill = card.querySelector('.sp');
+      if (pill) {
+        const SPCL = { approved:'spa', rejected:'spr' };
+        const SPLB = { approved:'รับรองแล้ว', rejected:'ไม่รับรอง' };
+        const SPIC = { approved:'fa-shield-check', rejected:'fa-shield-xmark' };
+        pill.className = 'sp ' + SPCL[ns];
+        pill.innerHTML = `<i class="fas ${SPIC[ns]}" style="font-size:.65rem"></i> ${SPLB[ns]}`;
+      }
+      const foot = card.querySelector('.rf');
+      if (foot) foot.innerHTML = `<span class="dl"><i class="fas ${isA?'fa-shield-check':'fa-shield-xmark'}"></i> ดำเนินการแล้ว</span>`;
+      const cb = card.querySelector('input[type=checkbox]');
+      if (cb) cb.remove();
+    }
+    await loadCounts();
+    Swal.fire({ icon: 'success', title: isA ? 'รับรองสำเร็จ' : 'บันทึกสำเร็จ', timer: 1800, showConfirmButton: false });
+  } catch (err) {
+    Swal.fire({ icon: 'error', title: 'เกิดข้อผิดพลาด', text: err.message, confirmButtonColor: '#dc2626' });
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => { initUser(); load(true); });
+</script>
+</body>
+</html>
