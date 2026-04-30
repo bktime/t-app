@@ -2,10 +2,6 @@
 export async function onRequest(context) {
   const { request, env } = context;
 
-  console.log("DB:", env.DB);
-
-  return new Response("DB:", env.DB);
-
   const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'GET, OPTIONS',
