@@ -14,7 +14,7 @@ export async function onRequest(context) {
   const { request, env } = context;
 
   // ─── Resolve credentials ────────────────────────────────────────────────────
-  const BOT_TOKEN = env.TELEGRAM_BOT_TOKEN || '7781010431:AAFOVbpNriMd-CzLDswEjeTLpGkSKsqoE10';
+  const BOT_TOKEN = env.TELEGRAM_BOT_TOKEN ;
   const BOT_ID    = env.TELEGRAM_BOT_ID || (BOT_TOKEN ? BOT_TOKEN.split(':')[0] : null);
 
   if (!BOT_TOKEN) {
