@@ -4,7 +4,7 @@ export async function onRequest(context) {
 
   console.log("DB:", env.DB);
 
-  return new Response("ok");
+  return new Response("DB:", env.DB);
 
   const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
