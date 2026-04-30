@@ -47,8 +47,8 @@ async function onRequestPost({ request, env }) {
     }
 
     // 🔐 อ่านค่าจาก environment variables อย่าลืมลบค่าออก !!!
-    const CHANNEL_ID = env.LINE_CHANNEL_ID || '2000472605';
-    const CHANNEL_SECRET = env.LINE_CHANNEL_SECRET || '596981a8e2f665fba96d1093b788d131'; 
+    const CHANNEL_ID = env.LINE_CHANNEL_ID ;
+    const CHANNEL_SECRET = env.LINE_CHANNEL_SECRET ; 
 
     console.log('[Worker] 3. CHANNEL_ID from env:', CHANNEL_ID);
     console.log('[Worker] 4. CHANNEL_SECRET from env:', CHANNEL_SECRET ? `[SET] length=${CHANNEL_SECRET.length}` : 'MISSING!');
