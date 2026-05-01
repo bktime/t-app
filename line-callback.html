@@ -399,6 +399,15 @@ function getSourcePage() {
   return 'login.html';
 }
 
+// line= param ที่แต่ละหน้าคาดหวัง:
+//   profile.html  → 'link'     (initLineCallback ตรวจ line === 'link')
+//   login/register → 'callback' (detectLineCallback ตรวจ line === 'callback')
+function getLineParam() {
+  if (!stateBack) return 'callback';
+  const prefix = stateBack.split('|')[0];
+  return prefix === 'link_line' ? 'link' : 'callback';
+}
+
 // ==================== Token Exchange (via backend) ====================
 async function exchangeToken(authCode) {
   console.log('[LINE] Exchanging token via:', API_ENDPOINT);
@@ -497,7 +506,7 @@ async function handleCallback() {
     // Redirect mode (กรณีไม่ได้เปิดเป็น popup)
     const src = getSourcePage();
     const qs  = new URLSearchParams({
-      line:        'link',
+      line:        getLineParam(),
       userId:      user.userId,
       displayName: user.displayName,
       email:       user.email        || '',
