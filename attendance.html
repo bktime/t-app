@@ -1155,16 +1155,16 @@ async function toggleButtonsByTime() {
   const datecheck    = localStorage.getItem('datecheck');
   const datecheckout = localStorage.getItem('datecheckout');
 
-  // ก่อน 8:00 หรือ ก่อน 16:30
-  if (h < 8 || (h === 8 && m === 0)) {
-    // ก่อน 08:00 — แสดงปุ่ม checkin ถ้ายังไม่ได้เช็คอิน
+  // ก่อน 8:30 หรือ ก่อน 16:30
+  if (h < 8 || (h === 8 && m === 30)) {
+    // ก่อน 08:30 — แสดงปุ่ม checkin ถ้ายังไม่ได้เช็คอิน
     startBtn.style.display = todayStr === datecheck ? 'none' : 'flex';
     statusBtn.style.display = todayStr === datecheck ? 'flex' : 'none';
     endBtn.style.display    = 'none';
     requestBtn.style.display = 'none';
 
   } else if (h < 16 || (h === 16 && m < 30)) {
-    // ช่วงทำงาน 08:00–16:29
+    // ช่วงทำงาน 08:30–16:29
     if (todayStr === datecheck) {
       // เช็คอินแล้ว — แสดง checkin(disabled) + checkout แถวเดียวกัน
       startBtn.style.display   = 'flex';
@@ -1533,54 +1533,178 @@ async function checktoday() {
   const ud   = getUserData();
   const uuid = ud?.uuid || localStorage.getItem('uuid');
   const date = new Date().toISOString().slice(0, 10);
+
   try {
     const res  = await fetch(`${API_BASE}/today?uuid=${encodeURIComponent(uuid)}&date=${date}`, { headers: AUTH_HEADER() });
     const data = await res.json();
     Swal.close();
+
     if (data.success && (data.data.has_checkin || data.data.has_checkout || data.data.request)) {
       const ci  = data.data.checkin;
       const co  = data.data.checkout;
       const req = data.data.request;
       const sup = data.data.supervisor;
-      const coLabel = co ? (co.checkout_type === 'auto' ? `${co.time_str} (Auto ⚙️)` : `${co.time_str} (Manual ✋)`) : '—';
+
+      // --- checkout label ---
+      const coTypeIcon  = co?.checkout_type === 'auto' ? '<i class="fa-solid fa-gear fa-tag-inline"></i>Auto' : '<i class="fa-solid fa-hand fa-tag-inline"></i>Manual';
+      const coLabel     = co ? `${co.time_str} <span class="co-type-tag">${coTypeIcon}</span>` : '—';
+
+      // --- distance row ---
+      const distRow = ci?.distance_m != null ? (() => {
+        const distText = ci.distance_m >= 1000
+          ? (ci.distance_m / 1000).toFixed(2) + ' กม.'
+          : ci.distance_m + ' ม.';
+        const rangeIcon = ci.is_in_range
+          ? '<i class="fa-solid fa-circle-check" style="color:#22c55e"></i>'
+          : '<i class="fa-solid fa-triangle-exclamation" style="color:#f59e0b"></i>';
+        const rangeSub = ci.is_in_range
+          ? '<p class="att-sub">อยู่ในพื้นที่กำหนด</p>'
+          : '<p class="att-sub" style="color:#f59e0b">อยู่นอกพื้นที่กำหนด</p>';
+        return `
+          <div class="att-row">
+            <div class="att-icon icon-dist"><i class="fa-solid fa-location-dot"></i></div>
+            <div style="flex:1">
+              <p class="att-label">ระยะห่างจากสถานที่</p>
+              <p class="att-value">${distText} <span style="font-size:13px;margin-left:4px">${rangeIcon}</span></p>
+              ${rangeSub}
+            </div>
+          </div>`;
+      })() : '';
+
+      // --- supervisor row ---
       const supCfg = {
-        pending:  { color:'#fb8c00', icon:'fa-hourglass-half', label:'รอการรับรองจาก Supervisor' },
-        approved: { color:'#2e7d32', icon:'fa-shield-halved',  label:'Supervisor รับรองแล้ว ✓' },
-        rejected: { color:'#c62828', icon:'fa-circle-xmark',   label:'Supervisor ไม่รับรอง'    },
-        none:     { color:'#aaa',    icon:'fa-minus-circle',    label:'ยังไม่มีคำขอ'             },
+        pending:  { cls: 'badge-pending',  icon: 'fa-hourglass-half',  label: 'รอการรับรอง' },
+        approved: { cls: 'badge-approved', icon: 'fa-shield-halved',   label: 'รับรองแล้ว'  },
+        rejected: { cls: 'badge-rejected', icon: 'fa-circle-xmark',    label: 'ไม่รับรอง'   },
+        none:     { cls: 'badge-none',     icon: 'fa-minus-circle',    label: 'ยังไม่มีคำขอ' },
       };
       const sc = supCfg[sup?.status || 'none'];
-      const supRow = sup && sup.status !== 'none' ? `
-        <tr><td style="color:#666;font-size:0.82rem;padding:5px 8px 5px 0;white-space:nowrap;vertical-align:top">Supervisor</td>
-        <td style="padding:5px 0">
-          <span style="display:inline-flex;align-items:center;gap:4px;font-size:0.8rem;padding:2px 9px;border-radius:14px;background:${sc.color}15;color:${sc.color};font-weight:600">
-            <i class="fa-solid ${sc.icon}" style="font-size:.65rem"></i> ${sc.label}
-          </span>
-          ${sup.supervisor_name ? `<div style="font-size:0.72rem;color:#999;margin-top:2px">${esc(sup.supervisor_name)}</div>` : ''}
-          ${sup.supervisor_note ? `<div style="font-size:0.72rem;color:#888;font-style:italic;margin-top:2px">"${esc(sup.supervisor_note)}"</div>` : ''}
-        </td></tr>` : '';
+      const supRow = sup && sup.status && sup.status !== 'none' ? `
+        <div class="att-row">
+          <div class="att-icon icon-sup"><i class="fa-solid fa-user-shield"></i></div>
+          <div style="flex:1">
+            <p class="att-label">Supervisor</p>
+            <div style="margin-top:3px">
+              <span class="badge ${sc.cls}">
+                <i class="fa-solid ${sc.icon} fa-tag-inline"></i>${sc.label}
+              </span>
+            </div>
+            ${sup.supervisor_name ? `<p class="att-sub" style="margin-top:5px">${esc(sup.supervisor_name)}</p>` : ''}
+            ${sup.supervisor_note ? `<p class="att-sub" style="font-style:italic">"${esc(sup.supervisor_note)}"</p>` : ''}
+          </div>
+        </div>` : '';
+
+      // --- request row ---
       const reqRow = req ? `
-        <tr><td style="color:#666;font-size:0.82rem;padding:5px 8px 5px 0;white-space:nowrap;vertical-align:top">คำขอ</td>
-        <td style="font-size:0.82rem;padding:5px 0;color:#1a1a2e">${esc(req.request_type || '')}</td></tr>` : '';
-      Swal.fire({
-        position: 'center', icon: 'info', title: 'สถานะการลงเวลาวันนี้',
-        html: `<table style="width:100%;text-align:left;border-collapse:collapse">
-          <tr><td style="color:#666;font-size:0.82rem;padding:5px 8px 5px 0;white-space:nowrap">เวลาเข้า</td>
-              <td style="font-weight:600;padding:5px 0">${ci ? ci.time_str : '—'}</td></tr>
-          <tr><td style="color:#666;font-size:0.82rem;padding:5px 8px 5px 0;white-space:nowrap">เวลาออก</td>
-              <td style="padding:5px 0">${coLabel}</td></tr>
-          <tr><td style="color:#666;font-size:0.82rem;padding:5px 8px 5px 0;white-space:nowrap">ประเภทงาน</td>
-              <td style="padding:5px 0">${esc(ci?.work_type || '—')}</td></tr>
-          ${ci?.distance_m != null ? `<tr><td style="color:#666;font-size:0.82rem;padding:5px 8px 5px 0;white-space:nowrap">ระยะห่าง</td>
-            <td style="padding:5px 0">${ci.distance_m >= 1000 ? (ci.distance_m/1000).toFixed(2)+' กม.' : ci.distance_m+' ม.'} ${ci.is_in_range ? '✅' : '⚠️'}</td></tr>` : ''}
-          ${reqRow}${supRow}
-          ${ci?.reference ? `<tr><td style="color:#666;font-size:0.82rem;padding:5px 8px 5px 0;white-space:nowrap">Ref</td>
-            <td style="padding:5px 0"><code style="font-size:0.78rem;color:#888">${ci.reference}</code></td></tr>` : ''}
-        </table>`,
-        confirmButtonColor: '#1565c0'
+        <div class="att-row">
+          <div class="att-icon icon-req"><i class="fa-solid fa-file-lines"></i></div>
+          <div style="flex:1">
+            <p class="att-label">คำขอ</p>
+            <p class="att-value" style="font-size:14px">${esc(req.request_type || '')}</p>
+            <span class="badge badge-pending" style="margin-top:5px">
+              <i class="fa-solid fa-hourglass-half fa-tag-inline"></i>รอการพิจารณา
+            </span>
+          </div>
+        </div>` : '';
+
+      // --- reference row ---
+      const refRow = ci?.reference ? `
+        <div class="att-row" style="background:var(--swal2-background, #f8fafc)">
+          <div class="att-icon icon-ref"><i class="fa-solid fa-fingerprint"></i></div>
+          <div style="flex:1">
+            <p class="att-label">อ้างอิง</p>
+            <span class="ref-code">${ci.reference}</span>
+          </div>
+        </div>` : '';
+
+      // --- date display ---
+      const dateDisplay = new Date(date).toLocaleDateString('th-TH', {
+        weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
       });
+
+      Swal.fire({
+        position: 'center',
+        showConfirmButton: true,
+        confirmButtonText: 'ปิด',
+        confirmButtonColor: '#1565c0',
+        width: 520,
+        padding: 0,
+        html: `
+          <style>
+            .att-card { text-align: left; font-family: inherit; }
+            .att-header { padding: 1.25rem 1.5rem 1rem; border-bottom: 1px solid #f1f5f9; }
+            .att-title { font-size: 11px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: #94a3b8; margin: 0 0 4px; }
+            .att-date-text { font-size: 17px; font-weight: 600; color: #1e293b; margin: 0; }
+            .att-body { padding: 0; }
+            .att-row { display: flex; align-items: flex-start; gap: 12px; padding: 13px 1.5rem; border-bottom: 1px solid #f1f5f9; }
+            .att-row:last-child { border-bottom: none; }
+            .att-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; font-size: 14px; }
+            .att-label { font-size: 10px; color: #94a3b8; margin: 0 0 3px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; }
+            .att-value { font-size: 15px; font-weight: 600; color: #1e293b; margin: 0; }
+            .att-sub { font-size: 12px; color: #64748b; margin: 2px 0 0; }
+            .badge { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 99px; }
+            .badge-pending  { background: #fef3c7; color: #92400e; }
+            .badge-approved { background: #d1fae5; color: #065f46; }
+            .badge-rejected { background: #fee2e2; color: #7f1d1d; }
+            .badge-none     { background: #f1f5f9; color: #64748b; }
+            .co-type-tag { font-size: 12px; font-weight: 400; color: #64748b; margin-left: 4px; }
+            .fa-tag-inline { font-size: 10px; }
+            .ref-code { font-size: 11px; font-family: monospace; color: #94a3b8; background: #f8fafc; padding: 2px 8px; border-radius: 4px; letter-spacing: 0.04em; border: 1px solid #e2e8f0; }
+            .icon-in  { background: #eff6ff; color: #3b82f6; }
+            .icon-out { background: #f0fdf4; color: #22c55e; }
+            .icon-type{ background: #faf5ff; color: #8b5cf6; }
+            .icon-dist{ background: #fff7ed; color: #f97316; }
+            .icon-req { background: #fdf4ff; color: #a855f7; }
+            .icon-sup { background: #f8fafc; color: #64748b; }
+            .icon-ref { background: #f8fafc; color: #94a3b8; }
+          </style>
+          <div class="att-card">
+            <div class="att-header">
+              <p class="att-title">สถานะการลงเวลา</p>
+              <p class="att-date-text">${dateDisplay}</p>
+            </div>
+            <div class="att-body">
+
+              <div class="att-row">
+                <div class="att-icon icon-in"><i class="fa-solid fa-clock"></i></div>
+                <div style="flex:1">
+                  <p class="att-label">เวลาเข้า</p>
+                  <p class="att-value">${ci ? ci.time_str : '—'}</p>
+                </div>
+              </div>
+
+              <div class="att-row">
+                <div class="att-icon icon-out"><i class="fa-solid fa-right-from-bracket"></i></div>
+                <div style="flex:1">
+                  <p class="att-label">เวลาออก</p>
+                  <p class="att-value">${coLabel}</p>
+                </div>
+              </div>
+
+              <div class="att-row">
+                <div class="att-icon icon-type"><i class="fa-solid fa-briefcase"></i></div>
+                <div style="flex:1">
+                  <p class="att-label">ประเภทงาน</p>
+                  <p class="att-value">${esc(ci?.work_type || '—')}</p>
+                </div>
+              </div>
+
+              ${distRow}
+              ${reqRow}
+              ${supRow}
+              ${refRow}
+
+            </div>
+          </div>`,
+      });
+
     } else {
-      Swal.fire({ icon: 'warning', title: 'ยังไม่พบการลงเวลาวันนี้', position: 'center', confirmButtonColor: '#e65100' });
+      Swal.fire({
+        icon: 'warning',
+        title: 'ยังไม่พบการลงเวลาวันนี้',
+        position: 'center',
+        confirmButtonColor: '#e65100'
+      });
     }
   } catch (e) {
     Swal.close();
@@ -1590,27 +1714,33 @@ async function checktoday() {
 
 // ===================== CANCEL TODAY =====================
 async function canceltoday() {
-  const result = await Swal.fire({
-    icon:'warning', title:'ยืนยันการยกเลิก?',
-    text:'ต้องการยกเลิกการลงเวลาในวันนี้หรือไม่',
-    showCancelButton:true,
-    confirmButtonText:'ยืนยันยกเลิก',
-    cancelButtonText:'ไม่ยกเลิก',
-    position: 'center',
-    confirmButtonColor:'#e53935',
-    cancelButtonColor:'#6c757d'
-  });
-  if (result.isConfirmed) {
-    localStorage.removeItem('datecheck');
-    localStorage.removeItem('datecheckout');
-    localStorage.removeItem('timecheck');
-    localStorage.removeItem('timecheckout');
-    localStorage.removeItem(HISTORY_KEY);
-    toggleButtonsByTime();
-    renderHistory();
-    Swal.fire({ icon:'success', title:'ยกเลิกสำเร็จ', position: 'center',
-    timer:1500, showConfirmButton:false });
-  }
+  Swal.fire(
+    'ยังไม่เปิดใช้งาน'
+  )
+
+
+
+  // const result = await Swal.fire({
+  //   icon:'warning', title:'ยืนยันการยกเลิก?',
+  //   text:'ต้องการยกเลิกการลงเวลาในวันนี้หรือไม่',
+  //   showCancelButton:true,
+  //   confirmButtonText:'ยืนยันยกเลิก',
+  //   cancelButtonText:'ไม่ยกเลิก',
+  //   position: 'center',
+  //   confirmButtonColor:'#e53935',
+  //   cancelButtonColor:'#6c757d'
+  // });
+  // if (result.isConfirmed) {
+  //   localStorage.removeItem('datecheck');
+  //   localStorage.removeItem('datecheckout');
+  //   localStorage.removeItem('timecheck');
+  //   localStorage.removeItem('timecheckout');
+  //   localStorage.removeItem(HISTORY_KEY);
+  //   toggleButtonsByTime();
+  //   renderHistory();
+  //   Swal.fire({ icon:'success', title:'ยกเลิกสำเร็จ', position: 'center',
+  //   timer:1500, showConfirmButton:false });
+  // }
 }
 
 // ===================== ABOUT ME =====================
@@ -1677,16 +1807,35 @@ function inputcid() {
 
 // ===================== CHECK SIGNATURE =====================
 function checkSignature() {
-  const sig = localStorage.getItem('signature_url');
-  if (sig) {
+  const ud     = getUserData();
+  const sig = ud?.signature || '';
+
+  if (sig && sig.startsWith('data:image')) {
     Swal.fire({
-      title:'ลายเซ็นของคุณ',
-      html:`<img src="${sig}" style="max-width:100%;border-radius:8px;border:2px dashed #4caf50">`,
-      confirmButtonColor:'#388e3c'
+      title: 'ลายเซ็นของคุณ',
+      html: `
+        <div style="display:flex;justify-content:center;align-items:center">
+          <img src="${sig}"
+               style="
+                 max-width:100%;
+                 max-height:400px;
+                 border-radius:8px;
+                 border:2px dashed #4caf50;
+                 object-fit:contain;
+                 background:#fff;
+               ">
+        </div>
+      `,
+      confirmButtonColor: '#388e3c',
+      width: 600
     });
   } else {
-    Swal.fire({ position: 'center',
-    icon:'warning', title:'ยังไม่มีลายเซ็น', text:'กรุณาสร้างลายเซ็นก่อนใช้งาน' });
+    Swal.fire({
+      icon: 'warning',
+      title: 'ยังไม่มีลายเซ็น',
+      text: 'กรุณาสร้างลายเซ็นก่อนใช้งาน',
+      confirmButtonColor: '#388e3c'
+    });
   }
 }
 
@@ -1999,10 +2148,10 @@ const REQUEST_TYPES = [
   { value: 'ลืมลงเวลาออก',     label: 'ลืมลงเวลาออก',     icon: 'fa-clock-rotate-left' },
   { value: 'แก้ไขเวลาเข้า',    label: 'แก้ไขเวลาเข้า',    icon: 'fa-pen-to-square' },
   { value: 'แก้ไขเวลาออก',     label: 'แก้ไขเวลาออก',     icon: 'fa-pen-to-square' },
-  { value: 'ขอลาป่วย',         label: 'ขอลาป่วย',         icon: 'fa-kit-medical' },
-  { value: 'ขอลากิจ',          label: 'ขอลากิจ',          icon: 'fa-calendar-xmark' },
-  { value: 'ขอลาพักร้อน',      label: 'ขอลาพักร้อน',      icon: 'fa-umbrella-beach' },
-  { value: 'อื่นๆ',            label: 'อื่นๆ',            icon: 'fa-ellipsis' },
+  // { value: 'ขอลาป่วย',         label: 'ขอลาป่วย',         icon: 'fa-kit-medical' },
+  // { value: 'ขอลากิจ',          label: 'ขอลากิจ',          icon: 'fa-calendar-xmark' },
+  // { value: 'ขอลาพักร้อน',      label: 'ขอลาพักร้อน',      icon: 'fa-umbrella-beach' },
+  // { value: 'อื่นๆ',            label: 'อื่นๆ',            icon: 'fa-ellipsis' },
 ];
 
 async function sendRequest() {
