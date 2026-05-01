@@ -394,6 +394,7 @@ function getSourcePage() {
 
   if (prefix === 'register') return 'register.html';
   if (prefix === 'profile') return 'profile.html';
+  if (prefix === 'link_line') return 'profile.html';
 
   return 'login.html';
 }
@@ -496,7 +497,7 @@ async function handleCallback() {
     // Redirect mode (กรณีไม่ได้เปิดเป็น popup)
     const src = getSourcePage();
     const qs  = new URLSearchParams({
-      line:        'callback',
+      line:        'link',
       userId:      user.userId,
       displayName: user.displayName,
       email:       user.email        || '',
