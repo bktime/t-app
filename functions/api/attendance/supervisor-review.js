@@ -43,13 +43,8 @@ export async function onRequest(context) {
   if (!attRow) return json({ success: false, message: 'ไม่พบข้อมูลการลงเวลา' }, 404);
 
   // ตรวจสิทธิ์
-  const isApprover = attRow.approver_uuid === reviewer.uuid;
-  const isAdmin    = reviewer.role === 'admin';
-  const isSameUnit = ['supervisor','approver'].includes(reviewer.role) &&
-    (attRow.dep_code === reviewer.dep_code || attRow.aff_code === reviewer.aff_code);
-
-  if (!isApprover && !isAdmin && !isSameUnit)
-    return json({ success: false, message: 'ไม่มีสิทธิ์รับรองรายการนี้' }, 403);
+if (attRow.approver_uuid !== reviewer.uuid)
+  return json({ success: false, message: 'ไม่มีสิทธิ์รับรองรายการนี้ ผู้มีสิทธิ์คือ ' + attRow.supervisor_name }, 403);
 
   if (attRow.supervisor_status !== 'pending')
     return json({ success: false, message: `ดำเนินการไปแล้ว (${attRow.supervisor_status})` }, 409);

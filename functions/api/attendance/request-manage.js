@@ -121,13 +121,8 @@ export async function onRequest(context) {
     if (reqRow.status !== 'pending')
       return json({ success: false, message: `ดำเนินการไปแล้ว (${reqRow.status})` }, 409);
 
-    const isApprover = reqRow.approver_uuid === reviewer.uuid;
-    const isAdmin    = reviewer.role === 'admin';
-    const isSameUnit = reviewer.role === 'supervisor' &&
-      (reqRow.dep_code === reviewer.dep_code || reqRow.aff_code === reviewer.aff_code);
-
-    if (!isApprover && !isAdmin && !isSameUnit)
-      return json({ success: false, message: 'ไม่มีสิทธิ์จัดการคำขอนี้' }, 403);
+    if (reqRow.approver_uuid !== reviewer.uuid)
+      return json({ success: false, message: 'ไม่มีสิทธิ์จัดการคำขอนี้ ผู้มีสิทธิ์คือ ' + reqRow.supervisor_name }, 403);
 
     const newStatus = action === 'approve' ? 'approved' : 'rejected';
     const supStatus = action === 'approve' ? 'approved' : 'rejected';

@@ -33,16 +33,8 @@ export async function onRequest(context) {
   const cond = [], bind = [];
 
   // กรองตาม role
-  if (['admin'].includes(reviewer.role)) {
-    // admin เห็นทุกคน
-  } else if (['supervisor', 'approver'].includes(reviewer.role)) {
-    cond.push('(a.approver_uuid = ? OR u.dep_code = ? OR u.aff_code = ?)');
-    bind.push(reviewer.uuid, reviewer.dep_code || '', reviewer.aff_code || '');
-  } else {
-    // user ทั่วไปที่เป็น approver
-    cond.push('a.approver_uuid = ?');
-    bind.push(reviewer.uuid);
-  }
+cond.push('a.approver_uuid = ?');
+bind.push(reviewer.uuid);
 
   cond.push('a.checkin_time IS NOT NULL');
 
