@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="th-TH">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>แก้ไขข้อมูลส่วนตัว | ระบบลงเวลาปฏิบัติงาน</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <style>
+    :root {
+      --bg:#0a0a0f; --surface:#111118; --surface2:#18181f; --surface3:#1e1e28;
+      --border:rgba(255,255,255,0.07); --text-primary:#f0f0f5; --text-secondary:#7a7a8a; --text-muted:#3d3d50;
+      --accent:#6366f1; --accent-hover:#4f52e0; --accent-glow:rgba(99,102,241,0.25);
+      --green:#10b981; --green-glow:rgba(16,185,129,0.2); --red:#f43f5e;
+      --radius:16px; --radius-sm:10px; --radius-lg:20px;
+      --transition:0.2s cubic-bezier(0.4,0,0.2,1);
+    }
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{font-family:'Noto Sans Thai',sans-serif;background:var(--bg);min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:0 0 5rem;overflow-x:hidden;position:relative}
+
+    /* BG */
+    .bg-fx{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+    .orb{position:absolute;border-radius:50%;filter:blur(80px);opacity:.1}
+    .orb1{width:500px;height:500px;background:radial-gradient(circle,#6366f1,transparent);top:-150px;left:-100px;animation:orb 12s ease-in-out infinite}
+    .orb2{width:400px;height:400px;background:radial-gradient(circle,#22d3ee,transparent);bottom:-100px;right:-80px;animation:orb 15s ease-in-out infinite reverse}
+    .grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.013) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.013) 1px,transparent 1px);background-size:60px 60px}
+    @keyframes orb{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(30px,-20px) scale(1.05)}66%{transform:translate(-20px,15px) scale(.97)}}
+
+    .page{position:relative;z-index:1;width:100%;max-width:680px;display:flex;flex-direction:column}
+
+    /* ── Sticky Header ─── */
+    .top-header{position:sticky;top:0;z-index:100;background:rgba(10,10,15,.88);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:.875rem 1.5rem;display:flex;align-items:center;gap:1rem}
+    .back-btn{display:flex;align-items:center;gap:6px;padding:.45rem .9rem;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--surface);color:var(--text-secondary);text-decoration:none;font-size:.8rem;transition:all var(--transition);white-space:nowrap}
+    .back-btn:hover{border-color:rgba(255,255,255,.14);color:var(--text-primary)}
+    .header-title{font-family:'Syne',sans-serif;font-size:.95rem;font-weight:700;color:var(--text-primary);flex:1}
+    .header-avatar{width:36px;height:36px;border-radius:50%;object-fit:cover;border:2px solid var(--border)}
+
+    /* ── Nav Pills ─── */
+    .sec-nav{position:sticky;top:57px;z-index:99;background:rgba(10,10,15,.8);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:.55rem 1.5rem;display:flex;gap:.35rem;overflow-x:auto;scrollbar-width:none}
+    .sec-nav::-webkit-scrollbar{display:none}
+    .pill{display:flex;align-items:center;gap:5px;padding:.32rem .78rem;border-radius:99px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-size:.72rem;font-weight:600;cursor:pointer;font-family:'Noto Sans Thai',sans-serif;transition:all var(--transition);white-space:nowrap}
+    .pill:hover{color:var(--text-secondary);border-color:rgba(255,255,255,.12)}
+    .pill.active{background:var(--accent);border-color:var(--accent);color:#fff}
+    .pill-dot{width:6px;height:6px;border-radius:50%;background:var(--green);display:none;flex-shrink:0}
+    .pill.saved .pill-dot{display:block}
+
+    /* ── Content ─── */
+    .content{padding:1.25rem 1.5rem;display:flex;flex-direction:column;gap:1.1rem}
+
+    /* ── Hero Card ─── */
+    .hero{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.5rem;display:flex;align-items:center;gap:1.25rem;box-shadow:0 0 0 1px rgba(255,255,255,.03),0 20px 40px rgba(0,0,0,.4);animation:up .5s ease both}
+    .hero-av-wrap{position:relative;flex-shrink:0}
+    .hero-av{width:76px;height:76px;border-radius:50%;object-fit:cover;border:3px solid var(--border);box-shadow:0 0 0 3px var(--surface)}
+    .av-edit{position:absolute;bottom:0;right:0;width:24px;height:24px;border-radius:50%;background:var(--accent);border:2px solid var(--bg);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.58rem;color:#fff;transition:all var(--transition)}
+    .av-edit:hover{transform:scale(1.1)}
+    .hero-info{flex:1;min-width:0}
+    .hero-name{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:700;color:var(--text-primary);margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .hero-pos{font-size:.75rem;color:var(--text-secondary);margin-bottom:.55rem}
+    .hero-badges{display:flex;gap:5px;flex-wrap:wrap}
+    .hbadge{font-size:.64rem;padding:2px 7px;border-radius:99px;font-weight:600}
+    .hb-role{background:rgba(99,102,241,.12);color:#a5b4fc;border:1px solid rgba(99,102,241,.2)}
+    .hb-status{background:rgba(16,185,129,.1);color:var(--green);border:1px solid rgba(16,185,129,.2)}
+    .hb-type{background:var(--surface3);color:var(--text-secondary);border:1px solid var(--border)}
+
+    /* ── Section Card ─── */
+    .sc{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;box-shadow:0 0 0 1px rgba(255,255,255,.03),0 8px 24px rgba(0,0,0,.3);transition:border-color .4s ease,box-shadow .4s ease;animation:up .5s ease both}
+    .sc.hl{border-color:rgba(16,185,129,.45);box-shadow:0 0 0 1px rgba(16,185,129,.15),0 8px 32px rgba(16,185,129,.12)}
+
+    /* Section Head */
+    .sc-head{display:flex;align-items:center;gap:11px;padding:1rem 1.4rem;background:var(--surface2);border-bottom:1px solid var(--border);cursor:pointer;user-select:none}
+    .sc-head:hover{background:rgba(255,255,255,.018)}
+    .sc-icon{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:.85rem;flex-shrink:0}
+    .ic-personal{background:rgba(99,102,241,.15);color:#a5b4fc}
+    .ic-sig{background:rgba(168,85,247,.15);color:#d8b4fe}
+    .ic-photo{background:rgba(34,211,238,.12);color:#67e8f9}
+    .ic-related{background:rgba(245,158,11,.12);color:#fcd34d}
+    .ic-ot{background:rgba(16,185,129,.12);color:#6ee7b7}
+    .ic-social{background:rgba(244,63,94,.12);color:#fda4af}
+    .sc-txt{flex:1;min-width:0}
+    .sc-txt h3{font-family:'Syne',sans-serif;font-size:.88rem;font-weight:700;color:var(--text-primary)}
+    .sc-txt p{font-size:.7rem;color:var(--text-muted);margin-top:1px}
+    .sc-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
+    .saved-chip{display:inline-flex;align-items:center;gap:4px;font-size:.64rem;padding:2px 8px;border-radius:99px;background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.2);color:var(--green);font-weight:600;opacity:0;transition:opacity .3s ease}
+    .saved-chip.show{opacity:1}
+    .chev{color:var(--text-muted);font-size:.72rem;transition:transform var(--transition)}
+    .sc.col .chev{transform:rotate(-90deg)}
+
+    /* Section Body */
+    .sc-body{padding:1.4rem}
+    .sc.col .sc-body{display:none}
+
+    /* Section Footer */
+    .sc-foot{padding:.9rem 1.4rem;border-top:1px solid var(--border);background:rgba(255,255,255,.013);display:flex;align-items:center;justify-content:space-between;gap:.75rem}
+    .sc.col .sc-foot{display:none}
+    .save-st{font-size:.72rem;color:var(--text-muted);display:flex;align-items:center;gap:5px;min-height:1.2em;transition:color .2s}
+    .save-st.ok{color:var(--green)}
+    .save-st.err{color:var(--red)}
+
+    /* ── Forms ─── */
+    .fg{margin-bottom:.95rem}
+    .fg:last-child{margin-bottom:0}
+    .fg label{display:flex;align-items:center;gap:4px;font-size:.71rem;font-weight:600;color:var(--text-secondary);margin-bottom:5px;text-transform:uppercase;letter-spacing:.04em}
+    .req{color:var(--red)}
+    .fc{width:100%;padding:.65rem .85rem;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);color:var(--text-primary);font-family:'Noto Sans Thai',sans-serif;font-size:.875rem;transition:all var(--transition);outline:none}
+    .fc::placeholder{color:var(--text-muted)}
+    .fc:focus{border-color:var(--accent);background:var(--surface3);box-shadow:0 0 0 3px var(--accent-glow)}
+    .fc:disabled{opacity:.4;cursor:not-allowed}
+    select.fc{cursor:pointer}
+    select.fc option{background:var(--surface2)}
+    .frow{display:grid;grid-template-columns:1fr 1fr;gap:.8rem}
+    .ig{position:relative}
+    .ig .fc{padding-left:2.4rem}
+    .ii{position:absolute;left:.85rem;top:50%;transform:translateY(-50%);color:var(--text-muted);font-size:.78rem;pointer-events:none}
+    .fhint{font-size:.65rem;color:var(--text-muted);margin-top:3px}
+
+    /* Buttons */
+    .btn{display:inline-flex;align-items:center;gap:6px;padding:.58rem 1.15rem;border-radius:var(--radius-sm);font-size:.8rem;font-weight:600;cursor:pointer;border:none;font-family:'Noto Sans Thai',sans-serif;transition:all var(--transition)}
+    .btn-p{background:var(--accent);color:#fff}
+    .btn-p:hover{background:var(--accent-hover);transform:translateY(-1px);box-shadow:0 4px 16px var(--accent-glow)}
+    .btn-p:disabled{opacity:.55;cursor:not-allowed;transform:none!important;box-shadow:none!important}
+    .btn-g{background:transparent;color:var(--text-secondary);border:1px solid var(--border)}
+    .btn-g:hover{background:var(--surface2);color:var(--text-primary)}
+    .btn-sm{padding:.4rem .8rem;font-size:.75rem}
+    .btn-pur{background:rgba(168,85,247,.15);color:#d8b4fe;border:1px solid rgba(168,85,247,.25)}
+    .btn-pur:hover{background:rgba(168,85,247,.25)}
+
+    /* Signature */
+    .sig-preview{text-align:center;margin-bottom:.9rem}
+    .sig-preview p{font-size:.68rem;color:var(--text-muted);margin-bottom:5px}
+    .sig-preview img{max-height:66px;object-fit:contain;border:1px solid var(--border);border-radius:8px;background:#fff;padding:4px}
+    .sig-wrap-c{border:1.5px dashed var(--border);border-radius:var(--radius-sm);overflow:hidden;background:#fff;position:relative;margin-bottom:.7rem}
+    canvas#sigCanvas{display:block;width:100%;height:155px;cursor:crosshair;touch-action:none}
+    .sig-hint{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;font-size:.78rem;color:#999;gap:6px;opacity:.6}
+    .sig-btns{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:.45rem}
+    .sig-st{font-size:.7rem;color:var(--text-muted);display:flex;align-items:center;gap:4px}
+    .sig-st.ok{color:var(--green)}
+
+    /* Image Upload */
+    .img-row{display:flex;align-items:center;gap:1.1rem}
+    .img-av{width:76px;height:76px;border-radius:50%;object-fit:cover;border:2px solid var(--border);flex-shrink:0}
+    .upload-z{flex:1;border:1.5px dashed var(--border);border-radius:var(--radius);padding:.9rem;text-align:center;cursor:pointer;transition:all var(--transition);background:var(--surface2)}
+    .upload-z:hover{border-color:var(--accent);background:rgba(99,102,241,.05)}
+    .upload-z i{font-size:1.35rem;color:var(--text-muted);margin-bottom:3px;display:block}
+    .upload-z p{font-size:.76rem;color:var(--text-secondary)}
+    .upload-z small{font-size:.65rem;color:var(--text-muted)}
+
+    /* Related */
+    .rel-grid{display:flex;flex-direction:column;gap:.65rem}
+    .rel-card{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.8rem .95rem}
+    .rel-lbl{display:flex;align-items:center;gap:6px;font-size:.7rem;font-weight:600;color:var(--text-secondary);margin-bottom:.45rem;text-transform:uppercase;letter-spacing:.04em}
+    .dot{width:7px;height:7px;border-radius:50%}
+    .dot-b{background:#6366f1}.dot-t{background:#22d3ee}.dot-g{background:#10b981}
+
+    /* OT */
+    .ot-chip{display:flex;align-items:center;gap:8px;padding:.55rem .85rem;background:rgba(16,185,129,.06);border:1px solid rgba(16,185,129,.15);border-radius:var(--radius-sm);font-size:.72rem;color:#6ee7b7;margin-bottom:.95rem}
+    .ot-grid{display:grid;grid-template-columns:1fr 1fr;gap:.8rem}
+
+    /* Social */
+    .social-note{font-size:.68rem;color:var(--text-muted);padding:.45rem .7rem;background:rgba(255,255,255,.02);border-radius:8px;border-left:2px solid var(--accent);margin-bottom:.8rem}
+    .social-list{display:flex;flex-direction:column;gap:.6rem}
+    .si{display:flex;align-items:center;gap:11px;padding:.8rem .95rem;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--surface2);transition:all var(--transition)}
+    .si-icon{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0}
+    .si-google .si-icon{background:rgba(234,67,53,.1);color:#ea4335}
+    .si-line   .si-icon{background:rgba(6,199,85,.1);color:#06c755}
+    .si-tg     .si-icon{background:rgba(42,171,238,.1);color:#2AABEE}
+    .si-info{flex:1;min-width:0}
+    .si-info strong{display:block;font-size:.82rem;font-weight:600;color:var(--text-primary)}
+    .si-info span{font-size:.68rem;color:var(--text-secondary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
+    .si-act{display:flex;gap:5px;align-items:center;flex-shrink:0}
+    .badge-conn{display:inline-flex;align-items:center;gap:3px;font-size:.65rem;padding:2px 7px;border-radius:20px;background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.2);color:var(--green)}
+    .badge-pri{font-size:.6rem;padding:1px 6px;border-radius:20px;background:rgba(99,102,241,.12);border:1px solid rgba(99,102,241,.2);color:#a5b4fc}
+    .btn-soc{display:inline-flex;align-items:center;gap:4px;padding:.32rem .65rem;border-radius:7px;font-size:.7rem;font-weight:600;cursor:pointer;border:none;font-family:'Noto Sans Thai',sans-serif;transition:all var(--transition)}
+    .btn-soc.conn{background:var(--accent);color:#fff}
+    .btn-soc.conn:hover{background:var(--accent-hover)}
+    .btn-soc.disc{background:rgba(244,63,94,.08);color:var(--red);border:1px solid rgba(244,63,94,.2)}
+    .btn-soc.disc:hover{background:rgba(244,63,94,.15)}
+
+    /* Notify */
+    .nb{display:flex;align-items:center;gap:9px;padding:.6rem .85rem;border-radius:var(--radius-sm);font-size:.76rem;margin-bottom:.95rem}
+    .nb.info{background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.2);color:#a5b4fc}
+
+    /* Animations */
+    @keyframes up{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+    .sc:nth-child(1){animation-delay:.05s}.sc:nth-child(2){animation-delay:.1s}.sc:nth-child(3){animation-delay:.15s}
+    .sc:nth-child(4){animation-delay:.2s}.sc:nth-child(5){animation-delay:.25s}.sc:nth-child(6){animation-delay:.3s}
+
+    /* Swal */
+    .swal2-popup{background:var(--surface)!important;color:var(--text-primary)!important;border:1px solid var(--border)!important;border-radius:20px!important}
+    .swal2-title{color:var(--text-primary)!important}
+    .swal2-html-container{color:var(--text-secondary)!important}
+    .swal2-confirm{background:var(--accent)!important;border-radius:var(--radius-sm)!important}
+    .swal2-cancel{background:var(--surface3)!important;color:var(--text-primary)!important;border-radius:var(--radius-sm)!important}
+
+    @media(max-width:560px){
+      .frow,.ot-grid{grid-template-columns:1fr}
+      .sc-body{padding:1.1rem}
+      .content{padding:1rem}
+      .top-header{padding:.7rem 1rem}
+      .sec-nav{padding:.5rem 1rem}
+      .img-row{flex-direction:column;align-items:flex-start}
+    }
+    .spin{animation:sp .7s linear infinite}
+    @keyframes sp{to{transform:rotate(360deg)}}
+  </style>
+</head>
+<body>
+<div class="bg-fx"><div class="grid"></div><div class="orb orb1"></div><div class="orb orb2"></div></div>
+
+<div class="page">
+
+  <!-- Sticky Header -->
+  <div class="top-header">
+    <a href="dashboard.html" class="back-btn"><i class="fas fa-arrow-left"></i> กลับ</a>
+    <span class="header-title">แก้ไขข้อมูลส่วนตัว</span>
+    <img id="headerAv" class="header-avatar" src="https://ui-avatars.com/api/?background=6366f1&color=fff&size=72&bold=true&name=U" alt="">
+  </div>
+
+  <!-- Nav Pills -->
+  <div class="sec-nav" id="secNav">
+    <button class="pill active" onclick="goSec('sec-personal')"   data-sec="sec-personal" ><span class="pill-dot"></span><i class="fas fa-id-badge"></i> ข้อมูล</button>
+    <button class="pill"        onclick="goSec('sec-signature')"  data-sec="sec-signature"><span class="pill-dot"></span><i class="fas fa-signature"></i> ลายเซ็น</button>
+    <button class="pill"        onclick="goSec('sec-photo')"      data-sec="sec-photo"    ><span class="pill-dot"></span><i class="fas fa-camera"></i> รูปภาพ</button>
+    <button class="pill"        onclick="goSec('sec-related')"    data-sec="sec-related"  ><span class="pill-dot"></span><i class="fas fa-users"></i> ผู้เกี่ยวข้อง</button>
+    <button class="pill"        onclick="goSec('sec-ot')"         data-sec="sec-ot"       ><span class="pill-dot"></span><i class="fas fa-clock"></i> โอที</button>
+    <button class="pill"        onclick="goSec('sec-social')"     data-sec="sec-social"   ><span class="pill-dot"></span><i class="fas fa-share-nodes"></i> โซเชียล</button>
+  </div>
+
+  <div class="content">
+
+    <!-- Hero -->
+    <div class="hero">
+      <div class="hero-av-wrap">
+        <img id="heroAv" class="hero-av" src="https://ui-avatars.com/api/?background=6366f1&color=fff&size=160&bold=true&name=U" alt="">
+        <div class="av-edit" onclick="G('profileImageInput').click()" title="เปลี่ยนรูป"><i class="fas fa-pen"></i></div>
+      </div>
+      <div class="hero-info">
+        <div class="hero-name" id="heroName">กำลังโหลด...</div>
+        <div class="hero-pos"  id="heroPos">-</div>
+        <div class="hero-badges">
+          <span class="hbadge hb-role"   id="hbRole">user</span>
+          <span class="hbadge hb-status" id="hbStatus">Active</span>
+          <span class="hbadge hb-type"   id="hbType">-</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ SEC 1: ข้อมูลส่วนตัว ══ -->
+    <div class="sc" id="sec-personal">
+      <div class="sc-head" onclick="tog('sec-personal')">
+        <div class="sc-icon ic-personal"><i class="fas fa-id-badge"></i></div>
+        <div class="sc-txt"><h3>ข้อมูลส่วนตัว</h3><p>สังกัด ชื่อ-สกุล ตำแหน่ง ประเภทบุคลากร</p></div>
+        <div class="sc-right"><span class="saved-chip" id="chip-personal"><i class="fas fa-check"></i> บันทึกแล้ว</span><i class="fas fa-chevron-down chev"></i></div>
+      </div>
+      <div class="sc-body">
+        <div class="fg"><label>สังกัด <span class="req">*</span></label><select id="affiliation" class="fc"><option value="">กำลังโหลด...</option></select></div>
+        <div class="fg"><label>หน่วยงาน / กลุ่มงาน <span class="req">*</span></label><select id="department" class="fc" disabled><option value="">เลือกสังกัดก่อน</option></select></div>
+        <div class="fg">
+          <label>เลขบัตรประจำตัวประชาชน</label>
+          <div class="ig"><i class="fas fa-id-card ii"></i><input type="text" id="idCard" class="fc" maxlength="13" disabled placeholder="ไม่สามารถแก้ไขได้"></div>
+          <div class="fhint">กรุณาติดต่อผู้ดูแลระบบหากต้องการแก้ไข</div>
+        </div>
+        <div class="frow">
+          <div class="fg"><label>คำนำหน้า <span class="req">*</span></label>
+            <select id="prefix" class="fc"><option value="">เลือก</option><option>นาย</option><option>นาง</option><option>นางสาว</option><option>แพทย์หญิง</option><option>แพทย์ชาย</option></select>
+          </div>
+          <div class="fg"><label>ชื่อ <span class="req">*</span></label><input type="text" id="firstName" class="fc" placeholder="ชื่อจริง"></div>
+        </div>
+        <div class="frow">
+          <div class="fg"><label>นามสกุล <span class="req">*</span></label><input type="text" id="lastName" class="fc" placeholder="นามสกุล"></div>
+          <div class="fg"><label>ตำแหน่ง <span class="req">*</span></label><input type="text" id="position" class="fc" placeholder="เช่น พยาบาลวิชาชีพ"></div>
+        </div>
+        <div class="fg"><label>ประเภทบุคลากร <span class="req">*</span></label>
+          <select id="personnelType" class="fc"><option value="">เลือกประเภท</option><option>ข้าราชการ</option><option>ลูกจ้างประจำ</option><option>พนักงานราชการ</option><option>พนักงานกระทรวงสาธารณสุข</option><option>พนักงานส่วนท้องถิ่น</option><option>อาสาสมัคร</option><option>อื่นๆ</option></select>
+        </div>
+      </div>
+      <div class="sc-foot">
+        <div class="save-st" id="st-personal"></div>
+        <button class="btn btn-p" id="btn-personal" onclick="save('personal')"><i class="fas fa-floppy-disk"></i> บันทึก</button>
+      </div>
+    </div>
+
+    <!-- ══ SEC 2: ลายเซ็น ══ -->
+    <div class="sc col" id="sec-signature">
+      <div class="sc-head" onclick="tog('sec-signature')">
+        <div class="sc-icon ic-sig"><i class="fas fa-signature"></i></div>
+        <div class="sc-txt"><h3>ลายเซ็นอิเล็กทรอนิกส์</h3><p>ใช้ในเอกสารราชการ</p></div>
+        <div class="sc-right"><span class="saved-chip" id="chip-signature"><i class="fas fa-check"></i> บันทึกแล้ว</span><i class="fas fa-chevron-down chev"></i></div>
+      </div>
+      <div class="sc-body">
+        <div class="sig-preview" id="sigCurWrap" style="display:none"><p>ลายเซ็นปัจจุบัน</p><img id="sigCurImg" alt="ลายเซ็น"></div>
+        <div class="sig-wrap-c">
+          <canvas id="sigCanvas"></canvas>
+          <div class="sig-hint" id="sigHint"><i class="fas fa-pen-nib"></i> เซ็นชื่อที่นี่</div>
+        </div>
+        <div class="sig-btns">
+          <button class="btn btn-g btn-sm" onclick="clearSig()"><i class="fas fa-rotate-left"></i> ล้างใหม่</button>
+          <button class="btn btn-pur btn-sm" onclick="captureSig()"><i class="fas fa-check"></i> บันทึกลายเซ็น</button>
+        </div>
+        <div class="sig-st" id="sigSt"><i class="fas fa-circle-dot"></i> ยังไม่ได้บันทึก</div>
+      </div>
+      <div class="sc-foot">
+        <div class="save-st" id="st-signature"></div>
+        <button class="btn btn-p" id="btn-signature" onclick="save('signature')"><i class="fas fa-floppy-disk"></i> บันทึกและอัปโหลด</button>
+      </div>
+    </div>
+
+    <!-- ══ SEC 3: รูปภาพ ══ -->
+    <div class="sc col" id="sec-photo">
+      <div class="sc-head" onclick="tog('sec-photo')">
+        <div class="sc-icon ic-photo"><i class="fas fa-camera"></i></div>
+        <div class="sc-txt"><h3>รูปภาพโปรไฟล์</h3><p>รูปบุคคลสำหรับระบบ</p></div>
+        <div class="sc-right"><span class="saved-chip" id="chip-photo"><i class="fas fa-check"></i> บันทึกแล้ว</span><i class="fas fa-chevron-down chev"></i></div>
+      </div>
+      <div class="sc-body">
+        <div class="img-row">
+          <img id="profilePreview" class="img-av" src="https://ui-avatars.com/api/?background=6366f1&color=fff&size=160&bold=true&name=U" alt="">
+          <div class="upload-z" onclick="G('profileImageInput').click()">
+            <i class="fas fa-cloud-arrow-up"></i>
+            <p>คลิกหรือลากไฟล์มาวางที่นี่</p>
+            <small>JPG, PNG, WEBP ≤ 2MB — crop + บีบอัดอัตโนมัติ</small>
+          </div>
+        </div>
+        <input type="file" id="profileImageInput" accept="image/*" style="display:none" onchange="previewImg(this)">
+      </div>
+      <div class="sc-foot">
+        <div class="save-st" id="st-photo"></div>
+        <button class="btn btn-p" id="btn-photo" onclick="save('photo')"><i class="fas fa-floppy-disk"></i> บันทึกรูปภาพ</button>
+      </div>
+    </div>
+
+    <!-- ══ SEC 4: ผู้เกี่ยวข้อง ══ -->
+    <div class="sc col" id="sec-related">
+      <div class="sc-head" onclick="tog('sec-related')">
+        <div class="sc-icon ic-related"><i class="fas fa-users"></i></div>
+        <div class="sc-txt"><h3>ผู้เกี่ยวข้องในระบบ</h3><p>ผู้บังคับบัญชา ผู้รับรอง ผู้จ่ายเงิน</p></div>
+        <div class="sc-right"><span class="saved-chip" id="chip-related"><i class="fas fa-check"></i> บันทึกแล้ว</span><i class="fas fa-chevron-down chev"></i></div>
+      </div>
+      <div class="sc-body">
+        <div class="rel-grid">
+          <div class="rel-card"><div class="rel-lbl"><div class="dot dot-b"></div>ผู้บริหาร / หัวหน้า</div><select id="supervisor" class="fc"><option value="">-- ไม่ระบุ --</option></select></div>
+          <div class="rel-card"><div class="rel-lbl"><div class="dot dot-t"></div>ผู้รับรองการทำงาน</div><select id="approver"   class="fc"><option value="">-- ไม่ระบุ --</option></select></div>
+          <div class="rel-card"><div class="rel-lbl"><div class="dot dot-g"></div>ผู้จ่ายเงิน / การเงิน</div><select id="payer"      class="fc"><option value="">-- ไม่ระบุ --</option></select></div>
+        </div>
+      </div>
+      <div class="sc-foot">
+        <div class="save-st" id="st-related"></div>
+        <button class="btn btn-p" id="btn-related" onclick="save('related')"><i class="fas fa-floppy-disk"></i> บันทึก</button>
+      </div>
+    </div>
+
+    <!-- ══ SEC 5: โอที ══ -->
+    <div class="sc col" id="sec-ot">
+      <div class="sc-head" onclick="tog('sec-ot')">
+        <div class="sc-icon ic-ot"><i class="fas fa-clock"></i></div>
+        <div class="sc-txt"><h3>ข้อมูลการทำงานล่วงเวลา (โอที)</h3><p>อัตราค่าตอบแทน เลขที่หนังสือ บัญชีธนาคาร</p></div>
+        <div class="sc-right"><span class="saved-chip" id="chip-ot"><i class="fas fa-check"></i> บันทึกแล้ว</span><i class="fas fa-chevron-down chev"></i></div>
+      </div>
+      <div class="sc-body">
+        <div class="ot-chip"><i class="fas fa-circle-info"></i>ข้อมูลนี้ใช้คำนวณค่าตอบแทน OT โดยอัตโนมัติ</div>
+        <div class="fg">
+          <label>เลขที่หนังสือ</label>
+          <div class="ig"><i class="fas fa-hashtag ii"></i><input type="text" id="otDocNumber" class="fc" placeholder="เช่น สธ 0032.006/1234"></div>
+        </div>
+        <div class="ot-grid">
+          <div class="fg"><label>อัตราต่อวัน (บาท)</label><div class="ig"><i class="fas fa-baht-sign ii"></i><input type="number" id="otRatePerDay" class="fc" placeholder="0.00" min="0" step="0.01"></div></div>
+          <div class="fg"><label>อัตราต่อชั่วโมง (บาท)</label><div class="ig"><i class="fas fa-baht-sign ii"></i><input type="number" id="otRatePerHour" class="fc" placeholder="0.00" min="0" step="0.01"></div></div>
+        </div>
+        <div class="fg">
+          <label>จำกัดชั่วโมงต่อวัน <span style="font-weight:400;text-transform:none;font-size:.67rem;color:var(--text-muted)">(สำหรับบวกเวลา)</span></label>
+          <div class="ig"><i class="fas fa-stopwatch ii"></i><input type="number" id="otMaxHoursPerDay" class="fc" placeholder="เช่น 8" min="1" max="24" step="1"></div>
+        </div>
+        <div class="fg">
+          <label>เลขบัญชี ธ.กรุงไทย</label>
+          <div class="ig"><i class="fas fa-building-columns ii"></i><input type="text" id="otBankAccount" class="fc" maxlength="20" placeholder="XXX-X-XXXXX-X" oninput="this.value=this.value.replace(/[^0-9\-]/g,'')"></div>
+        </div>
+      </div>
+      <div class="sc-foot">
+        <div class="save-st" id="st-ot"></div>
+        <button class="btn btn-p" id="btn-ot" onclick="save('ot')"><i class="fas fa-floppy-disk"></i> บันทึก</button>
+      </div>
+    </div>
+
+    <!-- ══ SEC 6: โซเชียล ══ -->
+    <div class="sc col" id="sec-social">
+      <div class="sc-head" onclick="tog('sec-social')">
+        <div class="sc-icon ic-social"><i class="fas fa-share-nodes"></i></div>
+        <div class="sc-txt"><h3>บัญชีโซเชียล</h3><p>เชื่อมต่อ Google, LINE, Telegram</p></div>
+        <div class="sc-right"><i class="fas fa-chevron-down chev"></i></div>
+      </div>
+      <div class="sc-body">
+        <div class="social-note">บัญชีที่ใช้สมัครสมาชิกครั้งแรกถูกกำหนดเป็น <strong>บัญชีหลัก</strong> — ไม่สามารถยกเลิกได้</div>
+        <div class="social-list">
+          <div class="si si-google" id="siGoogle">
+            <div class="si-icon"><i class="fab fa-google"></i></div>
+            <div class="si-info"><strong>Google <span id="gPri" class="badge-pri" style="display:none">หลัก</span></strong><span id="gSub">ยังไม่เชื่อมต่อ</span></div>
+            <div class="si-act" id="gAct"></div>
+          </div>
+          <div class="si si-line" id="siLine">
+            <div class="si-icon"><i class="fab fa-line"></i></div>
+            <div class="si-info"><strong>LINE <span id="lPri" class="badge-pri" style="display:none">หลัก</span></strong><span id="lSub">ยังไม่เชื่อมต่อ</span></div>
+            <div class="si-act" id="lAct"></div>
+          </div>
+          <div class="si si-tg" id="siTg">
+            <div class="si-icon"><i class="fab fa-telegram"></i></div>
+            <div class="si-info"><strong>Telegram <span id="tPri" class="badge-pri" style="display:none">หลัก</span></strong><span id="tSub">ยังไม่เชื่อมต่อ</span></div>
+            <div class="si-act" id="tAct"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /page -->
+
+<script>
+'use strict';
+
+const LINE_CHANNEL_ID       = '2000472605';
+const LINE_REDIRECT_URI     = window.location.origin + '/line-callback.html';
+const TELEGRAM_BOT_USERNAME = 'wisanusenhombot';
+const GOOGLE_CLIENT_ID      = '6897615091-r2tuo13f7gnf9irjqbbtt3u1icighmsv.apps.googleusercontent.com';
+const API_BASE_URL          = '/api';
+
+let sigSaved = false, canvas, ctx, drawing = false;
+let croppedImg = null, orgsData = [], tgPopup = null, tgTimer = null;
+
+let userData = {
+  uuid:null,social_id:null,social_id_google:null,social_id_line:null,social_id_telegram:null,
+  social_type:null,name:null,email:null,picture:null,status:null,role:null,
+  affiliation:'',aff_code:'',department:'',dep_code:'',idCard:'',
+  prefix:'',firstName:'',lastName:'',position:'',personnelType:'',
+  signature:null,profileImage:null,
+  supervisor:'',supervisor_code:'',approver:'',approver_code:'',payer:'',payer_code:'',
+  email_google:null,name_line:null,username_telegram:null,
+  ot_doc_number:'',ot_rate_per_day:'',ot_rate_per_hour:'',ot_max_hours_per_day:'',ot_bank_account:'',
+};
+
+// ─ Auth ─
+const G = id => document.getElementById(id);
+const tok = () => localStorage.getItem('auth_token');
+const setTok = t => t ? localStorage.setItem('auth_token',t) : localStorage.removeItem('auth_token');
+const getUD = () => JSON.parse(localStorage.getItem('user_data')||'{}');
+const setUD = d => localStorage.setItem('user_data',JSON.stringify(d));
+const goLogin = () => window.location.href = 'login.html';
+
+function toast(msg, type='success') {
+  Swal.fire({icon:type,title:msg,toast:true,position:'top-end',showConfirmButton:false,timer:2500,timerProgressBar:true});
+}
+
+// ─ Load User ─
+async function loadUser() {
+  const token=tok(); if(!token){goLogin();return false;}
+  try {
+    const res=await fetch(`${API_BASE_URL}/user/me`,{headers:{'Authorization':`Bearer ${token}`,'Content-Type':'application/json'}});
+    if(res.ok){
+      const d=await res.json();
+      if(d.success&&d.user){Object.assign(userData,d.user);setUD(userData);fillForm();return true;}
+    }
+    if(res.status===401){const e=await res.json().catch(()=>({}));if(e.expired)Swal.fire({icon:'warning',title:'เซสชันหมดอายุ',confirmButtonText:'ตกลง'}).then(()=>goLogin());else goLogin();return false;}
+    throw new Error();
+  } catch {
+    const c=getUD(); if(c?.uuid){Object.assign(userData,c);fillForm();toast('ใช้ข้อมูลจากเซสชันเดิม','warning');return true;}
+    goLogin(); return false;
+  }
+}
+
+function fillForm() {
+  const u=userData;
+  const n=[u.prefix,u.firstName,u.lastName].filter(Boolean).join(' ')||u.name||'ผู้ใช้';
+  const img=u.profileImage||u.picture||`https://ui-avatars.com/api/?background=6366f1&color=fff&size=160&bold=true&name=${encodeURIComponent(n.charAt(0))}`;
+
+  G('heroName').textContent=n; G('heroPos').textContent=[u.position,u.department].filter(Boolean).join(' • ')||'-';
+  G('hbRole').textContent=u.role||'user'; G('hbStatus').textContent=u.status||'Active'; G('hbType').textContent=u.personnelType||'-';
+  G('heroAv').src=img; G('headerAv').src=img; G('profilePreview').src=img;
+  croppedImg=u.profileImage||null;
+
+  sv('idCard',u.idCard); sv('prefix',u.prefix,true); sv('firstName',u.firstName); sv('lastName',u.lastName);
+  sv('position',u.position); sv('personnelType',u.personnelType,true);
+  sv('otDocNumber',u.ot_doc_number||''); sv('otRatePerDay',u.ot_rate_per_day!=null?u.ot_rate_per_day:'');
+  sv('otRatePerHour',u.ot_rate_per_hour!=null?u.ot_rate_per_hour:''); sv('otMaxHoursPerDay',u.ot_max_hours_per_day!=null?u.ot_max_hours_per_day:'');
+  sv('otBankAccount',u.ot_bank_account||'');
+
+  // if(u.signature){G('sigCurImg').src=u.signature;G('sigCurWrap').style.display='block';sigSaved=true;updSigSt(true);chip('signature',true);}
+  // renderSocial();
+
+  // if(u.affiliation&&u.firstName) chip('personal',true);
+  // if(u.profileImage||u.picture)   chip('photo',true);
+  // if(u.supervisor||u.approver||u.payer) chip('related',true);
+  // if(u.ot_doc_number||u.ot_rate_per_day) chip('ot',true);
+}
+
+// ─ Orgs ─
+async function loadOrgs() {
+  try{const res=await fetch(`${API_BASE_URL}/organizations`);const r=await res.json();orgsData=(r.success&&Array.isArray(r.data))?r.data:(Array.isArray(r)?r:[]);}catch{orgsData=[];}
+  buildAff();
+}
+function buildAff() {
+  const sel=G('affiliation');if(!sel)return;
+  const map=new Map();
+  orgsData.forEach(o=>{if(o.affiliation&&!map.has(o.affiliation))map.set(o.affiliation,o.affiliation_code||'');});
+  sel.innerHTML='<option value="">เลือกสังกัด</option>';
+  map.forEach((code,aff)=>{const o=document.createElement('option');o.value=aff;o.textContent=aff;o.setAttribute('data-code',code);sel.appendChild(o);});
+  if(userData.affiliation){sel.value=userData.affiliation;buildDep(userData.affiliation);setTimeout(()=>{const d=G('department');if(d&&userData.department)d.value=userData.department;},60);}
+}
+function buildDep(aff) {
+  const sel=G('department');if(!sel)return;
+  const depts=orgsData.filter(o=>o.affiliation===aff);
+  if(!depts.length){sel.innerHTML='<option value="">ไม่พบข้อมูล</option>';sel.disabled=true;return;}
+  sel.disabled=false;sel.innerHTML='<option value="">เลือกหน่วยงาน</option>';
+  depts.forEach(d=>{const o=document.createElement('option');o.value=d.department;o.textContent=d.department;o.setAttribute('data-code',d.department_code||'');sel.appendChild(o);});
+}
+function bindOrg() {
+  G('affiliation')?.addEventListener('change',async function(){
+    const aff=this.value,code=this.options[this.selectedIndex]?.getAttribute('data-code')||'';
+    userData.affiliation=aff;userData.aff_code=code;
+    if(aff){buildDep(aff);userData.department='';userData.dep_code='';await loadStaff(code);}
+    else{G('department').innerHTML='<option value="">เลือกสังกัดก่อน</option>';G('department').disabled=true;await loadStaff('');}
+  });
+  G('department')?.addEventListener('change',function(){userData.department=this.value;userData.dep_code=this.options[this.selectedIndex]?.getAttribute('data-code')||'';});
+}
+
+// ─ Staff ─
+async function loadStaff(aff_code) {
+  let staff=[];
+  try{let url=`${API_BASE_URL}/user/staff-list`;if(aff_code?.trim())url+=`?aff_code=${encodeURIComponent(aff_code)}`;const res=await fetch(url,{headers:tok()?{'Authorization':`Bearer ${tok()}`}:{}});if(res.ok){const r=await res.json();staff=(r.success&&Array.isArray(r.data))?r.data:(Array.isArray(r)?r:[]); }}catch{}
+  ['supervisor','approver','payer'].forEach(id=>{const sel=G(id);if(!sel)return;sel.innerHTML='<option value="">-- ไม่ระบุ --</option>';staff.forEach(s=>{const val=s.uuid||s.id;const lbl=`${s.name||''}${s.position?' ('+s.position+')':''}${s.department?' - '+s.department:''}`;sel.innerHTML+=`<option value="${esc(val)}">${esc(lbl)}</option>`;});const saved=userData[`${id}_code`]||userData[id]||'';if(saved)sel.value=saved;});
+}
+function bindRel() {
+  ['supervisor','approver','payer'].forEach(id=>{G(id)?.addEventListener('change',function(){userData[id]=this.options[this.selectedIndex]?.text||'';userData[`${id}_code`]=this.value||'';});});
+}
+
+// ─ Signature ─
+function initSig() {
+  canvas=G('sigCanvas');if(!canvas)return;ctx=canvas.getContext('2d');rsz();
+  ctx.strokeStyle='#000';ctx.lineWidth=2.5;ctx.lineCap='round';ctx.lineJoin='round';
+  canvas.addEventListener('mousedown',sd);canvas.addEventListener('mousemove',dr);canvas.addEventListener('mouseup',su);canvas.addEventListener('mouseleave',su);
+  canvas.addEventListener('touchstart',e=>{e.preventDefault();drawing=true;const h=G('sigHint');if(h)h.style.display='none';const t=e.touches[0];sd({clientX:t.clientX,clientY:t.clientY});},{passive:false});
+  canvas.addEventListener('touchmove',e=>{e.preventDefault();if(!drawing)return;const t=e.touches[0];dr({clientX:t.clientX,clientY:t.clientY});},{passive:false});
+  canvas.addEventListener('touchend',su);
+}
+function rsz(){if(!canvas)return;const r=canvas.getBoundingClientRect();canvas.width=r.width||500;canvas.height=155;}
+function gp(e){const r=canvas.getBoundingClientRect();return{x:(e.clientX-r.left)*(canvas.width/r.width),y:(e.clientY-r.top)*(canvas.height/r.height)};}
+function sd(e){drawing=true;const h=G('sigHint');if(h)h.style.display='none';const p=gp(e);ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(p.x,p.y);ctx.stroke();}
+function dr(e){if(!drawing)return;const p=gp(e);ctx.lineTo(p.x,p.y);ctx.stroke();ctx.beginPath();ctx.moveTo(p.x,p.y);}
+function su(){drawing=false;ctx.beginPath();}
+function clearSig(){ctx.clearRect(0,0,canvas.width,canvas.height);sigSaved=false;userData.signature=null;const h=G('sigHint');if(h)h.style.display='flex';updSigSt(false);}
+function updSigSt(ok){const s=G('sigSt');if(!s)return;s.className=ok?'sig-st ok':'sig-st';s.innerHTML=ok?'<i class="fas fa-circle-check"></i> บันทึกลายเซ็นในหน่วยความจำแล้ว':'<i class="fas fa-circle-dot"></i> ยังไม่ได้บันทึก';}
+function captureSig(){
+  if(!canvas||!ctx)return;
+  const id=ctx.getImageData(0,0,canvas.width,canvas.height),d=id.data;
+  let top=canvas.height,left=canvas.width,right=0,bottom=0;
+  for(let y=0;y<canvas.height;y++)for(let x=0;x<canvas.width;x++){const i=(y*canvas.width+x)*4;if(d[i+3]>0){if(x<left)left=x;if(x>right)right=x;if(y<top)top=y;if(y>bottom)bottom=y;}}
+  if(right<=left||bottom<=top){Swal.fire({icon:'warning',title:'ไม่พบลายเซ็น',text:'กรุณาเซ็นก่อนบันทึก'});return;}
+  const pad=10,w=right-left+pad*2,h=bottom-top+pad*2;
+  const cc=document.createElement('canvas'),cctx=cc.getContext('2d');
+  let scale=1,url='';
+  while(scale>0.2){cc.width=w*scale;cc.height=h*scale;cctx.clearRect(0,0,cc.width,cc.height);cctx.drawImage(canvas,left-pad,top-pad,w,h,0,0,cc.width,cc.height);url=cc.toDataURL('image/png');if(Math.round((url.length*3)/4/1024)<=20)break;scale-=0.1;}
+  userData.signature=url;sigSaved=true;G('sigCurImg').src=url;G('sigCurWrap').style.display='block';updSigSt(true);
+  toast('บันทึกลายเซ็นในหน่วยความจำแล้ว กด "บันทึกและอัปโหลด" เพื่อส่งข้อมูล');
+}
+
+// ─ Image ─
+function previewImg(input) {
+  const file=input.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{const img=new Image();img.onload=function(){const sz=Math.min(img.width,img.height),sx=(img.width-sz)/2,sy=(img.height-sz)/2;const c=document.createElement('canvas'),ct=c.getContext('2d');c.width=200;c.height=200;ct.drawImage(img,sx,sy,sz,sz,0,0,200,200);let q=0.9,b=c.toDataURL('image/jpeg',q);while(b.length>20000&&q>0.1){q-=0.05;b=c.toDataURL('image/jpeg',q);}G('profilePreview').src=b;G('heroAv').src=b;G('headerAv').src=b;croppedImg=b;userData.profileImage=b;toast('เลือกรูปแล้ว กด "บันทึกรูปภาพ" เพื่อส่งข้อมูล');};img.src=e.target.result;};
+  reader.readAsDataURL(file);
+}
+
+// ─ Social ─
+function renderSocial(){
+  const u=userData;
+  rSI('google',  u.social_id_google,   u.email_google||u.email,                           u.social_type==='google');
+  rSI('line',    u.social_id_line,     u.name_line,                                       u.social_type==='line');
+  rSI('telegram',u.social_id_telegram, u.username_telegram?`@${u.username_telegram}`:null, u.social_type==='telegram');
+}
+function rSI(p,sid,disp,isPri){
+  const subMap={google:'gSub',line:'lSub',telegram:'tSub'},actMap={google:'gAct',line:'lAct',telegram:'tAct'},priMap={google:'gPri',line:'lPri',telegram:'tPri'};
+  const subEl=G(subMap[p]),actEl=G(actMap[p]),priEl=G(priMap[p]);
+  if(!actEl)return;
+  if(priEl)priEl.style.display=isPri?'inline-flex':'none';
+  if(subEl)subEl.textContent=sid?(disp||sid):'ยังไม่เชื่อมต่อ';
+  if(sid){
+    actEl.innerHTML=`<span class="badge-conn"><i class="fas fa-circle-check" style="font-size:.6rem"></i> เชื่อมต่อแล้ว</span>`;
+    if(!isPri)actEl.innerHTML+=` <button class="btn-soc disc" onclick="discSoc('${p}')"><i class="fas fa-unlink"></i> ยกเลิก</button>`;
+  }else{const h={google:'connG()',line:'connL()',telegram:'connT()'};actEl.innerHTML=`<button class="btn-soc conn" onclick="${h[p]}"><i class="fas fa-plus"></i> เชื่อมต่อ</button>`;}
+}
+function connG(){if(typeof google==='undefined'){Swal.fire({icon:'warning',title:'Google ยังโหลดไม่เสร็จ'});return;}google.accounts.id.initialize({client_id:GOOGLE_CLIENT_ID,callback:r=>{try{const p=parseJWT(r.credential);linkSoc('google',p.sub,{email:p.email,name:p.name,picture:p.picture});}catch{Swal.fire({icon:'error',title:'เกิดข้อผิดพลาด'});}},auto_select:false});google.accounts.id.prompt();}
+function connL(){const st='link_line|'+Math.random().toString(36).slice(2);sessionStorage.setItem('line_link_state',st);window.location.href=`https://access.line.me/oauth2/v2.1/authorize?response_type=code&client_id=${LINE_CHANNEL_ID}&redirect_uri=${encodeURIComponent(LINE_REDIRECT_URI)}&state=${encodeURIComponent(st)}&scope=profile%20openid%20email`;}
+function connT(){tgPopup=window.open(`/telegram-callback.html?bot=${encodeURIComponent(TELEGRAM_BOT_USERNAME)}&origin=${encodeURIComponent(window.location.origin)}`,'TgLink','width=480,height=600,scrollbars=no');if(!tgPopup||tgPopup.closed){Swal.fire({icon:'warning',title:'Popup ถูกบล็อก'});return;}tgTimer=setInterval(()=>{if(tgPopup?.closed){clearInterval(tgTimer);tgTimer=null;}},500);}
+window.handleTelegramCallback=u=>{if(tgPopup&&!tgPopup.closed)tgPopup.close();if(tgTimer){clearInterval(tgTimer);tgTimer=null;}if(!u?.id)return;const n=[u.first_name,u.last_name].filter(Boolean).join(' ')||u.username||'Telegram User';linkSoc('telegram',u.id.toString(),{name:n,username:u.username,picture:u.photo_url});};
+function initLineCallback(){const p=new URLSearchParams(window.location.search);if(p.get('line')!=='link')return;const uid=p.get('userId'),n=p.get('displayName');if(uid&&n){linkSoc('line',uid,{name:n,picture:p.get('pictureUrl')||null});history.replaceState({},'',window.location.pathname);}}
+
+async function linkSoc(platform,sid,profile){
+  try{const res=await fetch(`${API_BASE_URL}/user/link-social`,{method:'POST',headers:{'Content-Type':'application/json',...(tok()?{'Authorization':`Bearer ${tok()}`}:{})},body:JSON.stringify({uuid:userData.uuid,platform,social_id:sid,...profile})});if(!res.ok)throw new Error();}catch{Swal.fire({icon:'error',title:'เชื่อมต่อไม่สำเร็จ',text:'กรุณาลองใหม่อีกครั้ง'});return;}
+  if(platform==='google'){userData.social_id_google=sid;userData.email_google=profile.email;}
+  if(platform==='line'){userData.social_id_line=sid;userData.name_line=profile.name;}
+  if(platform==='telegram'){userData.social_id_telegram=sid;userData.username_telegram=profile.username;}
+  setUD(userData);renderSocial();toast(`เชื่อมต่อ ${platform} สำเร็จ`);
+}
+function discSoc(platform){
+  Swal.fire({icon:'warning',title:`ยกเลิกการเชื่อมต่อ?`,showCancelButton:true,confirmButtonText:'ยืนยัน',cancelButtonText:'ยกเลิก',confirmButtonColor:'#f43f5e'}).then(async r=>{
+    if(!r.isConfirmed)return;
+    try{await fetch(`${API_BASE_URL}/user/unlink-social`,{method:'POST',headers:{'Content-Type':'application/json',...(tok()?{'Authorization':`Bearer ${tok()}`}:{})},body:JSON.stringify({uuid:userData.uuid,platform})});}catch{}
+    if(platform==='google'){userData.social_id_google=null;userData.email_google=null;}
+    if(platform==='line'){userData.social_id_line=null;userData.name_line=null;}
+    if(platform==='telegram'){userData.social_id_telegram=null;userData.username_telegram=null;}
+    setUD(userData);renderSocial();toast(`ยกเลิก ${platform} สำเร็จ`);
+  });
+}
+
+// ─ Section UI ─
+function tog(id){
+  const c=G(id);if(!c)return;
+  c.classList.toggle('col');
+  if(!c.classList.contains('col')&&id==='sec-signature')setTimeout(rsz,60);
+}
+function goSec(id){
+  const c=G(id);if(!c)return;
+  if(c.classList.contains('col'))c.classList.remove('col');
+  if(id==='sec-signature')setTimeout(rsz,60);
+  setTimeout(()=>window.scrollTo({top:c.getBoundingClientRect().top+window.scrollY-130,behavior:'smooth'}),50);
+  document.querySelectorAll('.pill').forEach(p=>p.classList.remove('active'));
+  document.querySelector(`[data-sec="${id}"]`)?.classList.add('active');
+}
+function chip(k,show){const c=G(`chip-${k}`);if(c)c.classList.toggle('show',show);document.querySelector(`[data-sec="sec-${k}"]`)?.classList.toggle('saved',show);}
+function hl(id){const c=G(id);if(!c)return;c.classList.add('hl');setTimeout(()=>c.classList.remove('hl'),3000);}
+function updatePill(){
+  const secs=['sec-personal','sec-signature','sec-photo','sec-related','sec-ot','sec-social'];
+  let active=secs[0];secs.forEach(id=>{const c=G(id);if(c&&c.getBoundingClientRect().top<=160)active=id;});
+  document.querySelectorAll('.pill').forEach(p=>p.classList.remove('active'));
+  document.querySelector(`[data-sec="${active}"]`)?.classList.add('active');
+}
+
+// ─ Save ─
+async function save(sec) {
+  const stEl=G(`st-${sec}`), btn=G(`btn-${sec}`);
+  const setSt=(msg,cls='')=>{if(!stEl)return;stEl.className='save-st'+(cls?' '+cls:'');stEl.innerHTML=msg;};
+  const setBtnL=on=>{if(!btn)return;btn.disabled=on;btn.innerHTML=on?'<i class="fas fa-spinner spin"></i> กำลังบันทึก...':{personal:'<i class="fas fa-floppy-disk"></i> บันทึก',signature:'<i class="fas fa-floppy-disk"></i> บันทึกและอัปโหลด',photo:'<i class="fas fa-floppy-disk"></i> บันทึกรูปภาพ',related:'<i class="fas fa-floppy-disk"></i> บันทึก',ot:'<i class="fas fa-floppy-disk"></i> บันทึก'}[sec];};
+
+  let payload={uuid:userData.uuid};
+
+  if(sec==='personal'){
+    const aff=G('affiliation').value,dep=G('department').value,pref=G('prefix').value,fn=G('firstName').value.trim(),ln=G('lastName').value.trim(),pos=G('position').value.trim(),pt=G('personnelType').value;
+    if(!aff){Swal.fire({icon:'warning',title:'กรุณาเลือกสังกัด'});return;}
+    if(!dep){Swal.fire({icon:'warning',title:'กรุณาเลือกหน่วยงาน'});return;}
+    if(!pref||!fn||!ln||!pos||!pt){Swal.fire({icon:'warning',title:'กรอกข้อมูลไม่ครบ',text:'กรุณากรอกข้อมูลที่มี * ให้ครบถ้วน'});return;}
+    const affO=G('affiliation').options,depO=G('department').options;
+    userData.affiliation=aff;userData.aff_code=affO[affO.selectedIndex]?.getAttribute('data-code')||'';
+    userData.department=dep;userData.dep_code=depO[depO.selectedIndex]?.getAttribute('data-code')||'';
+    userData.prefix=pref;userData.firstName=fn;userData.lastName=ln;userData.position=pos;userData.personnelType=pt;
+    userData.name=[pref,fn,ln].filter(Boolean).join(' ');
+    payload={...payload,affiliation:userData.affiliation,aff_code:userData.aff_code,department:userData.department,dep_code:userData.dep_code,prefix:pref,firstName:fn,lastName:ln,name:userData.name,position:pos,personnelType:pt};
+  }
+  else if(sec==='signature'){if(!userData.signature){Swal.fire({icon:'warning',title:'ยังไม่มีลายเซ็น',text:'กรุณาเซ็นและกดบันทึกลายเซ็นก่อน'});return;}payload.signature=userData.signature;}
+  else if(sec==='photo'){if(!userData.profileImage){Swal.fire({icon:'warning',title:'ยังไม่ได้เลือกรูป',text:'กรุณาเลือกไฟล์รูปภาพก่อน'});return;}payload.profileImage=userData.profileImage;}
+  else if(sec==='related'){
+    ['supervisor','approver','payer'].forEach(id=>{const sel=G(id);if(!sel)return;userData[id]=sel.options[sel.selectedIndex]?.text||'';userData[`${id}_code`]=sel.value||'';});
+    payload={...payload,supervisor:userData.supervisor,supervisor_code:userData.supervisor_code,approver:userData.approver,approver_code:userData.approver_code,payer:userData.payer,payer_code:userData.payer_code};
+  }
+  else if(sec==='ot'){
+    userData.ot_doc_number=G('otDocNumber')?.value.trim()||'';userData.ot_rate_per_day=G('otRatePerDay')?.value.trim()||'';
+    userData.ot_rate_per_hour=G('otRatePerHour')?.value.trim()||'';userData.ot_max_hours_per_day=G('otMaxHoursPerDay')?.value.trim()||'';
+    userData.ot_bank_account=G('otBankAccount')?.value.trim()||'';
+    payload={...payload,ot_doc_number:userData.ot_doc_number||null,ot_rate_per_day:userData.ot_rate_per_day!==''?parseFloat(userData.ot_rate_per_day):null,ot_rate_per_hour:userData.ot_rate_per_hour!==''?parseFloat(userData.ot_rate_per_hour):null,ot_max_hours_per_day:userData.ot_max_hours_per_day!==''?parseInt(userData.ot_max_hours_per_day):null,ot_bank_account:userData.ot_bank_account||null};
+  }
+
+  setBtnL(true);setSt('<i class="fas fa-spinner spin"></i> กำลังบันทึก...');
+  try{
+    const res=await fetch(`${API_BASE_URL}/user/update`,{method:'POST',headers:{'Content-Type':'application/json',...(tok()?{'Authorization':`Bearer ${tok()}`}:{})},body:JSON.stringify(payload)});
+    const r=await res.json();
+    if(r.success){
+      setUD(userData);setSt('<i class="fas fa-circle-check"></i> บันทึกสำเร็จ','ok');chip(sec,true);hl(`sec-${sec}`);
+      toast({personal:'บันทึกข้อมูลส่วนตัวสำเร็จ',signature:'บันทึกลายเซ็นสำเร็จ',photo:'บันทึกรูปภาพสำเร็จ',related:'บันทึกผู้เกี่ยวข้องสำเร็จ',ot:'บันทึกข้อมูลโอทีสำเร็จ'}[sec]||'บันทึกสำเร็จ');
+      if(sec==='personal'){G('heroName').textContent=userData.name;G('heroPos').textContent=[userData.position,userData.department].filter(Boolean).join(' • ')||'-';G('hbType').textContent=userData.personnelType||'-';}
+      setTimeout(()=>setSt(''),5000);
+    }else{setSt(`<i class="fas fa-triangle-exclamation"></i> ${r.message||'บันทึกไม่สำเร็จ'}`,'err');toast(r.message||'เกิดข้อผิดพลาด','error');}
+  }catch(err){console.error(err);setSt('<i class="fas fa-triangle-exclamation"></i> เกิดข้อผิดพลาด กรุณาลองใหม่','err');toast('เกิดข้อผิดพลาด','error');}
+  finally{setBtnL(false);}
+}
+
+// ─ Utils ─
+function sv(id,v,isSel=false){const e=G(id);if(!e)return;if(isSel)[...e.options].forEach(o=>o.selected=o.value===(v||''));else e.value=v||'';}
+function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function parseJWT(t){const b=t.split('.')[1].replace(/-/g,'+').replace(/_/g,'/').padEnd(Math.ceil(t.split('.')[1].length/4)*4,'=');return JSON.parse(decodeURIComponent(atob(b).split('').map(c=>'%'+('00'+c.charCodeAt(0).toString(16)).slice(-2)).join('')));}
+
+// ─ Init ─
+document.addEventListener('DOMContentLoaded',async()=>{
+  const ok=await loadUser(); if(!ok)return;
+  await loadOrgs(); bindOrg(); await loadStaff(userData.aff_code||''); bindRel();
+  initSig(); initLineCallback();
+  window.addEventListener('scroll',updatePill,{passive:true});
+  window.addEventListener('resize',()=>{if(!G('sec-signature').classList.contains('col'))rsz();});
+  window.addEventListener('message',e=>{if(e.origin!==window.location.origin)return;if(e.data?.type==='TELEGRAM_LOGIN_SUCCESS')window.handleTelegramCallback(e.data.user);});
+});
+</script>
+</body>
+</html>

@@ -6,36 +6,63 @@
   <title>เข้าสู่ระบบ | ระบบลงเวลาปฏิบัติงาน</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700;800&family=Noto+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script src="https://accounts.google.com/gsi/client" async defer></script>
 
   <style>
     :root {
-      --bg: #0a0a0f;
-      --surface: #111118;
-      --surface2: #18181f;
-      --surface3: #1e1e28;
-      --border: rgba(255,255,255,0.07);
-      --text-primary: #f0f0f5;
-      --text-secondary: #7a7a8a;
-      --text-muted: #3d3d50;
-      --accent: #6366f1;
-      --accent-hover: #4f52e0;
-      --accent-glow: rgba(99,102,241,0.25);
-      --green: #10b981;
-      --red: #f43f5e;
-      --telegram-blue: #2AABEE;
-      --radius: 16px;
-      --radius-sm: 10px;
-      --radius-lg: 24px;
-      --transition: 0.2s cubic-bezier(0.4,0,0.2,1);
+      /* Premium Royal Navy Theme */
+      --bg-primary: #020617;
+      --bg-secondary: #0f172a;
+      --bg-card: rgba(15, 23, 42, 0.65);
+      --bg-glass: rgba(255,255,255,0.03);
+      --border-color: rgba(148, 163, 184, 0.1);
+      --border-glow: rgba(59, 130, 246, 0.3);
+      --border-user: rgba(96, 165, 250, 0.3);
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --accent: #3b82f6;
+      --accent-mid: #2563eb;
+      --accent-light: #60a5fa;
+      --accent-subtle: rgba(59, 130, 246, 0.1);
+      --accent-subtle2: rgba(59, 130, 246, 0.15);
+      --gold: #f59e0b;
+      --gold-light: #fbbf24;
+      --gold-bg: rgba(245, 158, 11, 0.1);
+      --success: #10b981;
+      --success-bg: rgba(16, 185, 129, 0.15);
+      --success-border: rgba(16, 185, 129, 0.4);
+      --danger: #ef4444;
+      --danger-bg: rgba(239, 68, 68, 0.1);
+      --danger-border: rgba(239, 68, 68, 0.3);
+      --shadow-glow: 0 0 40px rgba(37, 99, 235, 0.15);
+      --shadow-card: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      --radius-sm: 12px;
+      --radius-md: 20px;
+      --radius-lg: 28px;
+      --radius-xl: 36px;
+      --transition: 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      
+      /* Social Colors */
+      --google-color: #ea4335;
+      --google-bg: rgba(234, 67, 53, 0.1);
+      --google-border: rgba(234, 67, 53, 0.3);
+      --line-color: #06c755;
+      --line-bg: rgba(6, 199, 85, 0.1);
+      --line-border: rgba(6, 199, 85, 0.3);
+      --telegram-color: #2AABEE;
+      --telegram-bg: rgba(42, 171, 238, 0.1);
+      --telegram-border: rgba(42, 171, 238, 0.3);
     }
+
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
     body {
       font-family: 'Noto Sans Thai', sans-serif;
-      background: var(--bg);
+      background-color: var(--bg-primary);
       min-height: 100vh;
       display: flex;
       align-items: center;
@@ -44,110 +71,449 @@
       overflow-x: hidden;
       position: relative;
     }
-    .bg-effects { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
-    .bg-orb { position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.1; }
-    .bg-orb-1 { width: 500px; height: 500px; background: radial-gradient(circle, #6366f1, transparent); top: -150px; left: -100px; animation: orbFloat 12s ease-in-out infinite; }
-    .bg-orb-2 { width: 350px; height: 350px; background: radial-gradient(circle, #2AABEE, transparent); bottom: -100px; right: -80px; animation: orbFloat 15s ease-in-out infinite reverse; }
-    .bg-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px); background-size: 60px 60px; }
-    @keyframes orbFloat { 0%, 100% { transform: translate(0,0); } 50% { transform: translate(20px,-20px); } }
 
-    .wrapper { position: relative; z-index: 1; width: 100%; max-width: 440px; }
-
-    .brand { text-align: center; margin-bottom: 2rem; animation: fadeSlideDown 0.6s ease both; }
-    .brand-icon { width: 60px; height: 60px; background: linear-gradient(135deg, var(--accent), #a855f7); border-radius: 18px; display: inline-flex; align-items: center; justify-content: center; font-size: 1.6rem; color: white; margin-bottom: 0.75rem; box-shadow: 0 0 30px var(--accent-glow); }
-    .brand-title { font-family: 'Syne', sans-serif; font-size: 1.25rem; font-weight: 700; color: var(--text-primary); }
-    .brand-sub { font-size: 0.75rem; color: var(--text-secondary); margin-top: 3px; }
-
-    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 2rem 1.75rem; animation: fadeSlideUp 0.6s ease 0.1s both; box-shadow: 0 0 0 1px rgba(255,255,255,0.04), 0 40px 80px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.06); }
-
-    .card-title { font-family: 'Syne', sans-serif; font-size: 1.3rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.35rem; }
-    .card-sub { font-size: 0.82rem; color: var(--text-secondary); margin-bottom: 1.75rem; }
-
-    .social-grid { display: flex; flex-direction: column; gap: 0.7rem; }
-    .social-btn { display: flex; align-items: center; gap: 14px; padding: 0.9rem 1.2rem; border-radius: var(--radius); border: 1px solid var(--border); background: var(--surface2); cursor: pointer; transition: all var(--transition); user-select: none; }
-    .social-btn:hover { transform: translateY(-2px); }
-    .social-btn.google:hover   { border-color: rgba(234,67,53,0.4);  box-shadow: 0 8px 24px rgba(234,67,53,0.1); }
-    .social-btn.line:hover     { border-color: rgba(6,199,85,0.4);   box-shadow: 0 8px 24px rgba(6,199,85,0.1); }
-    .social-btn.telegram:hover { border-color: rgba(42,171,238,0.4); box-shadow: 0 8px 24px rgba(42,171,238,0.1); }
-    .social-btn.disabled       { opacity: 0.5; cursor: not-allowed; pointer-events: none; }
-    .social-icon { width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.15rem; flex-shrink: 0; }
-    .google   .social-icon { background: rgba(234,67,53,0.12);  color: #ea4335; }
-    .line     .social-icon { background: rgba(6,199,85,0.12);   color: #06c755; }
-    .telegram .social-icon { background: rgba(42,171,238,0.12); color: #2AABEE; }
-    .social-text { flex: 1; }
-    .social-text strong { display: block; font-size: 0.875rem; font-weight: 600; color: var(--text-primary); }
-    .social-text span   { font-size: 0.7rem; color: var(--text-secondary); }
-    .social-arrow { color: var(--text-muted); font-size: 0.75rem; transition: transform var(--transition); }
-    .social-btn:hover .social-arrow { transform: translateX(3px); color: var(--text-secondary); }
-
-    #loginStatus { margin-bottom: 1rem; }
-    .notify-bar { display: flex; align-items: center; gap: 10px; padding: 0.75rem 1rem; border-radius: var(--radius-sm); font-size: 0.8rem; }
-    .notify-bar.success { background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.2); color: var(--green); }
-    .notify-bar.error   { background: rgba(244,63,94,0.08);  border: 1px solid rgba(244,63,94,0.2);  color: var(--red); }
-    .notify-bar.info    { background: rgba(99,102,241,0.08); border: 1px solid rgba(99,102,241,0.2); color: #a5b4fc; }
-
-    .divider { display: flex; align-items: center; gap: 0.75rem; margin: 1.25rem 0; color: var(--text-muted); font-size: 0.72rem; }
-    .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
-
-    .register-link { text-align: center; margin-top: 1.5rem; font-size: 0.8rem; color: var(--text-secondary); }
-    .register-link a { color: var(--accent); text-decoration: none; font-weight: 600; }
-    .register-link a:hover { text-decoration: underline; }
-
-    .security-note { display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 0.7rem; color: var(--text-muted); margin-top: 1.5rem; }
-
-    @keyframes fadeSlideDown { from { opacity: 0; transform: translateY(-12px); } to { opacity: 1; transform: translateY(0); } }
-    @keyframes fadeSlideUp   { from { opacity: 0; transform: translateY(16px);  } to { opacity: 1; transform: translateY(0); } }
-
-    @media (max-width: 480px) {
-      .card { padding: 1.5rem 1.25rem; }
-      body  { padding: 1.5rem 0.75rem; }
+    /* Magnificent Animated Background */
+    .bg-layer {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      overflow: hidden;
+    }
+    
+    .orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.4;
+      animation: float 10s infinite cubic-bezier(0.45, 0, 0.55, 1);
+    }
+    
+    .orb-1 {
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, #1e3a8a, transparent);
+      top: -10%; left: -10%;
+      animation-duration: 12s;
+    }
+    
+    .orb-2 {
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, #7c3aed, transparent);
+      bottom: -15%; right: -10%;
+      animation-duration: 15s;
+      animation-delay: -3s;
+    }
+    
+    .orb-3 {
+      width: 300px; height: 300px;
+      background: radial-gradient(circle, #b45309, transparent);
+      top: 40%; right: 20%;
+      opacity: 0.2;
+      animation-duration: 20s;
+      animation-delay: -5s;
+    }
+    
+    .grid-overlay {
+      position: absolute;
+      inset: 0;
+      background-size: 60px 60px;
+      background-image: 
+        linear-gradient(to right, rgba(255,255,255,0.02) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255,255,255,0.02) 1px, transparent 1px);
+      mask-image: radial-gradient(circle at center, black 40%, transparent 100%);
     }
 
-    .swal2-popup { background: var(--surface) !important; color: var(--text-primary) !important; border: 1px solid var(--border) !important; border-radius: var(--radius-lg) !important; }
-    .swal2-title { color: var(--text-primary) !important; }
-    .swal2-html-container { color: var(--text-secondary) !important; }
-    .swal2-confirm { background: var(--accent) !important; border-radius: var(--radius-sm) !important; }
+    @keyframes float {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      33% { transform: translate(30px, -30px) scale(1.05); }
+      66% { transform: translate(-20px, 20px) scale(0.95); }
+    }
+
+    .wrapper {
+      position: relative;
+      z-index: 10;
+      width: 100%;
+      max-width: 440px;
+      animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(30px) scale(0.98); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    /* Header Brand */
+    .brand {
+      text-align: center;
+      margin-bottom: 2rem;
+      animation: fadeUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both;
+    }
     
+    .brand-icon {
+      width: 64px; height: 64px;
+      background: linear-gradient(135deg, var(--accent-mid), var(--gold));
+      border-radius: 18px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.6rem;
+      color: white;
+      margin-bottom: 1rem;
+      box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.5);
+      position: relative;
+    }
+    
+    .brand-icon::after {
+      content: '';
+      position: absolute;
+      inset: -6px;
+      border-radius: 24px;
+      background: linear-gradient(135deg, var(--accent-light), var(--gold));
+      z-index: -1;
+      opacity: 0.3;
+      filter: blur(12px);
+    }
+    
+    .brand-title {
+      font-family: 'Kanit', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      letter-spacing: 0.02em;
+    }
+    
+    .brand-sub {
+      font-family: 'Kanit', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 400;
+      color: var(--text-muted);
+      margin-top: 0.3rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    /* Main Premium Card */
+    .card {
+      background: var(--bg-card);
+      border-radius: var(--radius-xl);
+      border: 1px solid var(--border-glow);
+      padding: 2.5rem 2rem;
+      backdrop-filter: blur(40px) saturate(150%);
+      box-shadow: var(--shadow-card), var(--shadow-glow);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    }
+
+    .card-title {
+      font-family: 'Kanit', sans-serif;
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 0.35rem;
+    }
+    
+    .card-sub {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      margin-bottom: 2rem;
+    }
+
+    /* Status Message */
+    #loginStatus { margin-bottom: 1.5rem; }
+    
+    .notify-bar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 1rem 1.25rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      font-weight: 500;
+      animation: fadeUp 0.4s ease both;
+    }
+    
+    .notify-bar.success {
+      background: var(--success-bg);
+      border: 1px solid var(--success-border);
+      color: #34d399;
+    }
+    
+    .notify-bar.error {
+      background: var(--danger-bg);
+      border: 1px solid var(--danger-border);
+      color: #f87171;
+    }
+    
+    .notify-bar.info {
+      background: var(--accent-subtle2);
+      border: 1px solid var(--border-user);
+      color: var(--accent-light);
+    }
+
+    /* Social Login Grid */
+    .social-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+    }
+    
+    .social-btn {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 1rem 1.25rem;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-color);
+      background: rgba(15, 23, 42, 0.5);
+      cursor: pointer;
+      transition: all var(--transition);
+      user-select: none;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .social-btn::before {
+      content: '';
+      position: absolute;
+      top: 0; left: -100%;
+      width: 100%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
+      transition: left 0.5s ease;
+    }
+    
+    .social-btn:hover::before { left: 100%; }
+    .social-btn:hover { transform: translateY(-3px); }
+    
+    .social-btn.disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      pointer-events: none;
+      transform: none !important;
+    }
+
+    .social-btn.google {
+      border-color: var(--google-border);
+      background: var(--google-bg);
+    }
+    .social-btn.google:hover {
+      box-shadow: 0 10px 30px rgba(234, 67, 53, 0.2);
+      border-color: var(--google-color);
+    }
+
+    .social-btn.line {
+      border-color: var(--line-border);
+      background: var(--line-bg);
+    }
+    .social-btn.line:hover {
+      box-shadow: 0 10px 30px rgba(6, 199, 85, 0.2);
+      border-color: var(--line-color);
+    }
+
+    .social-btn.telegram {
+      border-color: var(--telegram-border);
+      background: var(--telegram-bg);
+    }
+    .social-btn.telegram:hover {
+      box-shadow: 0 10px 30px rgba(42, 171, 238, 0.2);
+      border-color: var(--telegram-color);
+    }
+
+    .social-icon {
+      width: 44px; height: 44px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      flex-shrink: 0;
+      transition: transform var(--transition);
+    }
+    
+    .social-btn:hover .social-icon { transform: scale(1.1); }
+    
+    .google .social-icon {
+      background: linear-gradient(135deg, rgba(234,67,53,0.2), rgba(234,67,53,0.05));
+      color: var(--google-color);
+      box-shadow: 0 0 20px rgba(234, 67, 53, 0.15);
+    }
+    
+    .line .social-icon {
+      background: linear-gradient(135deg, rgba(6,199,85,0.2), rgba(6,199,85,0.05));
+      color: var(--line-color);
+      box-shadow: 0 0 20px rgba(6, 199, 85, 0.15);
+    }
+    
+    .telegram .social-icon {
+      background: linear-gradient(135deg, rgba(42,171,238,0.2), rgba(42,171,238,0.05));
+      color: var(--telegram-color);
+      box-shadow: 0 0 20px rgba(42, 171, 238, 0.15);
+    }
+
+    .social-text { flex: 1; }
+    .social-text strong {
+      display: block;
+      font-family: 'Kanit', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+    .social-text span {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+      display: block;
+    }
+    
+    .social-arrow {
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      transition: all var(--transition);
+    }
+    .social-btn:hover .social-arrow {
+      transform: translateX(4px);
+      color: var(--text-secondary);
+    }
+
+    /* Security Note */
+    .security-note {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 1.75rem;
+    }
+    
+    .security-note i {
+      color: var(--gold);
+      font-size: 0.85rem;
+    }
+
+    /* Divider */
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin: 1.5rem 0;
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      font-family: 'Kanit', sans-serif;
+    }
+    .divider::before, .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border-color), transparent);
+    }
+
+    /* Register Link */
+    .register-link {
+      text-align: center;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+    .register-link a {
+      color: var(--accent-light);
+      text-decoration: none;
+      font-weight: 600;
+      transition: color 0.2s;
+    }
+    .register-link a:hover {
+      color: var(--gold-light);
+      text-decoration: underline;
+    }
+
+    /* SweetAlert Custom */
+    .swal2-popup {
+      background: var(--bg-secondary) !important;
+      color: var(--text-primary) !important;
+      border: 1px solid var(--border-glow) !important;
+      border-radius: var(--radius-lg) !important;
+      box-shadow: var(--shadow-card), var(--shadow-glow) !important;
+      font-family: 'Noto Sans Thai', sans-serif !important;
+    }
+    .swal2-title {
+      font-family: 'Kanit', sans-serif !important;
+      color: var(--text-primary) !important;
+    }
+    .swal2-html-container {
+      color: var(--text-secondary) !important;
+    }
+    .swal2-confirm {
+      background: linear-gradient(135deg, var(--accent-mid), #4f46e5) !important;
+      border-radius: var(--radius-sm) !important;
+      font-family: 'Kanit', sans-serif !important;
+      box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4) !important;
+    }
+    .swal2-cancel {
+      background: var(--bg-card) !important;
+      border: 1px solid var(--border-color) !important;
+      color: var(--text-secondary) !important;
+      border-radius: var(--radius-sm) !important;
+      font-family: 'Kanit', sans-serif !important;
+    }
+    
+    /* Loading Overlay */
     .loading-overlay {
       position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0,0,0,0.8);
+      inset: 0;
+      background: rgba(2, 6, 23, 0.85);
       display: flex;
       align-items: center;
       justify-content: center;
       z-index: 9999;
-      backdrop-filter: blur(4px);
+      backdrop-filter: blur(8px);
     }
     .loading-spinner {
-      background: var(--surface);
-      padding: 2rem;
+      background: var(--bg-secondary);
+      padding: 2.5rem 3rem;
       border-radius: var(--radius-lg);
       text-align: center;
-      border: 1px solid var(--border);
+      border: 1px solid var(--border-glow);
+      box-shadow: var(--shadow-glow);
     }
     .loading-spinner i {
-      font-size: 2rem;
+      font-size: 2.5rem;
       color: var(--accent);
       margin-bottom: 1rem;
+      display: block;
+    }
+    .loading-spinner p {
+      color: var(--text-secondary);
+      font-family: 'Kanit', sans-serif;
+      font-size: 0.9rem;
+    }
+
+    @media (max-width: 480px) {
+      .card { padding: 2rem 1.5rem; }
+      body  { padding: 1.5rem 0.75rem; }
+      .social-btn { padding: 0.9rem 1rem; }
+      .social-icon { width: 40px; height: 40px; font-size: 1.1rem; }
     }
   </style>
 </head>
 <body>
 
-<div class="bg-effects">
-  <div class="bg-grid"></div>
-  <div class="bg-orb bg-orb-1"></div>
-  <div class="bg-orb bg-orb-2"></div>
+<div class="bg-layer">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+  <div class="grid-overlay"></div>
 </div>
 
 <div class="wrapper">
   <div class="brand">
-    <div class="brand-icon"><i class="fas fa-clock-rotate-left"></i></div>
+    <div class="brand-icon"><i class="fas fa-business-time"></i></div>
     <div class="brand-title">ระบบลงเวลาปฏิบัติงาน</div>
-    <div class="brand-sub">Time & Attendance Management System</div>
+    <div class="brand-sub">Smart Time & Attendance System</div>
   </div>
 
   <div class="card">
@@ -208,27 +574,23 @@ const CONFIG = {
   LINE_CHANNEL_ID: '2000472605',
   LINE_REDIRECT_URI: window.location.origin + '/line-callback.html',
   TELEGRAM_BOT_USERNAME: 'wisanusenhombot',
-  API_BASE_URL: '/api'  // หรือ URL เต็มของ Worker
+  API_BASE_URL: '/api'
 };
 
 // ==================== State Management ====================
 let isProcessing = false;
 
 // ==================== User Data Normalizer ====================
-// login.js คืน user แบบ nested (location, staff)
-// ทุกหน้าอื่นใช้ flat structure → flatten ที่นี่ก่อนเซฟ localStorage เสมอ
 function flattenUserData(user) {
   if (!user) return {};
   const { location, staff, ...base } = user;
   return {
     ...base,
-    // location fields
     latitude:         location?.latitude   ?? base.latitude   ?? null,
     longitude:        location?.longitude  ?? base.longitude  ?? null,
     district:         location?.district   ?? base.district   ?? null,
     aff_code:         location?.aff_code   ?? base.aff_code   ?? '',
     dep_code:         location?.dep_code   ?? base.dep_code   ?? '',
-    // staff fields
     supervisor:       staff?.supervisor      ?? base.supervisor      ?? '',
     supervisor_code:  staff?.supervisor_code ?? base.supervisor_code ?? '',
     approver:         staff?.approver        ?? base.approver        ?? '',
@@ -250,9 +612,7 @@ function showStatus(type, msg, autoHide = true) {
     el.innerHTML = `<div class="notify-bar ${type}"><i class="fas fa-${icon}"></i><div>${msg}</div></div>`;
     if (autoHide) {
       setTimeout(() => {
-        if (el.innerHTML.includes(msg)) {
-          el.innerHTML = '';
-        }
+        if (el.innerHTML.includes(msg)) el.innerHTML = '';
       }, 5000);
     }
   }
@@ -267,7 +627,7 @@ function showLoading(show, message = 'กำลังดำเนินการ
       overlay.innerHTML = `
         <div class="loading-spinner">
           <i class="fas fa-spinner fa-pulse"></i>
-          <p style="color: var(--text-secondary); margin-top: 0.5rem;">${message}</p>
+          <p>${message}</p>
         </div>
       `;
       document.body.appendChild(overlay);
@@ -283,11 +643,8 @@ function showLoading(show, message = 'กำลังดำเนินการ
 function disableButtons(disabled) {
   const btns = document.querySelectorAll('.social-btn');
   btns.forEach(btn => {
-    if (disabled) {
-      btn.classList.add('disabled');
-    } else {
-      btn.classList.remove('disabled');
-    }
+    if (disabled) btn.classList.add('disabled');
+    else btn.classList.remove('disabled');
   });
 }
 
@@ -295,10 +652,7 @@ function disableButtons(disabled) {
 async function callLoginAPI(provider, socialId, profile) {
   const response = await fetch(`${CONFIG.API_BASE_URL}/user/login`, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json'
-    },
+    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
     body: JSON.stringify({
       social_type: provider,
       social_id: socialId,
@@ -313,8 +667,7 @@ async function callLoginAPI(provider, socialId, profile) {
     throw new Error(`API Error (${response.status}): ${errorText}`);
   }
 
-  const data = await response.json();
-  return data;
+  return await response.json();
 }
 
 async function processLogin(provider, socialId, profile) {
@@ -332,20 +685,14 @@ async function processLogin(provider, socialId, profile) {
     const data = await callLoginAPI(provider, socialId, profile);
 
     if (data.success) {
-      // บันทึก session data
-      if (data.token) {
-        localStorage.setItem('auth_token', data.token);
-      }
+      if (data.token) localStorage.setItem('auth_token', data.token);
       if (data.user) {
-        // Flatten nested objects (location, staff) ให้เป็น flat structure
-        // เพื่อให้ตรงกับ user_data ที่ใช้ใน profile.html และหน้าอื่นๆ
         const flat = flattenUserData(data.user);
         localStorage.setItem('user_data', JSON.stringify(flat));
       }
       
       showStatus('success', `เข้าสู่ระบบสำเร็จ ยินดีต้อนรับ <strong>${escapeHtml(profile.name)}</strong>`);
       
-      // Redirect ไปยังหน้าที่กำหนด
       setTimeout(() => {
         window.location.href = data.redirect || 'index.html';
       }, 1000);
@@ -361,17 +708,13 @@ async function processLogin(provider, socialId, profile) {
         confirmButtonText: 'ไปหน้าสมัครสมาชิก',
         showCancelButton: true,
         cancelButtonText: 'ยกเลิก',
-        confirmButtonColor: '#6366f1'
+        confirmButtonColor: '#2563eb'
       });
       
       if (result.isConfirmed) {
-        // เก็บข้อมูลผู้ใช้เพื่อส่งต่อไปยังหน้า register
         sessionStorage.setItem('temp_social_data', JSON.stringify({
-          provider,
-          socialId,
-          name: profile.name,
-          email: profile.email,
-          picture: profile.picture
+          provider, socialId,
+          name: profile.name, email: profile.email, picture: profile.picture
         }));
         window.location.href = 'register.html';
       }
@@ -390,7 +733,7 @@ async function processLogin(provider, socialId, profile) {
       title: 'เข้าสู่ระบบไม่สำเร็จ',
       text: error.message || 'เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง',
       confirmButtonText: 'ตกลง',
-      confirmButtonColor: '#6366f1'
+      confirmButtonColor: '#2563eb'
     });
 
   } finally {
@@ -409,7 +752,8 @@ function loginWithGoogle() {
       icon: 'error',
       title: 'Google ยังไม่พร้อม',
       text: 'กรุณารอสักครู่แล้วลองใหม่',
-      confirmButtonText: 'ตกลง'
+      confirmButtonText: 'ตกลง',
+      confirmButtonColor: '#2563eb'
     });
     return;
   }
@@ -444,13 +788,10 @@ async function handleGoogleCredential(response) {
   try {
     const payload = parseJwt(response.credential);
 
-        function fixThaiText(str) {
+    function fixThaiText(str) {
       if (!str) return str;
-      try {
-        return decodeURIComponent(escape(str));
-      } catch(e) {
-        return str;
-      }
+      try { return decodeURIComponent(escape(str)); } 
+      catch(e) { return str; }
     }
     
     await processLogin('google', payload.sub, {
@@ -484,7 +825,6 @@ function loginWithLine() {
   window.location.href = lineUrl;
 }
 
-// LINE Callback handler (called from line-callback.html)
 window.handleLineCallback = async function(userData) {
   if (!userData || !userData.userId) {
     showStatus('error', 'ไม่ได้รับข้อมูลจาก LINE กรุณาลองใหม่');
@@ -498,7 +838,6 @@ window.handleLineCallback = async function(userData) {
   });
 };
 
-// ตรวจจับ LINE callback ที่กลับมา
 function detectLineCallback() {
   const urlParams = new URLSearchParams(window.location.search);
   if (urlParams.get('line') === 'callback') {
@@ -508,13 +847,7 @@ function detectLineCallback() {
     const pictureUrl = urlParams.get('pictureUrl');
     
     if (userId && displayName) {
-      window.handleLineCallback({
-        userId,
-        displayName,
-        email,
-        pictureUrl
-      });
-      // ลบ query params ออกจาก URL
+      window.handleLineCallback({ userId, displayName, email, pictureUrl });
       history.replaceState({}, '', window.location.pathname);
     }
   }
@@ -540,7 +873,8 @@ function loginWithTelegram() {
       icon: 'warning',
       title: 'Popup ถูกบล็อก',
       text: 'กรุณาอนุญาต popup สำหรับเว็บไซต์นี้แล้วลองใหม่',
-      confirmButtonText: 'ตกลง'
+      confirmButtonText: 'ตกลง',
+      confirmButtonColor: '#2563eb'
     });
     return;
   }
@@ -555,7 +889,6 @@ function loginWithTelegram() {
 }
 
 window.handleTelegramCallback = async function(tgUser) {
-  // ปิด popup
   if (telegramPopup && !telegramPopup.closed) telegramPopup.close();
   if (telegramPollTimer) {
     clearInterval(telegramPollTimer);
@@ -577,7 +910,6 @@ window.handleTelegramCallback = async function(tgUser) {
   });
 };
 
-// Listen for postMessage from Telegram popup
 window.addEventListener('message', function(event) {
   if (event.origin !== window.location.origin) return;
   const msg = event.data;
@@ -588,36 +920,26 @@ window.addEventListener('message', function(event) {
 
 function resetTelegramBtn() {
   const btn = document.getElementById('telegramLoginBtn');
-  if (btn) {
-    btn.classList.remove('disabled');
-  }
+  if (btn) btn.classList.remove('disabled');
 }
 
 // ==================== Check Existing Session ====================
-// แทนที่ฟังก์ชัน checkExistingSession
 async function checkExistingSession() {
   const token = localStorage.getItem('auth_token');
   const userData = localStorage.getItem('user_data');
   
-  if (!token) {
-    return false;
-  }
+  if (!token) return false;
   
   try {
-    // ใช้ verify endpoint แทน
     const response = await fetch(`${CONFIG.API_BASE_URL}/user/verify`, {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
+      headers: { 'Authorization': `Bearer ${token}` }
     });
     
     if (response.ok) {
       const data = await response.json();
       if (data.success && data.user) {
-        // flatten nested แล้วอัปเดต user data
         localStorage.setItem('user_data', JSON.stringify(flattenUserData(data.user)));
         
-        // ถ้าอยู่ที่หน้า login ให้ไป dashboard
         if (window.location.pathname.includes('login.html') || 
             window.location.pathname === '/' || 
             window.location.pathname === '/login') {
@@ -627,7 +949,6 @@ async function checkExistingSession() {
       }
     }
     
-    // Token ไม่ถูกต้อง
     localStorage.removeItem('auth_token');
     localStorage.removeItem('user_data');
     return false;
@@ -638,40 +959,33 @@ async function checkExistingSession() {
   }
 }
 
-// เพิ่มฟังก์ชัน logout
 async function logout() {
   const token = localStorage.getItem('auth_token');
   if (token) {
     try {
       await fetch(`${CONFIG.API_BASE_URL}/user/logout`, {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
+        headers: { 'Authorization': `Bearer ${token}` }
       });
     } catch (error) {
       console.error('Logout error:', error);
     }
   }
-  
   localStorage.removeItem('auth_token');
   localStorage.removeItem('user_data');
   window.location.href = 'login.html';
 }
+
 // ==================== Initialize ====================
 document.addEventListener('DOMContentLoaded', () => {
-  // ตรวจสอบ session
   checkExistingSession();
   
-  // ตั้งค่า event listeners
   document.getElementById('googleLoginBtn').addEventListener('click', loginWithGoogle);
   document.getElementById('lineLoginBtn').addEventListener('click', loginWithLine);
   document.getElementById('telegramLoginBtn').addEventListener('click', loginWithTelegram);
   
-  // ตรวจจับ LINE callback
   detectLineCallback();
   
-  // ตรวจสอบว่ามี temporary data จาก register หรือไม่
   const tempData = sessionStorage.getItem('temp_social_data');
   if (tempData) {
     sessionStorage.removeItem('temp_social_data');
@@ -679,11 +993,8 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
-// ป้องกันการ submit form โดยไม่ตั้งใจ
 document.addEventListener('keypress', function(e) {
-  if (e.key === 'Enter') {
-    e.preventDefault();
-  }
+  if (e.key === 'Enter') e.preventDefault();
 });
 </script>
 </body>
