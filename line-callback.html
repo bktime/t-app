@@ -389,8 +389,12 @@ const errDesc   = urlParams.get('error_description');
 // ==================== Detect source page ====================
 function getSourcePage() {
   if (!stateBack) return 'login.html';
+
   const prefix = stateBack.split('|')[0];
+
   if (prefix === 'register') return 'register.html';
+  if (prefix === 'profile') return 'profile.html';
+
   return 'login.html';
 }
 
