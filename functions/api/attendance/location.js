@@ -1,6 +1,8 @@
 // functions/api/attendance/location.js
 // GET /api/attendance/location
 
+import { extractToken } from '../_auth.js';
+
 const CORS = {
   'Access-Control-Allow-Origin':  '*',
   'Access-Control-Allow-Methods': 'GET, OPTIONS',
@@ -33,25 +35,23 @@ export async function onRequest(context) {
   if (request.method !== 'GET')     return json({ success: false, message: 'Method not allowed' }, 405);
 
   // Auth
-  const auth = request.headers.get('Authorization') || '';
-  if (!auth.startsWith('Bearer '))
-    return json({ success: false, message: 'กรุณาเข้าสู่ระบบ' }, 401);
-
-  const userRow = await env.DB.prepare(`
-    SELECT u.uuid, u.aff_code, u.dep_code,
-           o.latitude  AS lat,
-           o.longitude AS lon,
-           o.district  AS district,
-           o.affiliation_code, o.department_code
-    FROM users u
-    LEFT JOIN organizations o
-      ON o.affiliation_code = u.aff_code
-     AND o.department_code  = u.dep_code
-    WHERE u.auth_token = ?
-      AND u.token_expires_at > CURRENT_TIMESTAMP
-      AND u.status = 'Active'
-    LIMIT 1
-  `).bind(auth.slice(7)).first();
+const token = extractToken(request);
+const userRow = await env.DB.prepare(`
+  SELECT u.uuid, u.aff_code, u.dep_code,
+         o.latitude  AS lat,
+         o.longitude AS lon,
+         o.district  AS district,
+         o.affiliation_code, o.department_code
+  FROM user_sessions s
+  JOIN users u ON u.uuid = s.uuid
+  LEFT JOIN organizations o
+    ON o.affiliation_code = u.aff_code
+   AND o.department_code  = u.dep_code
+  WHERE s.token = ?
+    AND s.expires_at > CURRENT_TIMESTAMP
+    AND u.status = 'Active'
+  LIMIT 1
+`).bind(token).first();
 
   if (!userRow) return json({ success: false, message: 'Token ไม่ถูกต้องหรือหมดอายุ' }, 401);
 

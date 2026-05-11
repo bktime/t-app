@@ -746,25 +746,57 @@ async function processLogin(provider, socialId, profile) {
 // ==================== Google Login ====================
 function loginWithGoogle() {
   if (isProcessing) return;
-  
-  if (typeof google === 'undefined') {
-    Swal.fire({
-      icon: 'error',
-      title: 'Google ยังไม่พร้อม',
-      text: 'กรุณารอสักครู่แล้วลองใหม่',
-      confirmButtonText: 'ตกลง',
-      confirmButtonColor: '#2563eb'
+
+  // ── ลอง One Tap ก่อน (desktop / browser ที่รองรับ) ──────────────────────
+  if (typeof google !== 'undefined' && google.accounts?.id) {
+    let oneTapShown   = false;
+    let oneTapSuccess = false;
+    let redirectTimer = null;
+
+    google.accounts.id.initialize({
+      client_id:             CONFIG.GOOGLE_CLIENT_ID,
+      callback:              (response) => {
+        oneTapSuccess = true;
+        if (redirectTimer) clearTimeout(redirectTimer);
+        handleGoogleCredential(response);
+      },
+      auto_select:           false,
+      cancel_on_tap_outside: true,
     });
+
+    google.accounts.id.prompt((notification) => {
+      if (notification.isDisplayed()) oneTapShown = true;
+      if (notification.isSkippedMoment() || notification.isDismissedMoment()) {
+        if (!oneTapShown && !oneTapSuccess) googleOAuthRedirect();
+      }
+    });
+
+    redirectTimer = setTimeout(() => {
+      if (!oneTapShown && !oneTapSuccess) googleOAuthRedirect();
+    }, 10000);
+    
     return;
   }
-  
-  google.accounts.id.initialize({
-    client_id: CONFIG.GOOGLE_CLIENT_ID,
-    callback: handleGoogleCredential,
-    auto_select: false,
-    cancel_on_tap_outside: true
+
+  // ── ไม่มี Google GSI → redirect ทันที ───────────────────────────────────
+  googleOAuthRedirect();
+}
+
+function googleOAuthRedirect() {
+  const state = 'login_google|' + Math.random().toString(36).slice(2) + '_' + Date.now();
+  sessionStorage.setItem('google_state', state);
+
+  const params = new URLSearchParams({
+    client_id:     CONFIG.GOOGLE_CLIENT_ID,
+    redirect_uri:  window.location.origin + '/google-callback.html',
+    response_type: 'code',
+    scope:         'openid profile email',
+    state:         state,
+    access_type:   'online',
+    prompt:        'select_account',
   });
-  google.accounts.id.prompt();
+
+  window.location.href = 'https://accounts.google.com/o/oauth2/v2/auth?' + params.toString();
 }
 
 function parseJwt(token) {
@@ -837,6 +869,25 @@ window.handleLineCallback = async function(userData) {
     picture: userData.pictureUrl || null
   });
 };
+
+function detectGoogleCallback() {
+  const p = new URLSearchParams(window.location.search);
+  if (p.get('google') !== 'callback') return;
+
+  const userId      = p.get('userId');
+  const displayName = p.get('displayName');
+  const email       = p.get('email');
+  const pictureUrl  = p.get('pictureUrl');
+
+  if (userId && displayName) {
+    history.replaceState({}, '', window.location.pathname);
+    processLogin('google', userId, {
+      name:    displayName,
+      email:   email   || null,
+      picture: pictureUrl || null,
+    });
+  }
+}
 
 function detectLineCallback() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -984,6 +1035,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('lineLoginBtn').addEventListener('click', loginWithLine);
   document.getElementById('telegramLoginBtn').addEventListener('click', loginWithTelegram);
   
+  detectGoogleCallback();
   detectLineCallback();
   
   const tempData = sessionStorage.getItem('temp_social_data');

@@ -1,6 +1,8 @@
 // functions/api/attendance/supervisor-pending.js
 // GET /api/attendance/supervisor-pending?limit=50&offset=0&date_from=&date_to=
-// ดึง attendance rows ที่ approver_uuid = ตัวเอง และ supervisor_status = 'pending'
+// ดึง attendance rows ที่ approver_uuid = ตัวเอง และ supervisor_status = 'none'
+
+import { extractToken } from '../_auth.js';
 
 const CORS = {
   'Access-Control-Allow-Origin':  '*',
@@ -14,21 +16,20 @@ export async function onRequest(context) {
   if (request.method === 'OPTIONS') return new Response(null, { headers: CORS });
   if (request.method !== 'GET')     return json({ success: false, message: 'Method not allowed' }, 405);
 
-  const auth = request.headers.get('Authorization') || '';
-  if (!auth.startsWith('Bearer ')) return json({ success: false, message: 'กรุณาเข้าสู่ระบบ' }, 401);
-
-  const reviewer = await env.DB.prepare(
-    `SELECT uuid, role, dep_code, aff_code, name
-     FROM users WHERE auth_token = ? AND token_expires_at > CURRENT_TIMESTAMP AND status = 'Active'`
-  ).bind(auth.slice(7)).first();
-  if (!reviewer) return json({ success: false, message: 'Token ไม่ถูกต้องหรือหมดอายุ' }, 401);
+const token = extractToken(request);
+const reviewer = await env.DB.prepare(
+  `SELECT u.uuid, u.role, u.dep_code, u.aff_code, u.name
+   FROM user_sessions s JOIN users u ON u.uuid = s.uuid
+   WHERE s.token = ? AND s.expires_at > CURRENT_TIMESTAMP AND u.status = 'Active'`
+).bind(token).first();
+if (!reviewer) return json({ success: false, message: 'Token ไม่ถูกต้องหรือหมดอายุ' }, 401);
 
   const url       = new URL(request.url);
   const limit     = Math.min(parseInt(url.searchParams.get('limit')  || '50'), 200);
   const offset    = parseInt(url.searchParams.get('offset') || '0');
   const date_from = url.searchParams.get('date_from') || '';
   const date_to   = url.searchParams.get('date_to')   || '';
-  const status    = url.searchParams.get('status')    || 'pending'; // pending|approved|rejected|all
+  const status    = url.searchParams.get('status')    || 'none'; // pending|approved|rejected|all
 
   const cond = [], bind = [];
 
@@ -68,7 +69,7 @@ bind.push(reviewer.uuid);
       LEFT JOIN users u ON u.uuid = a.uuid
       ${where} 
       ORDER BY
-        CASE a.supervisor_status WHEN 'pending' THEN 0 WHEN 'rejected' THEN 1 ELSE 2 END,
+        CASE a.supervisor_status WHEN 'none' THEN 0 WHEN 'rejected' THEN 1 ELSE 2 END,
         a.date DESC
       LIMIT ? OFFSET ?
     `).bind(...bind, limit, offset).all();

@@ -30,9 +30,10 @@ export async function onRequest(context) {
       });
     }
 
-    // รับค่า aff_code จาก query parameter
+    // รับค่า aff_code และ def_code จาก query parameter
     const url = new URL(request.url);
     const aff_code = url.searchParams.get('aff_code');
+    const def_code = url.searchParams.get('def_code');
     
     let query = `
       SELECT id, uuid, CONCAT(firstName, ' ', lastName) AS name, position, department 
@@ -46,6 +47,12 @@ export async function onRequest(context) {
     if (aff_code && aff_code.trim() !== '') {
       query += ` AND aff_code = ?`;
       params.push(aff_code);
+    }
+    
+    // กรองตาม def_code (department_code) ถ้ามีการระบุ
+    if (def_code && def_code.trim() !== '') {
+      query += ` AND dep_code = ?`;
+      params.push(def_code);
     }
     
     query += ` ORDER BY name LIMIT 100`;

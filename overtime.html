@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+<html lang="th-TH">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <title>บันทึก OT | Attendance</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=K2D:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <style>
+    :root {
+      --pri: #8e24aa; --pri-d: #6a1b9a; --pri-l: #ce93d8;
+      --pri-bg: #f3e5f5; --pri-bd: rgba(142,36,170,0.25);
+      --grn: #388e3c; --grn-bg: #e8f5e9; --grn-bd: #a5d6a7;
+      --red: #c62828; --red-bg: #ffebee; --red-bd: #ef9a9a;
+      --ora: #e65100; --ora-bg: #fff3e0; --ora-bd: #ffcc80;
+      --grey: #546e7a; --grey-bg: #eceff1; --grey-bd: #b0bec5; /* เพิ่มสีสำหรับ cancelled */
+      --bg: #f4f6f9; --sur: #ffffff; --sur2: #f8f9fb; --bd: #e4e8ef;
+      --tx: #1a1d23; --sub: #6b7280; --mt: #9ca3af;
+      --nav-h: 56px; --r: 14px;
+      --sh: 0 1px 4px rgba(0,0,0,.07), 0 4px 16px rgba(0,0,0,.04);
+      --shm: 0 4px 16px rgba(0,0,0,.10), 0 12px 32px rgba(0,0,0,.07);
+      --font: 'Sarabun', sans-serif;
+    }
+    [data-theme="dark"] {
+      --bg: #1a1d2e; --sur: #242738; --sur2: #2a2d40; --bd: #363a52;
+      --tx: #f0f0f8; --sub: #9ca3af; --mt: #6b7280;
+      --pri-bg: rgba(142,36,170,0.15); --grn-bg: rgba(56,142,60,0.15);
+      --red-bg: rgba(198,40,40,0.15); --ora-bg: rgba(230,81,0,0.15);
+      --grey-bg: rgba(84,110,122,0.15);
+    }
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:var(--font); background:var(--bg); color:var(--tx); min-height:100vh; padding-top:var(--nav-h); }
+    @keyframes fu { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes spin { to{transform:rotate(360deg)} }
+    .spin { animation:spin 1s linear infinite; }
+
+    /* ── Navbar ── */
+    nav {
+      position:fixed; top:0; left:0; right:0; z-index:200;
+      height:var(--nav-h); background:var(--sur); border-bottom:1px solid var(--bd);
+      display:flex; align-items:center; padding:0 1rem; gap:8px;
+      box-shadow:0 1px 6px rgba(0,0,0,.07);
+    }
+    .nav-back {
+      width:36px; height:36px; border-radius:10px; border:none;
+      background:var(--sur2); color:var(--tx); font-size:1rem; cursor:pointer;
+      display:flex; align-items:center; justify-content:center; flex-shrink:0;
+      transition:background .15s;
+    }
+    .nav-back:hover { background:var(--bd); }
+    .nav-title {
+      font-family:'K2D',sans-serif; font-size:1rem; font-weight:700; flex:1;
+      display:flex; align-items:center; gap:8px; color:var(--tx);
+    }
+    .nav-title i { color:var(--pri); }
+    .nav-tab-wrap { display:flex; align-items:center; gap:6px; }
+    .nav-tab-btn {
+      padding:5px 13px; border-radius:20px; font-size:.78rem; font-weight:600;
+      border:1px solid var(--bd); background:var(--sur2); color:var(--sub);
+      cursor:pointer; font-family:var(--font); transition:all .15s; white-space:nowrap;
+    }
+    .nav-tab-btn.active { background:var(--pri); color:#fff; border-color:var(--pri); }
+    .nav-theme-btn {
+      width:34px; height:34px; border-radius:10px; border:none;
+      background:var(--sur2); color:var(--sub); font-size:.95rem; cursor:pointer;
+      display:flex; align-items:center; justify-content:center;
+    }
+
+    /* ── Wrap ── */
+    .wrap { max-width:600px; margin:0 auto; padding:1rem 1rem 5rem; }
+
+    /* ── Summary Cards ── */
+    .summary-row { display:grid; grid-template-columns:repeat(3,1fr); gap:.65rem; margin-bottom:1rem; }
+    .sc {
+      background:var(--sur); border:1px solid var(--bd); border-radius:var(--r);
+      padding:.85rem .9rem; cursor:pointer; transition:all .15s;
+      display:flex; flex-direction:column; gap:3px;
+    }
+    .sc:hover { box-shadow:var(--sh); }
+    .sc.active { border-color:var(--pri); box-shadow:0 0 0 3px rgba(142,36,170,.12); }
+    .sc-val { font-family:'K2D',sans-serif; font-size:1.5rem; font-weight:800; line-height:1; }
+    .sc-lbl { font-size:.7rem; color:var(--sub); }
+    .sc-all  .sc-val { color:var(--tx); }
+    .sc-pend .sc-val { color:var(--ora); }
+    .sc-appr .sc-val { color:var(--grn); }
+    .sc-rej  .sc-val { color:var(--red); }
+
+    /* ── Filter bar ── */
+    .filter-bar {
+      background:var(--sur); border:1px solid var(--bd); border-radius:var(--r);
+      padding:.75rem 1rem; display:flex; gap:.6rem; flex-wrap:wrap; align-items:center;
+      margin-bottom:1rem;
+    }
+    .filter-bar input[type="date"], .filter-bar select {
+      flex:1; min-width:120px; padding:.45rem .75rem; border:1px solid var(--bd);
+      border-radius:8px; font-size:.83rem; font-family:var(--font); background:var(--sur2);
+      color:var(--tx); outline:none; transition:border-color .15s;
+    }
+    .filter-bar input:focus, .filter-bar select:focus { border-color:var(--pri); }
+    .filter-lbl { font-size:.78rem; color:var(--sub); white-space:nowrap; }
+    .filter-clear {
+      padding:.43rem .9rem; border-radius:8px; font-size:.78rem; font-weight:600;
+      border:1px solid var(--bd); background:var(--sur2); color:var(--sub);
+      cursor:pointer; font-family:var(--font); white-space:nowrap; transition:all .15s;
+    }
+    .filter-clear:hover { background:var(--bd); }
+
+    /* ── List ── */
+    .rl { display:flex; flex-direction:column; gap:.75rem; }
+    .rc {
+      background:var(--sur); border:1px solid var(--bd); border-radius:var(--r);
+      overflow:hidden; box-shadow:var(--sh); animation:fu .2s ease both;
+      transition:box-shadow .15s;
+    }
+    .rc:hover { box-shadow:var(--shm); }
+    .rc.pending  { border-left:4px solid var(--ora); }
+    .rc.approved { border-left:4px solid var(--grn); }
+    .rc.rejected { border-left:4px solid var(--red); }
+    .rc.cancelled { border-left:4px solid var(--grey); } /* เพิ่ม cancelled */
+
+    /* Card header */
+    .rh { display:flex; align-items:flex-start; gap:12px; padding:.9rem 1rem .7rem; }
+    .rav { width:40px; height:40px; border-radius:50%; flex-shrink:0; }
+    .rav-img { width:100%; height:100%; border-radius:50%; object-fit:cover; border:2px solid var(--bd); background:var(--sur2); display:block; }
+    .rav-txt {
+      width:40px; height:40px; border-radius:50%; border:2px solid var(--pri-bd);
+      background:var(--pri-bg); color:var(--pri);
+      display:flex; align-items:center; justify-content:center;
+      font-family:'K2D',sans-serif; font-size:.95rem; font-weight:800;
+      letter-spacing:-.02em; user-select:none;
+    }
+    .rm { flex:1; min-width:0; }
+    .rn { font-weight:600; font-size:.93rem; }
+    .rd { font-size:.74rem; color:var(--sub); margin-top:1px; }
+    .rr { flex-shrink:0; text-align:right; }
+    .sp {
+      display:inline-flex; align-items:center; gap:4px; font-size:.72rem;
+      padding:3px 10px; border-radius:20px; font-weight:700;
+    }
+    .sp-pending   { background:var(--ora-bg);  color:var(--ora);  border:1px solid var(--ora-bd); }
+    .sp-approved  { background:var(--grn-bg);  color:var(--grn);  border:1px solid var(--grn-bd); }
+    .sp-rejected  { background:var(--red-bg);  color:var(--red);  border:1px solid var(--red-bd); }
+    .sp-cancelled { background:var(--grey-bg); color:var(--grey); border:1px solid var(--grey-bd); } /* เพิ่ม cancelled */
+    .rref { font-size:.66rem; color:var(--mt); margin-top:4px; font-family:monospace; }
+
+    /* Card body */
+    .rbody { padding:.65rem 1rem .85rem; border-top:1px solid var(--bd); background:var(--sur2); }
+    .rrow  { display:flex; gap:1.25rem; flex-wrap:wrap; margin-bottom:.5rem; }
+    .rfl label { font-size:.67rem; color:var(--mt); text-transform:uppercase; letter-spacing:.04em; display:block; }
+    .rfl span  { font-size:.85rem; font-weight:600; }
+    .ot-hours-badge {
+      display:inline-flex; align-items:center; gap:5px;
+      background:var(--pri-bg); color:var(--pri); border:1px solid var(--pri-bd);
+      border-radius:20px; padding:3px 12px; font-size:.8rem; font-weight:700;
+    }
+    .rnote {
+      margin-top:.5rem; font-size:.78rem; padding:.4rem .7rem;
+      border-radius:8px; border-left:3px solid var(--bd);
+      background:var(--sur); color:var(--sub); font-style:italic; line-height:1.5;
+    }
+    .rnote.approved  { border-color:var(--grn); }
+    .rnote.rejected  { border-color:var(--red); }
+    .rnote.cancelled { border-color:var(--grey); }
+    .loc-chip {
+      display:inline-flex; align-items:center; gap:4px; font-size:.68rem;
+      padding:2px 8px; border-radius:20px; border:1px solid var(--bd);
+      background:var(--sur); color:var(--sub); margin-top:.4rem;
+    }
+    .loc-chip.ok  { border-color:var(--grn-bd); color:var(--grn); background:var(--grn-bg); }
+    .loc-chip.far { border-color:var(--red-bd);  color:var(--red);  background:var(--red-bg);  }
+
+    /* action row (supervisor) */
+    .action-row {
+      display:flex; gap:.6rem; padding:.65rem 1rem;
+      border-top:1px solid var(--bd); background:var(--sur);
+    }
+    .btn-approve, .btn-reject, .btn-cancel {
+      flex:1; padding:.55rem 1rem; border-radius:10px; font-size:.83rem;
+      font-weight:700; font-family:var(--font); cursor:pointer; border:none;
+      display:flex; align-items:center; justify-content:center; gap:6px;
+      transition:opacity .15s, transform .1s;
+    }
+    .btn-approve:active, .btn-reject:active { transform:scale(.97); }
+    .btn-approve { background:var(--grn); color:#fff; }
+    .btn-approve:hover { opacity:.88; }
+    .btn-reject  { background:var(--red); color:#fff; }
+    .btn-reject:hover  { opacity:.88; }
+    .btn-cancel  { background:var(--sur2); color:var(--sub); border:1px solid var(--bd); }
+    .btn-cancel:hover  { background:var(--bd); }
+
+    /* ── FAB ── */
+    .fab {
+      position:fixed; bottom:calc(1.5rem + env(safe-area-inset-bottom,0px));
+      right:1.25rem; z-index:150;
+      width:56px; height:56px; border-radius:50%;
+      background:linear-gradient(135deg,#ab47bc,#6a1b9a);
+      color:#fff; border:none; font-size:1.4rem; cursor:pointer;
+      box-shadow:0 4px 20px rgba(106,27,154,.4);
+      display:flex; align-items:center; justify-content:center;
+      transition:transform .15s, box-shadow .15s;
+    }
+    .fab:hover  { transform:scale(1.08); box-shadow:0 6px 24px rgba(106,27,154,.5); }
+    .fab:active { transform:scale(.95); }
+
+    /* ── Empty / Loading ── */
+    .empty { text-align:center; padding:3rem 1rem; color:var(--mt); }
+    .empty i { font-size:2.8rem; display:block; margin-bottom:.75rem; opacity:.35; }
+    .empty p { font-size:.88rem; }
+    .loader { text-align:center; padding:2rem 1rem; color:var(--mt); font-size:.88rem; }
+    .loader i { font-size:1.5rem; display:block; margin-bottom:.5rem; }
+
+    /* ── Own-record cancel chip ── */
+    .btn-cancel-ot {
+      display:inline-flex; align-items:center; gap:5px;
+      font-size:.72rem; padding:3px 10px; border-radius:20px;
+      border:1px solid var(--red-bd); background:var(--red-bg);
+      color:var(--red); cursor:pointer; font-weight:600; font-family:var(--font);
+      margin-top:.45rem; transition:opacity .15s;
+    }
+    .btn-cancel-ot:hover { opacity:.78; }
+
+    /* ── Responsive ── */
+    @media(max-width:480px) {
+      .summary-row { grid-template-columns:repeat(3,1fr); }
+      .sc-val { font-size:1.25rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav>
+  <button class="nav-back" onclick="history.length>1?history.back():location.href='attendance.html'" title="ย้อนกลับ">
+    <i class="fa-solid fa-arrow-left"></i>
+  </button>
+  <div class="nav-title">
+    <i class="fa-solid fa-business-time"></i>
+    <span id="navTitle">OT นอกเวลาราชการ</span>
+  </div>
+  <div class="nav-tab-wrap">
+    <button class="nav-tab-btn active" id="tabMine" onclick="switchTab('mine')">
+      <i class="fa-solid fa-user"></i> ของฉัน
+    </button>
+    <!-- แก้ไข id ซ้ำ -->
+    <button class="nav-tab-btn" id="tabSup" onclick="switchTab('supervisor')" style="display:none">
+      <i class="fa-solid fa-shield-halved"></i> รับรอง
+    </button>
+  </div>
+  <button class="nav-theme-btn" id="themeBtn" title="เปลี่ยนธีม" onclick="toggleTheme()">
+    <i class="fa-solid fa-moon"></i>
+  </button>
+</nav>
+
+<!-- Main -->
+<div class="wrap">
+  <!-- Summary -->
+  <div class="summary-row" id="summaryRow" style="grid-template-columns:repeat(4,1fr)">
+    <div class="sc sc-all active" onclick="filterStatus('all')" id="sc-all">
+      <span class="sc-val" id="cnt-all">—</span><span class="sc-lbl">ทั้งหมด</span>
+    </div>
+    <div class="sc sc-pend" onclick="filterStatus('pending')" id="sc-pending">
+      <span class="sc-val" id="cnt-pending">—</span><span class="sc-lbl">รอ</span>
+    </div>
+    <div class="sc sc-appr" onclick="filterStatus('approved')" id="sc-approved">
+      <span class="sc-val" id="cnt-approved">—</span><span class="sc-lbl">รับรอง</span>
+    </div>
+    <div class="sc" onclick="filterStatus('cancelled')" id="sc-cancelled">
+      <span class="sc-val" id="cnt-cancelled" style="color:var(--grey)">—</span><span class="sc-lbl">ยกเลิก</span>
+    </div>
+  </div>
+
+  <!-- Money summary -->
+  <div id="moneySummary" style="display:none;background:linear-gradient(135deg,#6a1b9a,#ab47bc);border-radius:var(--r);padding:1rem 1.1rem;margin-bottom:.9rem;color:#fff;box-shadow:0 4px 16px rgba(106,27,154,.3)">
+    <div style="font-size:.72rem;opacity:.8;margin-bottom:.35rem;letter-spacing:.05em">
+      <i class="fa-solid fa-circle-check" style="margin-right:4px"></i> สรุปยอด OT ที่รับรองแล้ว (ช่วงที่เลือก)
+    </div>
+    <div style="display:flex;gap:1.5rem;flex-wrap:wrap">
+      <div>
+        <div style="font-size:.68rem;opacity:.75">OT นอกเวลา</div>
+        <div style="font-family:'K2D',sans-serif;font-size:1.2rem;font-weight:800" id="sum-ot-hours">0.00 <span style="font-size:.7rem;font-weight:400">ชม.</span></div>
+        <div style="font-size:.78rem;opacity:.85" id="sum-amount-hour">— บาท</div>
+      </div>
+      <div style="width:1px;background:rgba(255,255,255,.25)"></div>
+      <div>
+        <div style="font-size:.68rem;opacity:.75">เวรวันหยุด</div>
+        <div style="font-family:'K2D',sans-serif;font-size:1.2rem;font-weight:800" id="sum-ot-days">0 <span style="font-size:.7rem;font-weight:400">วัน</span></div>
+        <div style="font-size:.78rem;opacity:.85" id="sum-amount-day">— บาท</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filter bar -->
+  <div class="filter-bar" id="filterBar">
+    <span class="filter-lbl"><i class="fa-solid fa-layer-group" style="color:var(--pri)"></i> ประเภท</span>
+    <select id="typeFilter" onchange="loadList()">
+      <option value="all">ทั้งหมด</option>
+      <option value="ot">OT นอกเวลา</option>
+      <option value="holiday">เวรวันหยุด</option>
+    </select>
+    <span class="filter-lbl"><i class="fa-solid fa-calendar-days" style="color:var(--pri)"></i> วันที่</span>
+    <input type="date" id="dateFrom" onchange="loadList()" title="ตั้งแต่วันที่">
+    <span class="filter-lbl">—</span>
+    <input type="date" id="dateTo"   onchange="loadList()" title="ถึงวันที่">
+    <button class="filter-clear" onclick="clearFilter()"><i class="fa-solid fa-xmark"></i> ล้าง</button>
+  </div>
+
+  <!-- List -->
+  <div class="rl" id="list">
+    <div class="loader"><i class="fa-solid fa-circle-notch spin"></i> กำลังโหลด...</div>
+  </div>
+
+  <!-- Load more -->
+  <div style="text-align:center;margin-top:1rem;display:none" id="loadMoreWrap">
+    <button onclick="loadMore()" style="padding:.55rem 1.5rem;border-radius:20px;border:1px solid var(--bd);background:var(--sur2);color:var(--sub);font-size:.82rem;font-weight:600;cursor:pointer;font-family:var(--font)">
+      <i class="fa-solid fa-chevron-down"></i> โหลดเพิ่ม
+    </button>
+  </div>
+</div>
+
+<!-- FAB -->
+<button class="fab" id="fabBtn" onclick="openOTForm()" title="บันทึก OT ใหม่">
+  <i class="fa-solid fa-plus"></i>
+</button>
+
+<script>
+/* ─── Config ─────────────────────────────────────────── */
+const API_BASE   = '/api/attendance';
+const AUTH_HEADER = () => {
+  const t = localStorage.getItem('auth_token');
+  return t ? { Authorization: `Bearer ${t}` } : {};
+};
+function getUserData() {
+  try { return JSON.parse(localStorage.getItem('user_data') || 'null'); } catch { return null; }
+}
+
+/* ─── State ──────────────────────────────────────────── */
+let currentTab    = 'mine';
+let currentStatus = 'all';
+let currentOffset = 0;
+const PAGE_LIMIT  = 20;
+let totalCount    = 0;
+let allRecords    = [];
+
+/* ─── Theme ──────────────────────────────────────────── */
+(function initTheme() {
+  const t = localStorage.getItem('theme') || 'light';
+  if (t === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+  updateThemeIcon();
+})();
+function toggleTheme() {
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  document.documentElement.setAttribute('data-theme', isDark ? 'light' : 'dark');
+  localStorage.setItem('theme', isDark ? 'light' : 'dark');
+  updateThemeIcon();
+}
+function updateThemeIcon() {
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  document.getElementById('themeBtn').innerHTML =
+    isDark ? '<i class="fa-solid fa-sun"></i>' : '<i class="fa-solid fa-moon"></i>';
+}
+
+/* ─── Init ───────────────────────────────────────────── */
+window.addEventListener('DOMContentLoaded', () => {
+  const ud = getUserData();
+  if (!ud || !localStorage.getItem('auth_token')) {
+    Swal.fire({ icon: 'warning', title: 'กรุณาเข้าสู่ระบบ', text: 'ไม่พบข้อมูล Session' })
+      .then(() => location.href = 'login.html');
+    return;
+  }
+
+  // const hasSupervisor = ud.role === 'supervisor' || ud.role === 'admin' || ud.isSupervisor;
+  // if (hasSupervisor) document.getElementById('tabSup').style.display = '';
+  document.getElementById('tabSup').style.display = '';
+
+  const now = new Date();
+  const pastDate = new Date();
+  pastDate.setDate(now.getDate() - 30); // ย้อนหลัง 30 วัน
+  
+  const y = pastDate.getFullYear();
+  const m = String(pastDate.getMonth()+1).padStart(2,'0');
+  const d = String(pastDate.getDate()).padStart(2,'0');
+  
+  document.getElementById('dateFrom').value = `${y}-${m}-${d}`;
+  document.getElementById('dateTo').value   = now.toISOString().slice(0,10);
+
+  loadList();
+});
+
+/* ─── Tab switching ──────────────────────────────────── */
+function switchTab(tab) {
+  currentTab    = tab;
+  currentStatus = 'all';
+  currentOffset = 0;
+  allRecords    = [];
+
+  document.getElementById('tabMine').classList.toggle('active', tab === 'mine');
+  document.getElementById('tabSup').classList.toggle('active', tab === 'supervisor');
+  document.getElementById('fabBtn').style.display = tab === 'mine' ? 'flex' : 'none';
+  document.getElementById('navTitle').textContent =
+    tab === 'mine' ? 'OT นอกเวลาราชการ' : 'รับรองการอยู่เวรนอกเวลาราชการ';
+
+  updateSummaryCards();
+  loadList();
+}
+
+function updateSummaryCards() {
+  const row = document.getElementById('summaryRow');
+  if (currentTab === 'supervisor') {
+    row.style.gridTemplateColumns = 'repeat(5,1fr)';
+    if (!document.getElementById('sc-rejected')) {
+      // insert rejected before cancelled
+      const canCard = document.getElementById('sc-cancelled');
+      const rejHtml = `<div class="sc sc-rej" onclick="filterStatus('rejected')" id="sc-rejected">
+           <span class="sc-val" id="cnt-rejected">—</span>
+           <span class="sc-lbl">ปฏิเสธ</span>
+         </div>`;
+      if (canCard) canCard.insertAdjacentHTML('beforebegin', rejHtml);
+      else row.insertAdjacentHTML('beforeend', rejHtml);
+    }
+  } else {
+    row.style.gridTemplateColumns = 'repeat(4,1fr)';
+    const rej = document.getElementById('sc-rejected');
+    if (rej) rej.remove();
+  }
+}
+
+/* ─── Filter ─────────────────────────────────────────── */
+function filterStatus(s) {
+  currentStatus = s;
+  currentOffset = 0;
+//  allRecords    = [];
+  ['all','pending','approved','rejected','cancelled'].forEach(k => {
+    const el = document.getElementById(`sc-${k}`);
+    if (el) el.classList.toggle('active', k === s);
+  });
+  renderList();
+}
+
+function clearFilter() {
+  document.getElementById('dateFrom').value = '';
+  document.getElementById('dateTo').value   = '';
+  document.getElementById('typeFilter').value = 'all';
+  loadList();
+}
+
+/* ─── Load data ──────────────────────────────────────── */
+async function loadList() {
+  currentOffset = 0; allRecords = [];
+  document.getElementById('list').innerHTML =
+    `<div class="loader"><i class="fa-solid fa-circle-notch spin"></i> กำลังโหลด...</div>`;
+  await fetchPage();
+}
+
+async function loadMore() {
+  currentOffset += PAGE_LIMIT;
+  await fetchPage();
+}
+
+async function fetchPage() {
+  const from = document.getElementById('dateFrom').value;
+  const to   = document.getElementById('dateTo').value;
+  const params = new URLSearchParams({
+    mode:   currentTab,
+    limit:  PAGE_LIMIT,
+    offset: currentOffset,
+    status: 'all',
+  });
+  if (from) params.set('date_from', from);
+  if (to)   params.set('date_to',   to);
+
+  try {
+    const res  = await fetch(`${API_BASE}/overtime?${params}`, { headers: AUTH_HEADER() });
+    const data = await res.json();
+    if (!data.success) throw new Error(data.message || 'โหลดไม่สำเร็จ');
+
+    totalCount = data.total || 0;
+    allRecords = allRecords.concat(data.data || []);
+
+    const sc = data.statusCount || {};
+    const total = (sc.pending||0) + (sc.approved||0) + (sc.rejected||0) + (sc.cancelled||0);
+    setCount('cnt-all',       total);
+    setCount('cnt-pending',   sc.pending   || 0);
+    setCount('cnt-approved',  sc.approved  || 0);
+    setCount('cnt-rejected',  sc.rejected  || 0);
+    setCount('cnt-cancelled', sc.cancelled || 0);
+
+    const moneyBar = document.getElementById('moneySummary');
+    if (currentTab === 'mine' && data.summary) {
+      const s = data.summary;
+      const fmt = n => n != null ? Number(n).toLocaleString('th-TH', { minimumFractionDigits: 2 }) : null;
+
+      const totalHrs  = fmt(s.total_ot_hours);
+      const amtHour   = fmt(s.total_amount_hour);
+      const amtDay    = fmt(s.total_amount_day);
+      const totalDays = s.total_ot_days || 0; // รับค่าจาก API โดยตรงแทนการนับเอง
+
+      document.getElementById('sum-ot-hours').innerHTML =
+        `${totalHrs || '0.00'} <span style="font-size:.7rem;font-weight:400">ชม.</span>`;
+      document.getElementById('sum-amount-hour').textContent =
+        amtHour != null ? `${amtHour} บาท` : 'ไม่ได้กำหนดอัตรา';
+      document.getElementById('sum-ot-days').innerHTML =
+        `${totalDays} <span style="font-size:.7rem;font-weight:400">วัน</span>`;
+      document.getElementById('sum-amount-day').textContent =
+        amtDay != null ? `${amtDay} บาท` : 'ไม่ได้กำหนดอัตรา';
+
+      moneyBar.style.display = 'block';
+    } else {
+      moneyBar.style.display = 'none';
+    }
+
+    renderList();
+
+    const loadWrap = document.getElementById('loadMoreWrap');
+    loadWrap.style.display = allRecords.length < totalCount ? 'block' : 'none';
+  } catch (err) {
+    document.getElementById('list').innerHTML =
+      `<div class="empty"><i class="fa-solid fa-triangle-exclamation"></i><p>${err.message}</p></div>`;
+  }
+}
+
+function setCount(id, n) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = n;
+}
+
+/* ─── Render ─────────────────────────────────────────── */
+function renderList() {
+  const typeFilter = document.getElementById('typeFilter')?.value || 'all';
+  let filtered = currentStatus === 'all' ? allRecords : allRecords.filter(r => r.supervisor_status === currentStatus);
+  if (typeFilter === 'ot')      filtered = filtered.filter(r => r.work_type !== 'เวรวันหยุด');
+  if (typeFilter === 'holiday') filtered = filtered.filter(r => r.work_type === 'เวรวันหยุด');
+
+  const list = document.getElementById('list');
+  if (!filtered.length) {
+    list.innerHTML = `<div class="empty"><i class="fa-solid fa-calendar-xmark"></i><p>ไม่พบรายการ OT</p></div>`;
+    return;
+  }
+
+  list.innerHTML = filtered.map(r => renderCard(r)).join('');
+}
+
+function renderCard(r) {
+  const ud = getUserData();
+  const fullName = ud ? `${ud.prefix||''}${ud.firstName||''} ${ud.lastName||''}`.trim() : '';
+  const isMine = currentTab === 'mine';
+  const name = isMine
+    ? (fullName || ud?.name || r.name || '—')
+    : (r.u_name || r.name || `${r.prefix||''}${r.firstName||''} ${r.lastName||''}`.trim() || '—');
+  const dept = isMine
+    ? [ud?.department, ud?.affiliation].filter(Boolean).join(' • ') || r.department || ''
+    : [r.u_department || r.department, r.affiliation].filter(Boolean).join(' • ') || '';
+
+  // ── avatar: ใช้รูปถ้ามี ไม่งั้นใช้ตัวอักษรแทน ──
+  const picUrl = isMine
+    ? (ud?.picture || r.picture || r.profileImage || '')
+    : (r.picture || r.profileImage || '');
+  const initials = (() => {
+    const n = name.replace(/^(นาย|นาง|นางสาว|ด\.ร\.|ดร\.|Mr\.|Mrs\.|Ms\.)\s*/,'').trim();
+    const parts = n.split(/\s+/).filter(Boolean);
+    if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
+    return n.slice(0,2).toUpperCase() || '?';
+  })();
+  const avatarHtml = picUrl
+    ? `<div class="rav"><img class="rav-img" src="${picUrl}" alt="" onerror="this.parentElement.outerHTML='<div class=\'rav\'><div class=\'rav-txt\'>${initials}</div></div>'"></div>`
+    : `<div class="rav"><div class="rav-txt">${initials}</div></div>`;
+  
+  const isHoliday = r.work_type === 'เวรวันหยุด';
+  const statusCls = r.supervisor_status || 'pending';
+  
+  // ── เพิ่ม Logic สำหรับ Icon และ Text ของสถานะ ──
+  let statusIcon = 'fa-circle-question';
+  let statusLabel = 'ไม่ทราบสถานะ';
+  if (statusCls === 'pending') {
+    statusIcon = 'fa-hourglass-half'; statusLabel = 'รอรับรอง';
+  } else if (statusCls === 'approved') {
+    statusIcon = 'fa-circle-check'; statusLabel = 'รับรอง';
+  } else if (statusCls === 'rejected') {
+    statusIcon = 'fa-circle-xmark'; statusLabel = 'ปฏิเสธ';
+  } else if (statusCls === 'cancelled') {
+    statusIcon = 'fa-ban'; statusLabel = 'ยกเลิก';
+  }
+
+  const otDate = r.ot_date ? new Date(r.ot_date+'T00:00:00').toLocaleDateString('th-TH',{year:'numeric',month:'long',day:'numeric'}) : '—';
+  const submAt = r.submitted_at ? new Date(r.submitted_at).toLocaleDateString('th-TH',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}) : '';
+
+  let locChip = '';
+  if (r.distance_m != null) {
+    const distStr = r.distance_m >= 1000 ? `${(r.distance_m/1000).toFixed(1)} km` : `${Math.round(r.distance_m)} m`;
+    const ok = r.is_in_range;
+    locChip = `<span class="loc-chip ${ok?'ok':'far'}">
+      <i class="fa-solid fa-location-dot"></i> ${distStr} ${ok?'(ในพื้นที่)':'(นอกพื้นที่)'}
+    </span>`;
+  }
+
+  let actionRow = '';
+  if (!isMine && r.supervisor_status === 'pending') {
+    actionRow = `
+      <div class="action-row">
+        <button class="btn-approve" onclick="reviewOT('${r.reference}','approve')">
+          <i class="fa-solid fa-circle-check"></i> รับรอง
+        </button>
+        <button class="btn-reject" onclick="reviewOT('${r.reference}','reject')">
+          <i class="fa-solid fa-circle-xmark"></i> ปฏิเสธ
+        </button>
+      </div>`;
+  }
+
+  let cancelChip = '';
+  if (isMine && r.supervisor_status === 'pending') {
+    cancelChip = `<button class="btn-cancel-ot" onclick="cancelOT('${r.reference}')">
+      <i class="fa-solid fa-xmark"></i> ยกเลิกคำขอ
+    </button>`;
+  }
+
+  let supNote = '';
+  if (r.supervisor_note) {
+    supNote = `<div class="rnote ${r.supervisor_status}">
+      <i class="fa-solid fa-comment" style="margin-right:4px;opacity:.6"></i> ${r.supervisor_note}
+    </div>`;
+  }
+
+  return `
+    <div class="rc ${statusCls}">
+      <div class="rh">
+        ${avatarHtml}
+        <div class="rm">
+          <div class="rn">${name}</div>
+          <div class="rd">${dept ? dept + ' • ' : ''}${otDate}</div>
+          <div style="margin-top:3px">
+            <span style="display:inline-flex;align-items:center;gap:4px;font-size:.7rem;padding:2px 9px;border-radius:20px;font-weight:600;${isHoliday?'background:#f3e5f5;color:#6a1b9a;border:1px solid #ce93d8':'background:#e8eaf6;color:#3949ab;border:1px solid #9fa8da'}">
+              <i class="fa-solid ${isHoliday?'fa-calendar-check':'fa-business-time'}" style="font-size:.6rem"></i>
+              ${isHoliday ? 'เวรวันหยุด' : 'OT นอกเวลา'}
+            </span>
+          </div>
+        </div>
+        <div class="rr">
+          <span class="sp sp-${statusCls}">
+            <i class="fa-solid ${statusIcon}" style="font-size:.6rem"></i> ${statusLabel}
+          </span>
+          <div class="rref">${r.reference || ''}</div>
+        </div>
+      </div>
+      <div class="rbody">
+        <div class="rrow">
+          <div class="rfl">
+            <label>เวลาเริ่ม</label>
+            <span>${r.ot_start ? r.ot_start.slice(0,5) : '—'}</span>
+          </div>
+          <div class="rfl">
+            <label>เวลาสิ้นสุด</label>
+            <span>${r.ot_end ? r.ot_end.slice(0,5) : '—'}</span>
+          </div>
+          <div class="rfl">
+            <label>${isHoliday ? 'จำนวน' : 'รวม'}</label>
+          <span class="ot-hours-badge">
+            <i class="fa-solid fa-business-time" style="font-size:.7rem"></i>
+            ${r.ot_hours != null ? r.ot_hours.toFixed(2) + ' ชม.' : '—'}
+          </span>
+          </div>
+        </div>
+        ${(() => {
+          const fmt = n => n != null ? Number(n).toLocaleString('th-TH', {minimumFractionDigits:2}) : null;
+          if (isHoliday) {
+            const rate = fmt(r.ot_rate_per_day);
+            const amt  = fmt(r.amount_day);
+            if (!rate && !amt) return '';
+            return `<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:.45rem">
+              ${rate ? `<span style="font-size:.73rem;color:var(--sub)"><i class="fa-solid fa-tag" style="color:var(--pri);margin-right:3px"></i>อัตรา/วัน: <b>${rate} บาท</b></span>` : ''}
+              ${amt  ? `<span style="display:inline-flex;align-items:center;gap:4px;background:var(--pri-bg);color:var(--pri);border:1px solid var(--pri-bd);border-radius:20px;padding:2px 10px;font-size:.75rem;font-weight:700"><i class="fa-solid fa-coins" style="font-size:.65rem"></i>ค่าเวร ${amt} บาท</span>` : ''}
+            </div>`;
+          } else {
+            const rate = fmt(r.ot_rate_per_hour);
+            const amt  = fmt(r.amount_hour);
+            if (!rate && !amt) return '';
+            return `<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:.45rem">
+              ${rate ? `<span style="font-size:.73rem;color:var(--sub)"><i class="fa-solid fa-tag" style="color:var(--pri);margin-right:3px"></i>อัตรา/ชม.: <b>${rate} บาท</b></span>` : ''}
+              ${amt  ? `<span style="display:inline-flex;align-items:center;gap:4px;background:var(--pri-bg);color:var(--pri);border:1px solid var(--pri-bd);border-radius:20px;padding:2px 10px;font-size:.75rem;font-weight:700"><i class="fa-solid fa-coins" style="font-size:.65rem"></i>ค่า OT ${amt} บาท</span>` : ''}
+            </div>`;
+          }
+        })()}
+        ${r.note ? `<div class="rnote">${r.note}</div>` : ''}
+        ${locChip}
+        ${r.supervisor_name && r.supervisor_status !== 'pending' ? `
+          <div style="font-size:.72rem;color:var(--mt);margin-top:.4rem">
+            <i class="fa-solid fa-shield-halved" style="color:var(--grn);margin-right:3px"></i>
+            ${r.supervisor_status === 'approved' ? 'รับรองโดย' : r.supervisor_status === 'cancelled' ? 'ยกเลิกโดย' : 'ปฏิเสธโดย'}: ${r.supervisor_name}
+            ${r.reviewed_at ? ' • ' + new Date(r.reviewed_at).toLocaleDateString('th-TH',{day:'numeric',month:'short'}) : ''}
+          </div>` : ''}
+        ${supNote}
+        ${cancelChip}
+        <div style="font-size:.67rem;color:var(--mt);margin-top:.4rem">
+          <i class="fa-regular fa-clock" style="margin-right:2px"></i> ส่งเมื่อ ${submAt}
+        </div>
+      </div>
+      ${actionRow}
+    </div>`;
+}
+
+/* ─── OT Form ────────────────────────────────────────── */
+async function openOTForm() {
+  const ud   = getUserData();
+  const uuid = ud?.uuid || localStorage.getItem('uuid') || '';
+  if (!uuid) { Swal.fire({ icon:'error', title:'ยังไม่ได้เข้าสู่ระบบ' }); return; }
+
+  const todayISO  = new Date().toISOString().slice(0, 10);
+  const rateHour  = ud?.ot_rate_per_hour     ?? null;
+  const maxHours  = ud?.ot_max_hours_per_day ?? 4;
+
+  const defStart  = '16:30';
+  const defEndMin = 16*60 + 30 + Math.round(maxHours * 60);
+  const defEnd    = `${String(Math.floor(defEndMin/60)%24).padStart(2,'0')}:${String(defEndMin%60).padStart(2,'0')}`;
+
+  const fmtMoney = n => n != null ? Number(n).toLocaleString('th-TH', {minimumFractionDigits:2}) : null;
+  const rateInfo = rateHour != null
+    ? `<span style="color:#6a1b9a;font-weight:600">${fmtMoney(rateHour)} บาท/ชม.</span>`
+    : `<span style="color:#9ca3af">ไม่ได้กำหนดอัตรา</span>`;
+
+  // ── ค่า approver เริ่มต้นจาก ud ──
+  const defApproverCode = ud?.approver_code || '';
+  const defApproverName = ud?.approver      || '';
+
+  // ── โหลด staff list ก่อนเปิด dialog (หลีกเลี่ยง CORB จาก fetch ใน didOpen) ──
+  let staffList = [];
+  try {
+    const p = new URLSearchParams();
+    if (ud?.aff_code) p.set('aff_code', ud.aff_code);
+    const r = await fetch(`/api/user/staff-list?${p}`, { headers: AUTH_HEADER() });
+    if (r.ok && (r.headers.get('content-type') || '').includes('application/json')) {
+      const d = await r.json();
+      if (d.success) staffList = d.data || [];
+    }
+  } catch (_) {}
+
+  // ── build <option> string สำหรับ select ──
+  const buildOptions = () => {
+    let html = `<option value="" data-name="">— ไม่ระบุ —</option>`;
+    let hasDefault = false;
+    staffList.forEach(s => {
+      const label = [s.name, s.position].filter(Boolean).join(' • ');
+      const sel   = s.uuid === defApproverCode ? ' selected' : '';
+      if (s.uuid === defApproverCode) hasDefault = true;
+      html += `<option value="${s.uuid}" data-name="${s.name || ''}"${sel}>${label}</option>`;
+    });
+    // ถ้า defApproverCode ไม่อยู่ในรายการ ให้ใส่เพิ่ม
+    if (defApproverCode && !hasDefault) {
+      html += `<option value="${defApproverCode}" data-name="${defApproverName}" selected>${defApproverName || defApproverCode}</option>`;
+    }
+    return html;
+  };
+
+  const { value: formVal, isConfirmed } = await Swal.fire({
+    title: '<i class="fa-solid fa-business-time" style="color:#8e24aa"></i> บันทึก OT นอกเวลาราชการ',
+    html: `
+      <div style="text-align:left;font-family:Sarabun,sans-serif">
+        <label style="font-size:.82rem;color:#666;display:block;margin-bottom:4px">
+          <i class="fa-solid fa-calendar" style="color:#8e24aa"></i> วันที่ปฏิบัติงาน
+        </label>
+        <input type="date" id="ot-date" value="${todayISO}"
+          style="width:100%;padding:9px 12px;border:1px solid #ddd;border-radius:10px;font-size:.9rem;margin-bottom:12px;font-family:Sarabun,sans-serif;color:#1a1d23;background:#fff">
+
+        <div style="display:flex;gap:10px;margin-bottom:0">
+          <div style="flex:1">
+            <label style="font-size:.82rem;color:#666;display:block;margin-bottom:4px">
+              <i class="fa-solid fa-play" style="color:#43a047;font-size:.75rem"></i> เวลาเริ่ม
+            </label>
+            <input type="time" id="ot-start" value="${defStart}"
+              style="width:100%;padding:9px 12px;border:1px solid #ddd;border-radius:10px;font-size:.9rem;margin-bottom:12px;font-family:Sarabun,sans-serif">
+          </div>
+          <div style="flex:1">
+            <label style="font-size:.82rem;color:#666;display:block;margin-bottom:4px">
+              <i class="fa-solid fa-stop" style="color:#e53935;font-size:.75rem"></i> เวลาเลิก
+              <span style="font-size:.68rem;color:#9ca3af">(สูงสุด ${maxHours} ชม.)</span>
+            </label>
+            <input type="time" id="ot-end" value="${defEnd}"
+              style="width:100%;padding:9px 12px;border:1px solid #ddd;border-radius:10px;font-size:.9rem;margin-bottom:12px;font-family:Sarabun,sans-serif">
+          </div>
+        </div>
+
+        <div id="ot-calc" style="background:#f3e5f5;padding:10px 14px;border-radius:10px;margin-bottom:12px;border:1px solid #ce93d8">
+          <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px">
+            <div>
+              <span style="font-size:.8rem;color:#6a1b9a;font-weight:600">ชั่วโมง OT: </span>
+              <span id="ot-hrs-lbl" style="font-size:1.05rem;color:#4a148c;font-weight:800">${maxHours.toFixed(2)} ชม.</span>
+            </div>
+            <div style="text-align:right">
+              <div style="font-size:.72rem;color:#7b1fa2">อัตรา: ${rateInfo}</div>
+              <div id="ot-amt-lbl" style="font-size:.88rem;color:#4a148c;font-weight:700"></div>
+            </div>
+          </div>
+        </div>
+
+        <label style="font-size:.82rem;color:#666;display:block;margin-bottom:4px">
+          <i class="fa-solid fa-user-shield" style="color:#8e24aa"></i> ผู้รับรองการทำงานล่วงเวลา
+        </label>
+        <div style="position:relative;margin-bottom:12px">
+          <select id="ot-approver"
+            style="width:100%;padding:9px 12px;border:1px solid #ddd;border-radius:10px;font-size:.88rem;font-family:Sarabun,sans-serif;color:#1a1d23;background:#fff;appearance:none;-webkit-appearance:none;cursor:pointer">
+            ${buildOptions()}
+          </select>
+          <i class="fa-solid fa-chevron-down" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);color:#9ca3af;pointer-events:none;font-size:.75rem"></i>
+        </div>
+
+        <label style="font-size:.82rem;color:#666;display:block;margin-bottom:4px">
+          <i class="fa-solid fa-pen-line" style="color:#8e24aa"></i> รายละเอียด / หมายเหตุ
+        </label>
+        <textarea id="ot-note" rows="3"
+          placeholder="ระบุรายละเอียดการปฏิบัติงานนอกเวลา..."
+          style="width:100%;padding:9px 12px;border:1px solid #ddd;border-radius:10px;font-size:.88rem;resize:vertical;font-family:Sarabun,sans-serif;margin-bottom:0;min-height:70px"></textarea>
+      </div>`,
+    showCancelButton:  true,
+    confirmButtonText: '<i class="fa-solid fa-paper-plane"></i> บันทึก OT',
+    cancelButtonText:  'ยกเลิก',
+    confirmButtonColor: '#8e24aa',
+    cancelButtonColor:  '#6c757d',
+    allowOutsideClick:  false,
+    didOpen: () => {
+      const calcHrs = () => {
+        const s = document.getElementById('ot-start').value;
+        const e = document.getElementById('ot-end').value;
+        if (!s || !e) return;
+        let mins = (e.split(':')[0]*60+Number(e.split(':')[1])) - (s.split(':')[0]*60+Number(s.split(':')[1]));
+        if (mins < 0) mins += 1440;
+        const hrs = mins / 60;
+        document.getElementById('ot-hrs-lbl').textContent = hrs.toFixed(2) + ' ชม.';
+        const amtEl = document.getElementById('ot-amt-lbl');
+        if (rateHour != null) {
+          const amt = (hrs * rateHour).toLocaleString('th-TH', {minimumFractionDigits:2});
+          amtEl.textContent = `ค่า OT: ${amt} บาท`;
+        } else { amtEl.textContent = ''; }
+      };
+      document.getElementById('ot-start').addEventListener('change', calcHrs);
+      document.getElementById('ot-end').addEventListener('change', calcHrs);
+      if (rateHour != null) {
+        const amt = (maxHours * rateHour).toLocaleString('th-TH', {minimumFractionDigits:2});
+        document.getElementById('ot-amt-lbl').textContent = `ค่า OT: ${amt} บาท`;
+      }
+    },
+    preConfirm: () => {
+      const date  = document.getElementById('ot-date').value;
+      const start = document.getElementById('ot-start').value;
+      const end   = document.getElementById('ot-end').value;
+      const note  = document.getElementById('ot-note').value.trim();
+      const selEl = document.getElementById('ot-approver');
+      const approverCode = selEl?.value || '';
+      const approverName = selEl?.selectedOptions[0]?.dataset?.name || selEl?.selectedOptions[0]?.textContent || '';
+      if (!date)  { Swal.showValidationMessage('กรุณาระบุวันที่'); return false; }
+      if (!start) { Swal.showValidationMessage('กรุณาระบุเวลาเริ่ม'); return false; }
+      if (!end)   { Swal.showValidationMessage('กรุณาระบุเวลาสิ้นสุด'); return false; }
+      let mins = (end.split(':')[0]*60+Number(end.split(':')[1]))-(start.split(':')[0]*60+Number(start.split(':')[1]));
+      if (mins < 0) mins += 1440;
+      if (mins < 15) { Swal.showValidationMessage('ชั่วโมง OT ต้องมากกว่า 15 นาที'); return false; }
+      if (mins > maxHours * 60) { Swal.showValidationMessage(`ชั่วโมง OT ต้องไม่เกิน ${maxHours} ชั่วโมง`); return false; }
+      if (approverCode === '') { Swal.showValidationMessage('กรุณาเลือกผู้รับรองการทำงานล่วงเวลา'); return false; }
+      return { date, start, end, note, approverCode, approverName };
+    },
+  });
+
+  if (!isConfirmed || !formVal) return;
+
+  const hrs = (() => {
+    let m = (formVal.end.split(':')[0]*60+Number(formVal.end.split(':')[1]))-(formVal.start.split(':')[0]*60+Number(formVal.start.split(':')[1])); 
+    if(m<0) m+=1440; return (m/60).toFixed(2);
+  })();
+  const dateDisplay = new Date(formVal.date+'T00:00:00').toLocaleDateString('th-TH',{year:'numeric',month:'long',day:'numeric'});
+  const { isConfirmed: ok } = await Swal.fire({
+    title: 'ยืนยันบันทึก OT?',
+    html: `<div style="text-align:left;font-size:.9rem;line-height:2;font-family:Sarabun,sans-serif">
+      <b>วันที่:</b> ${dateDisplay}<br>
+      <b>เวลา:</b> ${formVal.start} — ${formVal.end}<br>
+      <b>รวม:</b> <span style="color:#6a1b9a;font-weight:700">${hrs} ชั่วโมง</span><br>
+      ${formVal.approverName ? `<b>ผู้รับรอง:</b> ${formVal.approverName}<br>` : ''}
+      ${formVal.note ? `<b>หมายเหตุ:</b> ${formVal.note}` : ''}
+    </div>`,
+    icon:'question', showCancelButton:true,
+    confirmButtonText:'<i class="fa-solid fa-check"></i> ยืนยัน',
+    cancelButtonText:'แก้ไข',
+    confirmButtonColor:'#8e24aa', cancelButtonColor:'#6c757d',
+  });
+  if (!ok) { openOTForm(); return; }
+
+  Swal.fire({ title:'กำลังบันทึก...', allowOutsideClick:false, didOpen:()=>Swal.showLoading() });
+
+  let lat = null, lon = null;
+  try {
+    const pos = await new Promise((res, rej) =>
+      navigator.geolocation.getCurrentPosition(res, rej, { timeout:6000 })
+    );
+    lat = pos.coords.latitude; lon = pos.coords.longitude;
+  } catch (_) {}
+
+  const fullName = ud ? `${ud.prefix||''}${ud.firstName||''} ${ud.lastName||''}`.trim() : '';
+  const name = fullName || ud?.name || '';
+  const department   = ud?.department   || localStorage.getItem('office')      || '';
+  const affiliation  = ud?.affiliation  || localStorage.getItem('affiliation') || '';
+
+  try {
+    const res = await fetch(`${API_BASE}/overtime`, {
+      method:'POST',
+      headers:{ 'Content-Type':'application/json', ...AUTH_HEADER() },
+      body: JSON.stringify({
+        uuid: ud?.uuid || localStorage.getItem('uuid'),
+        ot_date: formVal.date, ot_start: formVal.start, ot_end: formVal.end,
+        note: formVal.note || null, name, department, affiliation,
+        latitude: lat, longitude: lon, timestamp_iso: new Date().toISOString(),
+        approver_code: formVal.approverCode || null,
+        approver:      formVal.approverName || null,
+      }),
+    });
+    const result = await res.json();
+    if (res.status === 409 || result.duplicate) {
+      Swal.fire({ icon:'warning', title:'มีรายการนี้แล้ว', text:'คุณได้บันทึก OT ช่วงเวลานี้ไปแล้ว', confirmButtonColor:'#8e24aa' });
+      return;
+    }
+    if (!result.success) throw new Error(result.message || 'บันทึกไม่สำเร็จ');
+
+    await Swal.fire({
+      icon:'success', title:'บันทึก OT สำเร็จ',
+      html:`<div style="font-size:.9rem;line-height:2;font-family:Sarabun,sans-serif">
+        <b>${dateDisplay}</b><br>เวลา ${formVal.start} — ${formVal.end} (${hrs} ชม.)<br>
+        <span style="font-size:.78rem;color:#888">เลขอ้างอิง: ${result.data?.reference || ''}</span><br>
+        <span style="font-size:.78rem;color:#fb8c00"><i class="fa-solid fa-hourglass-half"></i> รอการรับรองจาก Supervisor</span>
+      </div>`,
+      timer:3500, showConfirmButton:false,
+    });
+    loadList();
+  } catch (err) {
+    Swal.fire({ icon:'error', title:'เกิดข้อผิดพลาด', text: err.message });
+  }
+}
+
+/* ─── Supervisor review ──────────────────────────────── */
+async function reviewOT(reference, action) {
+  const label = action === 'approve' ? 'รับรอง' : 'ปฏิเสธ';
+  const color = action === 'approve' ? '#388e3c' : '#c62828';
+
+  const { value: note, isConfirmed } = await Swal.fire({
+    title: `${action==='approve'?'✅':'❌'} ${label} OT`,
+    input: 'textarea', inputLabel: 'หมายเหตุ (ไม่บังคับ)',
+    inputPlaceholder: 'ระบุเหตุผลหรือหมายเหตุเพิ่มเติม...',
+    inputAttributes: { style:'font-family:Sarabun,sans-serif;font-size:.88rem;resize:vertical' },
+    showCancelButton: true,
+    confirmButtonText: `<i class="fa-solid fa-check"></i> ${label}`,
+    cancelButtonText:  'ยกเลิก',
+    confirmButtonColor: color, cancelButtonColor: '#6c757d',
+  });
+  if (!isConfirmed) return;
+
+  Swal.fire({ title:'กำลังดำเนินการ...', allowOutsideClick:false, didOpen:()=>Swal.showLoading() });
+  try {
+    const res = await fetch(`${API_BASE}/overtime`, {
+      method:'PATCH',
+      headers:{ 'Content-Type':'application/json', ...AUTH_HEADER() },
+      body: JSON.stringify({ reference, action, supervisor_note: note || null }),
+    });
+    const result = await res.json();
+    if (!result.success) throw new Error(result.message || 'ไม่สำเร็จ');
+    Swal.fire({ icon:'success', title:result.message, timer:1800, showConfirmButton:false });
+    loadList();
+  } catch (err) {
+    Swal.fire({ icon:'error', title:'เกิดข้อผิดพลาด', text:err.message });
+  }
+}
+
+/* ─── Cancel OT (own pending) ───────────────────────── */
+async function cancelOT(reference) {
+  const { isConfirmed } = await Swal.fire({
+    title: 'ยกเลิกคำขอ OT?',
+    text:  'รายการนี้จะถูกยกเลิกและไม่สามารถกู้คืนได้',
+    icon:  'warning',
+    showCancelButton: true,
+    confirmButtonText: '<i class="fa-solid fa-trash"></i> ยกเลิกคำขอ',
+    cancelButtonText:  'ย้อนกลับ',
+    confirmButtonColor:'#c62828',
+    cancelButtonColor: '#6c757d',
+  });
+  if (!isConfirmed) return;
+
+  Swal.fire({ title:'กำลังดำเนินการ...', allowOutsideClick:false, didOpen:()=>Swal.showLoading() });
+  try {
+    // ยิง API action=cancel ไปยัง PATCH endpoint
+    const res = await fetch(`${API_BASE}/overtime`, {
+      method: 'PATCH',
+      headers: { 'Content-Type':'application/json', ...AUTH_HEADER() },
+      body: JSON.stringify({ reference, action: 'cancel' }),
+    });
+    const result = await res.json();
+    if (!result.success) throw new Error(result.message || 'ไม่สำเร็จ');
+    
+    await Swal.fire({ icon:'success', title:'ยกเลิกคำขอสำเร็จ', timer:1800, showConfirmButton:false });
+    loadList();
+  } catch (err) {
+    Swal.fire({ icon:'error', title:'เกิดข้อผิดพลาด', text:err.message });
+  }
+}
+</script>
+</body>
+</html>

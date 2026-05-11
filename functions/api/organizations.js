@@ -53,7 +53,8 @@ export async function onRequest(context) {
           longitude, 
           affiliation_code, 
           department_code, 
-          district
+          district,
+          doc_no
         FROM organizations 
         WHERE affiliation IS NOT NULL AND department IS NOT NULL
         ORDER BY affiliation, department

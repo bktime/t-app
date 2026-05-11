@@ -4,6 +4,8 @@
 //
 // เพิ่ม: เมื่อ approve/reject → อัปเดต supervisor_status ในตาราง attendance ด้วย
 
+import { extractToken } from '../_auth.js';
+
 const CORS = {
   'Access-Control-Allow-Origin':  '*',
   'Access-Control-Allow-Methods': 'GET, PATCH, OPTIONS',
@@ -13,52 +15,48 @@ const json = (d, s = 200) => Response.json(d, { status: s, headers: CORS });
 
 async function getReviewer(env, token) {
   return env.DB.prepare(
-    `SELECT uuid, role, dep_code, aff_code, name, firstName, lastName, prefix
-     FROM users
-     WHERE auth_token = ? AND token_expires_at > CURRENT_TIMESTAMP AND status = 'Active'`
+    `SELECT u.uuid, u.role, u.dep_code, u.aff_code, u.name, u.firstName, u.lastName, u.prefix
+     FROM user_sessions s
+     JOIN users u ON u.uuid = s.uuid
+     WHERE s.token = ?
+       AND s.expires_at > CURRENT_TIMESTAMP
+       AND u.status = 'Active'`
   ).bind(token).first();
 }
 
-function canReview(reviewer) {
-  return ['admin', 'supervisor', 'approver'].includes(reviewer?.role);
-}
 
 export async function onRequest(context) {
   const { request, env } = context;
   if (request.method === 'OPTIONS') return new Response(null, { headers: CORS });
 
-  const auth = request.headers.get('Authorization') || '';
-  if (!auth.startsWith('Bearer ')) return json({ success: false, message: 'กรุณาเข้าสู่ระบบ' }, 401);
-  const reviewer = await getReviewer(env, auth.slice(7));
-  if (!reviewer) return json({ success: false, message: 'Token ไม่ถูกต้องหรือหมดอายุ' }, 401);
+const token    = extractToken(request);
+const reviewer = await getReviewer(env, token);
+if (!reviewer) return json({ success: false, message: 'Unauthorized' }, 401);
 
   // ── GET ─────────────────────────────────────────────────────────────────
   if (request.method === 'GET') {
     const url      = new URL(request.url);
-    const status   = url.searchParams.get('status') || 'all';
-    const limit    = Math.min(parseInt(url.searchParams.get('limit') || '50'), 200);
-    const offset   = parseInt(url.searchParams.get('offset') || '0');
-    const search   = (url.searchParams.get('search') || '').trim();
-    const dep_code = url.searchParams.get('dep_code') || '';
+    const status    = url.searchParams.get('status') || 'all';
+    const limit     = Math.min(parseInt(url.searchParams.get('limit') || '50'), 200);
+    const offset    = parseInt(url.searchParams.get('offset') || '0');
+    const search    = (url.searchParams.get('search') || '').trim();
+    const date_from = (url.searchParams.get('date_from') || '').trim();
+    const date_to   = (url.searchParams.get('date_to')   || '').trim();
 
     const cond = [], bind = [];
 
     if (status !== 'all') { cond.push('r.status = ?'); bind.push(status); }
 
-    if (reviewer.role === 'admin') {
-      if (dep_code) { cond.push('u.dep_code = ?'); bind.push(dep_code); }
-    } else if (canReview(reviewer)) {
-      cond.push('(r.approver_uuid = ? OR u.dep_code = ? OR u.aff_code = ?)');
-      bind.push(reviewer.uuid, reviewer.dep_code || '', reviewer.aff_code || '');
-    } else {
-      cond.push('r.approver_uuid = ?');
-      bind.push(reviewer.uuid);
-    }
+    cond.push('r.approver_uuid = ?');
+    bind.push(reviewer.uuid);
 
     if (search) {
       cond.push('(r.name LIKE ? OR r.reference LIKE ? OR r.request_type LIKE ? OR r.department LIKE ?)');
       const q = `%${search}%`; bind.push(q, q, q, q);
     }
+
+    if (date_from) { cond.push('r.req_date >= ?'); bind.push(date_from); }
+    if (date_to)   { cond.push('r.req_date <= ?'); bind.push(date_to); }
 
     const where = cond.length ? 'WHERE ' + cond.join(' AND ') : '';
 

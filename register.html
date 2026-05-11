@@ -160,6 +160,12 @@
     .badge-teal { background: rgba(34,211,238,0.2); color: #67e8f9; }
     .badge-green { background: rgba(16,185,129,0.2); color: #6ee7b7; }
 
+    /* Staff filter bar */
+    .staff-filter-bar { display: flex; align-items: center; gap: 0.65rem; padding: 0.7rem 0.9rem; background: rgba(99,102,241,0.05); border: 1px solid rgba(99,102,241,0.14); border-radius: var(--radius-sm); margin-bottom: 1rem; }
+    .staff-filter-icon { width: 30px; height: 30px; border-radius: 8px; background: rgba(99,102,241,0.12); color: #a5b4fc; display: flex; align-items: center; justify-content: center; font-size: 0.78rem; flex-shrink: 0; }
+    .staff-filter-fields { display: flex; flex: 1; gap: 0.5rem; flex-wrap: wrap; }
+    .staff-filter-sel { flex: 1; min-width: 130px; padding: 0.45rem 0.7rem; font-size: 0.78rem; }
+
     /* Confirm */
     .confirm-grid { display: flex; flex-direction: column; gap: 0; }
     .confirm-row { display: flex; justify-content: space-between; padding: 0.55rem 0; border-bottom: 1px solid var(--border); font-size: 0.8rem; }
@@ -434,15 +440,26 @@
           <h2>ผู้เกี่ยวข้องในระบบ</h2>
           <p>เลือกผู้บังคับบัญชาและผู้รับผิดชอบ สามารถตั้งค่าภายหลังได้</p>
         </div>
+        <div class="staff-filter-bar">
+          <div class="staff-filter-icon"><i class="fas fa-filter"></i></div>
+          <div class="staff-filter-fields">
+            <select id="staffFilterAff" class="form-control staff-filter-sel" title="กรองตามสังกัด" disabled>
+              <option value="">ทุกสังกัด</option>
+            </select>
+            <select id="staffFilterDep" class="form-control staff-filter-sel" disabled title="กรองตามหน่วยงาน">
+              <option value="">ทุกหน่วยงาน</option>
+            </select>
+          </div>
+        </div>
         <div class="related-card">
-          <div class="related-card-label"><div class="badge badge-blue"><i class="fas fa-crown" style="font-size:0.55rem"></i></div> ผู้บริหาร / หัวหน้า</div>
+          <div class="related-card-label"><div class="badge badge-blue"><i class="fas fa-crown" style="font-size:0.55rem"></i></div> ผู้บริหาร / หัวหน้า (รับรองในการปฏิบัติงาน)</div>
           <select id="supervisor" class="form-control"><option value="">-- ไม่ระบุ --</option></select>
         </div>
         <div class="related-card">
-          <div class="related-card-label"><div class="badge badge-teal"><i class="fas fa-user-check" style="font-size:0.55rem"></i></div> ผู้รับรอง / ผู้ควบคุม</div>
+          <div class="related-card-label"><div class="badge badge-teal"><i class="fas fa-user-check" style="font-size:0.55rem"></i></div> ผู้รับรอง / ผู้ควบคุม (รับรองในการอยู่เวร)</div>
           <select id="approver" class="form-control"><option value="">-- ไม่ระบุ --</option></select>
         </div>
-        <div class="related-card">
+        <div class="related-card" hidden>
           <div class="related-card-label"><div class="badge badge-green"><i class="fas fa-coins" style="font-size:0.55rem"></i></div> ผู้จ่ายเงิน / การเงิน</div>
           <select id="payer" class="form-control"><option value="">-- ไม่ระบุ --</option></select>
         </div>
@@ -465,7 +482,7 @@
 
         <div class="form-group">
           <label><i class="fas fa-file-alt" style="margin-right:4px;opacity:0.6"></i> เลขที่หนังสือ</label>
-          <div class="input-group">
+          <div class="input-group" hidden>
             <i class="fas fa-hashtag input-icon"></i>
             <input type="text" id="otDocNumber" class="form-control" placeholder="เช่น บก0233(2)/">
           </div>
@@ -754,6 +771,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   initSignatureCanvas();
   await loadStaffOptions();
   bindRelatedEvents();  // ✅ เพิ่มบรรทัดนี้
+  bindStaffFilterEvents(); // ✅ filter สังกัด/หน่วยงาน ใน step 5
   
   initLineLogin();
   detectLineCallbackOnLoad();
@@ -928,17 +946,59 @@ function resetTelegramBtn() {
 }
 
 // ==================== Google Login ====================
+const GOOGLE_CLIENT_ID_REG = '6897615091-r2tuo13f7gnf9irjqbbtt3u1icighmsv.apps.googleusercontent.com';
+
 function loginWithGoogle() {
-  if (typeof google === 'undefined') {
-    Swal.fire({ icon: 'error', title: 'ไม่สามารถโหลด Google Login', text: 'กรุณาตรวจสอบการเชื่อมต่ออินเทอร์เน็ต' });
+  // ── ลอง One Tap ก่อน ────────────────────────────────────────────────────
+  if (typeof google !== 'undefined' && google.accounts?.id) {
+    let oneTapShown   = false;
+    let oneTapSuccess = false;
+    let redirectTimer = null;
+
+    google.accounts.id.initialize({
+      client_id:             GOOGLE_CLIENT_ID_REG,
+      callback:              (response) => {
+        oneTapSuccess = true;
+        if (redirectTimer) clearTimeout(redirectTimer);
+        handleGoogleCredential(response);
+      },
+      auto_select:           false,
+      cancel_on_tap_outside: true,
+    });
+
+    google.accounts.id.prompt((notification) => {
+      if (notification.isDisplayed()) oneTapShown = true;
+      if (notification.isSkippedMoment() || notification.isDismissedMoment()) {
+        if (!oneTapShown && !oneTapSuccess) googleOAuthRedirectReg();
+      }
+    });
+
+    redirectTimer = setTimeout(() => {
+      if (!oneTapShown && !oneTapSuccess) googleOAuthRedirectReg();
+    }, 10000);
+
     return;
   }
-  google.accounts.id.initialize({
-    client_id: '6897615091-r2tuo13f7gnf9irjqbbtt3u1icighmsv.apps.googleusercontent.com',
-    callback: handleGoogleCredential,
-    auto_select: false
+
+  // ── fallback OAuth redirect ──────────────────────────────────────────────
+  googleOAuthRedirectReg();
+}
+
+function googleOAuthRedirectReg() {
+  const state = 'register_google|' + Math.random().toString(36).slice(2);
+  sessionStorage.setItem('google_state', state);
+
+  const params = new URLSearchParams({
+    client_id:     GOOGLE_CLIENT_ID_REG,
+    redirect_uri:  window.location.origin + '/google-callback.html',
+    response_type: 'code',
+    scope:         'openid profile email',
+    state:         state,
+    access_type:   'online',
+    prompt:        'select_account',
   });
-  google.accounts.id.prompt();
+
+  window.location.href = 'https://accounts.google.com/o/oauth2/v2/auth?' + params.toString();
 }
 
 function parseJwt(token) {
@@ -1000,6 +1060,29 @@ function initLineLogin() {
       + `&state=${encodeURIComponent(state)}`
       + '&scope=profile%20openid%20email';
   };
+}
+
+function detectGoogleCallbackOnLoad() {
+  const p = new URLSearchParams(window.location.search);
+  if (p.get('google') !== 'callback') return;
+
+  const userId      = p.get('userId');
+  const displayName = p.get('displayName');
+  const email       = p.get('email');
+  const pictureUrl  = p.get('pictureUrl');
+
+  if (userId && displayName) {
+    history.replaceState({}, '', window.location.pathname);
+    userData.social_id        = userId;
+    userData.social_id_google = userId;
+    userData.social_type      = 'google';
+    userData.name             = displayName;
+    userData.email            = email  || null;
+    userData.picture          = pictureUrl || null;
+    userData.uuid             = generateShortId();
+    showConnectedStatus('Google', userData.name, userData.picture);
+    checkAndProceed();
+  }
 }
 
 function detectLineCallbackOnLoad() {
@@ -1070,14 +1153,14 @@ async function checkSocialIdExists(socialId, socialType) {
 }
 
 // ==================== Staff Options ====================
-async function loadStaffOptions(aff_code) {
+async function loadStaffOptions(aff_code, def_code) {
   let staff = [];
   try {
-    // ส่ง aff_code ไปด้วยถ้ามี
     let url = '/api/user/staff-list';
-    if (aff_code && aff_code.trim() !== '') {
-      url += `?aff_code=${encodeURIComponent(aff_code)}`;
-    }
+    const params = new URLSearchParams();
+    if (aff_code && aff_code.trim() !== '') params.set('aff_code', aff_code);
+    if (def_code && def_code.trim() !== '') params.set('def_code', def_code);
+    if (params.toString()) url += '?' + params.toString();
     
     const response = await fetch(url);
     if (response.ok) {
@@ -1102,8 +1185,54 @@ async function loadStaffOptions(aff_code) {
       const name = s.name || '';
       const position = s.position ? ` (${s.position})` : '';
       const department = s.department ? ` - ${s.department}` : '';
-      sel.innerHTML += `<option value="${value}">${escapeHtml(name)}${position}${department}</option>`;
+      sel.innerHTML += `<option value="${value}">${escapeHtml(name)}${position}</option>`;
     });
+  });
+}
+
+function buildStaffFilterDepOptions(aff) {
+  const sel = document.getElementById('staffFilterDep');
+  if (!sel) return;
+  sel.innerHTML = '<option value="">ทุกหน่วยงาน</option>';
+  const depts = organizationsData.filter(o => !aff || o.affiliation === aff);
+  if (!depts.length) { sel.disabled = true; return; }
+  sel.disabled = false;
+  depts.forEach(d => {
+    const o = document.createElement('option');
+    o.value = d.department_code || '';
+    o.textContent = d.department || '';
+    sel.appendChild(o);
+  });
+}
+
+function bindStaffFilterEvents() {
+  const filterAff = document.getElementById('staffFilterAff');
+  const filterDep = document.getElementById('staffFilterDep');
+  if (!filterAff || !filterDep) return;
+
+  // populate สังกัดใน filter
+  const affMap = new Map();
+  organizationsData.forEach(o => {
+    if (o.affiliation && !affMap.has(o.affiliation)) affMap.set(o.affiliation, o.affiliation_code || '');
+  });
+  affMap.forEach((code, aff) => {
+    const o = document.createElement('option');
+    o.value = code; o.textContent = aff; o.setAttribute('data-aff', aff);
+    filterAff.appendChild(o);
+  });
+
+  filterAff.addEventListener('change', async function () {
+    const code = this.value;
+    const aff  = this.options[this.selectedIndex]?.getAttribute('data-aff') || '';
+    buildStaffFilterDepOptions(aff);
+    filterDep.value = '';
+    await loadStaffOptions(code, '');
+  });
+
+  filterDep.addEventListener('change', async function () {
+    const def_code = this.value;
+    const aff_code = filterAff.value;
+    await loadStaffOptions(aff_code, def_code);
   });
 }
 
@@ -1386,7 +1515,7 @@ function nextStep() {
 
   // บันทึกข้อมูลโอทีในขั้นตอน 6
   if (currentStep === 6) {
-    userData.ot_doc_number        = document.getElementById('otDocNumber').value.trim();
+    userData.ot_doc_number        = document.getElementById('otDocNumber').value.trim() ;
     userData.ot_rate_per_day      = document.getElementById('otRatePerDay').value.trim();
     userData.ot_rate_per_hour     = document.getElementById('otRatePerHour').value.trim();
     userData.ot_max_hours_per_day = document.getElementById('otMaxHoursPerDay').value.trim();
@@ -1462,7 +1591,31 @@ function updateUI() {
   const stepCounter = document.getElementById('stepCounter');
   if (stepCounter) stepCounter.textContent = `ขั้นตอนที่ ${currentStep} จาก ${TOTAL_STEPS}`;
 
+  if (currentStep === 5) preSelectStaffFilter();
   if (currentStep === 7) buildConfirmData();
+}
+
+function preSelectStaffFilter() {
+  const filterAff = document.getElementById('staffFilterAff');
+  const filterDep = document.getElementById('staffFilterDep');
+  if (!filterAff || !filterDep) return;
+
+  // pre-select สังกัด
+  if (userData.aff_code) {
+    filterAff.value = userData.aff_code;
+    const curAff = filterAff.options[filterAff.selectedIndex]?.getAttribute('data-aff') || '';
+    buildStaffFilterDepOptions(curAff);
+  }
+
+  // pre-select หน่วยงาน
+  if (userData.dep_code) {
+    filterDep.value = userData.dep_code;
+  }
+
+  // โหลด staff ตาม aff+dep ที่เซ็ตไว้
+  if (userData.aff_code || userData.dep_code) {
+    loadStaffOptions(userData.aff_code || '', userData.dep_code || '');
+  }
 }
 
 // ==================== Confirm Data ====================
@@ -1580,8 +1733,12 @@ function bindOrganizationEvents() {
         userData.department = '';
         userData.dep_code = '';
         
-        // ✅ โหลดรายชื่อผู้เกี่ยวข้องตาม aff_code
+        // ✅ โหลดรายชื่อผู้เกี่ยวข้องตาม aff_code และ sync filter bar
         await loadStaffOptions(aff_code);
+        const fa = document.getElementById('staffFilterAff');
+        if (fa) { fa.value = aff_code; buildStaffFilterDepOptions(selectedAffiliation); }
+        const fd = document.getElementById('staffFilterDep');
+        if (fd) fd.value = '';
       } else {
         const departmentSelect = document.getElementById('department');
         if (departmentSelect) {
@@ -1590,6 +1747,8 @@ function bindOrganizationEvents() {
         }
         // โหลดรายชื่อทั้งหมด (ไม่กรอง)
         await loadStaffOptions('');
+        const fa = document.getElementById('staffFilterAff');
+        if (fa) { fa.value = ''; buildStaffFilterDepOptions(''); }
       }
     });
   }
@@ -1612,7 +1771,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   
   initSignatureCanvas();
   loadStaffOptions();
+  bindStaffFilterEvents(); // ✅ filter สังกัด/หน่วยงาน ใน step 5
   initLineLogin();
+  detectGoogleCallbackOnLoad();
   detectLineCallbackOnLoad();
   updateUI();
 

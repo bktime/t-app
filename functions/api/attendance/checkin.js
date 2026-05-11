@@ -1,8 +1,7 @@
 // functions/api/attendance/checkin.js
 // POST /api/attendance/checkin  — checkin & checkout
-// โครงสร้างใหม่: 1 แถวต่อ (uuid, date) ใน attendance_v2
-// เมื่อ checkin → INSERT แถวใหม่ + auto-checkout 16:30
-// เมื่อ checkout → UPDATE แถวเดิม
+
+import { authUser, extractToken } from '../_auth.js';
 
 const CORS = {
   'Access-Control-Allow-Origin':  '*',
@@ -12,18 +11,70 @@ const CORS = {
 const json = (d, s = 200) => Response.json(d, { status: s, headers: CORS });
 
 // ref: AT-{UUID8}-{YYYYMMDD}-{HHmmss}
-function generateRef(uuid, now = new Date()) {
-  const u = (uuid || 'NOUID').replace(/-/g, '').slice(0, 8).toUpperCase();
-  const d = now.toISOString().slice(0, 10).replace(/-/g, '');
+function generateRef(uuid = '') {
+  const now = new Date();
+  const d = now.toISOString().slice(2, 10).replace(/-/g, '');
   const t = now.toTimeString().slice(0, 8).replace(/:/g, '');
-  return `AT-${u}-${d}-${t}`;
+  const u = (uuid || 'NOUID').replace(/-/g, '').slice(0, 8).toUpperCase();
+  const base = d + t;
+
+  let sum = 0;
+  for (let i = 0; i < base.length; i++) {
+    sum += parseInt(base[i]) * (i + 1);
+  }
+  let check = sum % 11;
+  if (check === 10) check = 'X';
+
+  return `ATT-${d}-${t}-${u}-${check}`;
 }
 
-async function authUser(env, token) {
-  return env.DB.prepare(
-    `SELECT uuid FROM users
-     WHERE auth_token = ? AND token_expires_at > CURRENT_TIMESTAMP AND status = 'Active'`
-  ).bind(token).first();
+// ===== ฟังก์ชันเกี่ยวกับพื้นที่ =====
+function cleanText(text) {
+  return text
+    .toLowerCase()
+    .replace("จังหวัด", "")
+    .replace("changwat", "")
+    .replace("province", "")
+    .trim();
+}
+
+// ✅ แก้ไข: ส่ง env เข้าไปในฟังก์ชัน
+async function checkBuengKan(lat, lon, env) {
+  try {
+    // ✅ ใช้ env ที่ส่งเข้ามา
+    const apiKey = env.LOCATIONIQ_KEY;
+    
+    const res = await fetch(
+      `https://us1.locationiq.com/v1/reverse?key=${apiKey}&lat=${lat}&lon=${lon}&format=json`
+    );
+
+    if (!res.ok) {
+      console.error(`LocationIQ API error: ${res.status} ${res.statusText}`);
+      throw new Error(`API ERROR: ${res.status}`);
+    }
+
+    const data = await res.json();
+    const addr = data.address || {};
+
+    let province = addr.province || addr.state || addr.region || "";
+    const p = cleanText(province);
+
+    const isProvince = p.includes("บึงกาฬ") || p.includes("bueng kan");
+
+    return {
+      inProvince: isProvince,
+      displayName: data.display_name || "-",
+      province: province,
+      city: addr.city || addr.town || addr.village || "-"
+    };
+  } catch (e) {
+    console.error('Location check error:', e.message);
+    return {
+      inProvince: false,
+      displayName: "-",
+      error: e.message
+    };
+  }
 }
 
 export async function onRequest(context) {
@@ -31,9 +82,8 @@ export async function onRequest(context) {
   if (request.method === 'OPTIONS') return new Response(null, { headers: CORS });
   if (request.method !== 'POST')    return json({ success: false, message: 'Method not allowed' }, 405);
 
-  const auth = request.headers.get('Authorization') || '';
-  if (!auth.startsWith('Bearer ')) return json({ success: false, message: 'กรุณาเข้าสู่ระบบ' }, 401);
-  const userRow = await authUser(env, auth.slice(7));
+  const token   = extractToken(request);
+  const userRow = await authUser(env, token);
   if (!userRow) return json({ success: false, message: 'Token ไม่ถูกต้องหรือหมดอายุ' }, 401);
 
   let body;
@@ -49,9 +99,19 @@ export async function onRequest(context) {
   if (uuid !== userRow.uuid) return json({ success: false, message: 'UUID ไม่ตรงกัน' }, 403);
   if (!['checkin', 'checkout'].includes(action)) return json({ success: false, message: 'action ไม่ถูกต้อง' }, 400);
 
-  const now     = timestamp_iso ? new Date(timestamp_iso) : new Date();
+  const now = timestamp_iso ? new Date(timestamp_iso) : new Date();
+
+  if (isNaN(now.getTime())) {
+    return json({ success: false, message: 'รูปแบบเวลาไม่ถูกต้อง' }, 400);
+  }
+
   const dateISO = now.toISOString().slice(0, 10);
   const timeStr = now.toTimeString().slice(0, 8);
+
+  const todayISO = new Date().toISOString().slice(0, 10);
+  if (dateISO !== todayISO) {
+    return json({ success: false, message: 'ไม่สามารถลงเวลาย้อนหลังหรือข้ามวันได้' }, 400);
+  }
 
   // ── อ่าน approver_uuid จาก user_data (supervisor_code)
   const userInfo = await env.DB.prepare(
@@ -60,9 +120,45 @@ export async function onRequest(context) {
   const approverUuid   = userInfo?.supervisor_code || null;
   const supervisorName = userInfo?.supervisor || null;
 
+  // ── ตรวจสอบพื้นที่ จ.บึงกาฬ ──────────────────────────────────────────────
+  let finalDistanceM = distance_m;
+  let finalIsInRange = is_in_range;
+  let locationDisplay = null;
+  let locationDetail = null;
+
+  // ✅ ส่ง env เข้าไปในฟังก์ชัน checkBuengKan
+  if (latitude && longitude) {
+    const loc = await checkBuengKan(latitude, longitude, env);
+    
+    if (loc.inProvince) {
+      // อยู่ใน จ.บึงกาฬ บังคับ distance = 0 และ in_range = 1
+      finalDistanceM = 0;
+      finalIsInRange = true;
+      locationDisplay = `📍 อยู่ในพื้นที่จังหวัดบึงกาฬ`;
+      locationDetail = {
+        inBuengKan: true,
+        province: loc.province,
+        city: loc.city,
+        displayName: loc.displayName,
+        message: '✅ ตรวจพบว่าอยู่ในพื้นที่จังหวัดบึงกาฬ'
+      };
+    } else {
+      locationDisplay = `📍 นอกพื้นที่จังหวัดบึงกาฬ`;
+      locationDetail = {
+        inBuengKan: false,
+        province: loc.province,
+        city: loc.city,
+        displayName: loc.displayName,
+        message: loc.error ? `⚠️ ไม่สามารถตรวจสอบพื้นที่ได้: ${loc.error}` : '📍 อยู่นอกพื้นที่จังหวัดบึงกาฬ'
+      };
+    }
+  }
+
+  // แปลงค่าให้เหมาะสมกับ Database (1/0/null)
+  const inRangeVal = finalIsInRange != null ? (finalIsInRange ? 1 : 0) : null;
+
   // ── CHECKIN ───────────────────────────────────────────────────────────────
   if (action === 'checkin') {
-    // ตรวจสอบว่ามีแถวของวันนี้แล้วหรือยัง
     const existing = await env.DB.prepare(
       `SELECT id, checkin_time FROM attendance WHERE uuid = ? AND date = ? LIMIT 1`
     ).bind(uuid, dateISO).first();
@@ -72,11 +168,9 @@ export async function onRequest(context) {
     }
 
     const ref = generateRef(uuid, now);
-    const inRangeVal = is_in_range != null ? (is_in_range ? 1 : 0) : null;
 
     try {
       if (existing) {
-        // มีแถวอยู่แล้ว (อาจสร้างจาก request) → UPDATE checkin fields
         await env.DB.prepare(`
           UPDATE attendance SET
             checkin_time      = ?,
@@ -94,12 +188,11 @@ export async function onRequest(context) {
         `).bind(
           timeStr, work_type || 'ปกติ', note || null,
           latitude ?? null, longitude ?? null,
-          distance_m ?? null, inRangeVal,
+          finalDistanceM ?? null, inRangeVal,
           ref, now.toISOString(),
           uuid, dateISO
         ).run();
       } else {
-        // สร้างแถวใหม่ พร้อม auto-checkout 16:30
         await env.DB.prepare(`
           INSERT INTO attendance (
             uuid, date,
@@ -121,16 +214,19 @@ export async function onRequest(context) {
         `).bind(
           uuid, dateISO,
           timeStr, work_type || 'ปกติ', note || null,
-          latitude ?? null, longitude ?? null, distance_m ?? null, inRangeVal,
+          latitude ?? null, longitude ?? null, finalDistanceM ?? null, inRangeVal,
           ref, now.toISOString(),
           work_type || 'ปกติ', `${dateISO}T16:30:00`,
           approverUuid, supervisorName
         ).run();
       }
 
+      // ✅ ส่งข้อมูล location กลับไปด้วย
       return json({
         success: true,
-        message: 'บันทึกเวลาเข้าสำเร็จ',
+        message: locationDetail?.inBuengKan 
+          ? '✅ บันทึกเวลาเข้าสำเร็จ (อยู่ในพื้นที่จังหวัดบึงกาฬ)'
+          : 'บันทึกเวลาเข้าสำเร็จ',
         data: {
           action: 'checkin',
           reference: ref,
@@ -138,6 +234,8 @@ export async function onRequest(context) {
           time_str: timeStr,
           auto_checkout_at: '16:30',
           supervisor_status: 'none',
+          location_display: locationDisplay,
+          location_detail: locationDetail // ส่งรายละเอียดเพิ่มเติม
         },
       });
     } catch (err) {
@@ -155,12 +253,9 @@ export async function onRequest(context) {
     if (!row) return json({ success: false, message: 'ยังไม่ได้ลงเวลาเข้าวันนี้' }, 400);
     if (!row.checkin_time) return json({ success: false, message: 'ยังไม่ได้ลงเวลาเข้าวันนี้' }, 400);
 
-    // ป้องกัน manual checkout ซ้ำ
     if (row.checkout_type === 'manual') {
       return json({ success: false, message: 'คุณได้ลงเวลาออกในวันนี้แล้ว', duplicate: true }, 409);
     }
-
-    const inRangeVal = is_in_range != null ? (is_in_range ? 1 : 0) : null;
 
     try {
       await env.DB.prepare(`
@@ -180,15 +275,25 @@ export async function onRequest(context) {
       `).bind(
         timeStr, work_type || 'ปกติ', note || null,
         latitude ?? null, longitude ?? null,
-        distance_m ?? null, inRangeVal,
+        finalDistanceM ?? null, inRangeVal,
         now.toISOString(),
         uuid, dateISO
       ).run();
 
+      // ✅ ส่งข้อมูล location กลับไปด้วย
       return json({
         success: true,
-        message: 'บันทึกเวลาออกสำเร็จ',
-        data: { action: 'checkout', checkout_type: 'manual', date: dateISO, time_str: timeStr },
+        message: locationDetail?.inBuengKan
+          ? '✅ บันทึกเวลาออกสำเร็จ (อยู่ในพื้นที่จังหวัดบึงกาฬ)'
+          : 'บันทึกเวลาออกสำเร็จ',
+        data: { 
+          action: 'checkout', 
+          checkout_type: 'manual', 
+          date: dateISO, 
+          time_str: timeStr,
+          location_display: locationDisplay,
+          location_detail: locationDetail // ส่งรายละเอียดเพิ่มเติม
+        },
       });
     } catch (err) {
       console.error('[checkout]', err);

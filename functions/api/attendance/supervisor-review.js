@@ -3,6 +3,8 @@
 // Body: { uuid, date, action: 'approve'|'reject', supervisor_note }
 // Supervisor รับรอง/ไม่รับรอง การลงเวลาของพนักงาน
 
+import { extractToken } from '../_auth.js';
+
 const CORS = {
   'Access-Control-Allow-Origin':  '*',
   'Access-Control-Allow-Methods': 'PATCH, OPTIONS',
@@ -15,14 +17,13 @@ export async function onRequest(context) {
   if (request.method === 'OPTIONS') return new Response(null, { headers: CORS });
   if (request.method !== 'PATCH')   return json({ success: false, message: 'Method not allowed' }, 405);
 
-  const auth = request.headers.get('Authorization') || '';
-  if (!auth.startsWith('Bearer ')) return json({ success: false, message: 'กรุณาเข้าสู่ระบบ' }, 401);
-
-  const reviewer = await env.DB.prepare(
-    `SELECT uuid, role, dep_code, aff_code, name, firstName, lastName, prefix
-     FROM users WHERE auth_token = ? AND token_expires_at > CURRENT_TIMESTAMP AND status = 'Active'`
-  ).bind(auth.slice(7)).first();
-  if (!reviewer) return json({ success: false, message: 'Token ไม่ถูกต้องหรือหมดอายุ' }, 401);
+const token = extractToken(request);
+const reviewer = await env.DB.prepare(
+  `SELECT u.uuid, u.role, u.dep_code, u.aff_code, concat(u.firstName, u.lastName," ", u.prefix) as name
+   FROM user_sessions s JOIN users u ON u.uuid = s.uuid
+   WHERE s.token = ? AND s.expires_at > CURRENT_TIMESTAMP AND u.status = 'Active'`
+).bind(token).first();
+if (!reviewer) return json({ success: false, message: 'Token ไม่ถูกต้องหรือหมดอายุ' }, 401);
 
   let body;
   try { body = await request.json(); } catch { return json({ success: false, message: 'Invalid JSON' }, 400); }
@@ -46,7 +47,7 @@ export async function onRequest(context) {
 if (attRow.approver_uuid !== reviewer.uuid)
   return json({ success: false, message: 'ไม่มีสิทธิ์รับรองรายการนี้ ผู้มีสิทธิ์คือ ' + attRow.supervisor_name }, 403);
 
-  if (attRow.supervisor_status !== 'pending')
+  if (attRow.supervisor_status !== 'none')
     return json({ success: false, message: `ดำเนินการไปแล้ว (${attRow.supervisor_status})` }, 409);
 
   const newStatus  = action === 'approve' ? 'approved' : 'rejected';

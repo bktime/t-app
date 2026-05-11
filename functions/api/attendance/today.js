@@ -2,6 +2,8 @@
 // GET /api/attendance/today?uuid=...&date=YYYY-MM-DD
 // โครงสร้างใหม่: อ่านจาก attendance (1 แถวต่อวัน)
 
+import { authUser, extractToken } from '../_auth.js';
+
 const CORS = {
   'Access-Control-Allow-Origin':  '*',
   'Access-Control-Allow-Methods': 'GET, OPTIONS',
@@ -14,12 +16,9 @@ export async function onRequest(context) {
   if (request.method === 'OPTIONS') return new Response(null, { headers: CORS });
   if (request.method !== 'GET')     return json({ success: false, message: 'Method not allowed' }, 405);
 
-  const auth = request.headers.get('Authorization') || '';
-  if (!auth.startsWith('Bearer ')) return json({ success: false, message: 'กรุณาเข้าสู่ระบบ' }, 401);
-  const userRow = await env.DB.prepare(
-    `SELECT uuid FROM users WHERE auth_token = ? AND token_expires_at > CURRENT_TIMESTAMP AND status = 'Active'`
-  ).bind(auth.slice(7)).first();
-  if (!userRow) return json({ success: false, message: 'Token ไม่ถูกต้องหรือหมดอายุ' }, 401);
+  const token   = extractToken(request);
+const userRow = await authUser(env, token);
+if (!userRow) return json({ success: false, message: 'Token ไม่ถูกต้องหรือหมดอายุ' }, 401);
 
   const url  = new URL(request.url);
   const uuid = url.searchParams.get('uuid');

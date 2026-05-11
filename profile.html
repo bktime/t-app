@@ -151,6 +151,12 @@
     .dot{width:7px;height:7px;border-radius:50%}
     .dot-b{background:#6366f1}.dot-t{background:#22d3ee}.dot-g{background:#10b981}
 
+    /* Related filter bar */
+    .rel-filter-bar{display:flex;align-items:center;gap:.65rem;padding:.7rem .9rem;background:rgba(99,102,241,.05);border:1px solid rgba(99,102,241,.14);border-radius:var(--radius-sm);margin-bottom:.85rem}
+    .rel-filter-icon{width:30px;height:30px;border-radius:8px;background:rgba(99,102,241,.12);color:#a5b4fc;display:flex;align-items:center;justify-content:center;font-size:.78rem;flex-shrink:0}
+    .rel-filter-fields{display:flex;flex:1;gap:.5rem;flex-wrap:wrap}
+    .rel-filter-sel{flex:1;min-width:120px;padding:.45rem .7rem;font-size:.78rem}
+
     /* OT */
     .ot-chip{display:flex;align-items:center;gap:8px;padding:.55rem .85rem;background:rgba(16,185,129,.06);border:1px solid rgba(16,185,129,.15);border-radius:var(--radius-sm);font-size:.72rem;color:#6ee7b7;margin-bottom:.95rem}
     .ot-grid{display:grid;grid-template-columns:1fr 1fr;gap:.8rem}
@@ -336,10 +342,21 @@
         <div class="sc-right"><span class="saved-chip" id="chip-related"><i class="fas fa-check"></i> บันทึกแล้ว</span><i class="fas fa-chevron-down chev"></i></div>
       </div>
       <div class="sc-body">
+        <div class="rel-filter-bar">
+          <div class="rel-filter-icon"><i class="fas fa-filter"></i></div>
+          <div class="rel-filter-fields">
+            <select id="relFilterAff" class="fc rel-filter-sel" title="กรองตามสังกัด" disabled>
+              <option value="">ทุกสังกัด</option>
+            </select>
+            <select id="relFilterDep" class="fc rel-filter-sel" disabled title="กรองตามหน่วยงาน">
+              <option value="">ทุกหน่วยงาน</option>
+            </select>
+          </div>
+        </div>
         <div class="rel-grid">
-          <div class="rel-card"><div class="rel-lbl"><div class="dot dot-b"></div>ผู้บริหาร / หัวหน้า</div><select id="supervisor" class="fc"><option value="">-- ไม่ระบุ --</option></select></div>
-          <div class="rel-card"><div class="rel-lbl"><div class="dot dot-t"></div>ผู้รับรองการทำงาน</div><select id="approver"   class="fc"><option value="">-- ไม่ระบุ --</option></select></div>
-          <div class="rel-card"><div class="rel-lbl"><div class="dot dot-g"></div>ผู้จ่ายเงิน / การเงิน</div><select id="payer"      class="fc"><option value="">-- ไม่ระบุ --</option></select></div>
+          <div class="rel-card"><div class="rel-lbl"><div class="dot dot-b"></div> ผู้บริหาร / หัวหน้า (รับรองในการปฏิบัติงาน)</div><select id="supervisor" class="fc"><option value="">-- ไม่ระบุ --</option></select></div>
+          <div class="rel-card"><div class="rel-lbl"><div class="dot dot-t"></div> ผู้รับรอง / ผู้ควบคุม (รับรองในการอยู่เวร)</div><select id="approver"   class="fc"><option value="">-- ไม่ระบุ --</option></select></div>
+          <div class="rel-card" hidden><div class="rel-lbl"><div class="dot dot-g"></div>ผู้จ่ายเงิน / การเงิน</div><select id="payer"      class="fc"><option value="">-- ไม่ระบุ --</option></select></div>
         </div>
       </div>
       <div class="sc-foot">
@@ -656,11 +673,14 @@ function bindOrg() {
 }
 
 // ── Staff ─────────────────────────────────────────────────────────────────────
-async function loadStaff(aff_code) {
+async function loadStaff(aff_code, def_code) {
   let staff = [];
   try {
     let url = `${API_BASE_URL}/user/staff-list`;
-    if (aff_code?.trim()) url += `?aff_code=${encodeURIComponent(aff_code)}`;
+    const params = new URLSearchParams();
+    if (aff_code?.trim()) params.set('aff_code', aff_code);
+    if (def_code?.trim()) params.set('def_code', def_code);
+    if (params.toString()) url += '?' + params.toString();
     const res = await fetch(url, { headers: authHeaders() });
     if (res.ok) {
       const r = await res.json();
@@ -673,11 +693,25 @@ async function loadStaff(aff_code) {
     sel.innerHTML = '<option value="">-- ไม่ระบุ --</option>';
     staff.forEach(s => {
       const val = s.uuid || s.id;
-      const lbl = `${s.name || ''}${s.position ? ' (' + s.position + ')' : ''}${s.department ? ' - ' + s.department : ''}`;
+      // const lbl = `${s.name || ''}${s.position ? ' (' + s.position + ')' : ''}${s.department ? ' - ' + s.department : ''}`;
+      const lbl = `${s.name || ''}${s.position ? ' (' + s.position + ')' : ''}`;
       sel.innerHTML += `<option value="${esc(String(val))}">${esc(lbl)}</option>`;
     });
     const saved = userData[`${id}_code`] || userData[id] || '';
     if (saved) sel.value = saved;
+  });
+}
+
+function buildRelDepOptions(aff) {
+  const sel = G('relFilterDep'); if (!sel) return;
+  sel.innerHTML = '<option value="">ทุกหน่วยงาน</option>';
+  const depts = orgsData.filter(o => !aff || o.affiliation === aff);
+  if (!depts.length) { sel.disabled = true; return; }
+  sel.disabled = false;
+  depts.forEach(d => {
+    const o = document.createElement('option');
+    o.value = d.department_code || ''; o.textContent = d.department || '';
+    sel.appendChild(o);
   });
 }
 
@@ -687,6 +721,42 @@ function bindRel() {
       userData[id]              = this.options[this.selectedIndex]?.text || '';
       userData[`${id}_code`]   = this.value || '';
     });
+  });
+
+  // populate filter dropdowns จาก orgsData
+  const relFilterAff = G('relFilterAff');
+  const relFilterDep = G('relFilterDep');
+  if (!relFilterAff || !relFilterDep) return;
+
+  // สร้าง option สังกัด
+  const affMap = new Map();
+  orgsData.forEach(o => { if (o.affiliation && !affMap.has(o.affiliation)) affMap.set(o.affiliation, o.affiliation_code || ''); });
+  affMap.forEach((code, aff) => {
+    const o = document.createElement('option');
+    o.value = code; o.textContent = aff; o.setAttribute('data-aff', aff);
+    relFilterAff.appendChild(o);
+  });
+
+  // pre-select ตาม userData
+  if (userData.aff_code) relFilterAff.value = userData.aff_code;
+  const curAff = relFilterAff.options[relFilterAff.selectedIndex]?.getAttribute('data-aff') || '';
+  buildRelDepOptions(curAff);
+
+  // pre-select หน่วยงาน
+  if (userData.dep_code) relFilterDep.value = userData.dep_code;
+
+  relFilterAff.addEventListener('change', async function () {
+    const code = this.value;
+    const aff  = this.options[this.selectedIndex]?.getAttribute('data-aff') || '';
+    buildRelDepOptions(aff);
+    relFilterDep.value = '';
+    await loadStaff(code, '');
+  });
+
+  relFilterDep.addEventListener('change', async function () {
+    const def_code  = this.value;
+    const aff_code  = relFilterAff.value;
+    await loadStaff(aff_code, def_code);
   });
 }
 
@@ -1078,7 +1148,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   await loadOrgs();
   bindOrg();
-  await loadStaff(userData.aff_code || '');
+  await loadStaff(userData.aff_code || '', userData.dep_code || '');
   bindRel();
   initSig();
   initLineCallback();

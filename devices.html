@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="th-TH">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>จัดการอุปกรณ์ | ระบบลงเวลาปฏิบัติงาน</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <style>
+    :root {
+      --bg:           #0a0a0f;
+      --surface:      #111118;
+      --surface2:     #18181f;
+      --border:       rgba(255,255,255,0.07);
+      --border-hover: rgba(255,255,255,0.13);
+      --text-primary: #f0f0f5;
+      --text-secondary:#7a7a8a;
+      --text-muted:   #3d3d50;
+      --accent:       #6366f1;
+      --accent-glow:  rgba(99,102,241,0.2);
+      --green:        #10b981;
+      --green-bg:     rgba(16,185,129,0.1);
+      --green-border: rgba(16,185,129,0.3);
+      --red:          #f43f5e;
+      --red-bg:       rgba(244,63,94,0.08);
+      --red-border:   rgba(244,63,94,0.25);
+      --amber:        #f59e0b;
+      --amber-bg:     rgba(245,158,11,0.1);
+      --google:       #ea4335;
+      --line-c:       #06c755;
+      --telegram-c:   #2aabee;
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Noto Sans Thai', sans-serif;
+      background: var(--bg);
+      min-height: 100vh;
+      color: var(--text-primary);
+      padding-bottom: 3rem;
+    }
+
+    /* ── Background ── */
+    .bg-wrap { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+    .bg-grid {
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.018) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.018) 1px, transparent 1px);
+      background-size: 56px 56px;
+    }
+    .bg-orb {
+      position: absolute; border-radius: 50%; filter: blur(90px); opacity: 0.08;
+      animation: drift 14s ease-in-out infinite;
+    }
+    .o1 { width:500px;height:500px;background:radial-gradient(circle,#6366f1,transparent);top:-150px;left:-100px; }
+    .o2 { width:350px;height:350px;background:radial-gradient(circle,#10b981,transparent);bottom:-80px;right:-60px;animation-delay:-5s;animation-direction:reverse; }
+    @keyframes drift { 0%,100%{transform:translate(0,0)} 50%{transform:translate(18px,-22px)} }
+
+    /* ── Header ── */
+    .header {
+      position: relative; z-index: 10;
+      padding: 1.5rem 1.25rem 0;
+      max-width: 680px; margin: 0 auto;
+    }
+    .back-btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      color: var(--text-secondary); font-size: .82rem;
+      text-decoration: none; border: none; background: none;
+      cursor: pointer; padding: .4rem 0; transition: color .2s;
+    }
+    .back-btn:hover { color: var(--text-primary); }
+
+    .page-title-wrap { margin-top: 1.25rem; }
+    .page-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.55rem; font-weight: 800;
+      color: var(--text-primary); letter-spacing: -.04em;
+    }
+    .page-sub { font-size: .82rem; color: var(--text-secondary); margin-top: .3rem; }
+
+    /* ── Content ── */
+    .content {
+      position: relative; z-index: 10;
+      max-width: 680px; margin: 1.75rem auto 0;
+      padding: 0 1.25rem;
+    }
+
+    /* ── Summary bar ── */
+    .summary {
+      display: flex; align-items: center; justify-content: space-between;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 16px; padding: 1rem 1.25rem;
+      margin-bottom: 1.25rem;
+    }
+    .summary-left { display: flex; align-items: center; gap: 10px; }
+    .summary-icon {
+      width: 38px; height: 38px; border-radius: 10px;
+      background: var(--accent-glow); border: 1px solid rgba(99,102,241,.3);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--accent); font-size: .9rem;
+    }
+    .summary-label { font-size: .82rem; color: var(--text-secondary); }
+    .summary-count { font-size: 1.05rem; font-weight: 700; color: var(--text-primary); line-height: 1.2; }
+    .btn-revoke-all {
+      display: flex; align-items: center; gap: 6px;
+      background: var(--red-bg); border: 1px solid var(--red-border);
+      color: var(--red); border-radius: 10px;
+      padding: .5rem .9rem; font-family: inherit; font-size: .78rem;
+      font-weight: 600; cursor: pointer; transition: all .2s;
+    }
+    .btn-revoke-all:hover { background: rgba(244,63,94,.14); }
+    .btn-revoke-all:disabled { opacity: .4; cursor: not-allowed; }
+
+    /* ── Section label ── */
+    .section-label {
+      font-size: .7rem; font-weight: 700; letter-spacing: .1em;
+      text-transform: uppercase; color: var(--text-muted);
+      margin-bottom: .75rem; margin-top: 1.5rem;
+    }
+    .section-label:first-child { margin-top: 0; }
+
+    /* ── Device card ── */
+    .device-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 16px; padding: 1rem 1.25rem;
+      margin-bottom: .65rem; transition: border-color .2s;
+      animation: cardIn .35s cubic-bezier(.4,0,.2,1) both;
+    }
+    @keyframes cardIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+    .device-card:hover { border-color: var(--border-hover); }
+    .device-card.current { border-color: rgba(99,102,241,.35); background: rgba(99,102,241,.04); }
+
+    .dc-top { display: flex; align-items: flex-start; gap: 12px; }
+    .dc-icon {
+      width: 44px; height: 44px; flex-shrink: 0; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem; border: 1px solid var(--border);
+      background: var(--surface2);
+    }
+    .dc-icon.mobile   { background: rgba(99,102,241,.08); border-color: rgba(99,102,241,.2); color: #818cf8; }
+    .dc-icon.desktop  { background: rgba(16,185,129,.08); border-color: rgba(16,185,129,.2); color: #34d399; }
+    .dc-icon.tablet   { background: rgba(245,158,11,.08); border-color: rgba(245,158,11,.2); color: #fbbf24; }
+    .dc-icon.unknown  { background: var(--surface2); color: var(--text-muted); }
+
+    .dc-info { flex: 1; min-width: 0; }
+    .dc-name-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .dc-name { font-size: .92rem; font-weight: 600; color: var(--text-primary); }
+    .badge-current {
+      font-size: .65rem; font-weight: 700; letter-spacing: .06em;
+      text-transform: uppercase; padding: 2px 7px; border-radius: 99px;
+      background: var(--accent-glow); border: 1px solid rgba(99,102,241,.4);
+      color: #a5b4fc; flex-shrink: 0;
+    }
+    .badge-social {
+      font-size: .65rem; font-weight: 600; padding: 2px 7px; border-radius: 99px;
+      flex-shrink: 0;
+    }
+    .badge-google   { background:rgba(234,67,53,.1);  border:1px solid rgba(234,67,53,.25);  color:#f87171; }
+    .badge-line     { background:rgba(6,199,85,.1);   border:1px solid rgba(6,199,85,.25);   color:#4ade80; }
+    .badge-telegram { background:rgba(42,171,238,.1); border:1px solid rgba(42,171,238,.25); color:#67e8f9; }
+
+    .dc-meta { font-size: .75rem; color: var(--text-secondary); margin-top: .35rem; display: flex; flex-wrap: wrap; gap: 4px 12px; }
+    .dc-meta span { display: flex; align-items: center; gap: 4px; }
+    .dc-meta i { font-size: .65rem; opacity: .6; }
+
+    .dc-bottom { display: flex; align-items: center; justify-content: space-between; margin-top: .85rem; padding-top: .75rem; border-top: 1px solid var(--border); }
+    .dc-active { font-size: .72rem; color: var(--text-muted); }
+    .dc-active .dot-live { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--green); margin-right: 4px; box-shadow: 0 0 6px var(--green); animation: pulse 2s ease-in-out infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+    .btn-kick {
+      display: flex; align-items: center; gap: 5px;
+      background: none; border: 1px solid var(--border);
+      color: var(--text-secondary); border-radius: 8px;
+      padding: .4rem .75rem; font-family: inherit; font-size: .75rem;
+      cursor: pointer; transition: all .2s;
+    }
+    .btn-kick:hover { background: var(--red-bg); border-color: var(--red-border); color: var(--red); }
+
+    /* ── Empty & Loading ── */
+    .skeleton { background: linear-gradient(90deg,var(--surface),var(--surface2),var(--surface)); background-size: 200%; animation: shimmer 1.4s infinite; border-radius: 16px; height: 110px; margin-bottom: .65rem; }
+    @keyframes shimmer { 0%{background-position:200%} 100%{background-position:-200%} }
+    .empty-state { text-align: center; padding: 3rem 1rem; color: var(--text-muted); font-size: .85rem; }
+    .empty-state i { font-size: 2rem; margin-bottom: 1rem; display: block; }
+
+    /* ── Toast ── */
+    .toast {
+      position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%);
+      background: var(--surface2); border: 1px solid var(--border);
+      color: var(--text-primary); font-size: .82rem; padding: .75rem 1.25rem;
+      border-radius: 12px; z-index: 999; white-space: nowrap;
+      box-shadow: 0 8px 32px rgba(0,0,0,.4);
+      animation: toastIn .3s ease both;
+    }
+    @keyframes toastIn { from{opacity:0;transform:translateX(-50%) translateY(10px)} to{opacity:1;transform:translateX(-50%) translateY(0)} }
+  </style>
+</head>
+<body>
+
+<div class="bg-wrap">
+  <div class="bg-grid"></div>
+  <div class="bg-orb o1"></div>
+  <div class="bg-orb o2"></div>
+</div>
+
+<div class="header">
+  <button class="back-btn" onclick="history.back()">
+    <i class="fas fa-arrow-left"></i> กลับ
+  </button>
+  <div class="page-title-wrap">
+    <div class="page-title">อุปกรณ์ที่เข้าสู่ระบบ</div>
+    <div class="page-sub">จัดการเซสชันทั้งหมดของคุณ</div>
+  </div>
+</div>
+
+<div class="content">
+  <!-- Summary -->
+  <div class="summary" id="summaryBar" style="display:none">
+    <div class="summary-left">
+      <div class="summary-icon"><i class="fas fa-mobile-screen-button"></i></div>
+      <div>
+        <div class="summary-count" id="deviceCount">-</div>
+        <div class="summary-label">อุปกรณ์ที่เข้าสู่ระบบอยู่</div>
+      </div>
+    </div>
+    <button class="btn-revoke-all" id="btnRevokeAll" onclick="revokeAllOthers()">
+      <i class="fas fa-right-from-bracket"></i> ออกทั้งหมด
+    </button>
+  </div>
+
+  <!-- Device list -->
+  <div id="deviceList">
+    <!-- skeleton -->
+    <div class="skeleton" id="sk1"></div>
+    <div class="skeleton" id="sk2" style="animation-delay:.15s"></div>
+    <div class="skeleton" id="sk3" style="animation-delay:.3s"></div>
+  </div>
+</div>
+
+<script>
+const API = '/api/user';
+const token = localStorage.getItem('auth_token');
+
+if (!token) window.location.href = 'login.html';
+
+// ── Helpers ────────────────────────────────────────────────────────────────
+function deviceIcon(type) {
+  switch (type) {
+    case 'mobile':  return { cls: 'mobile',  icon: 'fa-mobile-screen-button' };
+    case 'tablet':  return { cls: 'tablet',  icon: 'fa-tablet-screen-button' };
+    case 'desktop': return { cls: 'desktop', icon: 'fa-desktop' };
+    default:        return { cls: 'unknown', icon: 'fa-question' };
+  }
+}
+
+function socialBadge(type) {
+  if (!type) return '';
+  const map = { google: ['Google','badge-google'], line: ['LINE','badge-line'], telegram: ['Telegram','badge-telegram'] };
+  const [label, cls] = map[type] || [type, ''];
+  return `<span class="badge-social ${cls}">${label}</span>`;
+}
+
+function timeAgo(dateStr) {
+  if (!dateStr) return 'ไม่ทราบ';
+  const diff = (Date.now() - new Date(dateStr).getTime()) / 1000;
+  if (diff < 60)           return 'เมื่อสักครู่';
+  if (diff < 3600)         return `${Math.floor(diff/60)} นาทีที่แล้ว`;
+  if (diff < 86400)        return `${Math.floor(diff/3600)} ชั่วโมงที่แล้ว`;
+  if (diff < 86400*30)     return `${Math.floor(diff/86400)} วันที่แล้ว`;
+  return new Date(dateStr).toLocaleDateString('th-TH', { year:'numeric', month:'short', day:'numeric' });
+}
+
+function formatDate(dateStr) {
+  if (!dateStr) return '-';
+  return new Date(dateStr).toLocaleDateString('th-TH', { year:'numeric', month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' });
+}
+
+function showToast(msg, duration = 2500) {
+  const old = document.getElementById('toast');
+  if (old) old.remove();
+  const t = document.createElement('div');
+  t.id = 'toast'; t.className = 'toast'; t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.style.animation = 'toastIn .3s ease reverse both', duration - 300);
+  setTimeout(() => t.remove(), duration);
+}
+
+// ── Render ─────────────────────────────────────────────────────────────────
+function renderDevices(devices, currentId) {
+  // แยก current กับ others
+  const current = devices.filter(d => d.is_current);
+  const others  = devices.filter(d => !d.is_current);
+
+  const list  = document.getElementById('deviceList');
+  const bar   = document.getElementById('summaryBar');
+  const count = document.getElementById('deviceCount');
+
+  list.innerHTML = '';
+  bar.style.display   = 'flex';
+  count.textContent   = `${devices.length} อุปกรณ์`;
+
+  // ซ่อนปุ่ม "ออกทั้งหมด" ถ้าไม่มีอุปกรณ์อื่น
+  document.getElementById('btnRevokeAll').style.display = others.length ? 'flex' : 'none';
+
+  // ── อุปกรณ์ปัจจุบัน ─────────────────────────────────────────────────────
+  if (current.length) {
+    const lbl = document.createElement('div');
+    lbl.className = 'section-label'; lbl.textContent = 'อุปกรณ์นี้';
+    list.appendChild(lbl);
+    current.forEach(d => list.appendChild(buildCard(d, true)));
+  }
+
+  // ── อุปกรณ์อื่น ──────────────────────────────────────────────────────────
+  if (others.length) {
+    const lbl = document.createElement('div');
+    lbl.className = 'section-label'; lbl.textContent = 'อุปกรณ์อื่น';
+    list.appendChild(lbl);
+    others.forEach((d, i) => {
+      const card = buildCard(d, false);
+      card.style.animationDelay = `${i * 0.06}s`;
+      list.appendChild(card);
+    });
+  }
+
+  if (!devices.length) {
+    list.innerHTML = `<div class="empty-state"><i class="fas fa-ghost"></i>ไม่มีเซสชันที่ใช้งานอยู่</div>`;
+  }
+}
+
+function buildCard(d, isCurrent) {
+  const card = document.createElement('div');
+  card.className = `device-card${isCurrent ? ' current' : ''}`;
+  card.id = `card-${d.id}`;
+
+  const { cls, icon } = deviceIcon(d.device_type);
+
+  card.innerHTML = `
+    <div class="dc-top">
+      <div class="dc-icon ${cls}"><i class="fas ${icon}"></i></div>
+      <div class="dc-info">
+        <div class="dc-name-row">
+          <span class="dc-name">${escHtml(d.device_name || 'Unknown Device')}</span>
+          ${isCurrent ? '<span class="badge-current">อุปกรณ์นี้</span>' : ''}
+          ${socialBadge(d.social_type)}
+        </div>
+        <div class="dc-meta">
+          ${d.os      ? `<span><i class="fas fa-layer-group"></i>${escHtml(d.os)}</span>` : ''}
+          ${d.browser ? `<span><i class="fas fa-globe"></i>${escHtml(d.browser)}</span>` : ''}
+          ${d.ip      ? `<span><i class="fas fa-location-dot"></i>${escHtml(d.ip)}</span>` : ''}
+        </div>
+      </div>
+    </div>
+    <div class="dc-bottom">
+      <div class="dc-active">
+        ${isCurrent
+          ? `<span class="dot-live"></span>ใช้งานอยู่ขณะนี้`
+          : `ใช้งานล่าสุด ${timeAgo(d.last_active_at)}`
+        }
+        <span style="margin-left:8px;opacity:.5">· เข้าสู่ระบบ ${formatDate(d.created_at)}</span>
+      </div>
+      ${!isCurrent
+        ? `<button class="btn-kick" onclick="kickDevice(${d.id}, this)">
+             <i class="fas fa-right-from-bracket"></i> นำออก
+           </button>`
+        : ''
+      }
+    </div>
+  `;
+  return card;
+}
+
+function escHtml(str) {
+  return (str || '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+}
+
+// ── API calls ──────────────────────────────────────────────────────────────
+async function loadDevices() {
+  try {
+    const res  = await fetch(`${API}/devices`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    const data = await res.json();
+
+    // ลบ skeleton
+    ['sk1','sk2','sk3'].forEach(id => { const el = document.getElementById(id); if(el) el.remove(); });
+
+    if (!data.success) throw new Error(data.message);
+    renderDevices(data.devices, data.current_session_id);
+
+  } catch (err) {
+    document.getElementById('deviceList').innerHTML =
+      `<div class="empty-state"><i class="fas fa-triangle-exclamation"></i>${err.message || 'โหลดข้อมูลไม่ได้'}</div>`;
+  }
+}
+
+async function kickDevice(sessionId, btn) {
+  const confirmed = await Swal.fire({
+    title: 'นำอุปกรณ์ออก?',
+    text: 'อุปกรณ์นั้นจะถูกออกจากระบบทันที',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'นำออก',
+    cancelButtonText: 'ยกเลิก',
+    confirmButtonColor: '#f43f5e',
+    cancelButtonColor: '#3d3d50',
+    background: '#111118',
+    color: '#f0f0f5',
+  });
+  if (!confirmed.isConfirmed) return;
+
+  btn.disabled = true;
+  try {
+    const res  = await fetch(`${API}/devices`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ session_id: sessionId }),
+    });
+    const data = await res.json();
+    if (!data.success) throw new Error(data.message);
+
+    // ลบ card ออก
+    const card = document.getElementById(`card-${sessionId}`);
+    if (card) { card.style.transition = 'all .3s ease'; card.style.opacity = '0'; card.style.transform = 'translateX(20px)'; setTimeout(() => { card.remove(); recount(); }, 300); }
+    showToast('✓ นำอุปกรณ์ออกจากระบบแล้ว');
+
+  } catch (err) {
+    showToast(`⚠ ${err.message}`);
+    btn.disabled = false;
+  }
+}
+
+async function revokeAllOthers() {
+  const confirmed = await Swal.fire({
+    title: 'ออกจากระบบทุกอุปกรณ์อื่น?',
+    text: 'อุปกรณ์อื่นทั้งหมดจะถูกออกจากระบบทันที',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'ยืนยัน',
+    cancelButtonText: 'ยกเลิก',
+    confirmButtonColor: '#f43f5e',
+    cancelButtonColor: '#3d3d50',
+    background: '#111118',
+    color: '#f0f0f5',
+  });
+  if (!confirmed.isConfirmed) return;
+
+  const btn = document.getElementById('btnRevokeAll');
+  btn.disabled = true;
+
+  try {
+    const res  = await fetch(`${API}/devices`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ revoke_all_others: true }),
+    });
+    const data = await res.json();
+    if (!data.success) throw new Error(data.message);
+
+    showToast('✓ นำออกจากระบบทุกอุปกรณ์อื่นแล้ว');
+    setTimeout(loadDevices, 600);
+
+  } catch (err) {
+    showToast(`⚠ ${err.message}`);
+    btn.disabled = false;
+  }
+}
+
+function recount() {
+  const cards  = document.querySelectorAll('.device-card:not(.current)');
+  const total  = document.querySelectorAll('.device-card').length;
+  const count  = document.getElementById('deviceCount');
+  if (count) count.textContent = `${total} อุปกรณ์`;
+  const revBtn = document.getElementById('btnRevokeAll');
+  if (revBtn) revBtn.style.display = cards.length ? 'flex' : 'none';
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────
+loadDevices();
+</script>
+</body>
+</html>

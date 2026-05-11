@@ -1,33 +1,89 @@
 // functions/api/attendance/request.js
 
+import { authUser, extractToken } from '../_auth.js';
+
 const CORS = {
   'Access-Control-Allow-Origin':  '*',
-  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+  'Access-Control-Allow-Methods': 'GET, POST, DELETE, OPTIONS',
   'Access-Control-Allow-Headers': 'Content-Type, Authorization',
 };
 const json = (d, s = 200) => Response.json(d, { status: s, headers: CORS });
 
-function generateRef(uuid, now = new Date()) {
-  const u = (uuid || 'NOUID').replace(/-/g, '').slice(0, 8).toUpperCase();
-  const d = now.toISOString().slice(0, 10).replace(/-/g, '');
+
+function generateRef(uuid = '') {
+  const now = new Date();
+  const d = now.toISOString().slice(2, 10).replace(/-/g, '');
   const t = now.toTimeString().slice(0, 8).replace(/:/g, '');
-  return `REQ-${u}-${d}-${t}`;
+  const u = (uuid || 'NOUID').replace(/-/g, '').slice(0, 8).toUpperCase();
+  const base = d + t;
+
+  let sum = 0;
+  for (let i = 0; i < base.length; i++) {
+    sum += parseInt(base[i]) * (i + 1);
+  }
+  let check = sum % 11;
+  if (check === 10) check = 'X';
+
+  return `REQ-${d}-${t}-${u}-${check}`;
 }
 
-function generateRefAT(uuid, now = new Date()) {
-  const u = (uuid || 'NOUID').replace(/-/g, '').slice(0, 8).toUpperCase();
-  const d = now.toISOString().slice(0, 10).replace(/-/g, '');
+function generateRefAT(uuid = '') {
+  const now = new Date();
+  const d = now.toISOString().slice(2, 10).replace(/-/g, '');
   const t = now.toTimeString().slice(0, 8).replace(/:/g, '');
-  return `AT-${u}-${d}-${t}`;
+  const u = (uuid || 'NOUID').replace(/-/g, '').slice(0, 8).toUpperCase();
+  const base = d + t;
+
+  let sum = 0;
+  for (let i = 0; i < base.length; i++) {
+    sum += parseInt(base[i]) * (i + 1);
+  }
+  let check = sum % 11;
+  if (check === 10) check = 'X';
+
+  return `ATT-${d}-${t}-${u}-${check}`;
 }
 
-async function authUser(env, token) {
-  return env.DB.prepare(`
-    SELECT uuid FROM users
-    WHERE auth_token = ?
-      AND token_expires_at > CURRENT_TIMESTAMP
-      AND status = 'Active'
-  `).bind(token).first();
+// ===== ฟังก์ชันเกี่ยวกับพื้นที่ =====
+function cleanText(text) {
+  return text
+    .toLowerCase()
+    .replace("จังหวัด", "")
+    .replace("changwat", "")
+    .replace("province", "")
+    .trim();
+}
+
+// ✅ แก้ไข: ส่ง env เข้าไปในฟังก์ชัน
+async function checkBuengKan(lat, lon, env) {
+  try {
+    // ✅ ใช้ env ที่ส่งเข้ามา
+    const apiKey = env.LOCATIONIQ_KEY;
+    const res = await fetch(
+      `https://us1.locationiq.com/v1/reverse?key=${apiKey}&lat=${lat}&lon=${lon}&format=json`
+    );
+
+    if (!res.ok) throw new Error("API ERROR");
+
+    const data = await res.json();
+    const addr = data.address || {};
+
+    let province = addr.province || addr.state || addr.region || "";
+    const p = cleanText(province);
+
+    const isProvince = p.includes("บึงกาฬ") || p.includes("bueng kan");
+
+    return {
+      inProvince: isProvince,
+      displayName: data.display_name || "-"
+    };
+  } catch (e) {
+    console.error("Location check error:", e);
+    return {
+      inProvince: false,
+      displayName: "-"
+    };
+  }
 }
 
 async function checkDuplicateRequest(env, uuid, request_type, req_date) {
@@ -50,13 +106,9 @@ export async function onRequest(context) {
   if (request.method === 'OPTIONS')
     return new Response(null, { headers: CORS });
 
-  const auth = request.headers.get('Authorization') || '';
-  if (!auth.startsWith('Bearer '))
-    return json({ success: false, message: 'กรุณาเข้าสู่ระบบ' }, 401);
-
-  const userRow = await authUser(env, auth.slice(7));
-  if (!userRow)
-    return json({ success: false, message: 'Token ไม่ถูกต้อง' }, 401);
+  const token   = extractToken(request);
+  const userRow = await authUser(env, token);
+  if (!userRow) return json({ success: false, message: 'Token ไม่ถูกต้องหรือหมดอายุ' }, 401);
 
   // ================= GET =================
   if (request.method === 'GET') {
@@ -132,8 +184,40 @@ export async function onRequest(context) {
 
     const ref = generateRef(uuid);
     const refAT = generateRefAT(uuid);
-    const inRangeVal = is_in_range != null ? (is_in_range ? 1 : 0) : null;
     const supName = supervisor_name || approver?.name;
+
+    // ── ตรวจสอบพื้นที่ จ.บึงกาฬ ──────────────────────────────────────────────
+    let finalDistanceM = distance_m;
+    let finalIsInRange = is_in_range;
+    let locationDisplay = null;
+    let locationCheckResult = null; // เก็บรายละเอียดเพิ่มเติม
+
+    // ✅ ส่ง env เข้าไปในฟังก์ชัน checkBuengKan
+    if (latitude && longitude) {
+      const loc = await checkBuengKan(latitude, longitude, env);
+      
+      if (loc.inProvince) {
+        // อยู่ใน จ.บึงกาฬ บังคับ distance = 0 และ in_range = 1
+        finalDistanceM = 0;
+        finalIsInRange = true;
+        locationDisplay = `📍 อยู่ในพื้นที่จังหวัดบึงกาฬ`;
+        locationCheckResult = {
+          inBuengKan: true,
+          displayName: loc.displayName,
+         message: 'ตรวจพบว่าอยู่ในพื้นที่จังหวัดบึงกาฬ'
+        };
+      } else {
+        locationDisplay = `📍 นอกพื้นที่จังหวัดบึงกาฬ`;
+        locationCheckResult = {
+          inBuengKan: false,
+          displayName: loc.displayName,
+          message: 'อยู่นอกพื้นที่จังหวัดบึงกาฬ'
+        };
+      }
+    }
+
+    // แปลงค่าให้เหมาะสมกับ Database (1/0/null)
+    const inRangeVal = finalIsInRange != null ? (finalIsInRange ? 1 : 0) : null;
 
     // ===== INSERT REQUEST =====
      await env.DB.prepare(`
@@ -176,7 +260,7 @@ export async function onRequest(context) {
           note || null,
           latitude ?? null,
           longitude ?? null,
-          distance_m ?? null,
+          finalDistanceM ?? null,
           inRangeVal,
           ref, request_type, reason,
           approver_uuid, supName,
@@ -210,7 +294,7 @@ export async function onRequest(context) {
           note || null,
           latitude ?? null,
           longitude ?? null,
-          distance_m ?? null,
+          finalDistanceM ?? null,
           inRangeVal,
           ref, request_type, reason,
           approver_uuid, supName,
@@ -238,7 +322,7 @@ export async function onRequest(context) {
         note || null,
         latitude ?? null,
         longitude ?? null,
-        distance_m ?? null,
+        finalDistanceM ?? null,
         inRangeVal,
         refAT,
         ref, request_type, reason,
@@ -246,27 +330,80 @@ export async function onRequest(context) {
       ).run();
     }
 
-const now = new Date();
+    const now = new Date();
 
-return json({
-  success: true,
-  message: 'ส่งคำขอสำเร็จ',
-  data: {
-    reference: ref,
-    status: 'pending',
-    supervisor_status: 'pending',
-    approver: approver?.name || null,
-    supervisor_name: supName,
-    submitted_at: now.toISOString(),
-    attendance: {
-      has_checkin:  hasCheckin,
-      has_checkout: hasCheckout,
-      checkin_time: attRow?.checkin_time || null,
-      checkout_time: attRow?.checkout_time || null,
-    }
+    // ✅ ส่งข้อมูล location กลับไปด้วย
+    return json({
+      success: true,
+      message: 'ส่งคำขอสำเร็จ',
+      data: {
+        reference: ref,
+        status: 'pending',
+        supervisor_status: 'pending',
+        approver: approver?.name || null,
+        supervisor_name: supName,
+        submitted_at: now.toISOString(),
+        location_display: locationDisplay, // ส่งข้อความสำหรับแสดงผล
+        location_check: locationCheckResult, // ส่งรายละเอียดเพิ่มเติม
+        attendance: {
+          has_checkin:  hasCheckin,
+          has_checkout: hasCheckout,
+          checkin_time: attRow?.checkin_time || null,
+          checkout_time: attRow?.checkout_time || null,
+        }
+      }
+    });
+
   }
-});
 
+  // ================= DELETE (cancel) =================
+  if (request.method === 'DELETE') {
+    const body = await request.json();
+    const { uuid, reference } = body;
+
+    if (!uuid || !reference)
+      return json({ success: false, message: 'ข้อมูลไม่ครบ' }, 400);
+
+    if (uuid !== userRow.uuid)
+      return json({ success: false, message: 'UUID ไม่ตรงกัน' }, 403);
+
+    const row = await env.DB.prepare(`
+      SELECT id, status, req_date, request_type
+      FROM attendance_requests
+      WHERE reference = ? AND uuid = ?
+      LIMIT 1
+    `).bind(reference, uuid).first();
+
+    if (!row)
+      return json({ success: false, message: 'ไม่พบคำขอ' }, 404);
+
+    if (row.status !== 'pending')
+      return json({ success: false, message: `ไม่สามารถยกเลิกได้ (สถานะ: ${row.status})` }, 400);
+
+    await env.DB.prepare(`
+      UPDATE attendance_requests
+      SET status = 'cancelled', updated_at = CURRENT_TIMESTAMP
+      WHERE reference = ? AND uuid = ?
+    `).bind(reference, uuid).run();
+
+    await env.DB.prepare(`
+      UPDATE attendance
+      SET request_ref       = NULL,
+          request_type      = NULL,
+          request_reason    = NULL,
+          request_at        = NULL,
+          approver_uuid     = NULL,
+          supervisor_name   = NULL,
+          supervisor_status = NULL,
+          updated_at        = CURRENT_TIMESTAMP
+      WHERE uuid = ? AND date = ? AND request_ref = ?
+    `).bind(uuid, row.req_date, reference).run();
+
+    return json({
+      success: true,
+      message: 'ยกเลิกคำขอสำเร็จ',
+      data: { reference, status: 'cancelled' }
+    });
   }
 
   return json({ success: false, message: 'Method not allowed' }, 405);

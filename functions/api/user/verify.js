@@ -1,82 +1,94 @@
-// GET /api/user/verify
+// functions/api/user/verify.js
+// GET /api/user/verify — ตรวจสอบ token จาก user_sessions
+
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+};
+
 export async function onRequest(context) {
   const { request, env } = context;
 
-  const corsHeaders = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-  };
-
-  if (request.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
-  }
+  if (request.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
 
   try {
-    // รับ token จาก Header
     const authHeader = request.headers.get('Authorization');
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return new Response(JSON.stringify({
-        success: false,
-        message: 'No token provided'
-      }), {
-        status: 401,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
+    if (!authHeader?.startsWith('Bearer ')) {
+      return json({ success: false, message: 'No token provided' }, 401);
     }
 
     const token = authHeader.substring(7);
 
-    // ตรวจสอบ token ในฐานข้อมูล
-    const user = await env.DB.prepare(`
-      SELECT * FROM users 
-      WHERE auth_token = ? 
-      AND token_expires_at > CURRENT_TIMESTAMP
-      AND status = 'Active'
+    // ── ตรวจสอบ session ────────────────────────────────────────────────────
+    const session = await env.DB.prepare(`
+      SELECT s.*, u.*,
+             o.latitude, o.longitude, o.district,
+             o.affiliation_code, o.department_code
+      FROM user_sessions s
+      JOIN users u ON u.uuid = s.uuid
+      LEFT JOIN organizations o
+        ON o.affiliation_code = u.aff_code
+       AND o.department_code  = u.dep_code
+      WHERE s.token = ?
+        AND s.expires_at > CURRENT_TIMESTAMP
+        AND u.status = 'Active'
     `).bind(token).first();
 
-    if (!user) {
-      return new Response(JSON.stringify({
-        success: false,
-        message: 'Invalid or expired token'
-      }), {
-        status: 401,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
+    if (!session) {
+      return json({ success: false, message: 'Invalid or expired token' }, 401);
     }
 
-    // ส่งข้อมูลผู้ใช้กลับ (ไม่ต้องส่ง token กลับ)
-    return new Response(JSON.stringify({
+    // ── อัปเดต last_active_at ──────────────────────────────────────────────
+    await env.DB.prepare(`
+      UPDATE user_sessions SET last_active_at = CURRENT_TIMESTAMP WHERE token = ?
+    `).bind(token).run();
+
+    return json({
       success: true,
       user: {
-        uuid: user.uuid,
-        name: user.name,
-        email: user.email,
-        picture: user.picture,
-        social_type: user.social_type,
-        affiliation: user.affiliation,
-        department: user.department,
-        prefix: user.prefix,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        position: user.position,
-        personnelType: user.personnelType,
-        role: user.role,
-        status: user.status
-      }
-    }), {
-      status: 200,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        uuid:          session.uuid,
+        name:          session.name,
+        email:         session.email,
+        picture:       session.picture,
+        social_type:   session.social_type,
+        affiliation:   session.affiliation,
+        department:    session.department,
+        prefix:        session.prefix,
+        firstName:     session.firstName,
+        lastName:      session.lastName,
+        position:      session.position,
+        personnelType: session.personnelType,
+        role:          session.role,
+        status:        session.status,
+        signature:     session.signature,
+        // location: {
+          latitude:  session.latitude,
+          longitude: session.longitude,
+          district:  session.district,
+          aff_code:  session.affiliation_code,
+          dep_code:  session.department_code,
+        // },
+        // staff: {
+          supervisor:      session.supervisor,
+          approver:        session.approver,
+          payer:           session.payer,
+          supervisor_code: session.supervisor_code,
+          approver_code:   session.approver_code,
+          payer_code:      session.payer_code,
+          ot_rate_per_day: session.ot_rate_per_day,
+          ot_rate_per_hour: session.ot_rate_per_hour,
+          ot_max_hours_per_day: session.ot_max_hours_per_day,
+        // },
+      },
     });
 
   } catch (error) {
-    console.error('Verify error:', error);
-    return new Response(JSON.stringify({
-      success: false,
-      message: 'Internal server error'
-    }), {
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    console.error('[verify] error:', error);
+    return json({ success: false, message: 'Internal server error' }, 500);
   }
+}
+
+function json(data, status = 200) {
+  return Response.json(data, { status, headers: corsHeaders });
 }

@@ -39,7 +39,7 @@
     .cbadge{font-size:.68rem;padding:1px 6px;border-radius:20px;background:var(--ora);color:#fff;font-weight:700;line-height:1.4}
     .rl{display:flex;flex-direction:column;gap:.75rem}
     .rc{background:var(--sur);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden;box-shadow:var(--sh);transition:box-shadow .15s;animation:fu .22s ease both}
-    .rc:hover{box-shadow:var(--shm)}.rc.pending{border-left:4px solid var(--ora)}.rc.approved{border-left:4px solid var(--grn)}.rc.rejected{border-left:4px solid var(--red)}
+    .rc:hover{box-shadow:var(--shm)}.rc.pending{border-left:4px solid var(--ora)}.rc.approved{border-left:4px solid var(--grn)}.rc.rejected{border-left:4px solid var(--red)}.rc.cancelled{border-left:4px solid #9e9e9e;opacity:.8}
     .rh{display:flex;align-items:flex-start;gap:12px;padding:1rem 1.1rem .75rem}
     .rav{width:42px;height:42px;border-radius:50%;object-fit:cover;border:2px solid var(--bd);flex-shrink:0}
     .rm{flex:1;min-width:0}.rn{font-weight:600;font-size:.95rem}.rd{font-size:.75rem;color:var(--sub);margin-top:1px}
@@ -57,12 +57,12 @@
     .tlch.in{border-color:var(--gbd);color:var(--grn);background:var(--gbg)}.tlch.oa{border-color:var(--obd);color:var(--ora);background:var(--obg)}.tlch.om{border-color:var(--bbd);color:var(--blu);background:var(--bbg)}
     .tln{font-size:.75rem;color:var(--mt);font-style:italic}
     .rnote{margin-top:.5rem;font-size:.78rem;padding:.4rem .7rem;border-radius:8px;border-left:3px solid var(--bd);background:#fff;color:var(--sub)}
-    .rnote.approved{border-color:var(--grn)}.rnote.rejected{border-color:var(--red)}
+    .rnote.approved{border-color:var(--grn)}.rnote.rejected{border-color:var(--red)}.rnote.cancelled{border-color:#9e9e9e}
     .rf{padding:.7rem 1.1rem;border-top:1px solid var(--bd);display:flex;align-items:center;justify-content:flex-end;gap:.5rem}
     .act{display:inline-flex;align-items:center;gap:5px;padding:.45rem .9rem;border-radius:8px;font-size:.82rem;font-weight:600;font-family:'Sarabun',sans-serif;cursor:pointer;border:none;transition:all .15s}
     .act.app{background:var(--gbg);color:var(--grn);border:1px solid var(--gbd)}.act.app:hover{background:var(--grn);color:#fff}
     .act.rej{background:var(--rbg);color:var(--red);border:1px solid var(--rbd)}.act.rej:hover{background:var(--red);color:#fff}
-    .dl{font-size:.75rem;color:var(--mt);display:flex;align-items:center;gap:4px}
+    .dl{font-size:.75rem;color:var(--mt);display:flex;align-items:center;gap:4px}.spc{background:#f5f5f5;color:#757575;border:1px solid #e0e0e0}.drf{display:flex;align-items:center;gap:.4rem;flex-wrap:wrap}.drf label{font-size:.75rem;color:var(--sub);white-space:nowrap}.drf input[type=date]{font-size:.78rem;padding:.3rem .55rem;border:1px solid var(--bd);border-radius:6px;background:var(--sur);color:var(--tx);font-family:"Sarabun",sans-serif;cursor:pointer}.drf input[type=date]:focus{outline:none;border-color:var(--pri)}.drf .drsep{font-size:.78rem;color:var(--mt)}.drf .clr{font-size:.72rem;padding:.28rem .6rem;border-radius:6px;border:1px solid var(--bd);background:transparent;color:var(--sub);cursor:pointer;font-family:"Sarabun",sans-serif}.drf .clr:hover{background:var(--bg)}
     .pg{display:flex;justify-content:center;align-items:center;gap:.5rem;margin-top:1.25rem;flex-wrap:wrap}
     .pb{padding:.42rem .85rem;border-radius:8px;border:1px solid var(--bd);background:var(--sur);font-size:.82rem;cursor:pointer;font-family:'Sarabun',sans-serif;transition:all .15s}
     .pb:hover:not(:disabled){background:var(--pri);color:#fff;border-color:var(--pri)}.pb:disabled{opacity:.4;cursor:not-allowed}.pb.cur{background:var(--pri);color:#fff;border-color:var(--pri)}
@@ -89,10 +89,18 @@
     <div class="sc active" id="sc-all"     onclick="filterSt('all')">    <div class="si sia"><i class="fas fa-list"></i></div>     <div><div class="sv" id="cnt-all">—</div><div class="sl">ทั้งหมด</div></div></div>
     <div class="sc"        id="sc-pending"  onclick="filterSt('pending')"> <div class="si sip"><i class="fas fa-hourglass-half"></i></div><div><div class="sv" id="cnt-pending">—</div><div class="sl">รอดำเนินการ</div></div></div>
     <div class="sc"        id="sc-approved" onclick="filterSt('approved')"><div class="si siap"><i class="fas fa-circle-check"></i></div><div><div class="sv" id="cnt-approved">—</div><div class="sl">อนุมัติแล้ว</div></div></div>
-    <div class="sc"        id="sc-rejected" onclick="filterSt('rejected')"><div class="si sir"><i class="fas fa-circle-xmark"></i></div><div><div class="sv" id="cnt-rejected">—</div><div class="sl">ปฏิเสธแล้ว</div></div></div>
+    <div class="sc"        id="sc-rejected"   onclick="filterSt('rejected')"><div class="si sir"><i class="fas fa-circle-xmark"></i></div><div><div class="sv" id="cnt-rejected">—</div><div class="sl">ปฏิเสธแล้ว</div></div></div>
+    <div class="sc"        id="sc-cancelled" onclick="filterSt('cancelled')"><div class="si" style="background:#f5f5f5;color:#9e9e9e;border-color:#e0e0e0"><i class="fas fa-ban"></i></div><div><div class="sv" id="cnt-cancelled">—</div><div class="sl">ยกเลิกแล้ว</div></div></div>
   </div>
   <div class="tb">
     <div class="sw"><i class="fas fa-magnifying-glass"></i><input type="text" id="si" placeholder="ค้นหาชื่อ, เลขอ้างอิง, ประเภท..." oninput="debS()"></div>
+    <div class="drf">
+      <label><i class="fas fa-calendar-days" style="font-size:.7rem"></i> ระหว่าง</label>
+      <input type="date" id="df" onchange="load(true)" title="วันเริ่มต้น">
+      <span class="drsep">—</span>
+      <input type="date" id="dt" onchange="load(true)" title="วันสิ้นสุด">
+      <button class="clr" onclick="clearDate()" title="ล้างวันที่"><i class="fas fa-xmark"></i></button>
+    </div>
     <button class="tbb" onclick="load(true)"><i class="fas fa-rotate-right"></i> รีเฟรช</button>
     <button class="tbb pri" id="batchBtn" style="display:none" onclick="batchApp()">
       <i class="fas fa-check-double"></i> อนุมัติที่เลือก <span class="cbadge" id="batchCnt">0</span>
@@ -115,15 +123,36 @@ function fmtS(s){if(!s)return'—';try{return new Date(s+'T00:00:00').toLocaleDa
 function ago(iso){if(!iso)return'';const d=(Date.now()-new Date(iso))/1000;if(d<60)return'เมื่อกี้';if(d<3600)return Math.floor(d/60)+' นาทีที่แล้ว';if(d<86400)return Math.floor(d/3600)+' ชม.ที่แล้ว';if(d<604800)return Math.floor(d/86400)+' วันที่แล้ว';return fmtD(iso)}
 
 function initUser(){
-  const ud=gUD();
-  if(!ud?.uuid){location.href='login.html';return}
-  const name=ud.name||((ud.prefix||'')+(ud.firstName||'')+' '+(ud.lastName||'')).trim()||'—';
-  const role=ud.role||'user';
-  document.getElementById('navRole').textContent={admin:'ผู้ดูแลระบบ',supervisor:'ผู้บังคับบัญชา',approver:'ผู้รับรอง'}[role]||role;
-  const pic=ud.profileImage||ud.picture||'https://ui-avatars.com/api/?background=2563eb&color=fff&size=68&bold=true&name='+encodeURIComponent(name.charAt(0));
-  document.getElementById('navAv').src=pic;
-  if(!['admin','supervisor','approver'].includes(role))
-    Swal.fire({icon:'error',title:'ไม่มีสิทธิ์',text:'หน้านี้สำหรับผู้ดูแลระบบเท่านั้น',confirmButtonColor:'#dc2626'}).then(()=>location.href='tm.html');
+  const ud = gUD();
+
+  if (!ud?.uuid) {
+    location.href = 'login.html';
+    return;
+  }
+
+  const name =
+    ud.name ||
+    ((ud.prefix || '') + (ud.firstName || '') + ' ' + (ud.lastName || '')).trim() ||
+    '—';
+
+  const role = ud.role || 'user';
+
+  document.getElementById('navRole').textContent = {
+    admin: 'ผู้ดูแลระบบ',
+    supervisor: 'ผู้บังคับบัญชา',
+    approver: 'ผู้รับรอง',
+    user: 'ผู้ใช้งาน'
+  }[role] || role;
+
+  const pic =
+    ud.profileImage ||
+    ud.picture ||
+    'https://ui-avatars.com/api/?background=2563eb&color=fff&size=68&bold=true&name=' +
+      encodeURIComponent(name.charAt(0));
+
+  document.getElementById('navAv').src = pic;
+
+  // ใช้ได้ทุกสิทธิ์ ไม่ตรวจ role แล้ว
 }
 
 async function load(reset=false){
@@ -131,7 +160,9 @@ async function load(reset=false){
   const rl=document.getElementById('rl');
   rl.innerHTML='<div class="loading"><i class="fas fa-spinner spin"></i> กำลังโหลด...</div>';
   const q=document.getElementById('si').value.trim();
-  const p=new URLSearchParams({status:curSt,limit:LIMIT,offset:curPg*LIMIT,...(q?{search:q}:{})});
+  const df=document.getElementById('df').value;
+  const dt=document.getElementById('dt').value;
+  const p=new URLSearchParams({status:curSt,limit:LIMIT,offset:curPg*LIMIT,...(q?{search:q}:{}),...(df?{date_from:df}:{}),...(dt?{date_to:dt}:{})});
   try{
     const res=await fetch(`${API}/request-manage?${p}`,{headers:AH()});
     if(res.status===401){location.href='login.html';return}
@@ -143,19 +174,20 @@ async function load(reset=false){
 }
 
 async function loadCounts(){
-  const [a,p,ap,r]=await Promise.all(['all','pending','approved','rejected'].map(s=>
+  const [a,p,ap,r,ca]=await Promise.all(['all','pending','approved','rejected','cancelled'].map(s=>
     fetch(`${API}/request-manage?status=${s}&limit=1`,{headers:AH()}).then(r=>r.json()).then(d=>d.total||0).catch(()=>0)
   ));
   document.getElementById('cnt-all').textContent=a;
   document.getElementById('cnt-pending').textContent=p;
   document.getElementById('cnt-approved').textContent=ap;
   document.getElementById('cnt-rejected').textContent=r;
+  document.getElementById('cnt-cancelled').textContent=ca;
 }
 
 const TICO={'ลืมลงเวลาเข้า':'fa-clock','ลืมลงเวลาออก':'fa-clock-rotate-left','แก้ไขเวลาเข้า':'fa-pen-to-square','แก้ไขเวลาออก':'fa-pen-to-square','ขอลาป่วย':'fa-kit-medical','ขอลากิจ':'fa-calendar-xmark','ขอลาพักร้อน':'fa-umbrella-beach','อื่นๆ':'fa-ellipsis'};
-const SPIC={pending:'fa-hourglass-half',approved:'fa-circle-check',rejected:'fa-circle-xmark'};
-const SPLB={pending:'รอดำเนินการ',approved:'อนุมัติ',rejected:'ปฏิเสธ'};
-const SPCL={pending:'spp',approved:'spa',rejected:'spr'};
+const SPIC={pending:'fa-hourglass-half',approved:'fa-circle-check',rejected:'fa-circle-xmark',cancelled:'fa-ban'};
+const SPLB={pending:'รอดำเนินการ',approved:'อนุมัติ',rejected:'ปฏิเสธ',cancelled:'ยกเลิกแล้ว'};
+const SPCL={pending:'spp',approved:'spa',rejected:'spr',cancelled:'spc'};
 
 function renderTL(tls){
   if(!tls?.length)return'<span class="tln">ไม่มีข้อมูลบันทึกเวลาวันนั้น</span>';
@@ -201,13 +233,13 @@ function renderList(items){
           <div class="tlc">${renderTL(it.attendance)}</div>
         </div>
         ${it.reviewed_at?`<div class="rnote ${it.status}"><i class="fas ${it.status==='approved'?'fa-circle-check':'fa-circle-xmark'}" style="margin-right:4px"></i>
-          ${it.status==='approved'?'อนุมัติเมื่อ':'ปฏิเสธเมื่อ'} ${fmtD(it.reviewed_at)}${it.reviewer_note?' — <em>'+esc(it.reviewer_note)+'</em>':''}</div>`:''}
+          ${it.status==='approved'?'อนุมัติเมื่อ':it.status==='cancelled'?'ยกเลิกเมื่อ':'ปฏิเสธเมื่อ'} ${fmtD(it.reviewed_at)}${it.reviewer_note?' — <em>'+esc(it.reviewer_note)+'</em>':''}</div>`:''}
       </div>
       <div class="rf">
         ${it.status==='pending'
           ?`<button class="act rej" onclick="review('${esc(it.reference)}','reject')"><i class="fas fa-xmark"></i> ปฏิเสธ</button>
              <button class="act app" onclick="review('${esc(it.reference)}','approve')"><i class="fas fa-check"></i> อนุมัติ</button>`
-          :`<span class="dl"><i class="fas ${it.status==='approved'?'fa-circle-check':'fa-circle-xmark'}"></i> ดำเนินการแล้ว ${it.reviewed_at?fmtD(it.reviewed_at):''}</span>`}
+          :`<span class="dl"><i class="fas ${it.status==='approved'?'fa-circle-check':it.status==='cancelled'?'fa-ban':'fa-circle-xmark'}"></i> ${it.status==='cancelled'?'ผู้ขอยกเลิกแล้ว':'ดำเนินการแล้ว'} ${it.reviewed_at?fmtD(it.reviewed_at):''}</span>`}
       </div>
     </div>`).join('');
 }
@@ -226,6 +258,7 @@ function renderPg(){
 }
 function goP(n){curPg=n;load(false);scrollTo({top:0,behavior:'smooth'})}
 
+function clearDate(){document.getElementById('df').value='';document.getElementById('dt').value='';load(true)}
 function filterSt(s){curSt=s;document.querySelectorAll('.sc').forEach(c=>c.classList.remove('active'));document.getElementById('sc-'+s)?.classList.add('active');load(true)}
 function debS(){clearTimeout(stTimer);stTimer=setTimeout(()=>load(true),380)}
 
