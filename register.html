@@ -37,7 +37,34 @@
       --radius-sm: 10px;
       --radius-lg: 24px;
       --transition: 0.2s cubic-bezier(0.4,0,0.2,1);
+      --grid-line: rgba(255,255,255,0.015);
+      --sig-bg: #ffffff;
+      --sig-stroke: #000000;
     }
+    [data-theme="light"] {
+      --bg: #f1f5f9;
+      --surface: #ffffff;
+      --surface2: #f8fafc;
+      --surface3: #f1f5f9;
+      --border: rgba(0,0,0,0.08);
+      --border-active: rgba(79,70,229,0.5);
+      --text-primary: #0f172a;
+      --text-secondary: #64748b;
+      --text-muted: #94a3b8;
+      --accent: #4f46e5;
+      --accent-hover: #4338ca;
+      --accent-glow: rgba(79,70,229,0.15);
+      --accent2: #0891b2;
+      --accent2-glow: rgba(8,145,178,0.12);
+      --green: #059669;
+      --green-glow: rgba(5,150,105,0.15);
+      --red: #dc2626;
+      --grid-line: rgba(0,0,0,0.04);
+      --sig-bg: #ffffff;
+      --sig-stroke: #1a1a2e;
+    }
+    #themeBtn{position:fixed;top:1rem;right:1rem;z-index:999;background:var(--surface);border:1px solid var(--border);color:var(--text-secondary);cursor:pointer;border-radius:var(--radius-sm);padding:8px 14px;font-size:.82rem;transition:all .2s;line-height:1}
+    #themeBtn:hover{color:var(--text-primary)}
 
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
     html { scroll-behavior: smooth; }
@@ -60,7 +87,7 @@
     .bg-orb-1 { width: 500px; height: 500px; background: radial-gradient(circle, #6366f1, transparent); top: -150px; left: -100px; animation: orbFloat 12s ease-in-out infinite; }
     .bg-orb-2 { width: 400px; height: 400px; background: radial-gradient(circle, #22d3ee, transparent); bottom: -100px; right: -80px; animation: orbFloat 15s ease-in-out infinite reverse; }
     .bg-orb-3 { width: 300px; height: 300px; background: radial-gradient(circle, #a855f7, transparent); top: 50%; left: 60%; animation: orbFloat 10s ease-in-out infinite 3s; }
-    .bg-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px); background-size: 60px 60px; }
+    .bg-grid { position: absolute; inset: 0; background-image: linear-gradient(var(--grid-line) 1px, transparent 1px), linear-gradient(90deg, var(--grid-line) 1px, transparent 1px); background-size: 60px 60px; }
     @keyframes orbFloat { 0%, 100% { transform: translate(0,0) scale(1); } 33% { transform: translate(30px,-20px) scale(1.05); } 66% { transform: translate(-20px,15px) scale(0.97); } }
 
     /* Wrapper */
@@ -136,7 +163,7 @@
 
     /* Signature */
     .sig-wrap { border: 1px dashed var(--border); border-radius: var(--radius); padding: 1.25rem; background: var(--surface2); text-align: center; }
-    .sig-canvas-wrap { position: relative; border-radius: var(--radius-sm); overflow: hidden; border: 1px solid var(--border); margin-bottom: 1rem; background: #fff; }
+    .sig-canvas-wrap { position: relative; border-radius: var(--radius-sm); overflow: hidden; border: 1px solid var(--border); margin-bottom: 1rem; background: var(--sig-bg); }
     canvas#sigCanvas { display: block; width: 100%; height: 180px; cursor: crosshair; touch-action: none; }
     .sig-hint { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; pointer-events: none; font-size: 0.8rem; color: #ccc; gap: 6px; opacity: 0.5; }
     .sig-btns { display: flex; gap: 0.6rem; justify-content: center; flex-wrap: wrap; }
@@ -237,6 +264,8 @@
   </style>
 </head>
 <body>
+
+<button id="themeBtn" title="เปลี่ยนธีม"><i class="fas fa-sun"></i></button>
 
 <div class="bg-effects">
   <div class="bg-grid"></div>
@@ -1241,7 +1270,7 @@ function initSignatureCanvas() {
   canvas = document.getElementById('sigCanvas');
   ctx    = canvas.getContext('2d');
   resizeCanvas();
-  ctx.strokeStyle = '#000000';
+  ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--sig-stroke').trim() || '#000000';
   ctx.lineWidth   = 2.5;
   ctx.lineCap     = 'round';
   ctx.lineJoin    = 'round';
@@ -1788,6 +1817,28 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   });
 });
+
+// ── Theme Toggle ──
+(function(){
+  const btn = document.getElementById('themeBtn');
+  const saved = localStorage.getItem('theme') || 'dark';
+  if (saved === 'light') {
+    document.documentElement.setAttribute('data-theme','light');
+    if (btn) btn.innerHTML = '<i class="fas fa-moon"></i>';
+  }
+  function updateSigStroke() {
+    if (typeof ctx !== 'undefined' && ctx) {
+      ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue('--sig-stroke').trim() || '#000000';
+    }
+  }
+  if (btn) btn.addEventListener('click', () => {
+    const light = document.documentElement.getAttribute('data-theme') === 'light';
+    document.documentElement.setAttribute('data-theme', light ? '' : 'light');
+    localStorage.setItem('theme', light ? 'dark' : 'light');
+    btn.innerHTML = light ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+    updateSigStroke();
+  });
+})();
 </script>
 </body>
 </html>

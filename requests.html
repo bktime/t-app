@@ -14,9 +14,20 @@
       --pri:#1d4ed8;--prih:#1e40af;--nh:60px;--r:12px;
       --sh:0 1px 3px rgba(0,0,0,.08),0 4px 16px rgba(0,0,0,.04);
       --shm:0 4px 12px rgba(0,0,0,.10),0 12px 32px rgba(0,0,0,.06)}
+    [data-theme="dark"]{--bg:#0f172a;--sur:#1e293b;--sur2:#273549;--bd:#334155;--tx:#f1f5f9;--sub:#94a3b8;--mt:#64748b;
+      --grn:#34d399;--gbg:rgba(52,211,153,.1);--gbd:rgba(52,211,153,.3);
+      --red:#f87171;--rbg:rgba(248,113,113,.1);--rbd:rgba(248,113,113,.3);
+      --ora:#fbbf24;--obg:rgba(251,191,36,.1);--obd:rgba(251,191,36,.3);
+      --blu:#60a5fa;--bbg:rgba(96,165,250,.1);--bbd:rgba(96,165,250,.3);
+      --pri:#3b82f6;--prih:#2563eb;
+      --sh:0 1px 3px rgba(0,0,0,.3),0 4px 16px rgba(0,0,0,.2);
+      --shm:0 4px 12px rgba(0,0,0,.4),0 12px 32px rgba(0,0,0,.3)}
+    .theme-btn{background:none;border:1px solid var(--bd);color:var(--sub);cursor:pointer;
+      border-radius:8px;padding:6px 10px;font-size:.85rem;transition:all .2s;line-height:1}
+    .theme-btn:hover{background:var(--sur2);color:var(--tx)}
     *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
     body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;padding-top:var(--nh)}
-    nav{position:fixed;top:0;left:0;right:0;z-index:200;height:var(--nh);background:#fff;border-bottom:1px solid var(--bd);display:flex;align-items:center;padding:0 1.25rem;gap:10px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+    nav{position:fixed;top:0;left:0;right:0;z-index:200;height:var(--nh);background:var(--sur);border-bottom:1px solid var(--bd);display:flex;align-items:center;padding:0 1.25rem;gap:10px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
     .nb{display:flex;align-items:center;gap:6px;text-decoration:none;color:var(--sub);font-size:.85rem;padding:6px 10px;border-radius:8px;transition:background .15s}
     .nb:hover{background:var(--bg);color:var(--tx)}
     .nt{font-family:'K2D',sans-serif;font-size:1rem;font-weight:700;flex:1}
@@ -81,6 +92,7 @@
   <a href="attendance.html" class="nb"><i class="fas fa-arrow-left"></i> กลับ</a>
   <div class="nt"><i class="fas fa-inbox" style="color:var(--pri);margin-right:6px"></i>จัดการคำขอ</div>
   <span class="nr" id="navRole">—</span>
+  <button class="theme-btn" id="themeBtn" title="เปลี่ยนธีม"><i class="fas fa-moon"></i></button>
   <img class="nav-av" id="navAv" src="https://ui-avatars.com/api/?background=2563eb&color=fff&size=68&bold=true&name=A" alt="">
 </nav>
 
@@ -310,6 +322,19 @@ async function review(reference,action){
 }
 
 document.addEventListener('DOMContentLoaded',()=>{initUser();load(true)});
+
+// ── Theme Toggle ──
+(function(){
+  const btn=document.getElementById('themeBtn');
+  const saved=localStorage.getItem('theme')||'light';
+  if(saved==='dark'){document.documentElement.setAttribute('data-theme','dark');btn.innerHTML='<i class="fas fa-sun"></i>';}
+  btn.addEventListener('click',()=>{
+    const dark=document.documentElement.getAttribute('data-theme')==='dark';
+    document.documentElement.setAttribute('data-theme',dark?'':'dark');
+    localStorage.setItem('theme',dark?'light':'dark');
+    btn.innerHTML=dark?'<i class="fas fa-moon"></i>':'<i class="fas fa-sun"></i>';
+  });
+})();
 </script>
 </body>
 </html>

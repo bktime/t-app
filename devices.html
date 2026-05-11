@@ -32,6 +32,32 @@
       --line-c:       #06c755;
       --telegram-c:   #2aabee;
     }
+    [data-theme="light"] {
+      --bg:           #f1f5f9;
+      --surface:      #ffffff;
+      --surface2:     #f8fafc;
+      --border:       rgba(0,0,0,0.08);
+      --border-hover: rgba(0,0,0,0.14);
+      --text-primary: #0f172a;
+      --text-secondary:#64748b;
+      --text-muted:   #94a3b8;
+      --accent:       #4f46e5;
+      --accent-glow:  rgba(79,70,229,0.15);
+      --green:        #059669;
+      --green-bg:     rgba(5,150,105,0.08);
+      --green-border: rgba(5,150,105,0.25);
+      --red:          #dc2626;
+      --red-bg:       rgba(220,38,38,0.06);
+      --red-border:   rgba(220,38,38,0.2);
+      --amber:        #d97706;
+      --amber-bg:     rgba(217,119,6,0.08);
+      --grid-line:    rgba(0,0,0,0.04);
+    }
+    .theme-toggle-btn{position:fixed;top:1rem;right:1rem;z-index:100;background:var(--surface);
+      border:1px solid var(--border);color:var(--text-secondary);cursor:pointer;
+      border-radius:10px;padding:8px 12px;font-size:.85rem;transition:all .2s;line-height:1;
+      display:flex;align-items:center;gap:6px;box-shadow:0 2px 8px rgba(0,0,0,.15)}
+    .theme-toggle-btn:hover{background:var(--surface2);color:var(--text-primary)}
 
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
     html { scroll-behavior: smooth; }
@@ -49,8 +75,8 @@
     .bg-grid {
       position: absolute; inset: 0;
       background-image:
-        linear-gradient(rgba(255,255,255,0.018) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,0.018) 1px, transparent 1px);
+        linear-gradient(var(--grid-line,rgba(255,255,255,0.018)) 1px, transparent 1px),
+        linear-gradient(90deg, var(--grid-line,rgba(255,255,255,0.018)) 1px, transparent 1px);
       background-size: 56px 56px;
     }
     .bg-orb {
@@ -217,6 +243,10 @@
     <div class="page-sub">จัดการเซสชันทั้งหมดของคุณ</div>
   </div>
 </div>
+
+<button class="theme-toggle-btn" id="themeBtn" title="เปลี่ยนธีม">
+  <i class="fas fa-sun"></i> สว่าง
+</button>
 
 <div class="content">
   <!-- Summary -->
@@ -481,6 +511,19 @@ function recount() {
 
 // ── Init ──────────────────────────────────────────────────────────────────
 loadDevices();
+
+// ── Theme Toggle ──
+(function(){
+  const btn=document.getElementById('themeBtn');
+  const saved=localStorage.getItem('theme')||'dark';
+  if(saved==='light'){document.documentElement.setAttribute('data-theme','light');btn.innerHTML='<i class="fas fa-moon"></i> มืด';}
+  btn.addEventListener('click',()=>{
+    const light=document.documentElement.getAttribute('data-theme')==='light';
+    document.documentElement.setAttribute('data-theme',light?'':'light');
+    localStorage.setItem('theme',light?'dark':'light');
+    btn.innerHTML=light?'<i class="fas fa-sun"></i> สว่าง':'<i class="fas fa-moon"></i> มืด';
+  });
+})();
 </script>
 </body>
 </html>

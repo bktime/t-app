@@ -18,6 +18,13 @@
       --radius:16px; --radius-sm:10px; --radius-lg:20px;
       --transition:0.2s cubic-bezier(0.4,0,0.2,1);
     }
+    [data-theme="light"] {
+      --bg:#f1f5f9; --surface:#ffffff; --surface2:#f8fafc; --surface3:#f1f5f9;
+      --border:rgba(0,0,0,0.08); --text-primary:#0f172a; --text-secondary:#64748b; --text-muted:#94a3b8;
+      --accent:#4f46e5; --accent-hover:#4338ca; --accent-glow:rgba(79,70,229,0.15);
+      --green:#059669; --green-glow:rgba(5,150,105,0.15); --red:#dc2626;
+      --header-bg:rgba(255,255,255,0.9); --nav-bg:rgba(248,250,252,0.85);
+    }
     *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
     html{scroll-behavior:smooth}
     body{font-family:'Noto Sans Thai',sans-serif;background:var(--bg);min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:0 0 5rem;overflow-x:hidden;position:relative}
@@ -32,14 +39,16 @@
     .page{position:relative;z-index:1;width:100%;max-width:680px;display:flex;flex-direction:column}
 
     /* Sticky Header */
-    .top-header{position:sticky;top:0;z-index:100;background:rgba(10,10,15,.88);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:.875rem 1.5rem;display:flex;align-items:center;gap:1rem}
+    .top-header{position:sticky;top:0;z-index:100;background:var(--header-bg,rgba(10,10,15,.88));backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:.875rem 1.5rem;display:flex;align-items:center;gap:1rem}
+    [data-theme="light"] .top-header{background:rgba(248,250,252,.92)}
+    [data-theme="light"] .sec-nav{background:rgba(248,250,252,.88)}
     .back-btn{display:flex;align-items:center;gap:6px;padding:.45rem .9rem;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--surface);color:var(--text-secondary);text-decoration:none;font-size:.8rem;transition:all var(--transition);white-space:nowrap}
     .back-btn:hover{border-color:rgba(255,255,255,.14);color:var(--text-primary)}
     .header-title{font-family:'Syne',sans-serif;font-size:.95rem;font-weight:700;color:var(--text-primary);flex:1}
     .header-avatar{width:36px;height:36px;border-radius:50%;object-fit:cover;border:2px solid var(--border)}
 
     /* Nav Pills */
-    .sec-nav{position:sticky;top:57px;z-index:99;background:rgba(10,10,15,.8);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:.55rem 1.5rem;display:flex;gap:.35rem;overflow-x:auto;scrollbar-width:none}
+    .sec-nav{position:sticky;top:57px;z-index:99;background:var(--nav-bg,rgba(10,10,15,.8));backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:.55rem 1.5rem;display:flex;gap:.35rem;overflow-x:auto;scrollbar-width:none}
     .sec-nav::-webkit-scrollbar{display:none}
     .pill{display:flex;align-items:center;gap:5px;padding:.32rem .78rem;border-radius:99px;border:1px solid var(--border);background:transparent;color:var(--text-muted);font-size:.72rem;font-weight:600;cursor:pointer;font-family:'Noto Sans Thai',sans-serif;transition:all var(--transition);white-space:nowrap}
     .pill:hover{color:var(--text-secondary);border-color:rgba(255,255,255,.12)}
@@ -218,6 +227,7 @@
   <div class="top-header">
     <a href="dashboard.html" class="back-btn"><i class="fas fa-arrow-left"></i> กลับ</a>
     <span class="header-title">แก้ไขข้อมูลส่วนตัว</span>
+    <button id="themeBtn" title="เปลี่ยนธีม" style="background:var(--surface);border:1px solid var(--border);color:var(--text-secondary);cursor:pointer;border-radius:var(--radius-sm);padding:6px 10px;font-size:.8rem;transition:all var(--transition);line-height:1"><i class="fas fa-sun"></i></button>
     <img id="headerAv" class="header-avatar" src="https://ui-avatars.com/api/?background=6366f1&color=fff&size=72&bold=true&name=U" alt="">
   </div>
 
@@ -1173,7 +1183,18 @@ window.addEventListener('DOMContentLoaded', () => {
       }
     }, 150);
   }
-});
+});// ── Theme Toggle ──
+(function(){
+  const btn=document.getElementById('themeBtn');
+  const saved=localStorage.getItem('theme')||'dark';
+  if(saved==='light'){document.documentElement.setAttribute('data-theme','light');if(btn)btn.innerHTML='<i class="fas fa-moon"></i>';}
+  if(btn)btn.addEventListener('click',()=>{
+    const light=document.documentElement.getAttribute('data-theme')==='light';
+    document.documentElement.setAttribute('data-theme',light?'':'light');
+    localStorage.setItem('theme',light?'dark':'light');
+    btn.innerHTML=light?'<i class="fas fa-sun"></i>':'<i class="fas fa-moon"></i>';
+  });
+})();
 
 
 </script>
