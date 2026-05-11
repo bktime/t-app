@@ -99,7 +99,7 @@
   const botUsername = params.get('bot');   // ชื่อ bot ไม่มี @
   const origin      = params.get('origin') || window.location.origin;
 
-  if (!botUsername || botUsername === 'YourBotUsername') {
+  if (!botUsername || botUsername === 't_app_bk_bot') {
     showError('ยังไม่ได้ตั้งค่า Bot Username', 'กรุณาแก้ไข TELEGRAM_BOT_USERNAME ใน register.html');
     return;
   }
