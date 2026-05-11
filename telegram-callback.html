@@ -79,56 +79,75 @@
 <body>
 <div class="card" id="card">
   <div class="logo">✈</div>
-  <h2>เข้าสู่ระบบด้วย Telegram</h2>
-  <p class="sub">กดปุ่มด้านล่างและอนุมัติผ่านแอป Telegram ของคุณ</p>
+  <h2 id="pageTitle">เข้าสู่ระบบด้วย Telegram</h2>
+  <p class="sub" id="pageSub">กดปุ่มด้านล่างและอนุมัติผ่านแอป Telegram ของคุณ</p>
 
   <!-- Telegram Login Widget จะถูก inject ที่นี่ -->
   <div class="widget-area" id="widgetArea">
     <div class="spinner" id="loadingSpinner"></div>
   </div>
 
-  <p class="note">ข้อมูลจะถูกส่งกลับไปยังหน้าสมัครสมาชิกโดยอัตโนมัติ</p>
+  <p class="note">ข้อมูลจะถูกส่งกลับไปยังหน้าเดิมโดยอัตโนมัติ</p>
 </div>
 
 <script>
 (function () {
   'use strict';
 
-  // ── อ่าน bot username จาก query string ──────────────────────────────────
+  // ── อ่าน query string ────────────────────────────────────────────────────
+  // ?bot=MyBotName  — ชื่อ bot ไม่มี @  (จำเป็น)
+  // ?page=register|login|profile        (default: register)
+  // ?origin=https://example.com         (สำหรับ postMessage; default: location.origin)
   const params      = new URLSearchParams(window.location.search);
-  const botUsername = params.get('bot');   // ชื่อ bot ไม่มี @
+  const botUsername = params.get('bot');
+  const page        = (params.get('page') || 'register').toLowerCase();  // register | login | profile
   const origin      = params.get('origin') || window.location.origin;
 
-if (!botUsername) {
-  showError(
-    'ยังไม่ได้ตั้งค่า Bot Username',
-    'กรุณาแก้ไข TELEGRAM_BOT_USERNAME'
-  );
-  return;
-}
+  // Map page → fallback redirect path
+  const REDIRECT = {
+    register : '/register.html?tg_callback=1',
+    login    : '/login.html?tg_callback=1',
+    profile  : '/profile.html?tg_callback=1',
+  };
+  const fallbackPath = REDIRECT[page] || REDIRECT.register;
 
-  // ── รับข้อมูลจาก Telegram widget callback ────────────────────────────────
-  // Telegram จะเรียก window.onTelegramAuth(user) เมื่อผู้ใช้ login สำเร็จ
+  // Map page → UI text
+  const UI_TEXT = {
+    register : { title: 'สมัครสมาชิกด้วย Telegram',   sub: 'กดปุ่มด้านล่างและอนุมัติผ่านแอป Telegram ของคุณ' },
+    login    : { title: 'เข้าสู่ระบบด้วย Telegram',    sub: 'กดปุ่มด้านล่างและอนุมัติผ่านแอป Telegram ของคุณ' },
+    profile  : { title: 'เชื่อมต่อ Telegram',           sub: 'กดปุ่มด้านล่างเพื่อเชื่อมบัญชี Telegram กับโปรไฟล์ของคุณ' },
+  };
+  const uiText = UI_TEXT[page] || UI_TEXT.register;
+  document.getElementById('pageTitle').textContent = uiText.title;
+  document.getElementById('pageSub').textContent   = uiText.sub;
+
+  // ── ตรวจสอบ bot username ─────────────────────────────────────────────────
+  if (!botUsername) {
+    showError('ยังไม่ได้ตั้งค่า Bot Username', 'กรุณาแก้ไข TELEGRAM_BOT_USERNAME');
+    return;
+  }
+
+  // ── Telegram widget callback ─────────────────────────────────────────────
+  // Telegram จะเรียก window.onTelegramAuth(user) เมื่อ login สำเร็จ
   window.onTelegramAuth = function (user) {
     console.log('[TG Popup] Auth success:', user);
     sendToOpener(user);
   };
 
-  // ── สร้าง Telegram Login Widget ──────────────────────────────────────────
+  // ── สร้าง Telegram Login Widget ─────────────────────────────────────────
   function injectWidget() {
     const area   = document.getElementById('widgetArea');
     const script = document.createElement('script');
 
-    script.async             = true;
-    script.src               = 'https://telegram.org/js/telegram-widget.js?22';
-    script.setAttribute('data-telegram-login',   botUsername);
-    script.setAttribute('data-size',             'large');
-    script.setAttribute('data-radius',           '10');
-    script.setAttribute('data-onauth',           'onTelegramAuth(user)');
-    script.setAttribute('data-request-access',   'write');
+    script.async = true;
+    script.src   = 'https://telegram.org/js/telegram-widget.js?22';
+    script.setAttribute('data-telegram-login', botUsername);
+    script.setAttribute('data-size',           'large');
+    script.setAttribute('data-radius',         '10');
+    script.setAttribute('data-onauth',         'onTelegramAuth(user)');
+    script.setAttribute('data-request-access', 'write');
 
-    // ซ่อน spinner เมื่อ widget โหลดเสร็จ
-    script.onload = () => {
+    script.onload  = () => {
       const spinner = document.getElementById('loadingSpinner');
       if (spinner) spinner.style.display = 'none';
     };
@@ -137,7 +156,16 @@ if (!botUsername) {
     area.appendChild(script);
   }
 
-  // ── ส่งข้อมูลกลับ opener (register.html) ─────────────────────────────────
+  // ── ส่งข้อมูลกลับ opener ─────────────────────────────────────────────────
+  // postMessage payload:
+  //   { type: 'TELEGRAM_LOGIN_SUCCESS', user: {...}, page: 'login'|'register'|'profile' }
+  //
+  // opener ของแต่ละหน้าควรฟัง:
+  //   window.addEventListener('message', (e) => {
+  //     if (e.data?.type === 'TELEGRAM_LOGIN_SUCCESS' && e.data?.page === 'profile') { ... }
+  //   });
+  //
+  // หรือใช้ฟังก์ชัน handleTelegramCallback(user, page) / handleTelegramCallback(user) ก็ได้
   function sendToOpener(user) {
     showSuccess(user);
 
@@ -146,16 +174,16 @@ if (!botUsername) {
     // วิธีที่ 1: เรียกฟังก์ชันโดยตรง (same-origin)
     try {
       if (openerWin && !openerWin.closed && typeof openerWin.handleTelegramCallback === 'function') {
-        openerWin.handleTelegramCallback(user);
+        openerWin.handleTelegramCallback(user, page);
         setTimeout(() => window.close(), 1200);
         return;
       }
-    } catch (_) { /* cross-origin — ใช้ postMessage แทน */ }
+    } catch (_) { /* cross-origin — ข้ามไป postMessage */ }
 
-    // วิธีที่ 2: postMessage
+    // วิธีที่ 2: postMessage (same-origin หรือ cross-origin)
     try {
       if (openerWin && !openerWin.closed) {
-        openerWin.postMessage({ type: 'TELEGRAM_LOGIN_SUCCESS', user }, origin);
+        openerWin.postMessage({ type: 'TELEGRAM_LOGIN_SUCCESS', user, page }, origin);
         setTimeout(() => window.close(), 1200);
         return;
       }
@@ -163,17 +191,20 @@ if (!botUsername) {
       console.error('[TG Popup] postMessage failed:', e);
     }
 
-    // ถ้าไม่มี opener: เก็บใน sessionStorage แล้ว redirect กลับ
-    sessionStorage.setItem('tg_auth_result', JSON.stringify(user));
-    window.location.href = '/register.html?tg_callback=1';
+    // วิธีที่ 3: ไม่มี opener → เก็บใน sessionStorage แล้ว redirect
+    sessionStorage.setItem('tg_auth_result', JSON.stringify({ user, page }));
+    window.location.href = fallbackPath;
   }
 
-  // ── UI States ────────────────────────────────────────────────────────────
+  // ── UI States ─────────────────────────────────────────────────────────────
   function showSuccess(user) {
     const name = [user.first_name, user.last_name].filter(Boolean).join(' ') || user.username || 'ผู้ใช้';
+    const msg  = page === 'profile'
+      ? 'เชื่อมต่อบัญชีสำเร็จ!'
+      : 'เข้าสู่ระบบสำเร็จ!';
     document.getElementById('card').innerHTML = `
       <div class="state-icon">✅</div>
-      <div class="state-title">เข้าสู่ระบบสำเร็จ!</div>
+      <div class="state-title">${escHtml(msg)}</div>
       <p class="state-msg">ยินดีต้อนรับ <strong>${escHtml(name)}</strong><br>กำลังส่งข้อมูลกลับ...</p>
     `;
   }
@@ -191,24 +222,23 @@ if (!botUsername) {
     return (str || '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
   }
 
-  // ── รองรับ sessionStorage fallback (ถ้าถูกเปิดโดยไม่มี opener) ───────────
+  // ── sessionStorage fallback ───────────────────────────────────────────────
+  // ใช้เมื่อหน้านี้ถูกเปิดโดยตรง (ไม่ใช่ popup) เช่น หลัง redirect กลับมา
   function checkSessionFallback() {
     const stored = sessionStorage.getItem('tg_auth_result');
-    if (stored) {
-      try {
-        const user = JSON.parse(stored);
-        sessionStorage.removeItem('tg_auth_result');
-        if (user && user.id && typeof window.handleTelegramCallback === 'function') {
-          window.handleTelegramCallback(user);
-        }
-      } catch (_) {}
-    }
+    if (!stored) return;
+    try {
+      const { user, page: storedPage } = JSON.parse(stored);
+      sessionStorage.removeItem('tg_auth_result');
+      if (user && user.id && typeof window.handleTelegramCallback === 'function') {
+        window.handleTelegramCallback(user, storedPage || page);
+      }
+    } catch (_) {}
   }
 
-  // ── Start ────────────────────────────────────────────────────────────────
+  // ── Start ─────────────────────────────────────────────────────────────────
   injectWidget();
 
-  // ถ้าหน้านี้เปิดในฐานะหน้าหลัก (ไม่ใช่ popup) ให้ตรวจสอบ sessionStorage
   if (!window.opener) {
     document.addEventListener('DOMContentLoaded', checkSessionFallback);
   }
