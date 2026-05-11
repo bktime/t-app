@@ -99,10 +99,13 @@
   const botUsername = params.get('bot');   // ชื่อ bot ไม่มี @
   const origin      = params.get('origin') || window.location.origin;
 
-  if (!botUsername || botUsername === 't_app_bk_bot') {
-    showError('ยังไม่ได้ตั้งค่า Bot Username', 'กรุณาแก้ไข TELEGRAM_BOT_USERNAME ใน register.html');
-    return;
-  }
+if (!botUsername) {
+  showError(
+    'ยังไม่ได้ตั้งค่า Bot Username',
+    'กรุณาแก้ไข TELEGRAM_BOT_USERNAME'
+  );
+  return;
+}
 
   // ── รับข้อมูลจาก Telegram widget callback ────────────────────────────────
   // Telegram จะเรียก window.onTelegramAuth(user) เมื่อผู้ใช้ login สำเร็จ
