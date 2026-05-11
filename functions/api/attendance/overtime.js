@@ -229,7 +229,7 @@ export async function onRequest(context) {
     const {
       uuid, ot_date, ot_start, ot_end, note, name, department, affiliation,
       latitude, longitude, distance_m, is_in_range, timestamp_iso, ot_max_hr,
-      work_type: bodyWorkType,
+      work_type: bodyWorkType, approver_code, approver,
     } = body;
 
     if (!uuid || !ot_date || !ot_start)
@@ -271,8 +271,8 @@ export async function onRequest(context) {
       ? Math.round(ratePerDay * 100) / 100
       : null;
 
-    const approverCode   = userInfo?.approver_code || null;
-    const supervisorName = userInfo?.approver    || null;
+    const approverCode   = approver_code || userInfo?.approver_code || null;
+    const supervisorName = approver      || userInfo?.approver      || null;
 
     const displayName = name || userInfo?.name ||
       `${userInfo?.prefix || ''}${userInfo?.firstName || ''} ${userInfo?.lastName || ''}`.trim();
