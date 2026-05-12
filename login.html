@@ -44,6 +44,29 @@
       --radius-md: 20px;
       --radius-lg: 28px;
       --radius-xl: 36px;
+    }
+    [data-theme="light"] {
+      --bg-primary: #e2e8f0;
+      --bg-secondary: #f1f5f9;
+      --bg-card: rgba(255, 255, 255, 0.85);
+      --bg-glass: rgba(0,0,0,0.02);
+      --border-color: rgba(100, 116, 139, 0.15);
+      --border-glow: rgba(37, 99, 235, 0.25);
+      --border-user: rgba(37, 99, 235, 0.25);
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --text-muted: #94a3b8;
+      --accent: #2563eb;
+      --accent-mid: #1d4ed8;
+      --accent-light: #3b82f6;
+      --accent-subtle: rgba(37, 99, 235, 0.08);
+      --accent-subtle2: rgba(37, 99, 235, 0.12);
+      --shadow-glow: 0 0 40px rgba(37, 99, 235, 0.08);
+      --shadow-card: 0 25px 50px -12px rgba(0, 0, 0, 0.12);
+    }
+    [data-theme="light"] body { background-color: var(--bg-primary); }
+    #themeBtn{position:fixed;top:1rem;right:1rem;z-index:999;background:var(--bg-card);border:1px solid var(--border-color);color:var(--text-secondary);cursor:pointer;border-radius:var(--radius-sm);padding:8px 14px;font-size:.82rem;transition:all .2s;line-height:1;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+    #themeBtn:hover{color:var(--text-primary);border-color:var(--border-glow)}
       --transition: 0.3s cubic-bezier(0.16, 1, 0.3, 1);
       
       /* Social Colors */
@@ -501,6 +524,8 @@
   </style>
 </head>
 <body>
+
+<button id="themeBtn" title="เปลี่ยนธีม"><i class="fas fa-sun"></i></button>
 
 <div class="bg-layer">
   <div class="orb orb-1"></div>
@@ -1048,6 +1073,22 @@ document.addEventListener('DOMContentLoaded', () => {
 document.addEventListener('keypress', function(e) {
   if (e.key === 'Enter') e.preventDefault();
 });
+
+// ── Theme Toggle ──
+(function(){
+  const btn = document.getElementById('themeBtn');
+  const saved = localStorage.getItem('theme') || 'light';
+  if (saved === 'light') {
+    document.documentElement.setAttribute('data-theme','light');
+    if (btn) btn.innerHTML = '<i class="fas fa-moon"></i>';
+  }
+  if (btn) btn.addEventListener('click', () => {
+    const light = document.documentElement.getAttribute('data-theme') === 'light';
+    document.documentElement.setAttribute('data-theme', light ? '' : 'light');
+    localStorage.setItem('theme', light ? 'dark' : 'light');
+    btn.innerHTML = light ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+  });
+})();
 </script>
 </body>
 </html>

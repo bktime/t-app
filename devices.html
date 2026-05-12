@@ -515,7 +515,7 @@ loadDevices();
 // ── Theme Toggle ──
 (function(){
   const btn=document.getElementById('themeBtn');
-  const saved=localStorage.getItem('theme')||'dark';
+  const saved=localStorage.getItem('theme')||'light';
   if(saved==='light'){document.documentElement.setAttribute('data-theme','light');btn.innerHTML='<i class="fas fa-moon"></i> มืด';}
   btn.addEventListener('click',()=>{
     const light=document.documentElement.getAttribute('data-theme')==='light';

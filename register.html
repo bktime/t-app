@@ -1821,7 +1821,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 // ── Theme Toggle ──
 (function(){
   const btn = document.getElementById('themeBtn');
-  const saved = localStorage.getItem('theme') || 'dark';
+  const saved = localStorage.getItem('theme') || 'light';
   if (saved === 'light') {
     document.documentElement.setAttribute('data-theme','light');
     if (btn) btn.innerHTML = '<i class="fas fa-moon"></i>';
