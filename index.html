@@ -2,11 +2,28 @@
 <html lang="th">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- PWA Viewport: ป้องกัน Zoom, รองรับ Dynamic Island/Notch -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>ระบบลงเวลาปฏิบัติงาน | เซกา</title>
+  
+  <!-- PWA Meta Tags -->
+  <meta name="theme-color" content="#020617" id="themeColorMeta">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="format-detection" content="telephone=no">
+  
+  <!-- PWA Manifest  -->
+  <link rel="manifest" href="manifest.json">
+  
+  <!-- Icons for PWA  -->
+  <link rel="apple-touch-icon" href="/icons/icon-192.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png">
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700;800&family=Noto+Sans+Thai:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  
   <style>
     :root {
       --bg-primary: #020617;
@@ -26,69 +43,38 @@
       --accent-deep: #059669;
       --accent-glow: rgba(16, 185, 129, 0.25);
       --accent-bg: rgba(16, 185, 129, 0.08);
-      --blue: #3b82f6;
-      --blue-bg: rgba(59, 130, 246, 0.08);
-      --blue-border: rgba(59, 130, 246, 0.2);
-      --indigo: #818cf8;
-      --indigo-bg: rgba(129, 140, 248, 0.08);
-      --indigo-border: rgba(129, 140, 248, 0.2);
-      --purple: #a78bfa;
-      --purple-bg: rgba(167, 139, 250, 0.08);
-      --purple-border: rgba(167, 139, 250, 0.2);
-      --amber: #fbbf24;
-      --amber-bg: rgba(251, 191, 36, 0.08);
-      --amber-border: rgba(251, 191, 36, 0.2);
-      --teal: #2dd4bf;
-      --teal-bg: rgba(45, 212, 191, 0.08);
-      --teal-border: rgba(45, 212, 191, 0.2);
-      --rose: #fb7185;
-      --rose-bg: rgba(251, 113, 133, 0.08);
-      --rose-border: rgba(251, 113, 133, 0.2);
-      --danger: #ef4444;
-      --danger-bg: rgba(239, 68, 68, 0.06);
-      --danger-border: rgba(239, 68, 68, 0.15);
+      --blue: #2563eb; --blue-bg: rgba(59, 130, 246, 0.08); --blue-border: rgba(59, 130, 246, 0.2);
+      --indigo: #6366f1; --indigo-bg: rgba(129, 140, 248, 0.08); --indigo-border: rgba(129, 140, 248, 0.2);
+      --purple: #9333ea; --purple-bg: rgba(167, 139, 250, 0.08); --purple-border: rgba(167, 139, 250, 0.2);
+      --amber: #f59e0b; --amber-bg: rgba(251, 191, 36, 0.08); --amber-border: rgba(251, 191, 36, 0.2);
+      --teal: #14b8a6; --teal-bg: rgba(45, 212, 191, 0.08); --teal-border: rgba(45, 212, 191, 0.2);
+      --rose: #f43f5e; --rose-bg: rgba(251, 113, 133, 0.08); --rose-border: rgba(251, 113, 133, 0.2);
+      --danger: #dc2626; --danger-bg: rgba(239, 68, 68, 0.06); --danger-border: rgba(239, 68, 68, 0.15);
       --success-border: rgba(16, 185, 129, 0.4);
-      --radius-xs: 8px;
-      --radius-sm: 12px;
-      --radius-md: 16px;
-      --radius-lg: 24px;
-      --radius-xl: 32px;
+      --radius-xs: 8px; --radius-sm: 12px; --radius-md: 16px; --radius-lg: 24px; --radius-xl: 32px;
       --shadow-card: 0 32px 64px -16px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.03);
       --transition: 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      /* Safe Area Insets for PWA */
+      --sat: env(safe-area-inset-top); --sar: env(safe-area-inset-right); 
+      --sab: env(safe-area-inset-bottom); --sal: env(safe-area-inset-left);
     }
 
     [data-theme="light"] {
-      --bg-primary: #f0f4f8;
-      --bg-secondary: #e2e8f0;
-      --bg-card: rgba(255, 255, 255, 0.92);
-      --bg-card-solid: #ffffff;
-      --bg-elevated: rgba(0,0,0,0.03);
-      --bg-user-card: rgba(16, 185, 129, 0.05);
-      --border-color: rgba(0,0,0,0.06);
-      --border-subtle: rgba(0,0,0,0.03);
+      --bg-primary: #f0f4f8; --bg-secondary: #e2e8f0;
+      --bg-card: rgba(255, 255, 255, 0.92); --bg-card-solid: #ffffff;
+      --bg-elevated: rgba(0,0,0,0.03); --bg-user-card: rgba(16, 185, 129, 0.05);
+      --border-color: rgba(0,0,0,0.06); --border-subtle: rgba(0,0,0,0.03);
       --border-accent: rgba(5, 150, 105, 0.25);
-      --text-primary: #0f172a;
-      --text-secondary: #475569;
-      --text-muted: #94a3b8;
-      --accent: #059669;
-      --accent-hover: #047857;
-      --accent-deep: #047857;
-      --accent-glow: rgba(5, 150, 105, 0.15);
-      --accent-bg: rgba(5, 150, 105, 0.06);
-      --blue-bg: rgba(37, 99, 235, 0.06);
-      --blue-border: rgba(37, 99, 235, 0.15);
-      --indigo-bg: rgba(99, 102, 241, 0.06);
-      --indigo-border: rgba(99, 102, 241, 0.15);
-      --purple-bg: rgba(139, 92, 246, 0.06);
-      --purple-border: rgba(139, 92, 246, 0.15);
-      --amber-bg: rgba(217, 119, 6, 0.06);
-      --amber-border: rgba(217, 119, 6, 0.15);
-      --teal-bg: rgba(13, 148, 136, 0.06);
-      --teal-border: rgba(13, 148, 136, 0.15);
-      --rose-bg: rgba(225, 29, 72, 0.06);
-      --rose-border: rgba(225, 29, 72, 0.15);
-      --danger-bg: rgba(220, 38, 38, 0.05);
-      --danger-border: rgba(220, 38, 38, 0.12);
+      --text-primary: #0f172a; --text-secondary: #475569; --text-muted: #94a3b8;
+      --accent: #059669; --accent-hover: #047857; --accent-deep: #047857;
+      --accent-glow: rgba(5, 150, 105, 0.15); --accent-bg: rgba(5, 150, 105, 0.06);
+      --blue-bg: rgba(37, 99, 235, 0.06); --blue-border: rgba(37, 99, 235, 0.15);
+      --indigo-bg: rgba(99, 102, 241, 0.06); --indigo-border: rgba(99, 102, 241, 0.15);
+      --purple-bg: rgba(139, 92, 246, 0.06); --purple-border: rgba(139, 92, 246, 0.15);
+      --amber-bg: rgba(217, 119, 6, 0.06); --amber-border: rgba(217, 119, 6, 0.15);
+      --teal-bg: rgba(13, 148, 136, 0.06); --teal-border: rgba(13, 148, 136, 0.15);
+      --rose-bg: rgba(225, 29, 72, 0.06); --rose-border: rgba(225, 29, 72, 0.15);
+      --danger-bg: rgba(220, 38, 38, 0.05); --danger-border: rgba(220, 38, 38, 0.12);
       --success-border: rgba(5, 150, 105, 0.3);
       --shadow-card: 0 32px 64px -16px rgba(0,0,0,0.08), 0 0 0 1px rgba(0,0,0,0.04);
     }
@@ -99,24 +85,42 @@
 
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
+    /* App-like Base Styles */
+    html { 
+      height: 100%; 
+      overflow: hidden; /* Prevent body scroll bounce */
+      -webkit-tap-highlight-color: transparent;
+    }
+
     body {
       font-family: 'Noto Sans Thai', sans-serif;
       background: var(--bg-primary);
-      min-height: 100vh;
+      /* dvh: Dynamic Viewport Height (handles mobile browser chrome) */
+      height: 100dvh; 
+      height: -webkit-fill-available;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 1.5rem 1rem;
-      overflow: auto;
+      overflow-y: auto;
+      overflow-x: hidden;
       -webkit-font-smoothing: antialiased;
+      overscroll-behavior-y: contain; /* Prevent pull-to-refresh */
+      -webkit-user-select: none; user-select: none; /* App feel */
+      /* Safe Area Padding for Notch/Dynamic Island */
+      padding: max(1.5rem, var(--sat)) max(1rem, var(--sar)) max(1.5rem, var(--sab)) max(1rem, var(--sal));
+      position: relative;
+    }
+
+    /* Allow text selection only for content */
+    .clock-date, .user-name, .user-email-text, p, span { 
+      -webkit-user-select: text; user-select: text; 
     }
 
     /* ═══════════════════════════════════
        Background
     ═══════════════════════════════════ */
     .bg-layer {
-      position: fixed; inset: 0; z-index: 0; overflow: hidden;
-      pointer-events: none;
+      position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none;
     }
     .orb {
       position: absolute; border-radius: 50%;
@@ -138,7 +142,10 @@
        Theme Toggle
     ═══════════════════════════════════ */
     #themeBtn {
-      position: fixed; top: 1rem; right: 1rem; z-index: 999;
+      position: fixed; 
+      top: max(1rem, var(--sat)); 
+      right: max(1rem, var(--sar)); 
+      z-index: 999;
       background: var(--bg-card); border: 1px solid var(--border-color);
       color: var(--text-secondary); cursor: pointer;
       border-radius: var(--radius-sm); padding: 8px 12px;
@@ -161,57 +168,41 @@
       to { opacity: 1; transform: translateY(0) scale(1); }
     }
 
-    /* ═══════════════════════════════════
-       Organization Header
-    ═══════════════════════════════════ */
     .org-header {
       text-align: center; margin-bottom: 1.25rem;
       animation: containerIn 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.05s both;
     }
     .org-name {
-      font-family: 'Kanit', sans-serif;
-      font-size: 0.82rem; font-weight: 500;
+      font-family: 'Kanit', sans-serif; font-size: 0.82rem; font-weight: 500;
       color: var(--text-secondary); letter-spacing: 0.02em;
     }
     .org-dept {
-      font-family: 'Kanit', sans-serif;
-      font-size: 0.7rem; font-weight: 400;
+      font-family: 'Kanit', sans-serif; font-size: 0.7rem; font-weight: 400;
       color: var(--text-muted); margin-top: 2px;
     }
 
-    /* ═══════════════════════════════════
-       Card
-    ═══════════════════════════════════ */
     .card {
-      background: var(--bg-card);
-      border-radius: var(--radius-xl);
-      border: 1px solid var(--border-color);
-      box-shadow: var(--shadow-card);
+      background: var(--bg-card); border-radius: var(--radius-xl);
+      border: 1px solid var(--border-color); box-shadow: var(--shadow-card);
       backdrop-filter: blur(40px) saturate(150%);
       -webkit-backdrop-filter: blur(40px) saturate(150%);
       overflow: hidden; position: relative;
     }
     .card::before {
-      content: ''; position: absolute;
-      top: 0; left: 0; right: 0; height: 1px;
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
       background: linear-gradient(90deg, transparent 5%, rgba(255,255,255,0.15) 50%, transparent 95%);
       z-index: 1;
     }
 
-    /* ─── Clock Section ─── */
     .clock-section {
-      padding: 2.5rem 2rem 2rem;
-      text-align: center;
-      position: relative;
+      padding: 2.5rem 2rem 2rem; text-align: center; position: relative;
       background: linear-gradient(180deg, rgba(16, 185, 129, 0.06) 0%, transparent 100%);
       border-bottom: 1px solid var(--border-subtle);
     }
     .clock-label {
-      font-family: 'Kanit', sans-serif;
-      font-size: 0.65rem; font-weight: 500;
-      letter-spacing: 0.25em; text-transform: uppercase;
-      color: var(--accent); margin-bottom: 0.75rem;
-      display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+      font-family: 'Kanit', sans-serif; font-size: 0.65rem; font-weight: 500;
+      letter-spacing: 0.25em; text-transform: uppercase; color: var(--accent);
+      margin-bottom: 0.75rem; display: flex; align-items: center; justify-content: center; gap: 0.5rem;
     }
     .clock-label::before, .clock-label::after {
       content: ''; width: 20px; height: 1px;
@@ -220,386 +211,194 @@
     .clock-label::after { background: linear-gradient(90deg, var(--accent-glow), transparent); }
 
     .clock-time {
-      font-family: 'Inter', sans-serif;
-      font-size: 3.2rem; font-weight: 600;
-      color: var(--text-primary);
-      letter-spacing: -0.02em; line-height: 1;
-      font-variant-numeric: tabular-nums;
+      font-family: 'Inter', sans-serif; font-size: 3.2rem; font-weight: 600;
+      color: var(--text-primary); letter-spacing: -0.02em; line-height: 1; font-variant-numeric: tabular-nums;
     }
-    .clock-time .colon {
-      animation: colonBlink 2s step-end infinite;
-      opacity: 1;
-    }
-    @keyframes colonBlink {
-      50% { opacity: 0.3; }
-    }
-    .clock-seconds {
-      font-size: 1.4rem; font-weight: 400;
-      color: var(--accent); vertical-align: super;
-      margin-left: 2px;
-    }
-    .clock-date {
-      font-family: 'Kanit', sans-serif;
-      font-size: 0.82rem; font-weight: 400;
-      color: var(--text-secondary); margin-top: 0.6rem;
-    }
+    .clock-time .colon { animation: colonBlink 2s step-end infinite; opacity: 1; }
+    @keyframes colonBlink { 50% { opacity: 0.3; } }
+    .clock-seconds { font-size: 1.4rem; font-weight: 400; color: var(--accent); vertical-align: super; margin-left: 2px; }
+    .clock-date { font-family: 'Kanit', sans-serif; font-size: 0.82rem; font-weight: 400; color: var(--text-secondary); margin-top: 0.6rem; }
 
-    /* ─── Card Body ─── */
     .card-body { padding: 1.75rem 1.5rem 1.5rem; }
 
-    /* ─── Section Label ─── */
     .section-label {
-      font-family: 'Kanit', sans-serif;
-      font-size: 0.62rem; font-weight: 500;
-      letter-spacing: 0.2em; text-transform: uppercase;
-      color: var(--text-muted);
-      margin-bottom: 0.85rem;
-      display: flex; align-items: center; gap: 0.6rem;
+      font-family: 'Kanit', sans-serif; font-size: 0.62rem; font-weight: 500;
+      letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-muted);
+      margin-bottom: 0.85rem; display: flex; align-items: center; gap: 0.6rem;
     }
-    .section-label::after {
-      content: ''; flex: 1; height: 1px;
-      background: linear-gradient(90deg, var(--border-color), transparent);
-    }
+    .section-label::after { content: ''; flex: 1; height: 1px; background: linear-gradient(90deg, var(--border-color), transparent); }
 
-    /* ═══════════════════════════════════
-       Auth Section (Logged Out)
-    ═══════════════════════════════════ */
-    .auth-prompt {
-      text-align: center; margin-bottom: 1.5rem;
-    }
-    .auth-prompt p {
-      font-size: 0.88rem; color: var(--text-secondary);
-      line-height: 1.6;
-    }
-    .auth-buttons {
-      display: flex; flex-direction: column; gap: 0.65rem;
-    }
+    .auth-prompt { text-align: center; margin-bottom: 1.5rem; }
+    .auth-prompt p { font-size: 0.88rem; color: var(--text-secondary); line-height: 1.6; }
+    .auth-buttons { display: flex; flex-direction: column; gap: 0.65rem; }
 
-    /* ═══════════════════════════════════
-       User Card
-    ═══════════════════════════════════ */
     .user-section { margin-bottom: 1.25rem; }
     .user-card {
-      background: var(--bg-user-card);
-      border: 1px solid var(--border-accent);
-      border-radius: var(--radius-md);
-      padding: 1rem 1.1rem;
-      display: flex; align-items: center; gap: 1rem;
-      transition: all var(--transition);
+      background: var(--bg-user-card); border: 1px solid var(--border-accent);
+      border-radius: var(--radius-md); padding: 1rem 1.1rem;
+      display: flex; align-items: center; gap: 1rem; transition: all var(--transition);
     }
-    .user-card:hover {
-      border-color: var(--accent);
-      background: rgba(16, 185, 129, 0.1);
-    }
+    .user-card:hover { border-color: var(--accent); background: rgba(16, 185, 129, 0.1); }
 
     .avatar-wrap { position: relative; flex-shrink: 0; }
-    .user-avatar {
-      width: 48px; height: 48px; border-radius: 50%;
-      object-fit: cover; border: 2px solid var(--accent-deep);
-    }
+    .user-avatar { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent-deep); }
     .avatar-status {
-      position: absolute; bottom: 0; right: 0;
-      width: 14px; height: 14px; border-radius: 50%;
+      position: absolute; bottom: 0; right: 0; width: 14px; height: 14px; border-radius: 50%;
       background: var(--accent); border: 2.5px solid var(--bg-card-solid);
       animation: statusPulse 3s ease-in-out infinite;
     }
-    @keyframes statusPulse {
-      0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
-      50% { box-shadow: 0 0 0 4px rgba(16, 185, 129, 0); }
-    }
+    @keyframes statusPulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); } 50% { box-shadow: 0 0 0 4px rgba(16, 185, 129, 0); } }
 
     .user-info { flex: 1; min-width: 0; }
-    .user-greeting {
-      font-size: 0.68rem; color: var(--accent);
-      font-weight: 500; margin-bottom: 1px;
-    }
+    .user-greeting { font-size: 0.68rem; color: var(--accent); font-weight: 500; margin-bottom: 1px; }
     .user-name {
-      font-family: 'Kanit', sans-serif;
-      font-weight: 600; font-size: 0.95rem;
-      color: var(--text-primary);
-      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      font-family: 'Kanit', sans-serif; font-weight: 600; font-size: 0.95rem;
+      color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
-    .user-meta {
-      display: flex; align-items: center; gap: 0.5rem;
-      margin-top: 4px;
-    }
+    .user-meta { display: flex; align-items: center; gap: 0.5rem; margin-top: 4px; }
     .user-role-badge {
       display: inline-flex; align-items: center; gap: 4px;
       background: var(--accent-bg); border: 1px solid var(--border-accent);
-      color: var(--accent); font-family: 'Kanit', sans-serif;
-      font-size: 0.6rem; font-weight: 500;
-      padding: 2px 7px; border-radius: 6px;
+      color: var(--accent); font-family: 'Kanit', sans-serif; font-size: 0.6rem;
+      font-weight: 500; padding: 2px 7px; border-radius: 6px;
     }
-    .user-email-text {
-      font-size: 0.68rem; color: var(--text-muted);
-      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    }
+    .user-email-text { font-size: 0.68rem; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-    /* ═══════════════════════════════════
-       Buttons — Base
-    ═══════════════════════════════════ */
     .btn {
-      display: flex; align-items: center; justify-content: center;
-      gap: 0.7rem;
-      padding: 0.8rem 1.25rem;
-      border-radius: var(--radius-sm);
-      font-family: 'Kanit', sans-serif;
-      font-weight: 500; font-size: 0.88rem;
-      cursor: pointer; border: 1px solid transparent;
-      text-decoration: none;
-      transition: all var(--transition);
-      position: relative; overflow: hidden;
-      letter-spacing: 0.01em;
-      -webkit-tap-highlight-color: transparent;
+      display: flex; align-items: center; justify-content: center; gap: 0.7rem;
+      padding: 0.8rem 1.25rem; border-radius: var(--radius-sm);
+      font-family: 'Kanit', sans-serif; font-weight: 500; font-size: 0.88rem;
+      cursor: pointer; border: 1px solid transparent; text-decoration: none;
+      transition: all var(--transition); position: relative; overflow: hidden;
+      letter-spacing: 0.01em; -webkit-tap-highlight-color: transparent;
     }
     .btn:active { transform: scale(0.97); }
-    .btn:focus-visible {
-      outline: 2px solid var(--accent);
-      outline-offset: 2px;
-    }
+    .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
     .btn-icon {
-      width: 30px; height: 30px;
-      display: flex; align-items: center; justify-content: center;
-      border-radius: var(--radius-xs); font-size: 0.82rem;
-      flex-shrink: 0; transition: transform var(--transition);
+      width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;
+      border-radius: var(--radius-xs); font-size: 0.82rem; flex-shrink: 0; transition: transform var(--transition);
     }
     .btn:hover .btn-icon { transform: scale(1.08); }
 
-    /* Primary (Login) */
     .btn-primary {
-      background: linear-gradient(135deg, var(--accent-deep), var(--accent));
-      color: white;
+      background: linear-gradient(135deg, var(--accent-deep), var(--accent)); color: white;
       box-shadow: 0 4px 20px var(--accent-glow), inset 0 1px 0 rgba(255,255,255,0.15);
     }
-    .btn-primary:hover {
-      box-shadow: 0 8px 30px var(--accent-glow);
-      transform: translateY(-1px);
-    }
+    .btn-primary:hover { box-shadow: 0 8px 30px var(--accent-glow); transform: translateY(-1px); }
     .btn-primary .btn-icon { background: rgba(255,255,255,0.15); }
 
-    /* Outline (Register) */
-    .btn-outline {
-      background: transparent;
-      color: var(--accent);
-      border-color: var(--border-accent);
-    }
-    .btn-outline:hover {
-      background: var(--accent-bg);
-      border-color: var(--accent);
-      transform: translateY(-1px);
-    }
+    .btn-outline { background: transparent; color: var(--accent); border-color: var(--border-accent); }
+    .btn-outline:hover { background: var(--accent-bg); border-color: var(--accent); transform: translateY(-1px); }
     .btn-outline .btn-icon { background: var(--accent-bg); }
 
-    /* ═══════════════════════════════════
-       Hero Clock-In Button
-    ═══════════════════════════════════ */
     .hero-action { margin-bottom: 1rem; }
     .btn-hero {
-      width: 100%;
-      background: linear-gradient(135deg, #047857, #10b981, #34d399);
-      color: white;
-      padding: 1.1rem 1.5rem;
-      border-radius: var(--radius-md);
-      font-size: 1rem; font-weight: 600;
+      width: 100%; background: linear-gradient(135deg, #047857, #10b981, #34d399); color: white;
+      padding: 1.1rem 1.5rem; border-radius: var(--radius-md); font-size: 1rem; font-weight: 600;
       box-shadow: 0 8px 32px rgba(16, 185, 129, 0.3), inset 0 1px 0 rgba(255,255,255,0.15);
       position: relative; overflow: hidden;
     }
     .btn-hero::before {
       content: ''; position: absolute; inset: 0;
       background: linear-gradient(135deg, transparent 30%, rgba(255,255,255,0.08) 50%, transparent 70%);
-      transform: translateX(-100%);
-      transition: transform 0.6s ease;
+      transform: translateX(-100%); transition: transform 0.6s ease;
     }
     .btn-hero:hover::before { transform: translateX(100%); }
-    .btn-hero:hover {
-      box-shadow: 0 12px 40px rgba(16, 185, 129, 0.4);
-      transform: translateY(-2px);
-    }
-    .btn-hero .btn-icon {
-      width: 40px; height: 40px; font-size: 1.15rem;
-      background: rgba(255,255,255,0.15); border-radius: var(--radius-sm);
-    }
+    .btn-hero:hover { box-shadow: 0 12px 40px rgba(16, 185, 129, 0.4); transform: translateY(-2px); }
+    .btn-hero .btn-icon { width: 40px; height: 40px; font-size: 1.15rem; background: rgba(255,255,255,0.15); border-radius: var(--radius-sm); }
     .btn-hero-text { display: flex; flex-direction: column; align-items: flex-start; }
     .btn-hero-label { line-height: 1.2; }
-    .btn-hero-sub {
-      font-size: 0.65rem; font-weight: 400; opacity: 0.8;
-      letter-spacing: 0.03em; margin-top: 1px;
-    }
+    .btn-hero-sub { font-size: 0.65rem; font-weight: 400; opacity: 0.8; letter-spacing: 0.03em; margin-top: 1px; }
 
-    /* ═══════════════════════════════════
-       Action Grid
-    ═══════════════════════════════════ */
-    .action-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0.65rem;
-      margin-bottom: 0.65rem;
-    }
-    .action-grid .btn {
-      flex-direction: column; gap: 0.45rem;
-      padding: 1.15rem 0.75rem;
-      border-radius: var(--radius-md);
-    }
-    .action-grid .btn-icon {
-      width: 42px; height: 42px; font-size: 1.1rem;
-      border-radius: var(--radius-sm); margin-bottom: 0.1rem;
-      transition: transform var(--transition);
-    }
+    .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.65rem; margin-bottom: 0.65rem; }
+    .action-grid .btn { flex-direction: column; gap: 0.45rem; padding: 1.15rem 0.75rem; border-radius: var(--radius-md); }
+    .action-grid .btn-icon { width: 42px; height: 42px; font-size: 1.1rem; border-radius: var(--radius-sm); margin-bottom: 0.1rem; }
     .action-grid .btn:hover .btn-icon { transform: scale(1.1) rotate(-3deg); }
     .action-grid .btn span { font-size: 0.78rem; font-weight: 500; text-align: center; line-height: 1.3; }
 
-    /* Grid item variants */
-    .btn-rose {
-      background: var(--rose-bg); border: 1px solid var(--rose-border); color: var(--rose);
-    }
+    .btn-rose { background: var(--rose-bg); border: 1px solid var(--rose-border); color: var(--rose); }
     .btn-rose:hover { background: rgba(251, 113, 133, 0.14); border-color: var(--rose); transform: translateY(-2px); }
     .btn-rose .btn-icon { background: rgba(251, 113, 133, 0.12); }
-
-    .btn-indigo {
-      background: var(--indigo-bg); border: 1px solid var(--indigo-border); color: var(--indigo);
-    }
+    .btn-indigo { background: var(--indigo-bg); border: 1px solid var(--indigo-border); color: var(--indigo); }
     .btn-indigo:hover { background: rgba(129, 140, 248, 0.14); border-color: var(--indigo); transform: translateY(-2px); }
     .btn-indigo .btn-icon { background: rgba(129, 140, 248, 0.12); }
-
-    .btn-purple {
-      background: var(--purple-bg); border: 1px solid var(--purple-border); color: var(--purple);
-    }
+    .btn-purple { background: var(--purple-bg); border: 1px solid var(--purple-border); color: var(--purple); }
     .btn-purple:hover { background: rgba(167, 139, 250, 0.14); border-color: var(--purple); transform: translateY(-2px); }
     .btn-purple .btn-icon { background: rgba(167, 139, 250, 0.12); }
-
-    .btn-amber {
-      background: var(--amber-bg); border: 1px solid var(--amber-border); color: var(--amber);
-    }
+    .btn-amber { background: var(--amber-bg); border: 1px solid var(--amber-border); color: var(--amber); }
     .btn-amber:hover { background: rgba(251, 191, 36, 0.14); border-color: var(--amber); transform: translateY(-2px); }
     .btn-amber .btn-icon { background: rgba(251, 191, 36, 0.12); }
-
-    .btn-teal {
-      background: var(--teal-bg); border: 1px solid var(--teal-border); color: var(--teal);
-    }
+    .btn-teal { background: var(--teal-bg); border: 1px solid var(--teal-border); color: var(--teal); }
     .btn-teal:hover { background: rgba(45, 212, 191, 0.14); border-color: var(--teal); transform: translateY(-2px); }
     .btn-teal .btn-icon { background: rgba(45, 212, 191, 0.12); }
-
-    .btn-blue {
-      background: var(--blue-bg); border: 1px solid var(--blue-border); color: var(--blue);
-    }
+    .btn-blue { background: var(--blue-bg); border: 1px solid var(--blue-border); color: var(--blue); }
     .btn-blue:hover { background: rgba(59, 130, 246, 0.14); border-color: var(--blue); transform: translateY(-2px); }
     .btn-blue .btn-icon { background: rgba(59, 130, 246, 0.12); }
 
-    /* Full-width action */
     .btn-full { width: 100%; }
-
-    /* Profile button */
-    .btn-profile {
-      background: var(--blue-bg); border: 1px solid var(--blue-border); color: var(--blue);
-    }
+    .btn-profile { background: var(--blue-bg); border: 1px solid var(--blue-border); color: var(--blue); }
     .btn-profile:hover { background: rgba(59, 130, 246, 0.14); border-color: var(--blue); transform: translateY(-1px); }
     .btn-profile .btn-icon { background: rgba(59, 130, 246, 0.12); }
 
-    /* ═══════════════════════════════════
-       Divider
-    ═══════════════════════════════════ */
-    .divider {
-      margin: 1.25rem 0;
-      border: none; height: 1px;
-      background: linear-gradient(90deg, transparent, var(--border-color), transparent);
-    }
+    .divider { margin: 1.25rem 0; border: none; height: 1px; background: linear-gradient(90deg, transparent, var(--border-color), transparent); }
 
-    /* ═══════════════════════════════════
-       Logout Buttons
-    ═══════════════════════════════════ */
-    .btn-danger {
-      background: var(--danger-bg); color: var(--danger); border-color: var(--danger-border);
-    }
+    .btn-danger { background: var(--danger-bg); color: var(--danger); border-color: var(--danger-border); }
     .btn-danger:hover { background: rgba(239, 68, 68, 0.12); border-color: var(--danger); transform: translateY(-1px); }
     .btn-danger .btn-icon { background: rgba(239, 68, 68, 0.1); }
-
-    .btn-ghost {
-      background: transparent; color: var(--text-muted);
-      border-color: var(--border-color);
-    }
+    .btn-ghost { background: transparent; color: var(--text-muted); border-color: var(--border-color); }
     .btn-ghost:hover { color: var(--text-secondary); border-color: var(--border-accent); background: var(--accent-bg); transform: translateY(-1px); }
     .btn-ghost .btn-icon { background: var(--bg-elevated); }
+    .logout-group { display: flex; flex-direction: column; gap: 0.5rem; }
 
-    .logout-group {
-      display: flex; flex-direction: column; gap: 0.5rem;
-    }
-
-    /* ═══════════════════════════════════
-       Card Footer
-    ═══════════════════════════════════ */
     .card-footer {
-      padding: 0.85rem 1.5rem;
-      border-top: 1px solid var(--border-subtle);
+      padding: 0.85rem 1.5rem; border-top: 1px solid var(--border-subtle);
       display: flex; align-items: center; justify-content: center; gap: 0.4rem;
       background: rgba(0,0,0,0.15);
     }
     [data-theme="light"] .card-footer { background: rgba(0,0,0,0.02); }
-    .card-footer span {
-      font-family: 'Kanit', sans-serif;
-      font-size: 0.62rem; color: var(--text-muted);
-      letter-spacing: 0.06em;
-    }
+    .card-footer span { font-family: 'Kanit', sans-serif; font-size: 0.62rem; color: var(--text-muted); letter-spacing: 0.06em; }
     .footer-dot { opacity: 0.3; font-size: 0.4rem; margin-top: 1px; }
 
-    /* ═══════════════════════════════════
-       Toast
-    ═══════════════════════════════════ */
     .toast {
-      position: fixed; top: 1.5rem; right: 1.5rem;
+      position: fixed; top: max(1.5rem, var(--sat)); right: 1.5rem;
       background: var(--bg-card-solid); border: 1px solid var(--border-color);
-      color: var(--text-primary);
-      padding: 0.85rem 1.25rem;
-      border-radius: var(--radius-sm);
-      font-family: 'Kanit', sans-serif; font-size: 0.85rem;
-      z-index: 1000;
-      display: flex; align-items: center; gap: 0.65rem;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-      animation: toastSlideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-      backdrop-filter: blur(16px);
-      max-width: 340px;
+      color: var(--text-primary); padding: 0.85rem 1.25rem; border-radius: var(--radius-sm);
+      font-family: 'Kanit', sans-serif; font-size: 0.85rem; z-index: 1000;
+      display: flex; align-items: center; gap: 0.65rem; box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+      animation: toastSlideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1); backdrop-filter: blur(16px); max-width: 340px;
     }
     .toast.error { border-color: var(--danger-border); }
     .toast.error i { color: var(--danger); }
     .toast.success { border-color: var(--success-border); }
     .toast.success i { color: var(--accent); }
-    @keyframes toastSlideIn {
-      from { transform: translateX(120%); opacity: 0; }
-      to { transform: translateX(0); opacity: 1; }
-    }
+    @keyframes toastSlideIn { from { transform: translateX(120%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 
-    /* ═══════════════════════════════════
-       Loading State
-    ═══════════════════════════════════ */
     .loading { opacity: 0.5; pointer-events: none; }
 
-    /* ═══════════════════════════════════
-       Staggered Grid Entrance
-    ═══════════════════════════════════ */
     .action-grid .btn:nth-child(1) { animation: gridIn 0.45s cubic-bezier(0.16,1,0.3,1) 0.08s both; }
     .action-grid .btn:nth-child(2) { animation: gridIn 0.45s cubic-bezier(0.16,1,0.3,1) 0.14s both; }
     .action-grid .btn:nth-child(3) { animation: gridIn 0.45s cubic-bezier(0.16,1,0.3,1) 0.20s both; }
     .action-grid .btn:nth-child(4) { animation: gridIn 0.45s cubic-bezier(0.16,1,0.3,1) 0.26s both; }
     .action-grid .btn:nth-child(5) { animation: gridIn 0.45s cubic-bezier(0.16,1,0.3,1) 0.32s both; }
-    @keyframes gridIn {
-      from { opacity: 0; transform: translateY(12px) scale(0.96); }
-      to { opacity: 1; transform: translateY(0) scale(1); }
-    }
+    @keyframes gridIn { from { opacity: 0; transform: translateY(12px) scale(0.96); } to { opacity: 1; transform: translateY(0) scale(1); } }
 
-    /* ═══════════════════════════════════
-       Section Transitions
-    ═══════════════════════════════════ */
-    .fade-section {
-      animation: fadeSection 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
-    }
-    @keyframes fadeSection {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
+    .fade-section { animation: fadeSection 0.5s cubic-bezier(0.16, 1, 0.3, 1) both; }
+    @keyframes fadeSection { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-    /* ═══════════════════════════════════
-       Responsive
-    ═══════════════════════════════════ */
+    /* PWA Install Prompt Style */
+    .pwa-install-banner {
+      position: fixed; bottom: 0; left: 0; right: 0; background: var(--bg-card-solid);
+      border-top: 1px solid var(--border-color); padding: 1rem 1.5rem;
+      padding-bottom: max(1rem, var(--sab)); z-index: 998;
+      display: flex; align-items: center; gap: 1rem;
+      box-shadow: 0 -10px 30px rgba(0,0,0,0.2); backdrop-filter: blur(16px);
+      animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .pwa-install-banner .btn { flex-shrink: 0; }
+
+    @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+
     @media (max-width: 480px) {
       .container { padding: 0 0.25rem; }
       .clock-section { padding: 2rem 1.25rem 1.5rem; }
@@ -610,15 +409,8 @@
       .action-grid .btn-icon { width: 38px; height: 38px; font-size: 1rem; }
     }
 
-    /* ═══════════════════════════════════
-       Accessibility
-    ═══════════════════════════════════ */
     @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-      }
+      *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
     }
   </style>
 </head>
@@ -626,7 +418,6 @@
 
   <button id="themeBtn" title="เปลี่ยนธีม" aria-label="เปลี่ยนธีม"><i class="fas fa-moon"></i></button>
 
-  <!-- Background -->
   <div class="bg-layer" aria-hidden="true">
     <div class="orb orb-1"></div>
     <div class="orb orb-2"></div>
@@ -634,16 +425,12 @@
   </div>
 
   <div class="container">
-
-    <!-- Organization Header -->
     <header class="org-header">
       <div class="org-name" id="wordmarkOrg">โรงพยาบาลส่งเสริมสุขภาพตำบลหนองทุ่ม</div>
       <div class="org-dept" id="wordmarkDept">อำเภอเซกา จังหวัดบึงกาฬ</div>
     </header>
 
     <main class="card">
-
-      <!-- Clock Section -->
       <section class="clock-section" aria-label="เวลาปัจจุบัน">
         <div class="clock-label">เวลาปัจจุบัน</div>
         <div class="clock-time" id="liveClock" aria-live="polite">
@@ -653,114 +440,53 @@
       </section>
 
       <div class="card-body">
-
-        <!-- ═══ NOT LOGGED IN ═══ -->
         <div id="authSection" class="fade-section">
           <div class="section-label">เข้าสู่ระบบ</div>
-          <div class="auth-prompt">
-            <p>ลงชื่อเข้าใช้เพื่อบันทึกเวลาปฏิบัติงาน<br>และจัดการข้อมูลการลงเวลาของคุณ</p>
-          </div>
+          <div class="auth-prompt"><p>ลงชื่อเข้าใช้เพื่อบันทึกเวลาปฏิบัติงาน<br>และจัดการข้อมูลการลงเวลาของคุณ</p></div>
           <div class="auth-buttons">
-            <a href="login.html" class="btn btn-primary btn-full">
-              <span class="btn-icon"><i class="fas fa-arrow-right-to-bracket"></i></span>
-              <span>เข้าสู่ระบบ</span>
-            </a>
-            <a href="register.html" class="btn btn-outline btn-full">
-              <span class="btn-icon"><i class="fas fa-user-plus"></i></span>
-              <span>ลงทะเบียนเข้าใช้งาน</span>
-            </a>
+            <a href="login.html" class="btn btn-primary btn-full"><span class="btn-icon"><i class="fas fa-arrow-right-to-bracket"></i></span><span>เข้าสู่ระบบ</span></a>
+            <a href="register.html" class="btn btn-outline btn-full"><span class="btn-icon"><i class="fas fa-user-plus"></i></span><span>ลงทะเบียนเข้าใช้งาน</span></a>
           </div>
         </div>
 
-        <!-- ═══ LOGGED IN ═══ -->
         <div id="appSection" style="display:none;">
-
-          <!-- User Card -->
           <div class="section-label">ผู้ใช้งาน</div>
           <div class="user-section">
             <div class="user-card">
-              <div class="avatar-wrap">
-                <img id="userAvatar" class="user-avatar" src="" alt="รูปโปรไฟล์">
-                <div class="avatar-status" title="ออนไลน์"></div>
-              </div>
+              <div class="avatar-wrap"><img id="userAvatar" class="user-avatar" src="" alt="รูปโปรไฟล์"><div class="avatar-status" title="ออนไลน์"></div></div>
               <div class="user-info">
                 <div class="user-greeting" id="userGreeting">สวัสดีตอนเช้า</div>
                 <div class="user-name" id="userName">—</div>
-                <div class="user-meta">
-                  <span class="user-role-badge" id="userRole"><i class="fa-solid fa-user"></i> บุคลากร</span>
-                  <span class="user-email-text" id="userEmail">—</span>
-                </div>
+                <div class="user-meta"><span class="user-role-badge" id="userRole"><i class="fa-solid fa-user"></i> บุคลากร</span><span class="user-email-text" id="userEmail">—</span></div>
               </div>
             </div>
           </div>
 
-          <!-- Hero Clock-In -->
           <div class="section-label">ลงเวลาปฏิบัติงาน</div>
           <div class="hero-action">
-            <a href="attendance.html" class="btn btn-hero">
-              <span class="btn-icon"><i class="fas fa-fingerprint"></i></span>
-              <div class="btn-hero-text">
-                <span class="btn-hero-label">ลงเวลาเข้า-ออกงาน</span>
-                <span class="btn-hero-sub">บันทึกเวลาปฏิบัติงานรายวัน</span>
-              </div>
-            </a>
+            <a href="attendance.html" class="btn btn-hero"><span class="btn-icon"><i class="fas fa-fingerprint"></i></span><div class="btn-hero-text"><span class="btn-hero-label">ลงเวลาเข้า-ออกงาน</span><span class="btn-hero-sub">บันทึกเวลาปฏิบัติงานรายวัน</span></div></a>
           </div>
 
-          <!-- Action Grid -->
           <div class="section-label">เมนูการทำงาน</div>
           <div class="action-grid">
-            <a href="overtime.html" class="btn btn-rose">
-              <span class="btn-icon"><i class="fas fa-clock-rotate-left"></i></span>
-              <span>ทำงานล่วงเวลา</span>
-            </a>
-            <a href="requests.html" class="btn btn-indigo">
-              <span class="btn-icon"><i class="fas fa-clipboard-list"></i></span>
-              <span>อนุมัติคำขอ</span>
-            </a>
-            <a href="supervisor.html" class="btn btn-purple">
-              <span class="btn-icon"><i class="fas fa-user-tie"></i></span>
-              <span>อนุมัติการลงเวลา</span>
-            </a>
-            <a href="dash.html" class="btn btn-amber">
-              <span class="btn-icon"><i class="fas fa-chart-pie"></i></span>
-              <span>รายงานสรุป</span>
-            </a>
-            <a href="devices.html" class="btn btn-teal">
-              <span class="btn-icon"><i class="fas fa-mobile-screen-button"></i></span>
-              <span>อุปกรณ์ของฉัน</span>
-            </a>
+            <a href="overtime.html" class="btn btn-rose"><span class="btn-icon"><i class="fas fa-clock-rotate-left"></i></span><span>ทำงานล่วงเวลา</span></a>
+            <a href="requests.html" class="btn btn-indigo"><span class="btn-icon"><i class="fas fa-clipboard-list"></i></span><span>อนุมัติคำขอ</span></a>
+            <a href="supervisor.html" class="btn btn-purple"><span class="btn-icon"><i class="fas fa-user-tie"></i></span><span>อนุมัติการลงเวลา</span></a>
+            <a href="dash.html" class="btn btn-amber"><span class="btn-icon"><i class="fas fa-chart-pie"></i></span><span>รายงานสรุป</span></a>
+            <a href="devices.html" class="btn btn-teal"><span class="btn-icon"><i class="fas fa-mobile-screen-button"></i></span><span>อุปกรณ์ของฉัน</span></a>
           </div>
 
-          <!-- Profile -->
-          <a href="profile.html" class="btn btn-profile btn-full">
-            <span class="btn-icon"><i class="fas fa-id-badge"></i></span>
-            <span>โปรไฟล์และการตั้งค่า</span>
-          </a>
-
+          <a href="profile.html" class="btn btn-profile btn-full"><span class="btn-icon"><i class="fas fa-id-badge"></i></span><span>โปรไฟล์และการตั้งค่า</span></a>
           <div class="divider"></div>
-
-          <!-- Logout -->
           <div class="logout-group">
-            <button id="logoutBtn" class="btn btn-danger btn-full">
-              <span class="btn-icon"><i class="fas fa-power-off"></i></span>
-              <span>ออกจากระบบ</span>
-            </button>
-            <button id="logoutAllBtn" class="btn btn-ghost btn-full">
-              <span class="btn-icon"><i class="fas fa-shield-halved"></i></span>
-              <span>ลงชื่อออกทุกอุปกรณ์</span>
-            </button>
+            <button id="logoutBtn" class="btn btn-danger btn-full"><span class="btn-icon"><i class="fas fa-power-off"></i></span><span>ออกจากระบบ</span></button>
+            <button id="logoutAllBtn" class="btn btn-ghost btn-full"><span class="btn-icon"><i class="fas fa-shield-halved"></i></span><span>ลงชื่อออกทุกอุปกรณ์</span></button>
           </div>
-
         </div>
       </div>
 
-      <!-- Footer -->
       <footer class="card-footer">
-        <span>v2.0</span>
-        <span class="footer-dot">●</span>
-        <span>ระบบบริหารทรัพยากรบุคคล</span>
-        <span class="footer-dot">●</span>
-        <span id="footerYear">2024</span>
+        <span>v2.0</span><span class="footer-dot">●</span><span>ระบบบริหารทรัพยากรบุคคล</span><span class="footer-dot">●</span><span id="footerYear">2024</span>
       </footer>
     </main>
   </div>
@@ -769,6 +495,53 @@
 
   <script>
     const API_BASE_URL = '/api';
+
+    // ═══════════════════════════════════
+    //  PWA: Service Worker Registration
+    // ═══════════════════════════════════
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .then(reg => console.log('✅ SW Registered:', reg.scope))
+          .catch(err => console.log('❌ SW Registration Failed:', err));
+      });
+    }
+
+    // ═══════════════════════════════════
+    //  PWA: Install Prompt
+    // ═══════════════════════════════════
+    let deferredPrompt;
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      showInstallBanner();
+    });
+
+    function showInstallBanner() {
+      if (window.matchMedia('(display-mode: standalone)').matches) return; // Already installed
+      
+      const banner = document.createElement('div');
+      banner.className = 'pwa-install-banner';
+      banner.innerHTML = `
+        <div style="flex:1; min-width:0">
+          <div style="font-family:'Kanit',sans-serif; font-size:0.9rem; font-weight:600; color:var(--text-primary)">ติดตั้งแอปพลิเคชัน</div>
+          <div style="font-size:0.75rem; color:var(--text-secondary); margin-top:2px">เพิ่มเข้าหน้าจอเพื่อใช้งานสะดวกขึ้น</div>
+        </div>
+        <button class="btn btn-primary" id="installBtn" style="padding:0.6rem 1.2rem; font-size:0.82rem">
+          <span>ติดตั้ง</span>
+        </button>
+      `;
+      document.body.appendChild(banner);
+
+      document.getElementById('installBtn').addEventListener('click', async () => {
+        if (!deferredPrompt) return;
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        console.log(`User response to the install prompt: ${outcome}`);
+        deferredPrompt = null;
+        banner.remove();
+      });
+    }
 
     // ═══════════════════════════════════
     //  Live Clock
@@ -783,7 +556,6 @@
       const s = String(now.getSeconds()).padStart(2, '0');
       document.getElementById('clockHM').textContent = `${h}:${m}`;
       document.getElementById('clockSec').textContent = s;
-
       const be = now.getFullYear() + 543;
       const dateStr = `วัน${thDays[now.getDay()]}ที่ ${now.getDate()} ${thMonths[now.getMonth()]} ${be}`;
       document.getElementById('currentDate').textContent = dateStr;
@@ -792,9 +564,6 @@
     updateClock();
     setInterval(updateClock, 1000);
 
-    // ═══════════════════════════════════
-    //  Greeting
-    // ═══════════════════════════════════
     function getGreeting() {
       const h = new Date().getHours();
       if (h >= 5 && h < 12) return 'สวัสดีตอนเช้า';
@@ -803,224 +572,89 @@
       return 'สวัสดีตอนดึก';
     }
 
-    // ═══════════════════════════════════
-    //  Toast
-    // ═══════════════════════════════════
     function showToast(message, type = 'default') {
       const icons = { error: 'fa-circle-xmark', success: 'fa-circle-check', default: 'fa-circle-info' };
       const toast = document.createElement('div');
       toast.className = 'toast' + (type !== 'default' ? ' ' + type : '');
       toast.innerHTML = `<i class="fas ${icons[type] || icons.default}"></i> ${message}`;
       document.body.appendChild(toast);
-      setTimeout(() => {
-        toast.style.opacity = '0';
-        toast.style.transform = 'translateX(50px)';
-        toast.style.transition = 'all 0.3s ease';
-        setTimeout(() => toast.remove(), 300);
-      }, 3200);
+      setTimeout(() => { toast.style.opacity = '0'; toast.style.transform = 'translateX(50px)'; toast.style.transition = 'all 0.3s ease'; setTimeout(() => toast.remove(), 300); }, 3200);
     }
 
-// ═══════════════════════════════════
-// Logout
-// ═══════════════════════════════════
-async function logout(logoutAll = false) {
-  const result = await Swal.fire({
-    icon: 'warning',
-    title: logoutAll ? 'ออกจากระบบทุกอุปกรณ์?' : 'ออกจากระบบ?',
-    text: logoutAll
-      ? 'คุณต้องเข้าสู่ระบบใหม่ทุกอุปกรณ์'
-      : 'คุณต้องเข้าสู่ระบบใหม่อีกครั้ง',
-    showCancelButton: true,
-    confirmButtonText: 'ยืนยัน',
-    cancelButtonText: 'ยกเลิก',
-    confirmButtonColor: '#e53935',
-    cancelButtonColor: '#6c757d',
-    reverseButtons: true
-  });
-
-  // กดยกเลิก
-  if (!result.isConfirmed) return;
-
-  const token = localStorage.getItem('auth_token');
-  if (!token) {
-    updateUIForLogout();
-    return;
-  }
-
-  const btnId = logoutAll ? 'logoutAllBtn' : 'logoutBtn';
-  const btn = document.getElementById(btnId);
-  const originalText = logoutAll ? 'ลงชื่อออกทุกอุปกรณ์' : 'ออกจากระบบ';
-
-  if (btn) {
-    btn.classList.add('loading');
-    btn.querySelector('span:last-child').textContent = 'กำลังออกจากระบบ...';
-  }
-
-  try {
-    const res = await fetch(`${API_BASE_URL}/user/logout`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ all: logoutAll })
-    });
-
-    const data = await res.json();
-
-    if (data.success) {
-      localStorage.removeItem('auth_token');
-      localStorage.removeItem('user_data');
-
-      showToast(
-        logoutAll
-          ? 'ออกจากระบบทุกอุปกรณ์แล้ว'
-          : 'ออกจากระบบสำเร็จ',
-        'success'
-      );
-
-      updateUIForLogout();
-
-      setTimeout(() => {
-        window.location.href = '/';
-      }, 1000);
-
-    } else {
-      showToast(data.message || 'ออกจากระบบไม่สำเร็จ', 'error');
-
-      if (btn) {
-        btn.classList.remove('loading');
-        btn.querySelector('span:last-child').textContent = originalText;
-      }
-    }
-
-  } catch {
-    showToast('ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้', 'error');
-
-    if (btn) {
-      btn.classList.remove('loading');
-      btn.querySelector('span:last-child').textContent = originalText;
-    }
-  }
-}
-
-    // ═══════════════════════════════════
-    //  Organization Name Expansion
-    // ═══════════════════════════════════
-    const prefixMap = [
-      { abbr: 'สสจ.', full: 'สำนักงานสาธารณสุขจังหวัด' },
-      { abbr: 'สสอ.', full: 'สำนักงานสาธารณสุขอำเภอ' },
-      { abbr: 'รพ.สต.', full: 'โรงพยาบาลส่งเสริมสุขภาพตำบล' },
-      { abbr: 'รพช.', full: 'โรงพยาบาลชุมชน' },
-      { abbr: 'รพ.', full: 'โรงพยาบาล' },
-      { abbr: 'ศสม.', full: 'ศูนย์สุขภาพชุมชนเมือง' },
-      { abbr: 'ศสช.', full: 'ศูนย์สุขภาพชุมชน' },
-    ];
-
-    function expandName(name) {
-      if (!name) return name;
-      for (const { abbr, full } of prefixMap) {
-        if (name.startsWith(abbr)) return full + name.slice(abbr.length);
-      }
-      return name;
-    }
-
-    function updateWordmark(u) {
-      const org = document.getElementById('wordmarkOrg');
-      const dept = document.getElementById('wordmarkDept');
-      if (u && u.affiliation) {
-        org.textContent = expandName(u.affiliation) + (u.aff_code ? '  ·  ' + u.aff_code : '');
-        dept.textContent = expandName(u.department) || 'TIME & ATTENDANCE SYSTEM';
-      } else {
-        org.textContent = 'โรงพยาบาลส่งเสริมสุขภาพตำบลหนองทุ่ม';
-        dept.textContent = 'อำเภอเซกา จังหวัดบึงกาฬ';
-      }
-    }
-
-    // ═══════════════════════════════════
-    //  UI State Management
-    // ═══════════════════════════════════
-    function checkLoginStatus() {
+    async function logout(logoutAll = false) {
+      const result = await Swal.fire({
+        icon: 'warning', title: logoutAll ? 'ออกจากระบบทุกอุปกรณ์?' : 'ออกจากระบบ?',
+        text: logoutAll ? 'คุณต้องเข้าสู่ระบบใหม่ทุกอุปกรณ์' : 'คุณต้องเข้าสู่ระบบใหม่อีกครั้ง',
+        showCancelButton: true, confirmButtonText: 'ยืนยัน', cancelButtonText: 'ยกเลิก',
+        confirmButtonColor: '#e53935', cancelButtonColor: '#6c757d', reverseButtons: true
+      });
+      if (!result.isConfirmed) return;
       const token = localStorage.getItem('auth_token');
-      const userDataStr = localStorage.getItem('user_data');
-      if (token && userDataStr) {
-        try {
-          const u = JSON.parse(userDataStr);
-          updateWordmark(u);
-          updateUIForLogin(u);
-        } catch { updateUIForLogout(); }
-      } else {
-        updateUIForLogout();
-      }
+      if (!token) { updateUIForLogout(); return; }
+      const btnId = logoutAll ? 'logoutAllBtn' : 'logoutBtn';
+      const btn = document.getElementById(btnId);
+      const originalText = logoutAll ? 'ลงชื่อออกทุกอุปกรณ์' : 'ออกจากระบบ';
+      if (btn) { btn.classList.add('loading'); btn.querySelector('span:last-child').textContent = 'กำลังออกจากระบบ...'; }
+      try {
+        const res = await fetch(`${API_BASE_URL}/user/logout`, { method: 'POST', headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ all: logoutAll }) });
+        const data = await res.json();
+        if (data.success) { localStorage.removeItem('auth_token'); localStorage.removeItem('user_data'); showToast(logoutAll ? 'ออกจากระบบทุกอุปกรณ์แล้ว' : 'ออกจากระบบสำเร็จ', 'success'); updateUIForLogout(); setTimeout(() => { window.location.href = '/'; }, 1000); }
+        else { showToast(data.message || 'ออกจากระบบไม่สำเร็จ', 'error'); if (btn) { btn.classList.remove('loading'); btn.querySelector('span:last-child').textContent = originalText; } }
+      } catch { showToast('ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้', 'error'); if (btn) { btn.classList.remove('loading'); btn.querySelector('span:last-child').textContent = originalText; } }
     }
+
+    const prefixMap = [
+      { abbr: 'สสจ.', full: 'สำนักงานสาธารณสุขจังหวัด' }, { abbr: 'สสอ.', full: 'สำนักงานสาธารณสุขอำเภอ' },
+      { abbr: 'รพ.สต.', full: 'โรงพยาบาลส่งเสริมสุขภาพตำบล' }, { abbr: 'รพช.', full: 'โรงพยาบาลชุมชน' },
+      { abbr: 'รพ.', full: 'โรงพยาบาล' }, { abbr: 'ศสม.', full: 'ศูนย์สุขภาพชุมชนเมือง' }, { abbr: 'ศสช.', full: 'ศูนย์สุขภาพชุมชน' },
+    ];
+    function expandName(name) { if (!name) return name; for (const { abbr, full } of prefixMap) { if (name.startsWith(abbr)) return full + name.slice(abbr.length); } return name; }
+    function updateWordmark(u) { const org = document.getElementById('wordmarkOrg'); const dept = document.getElementById('wordmarkDept'); if (u && u.affiliation) { org.textContent = expandName(u.affiliation) + (u.aff_code ? '  ·  ' + u.aff_code : ''); dept.textContent = expandName(u.department) || 'TIME & ATTENDANCE SYSTEM'; } else { org.textContent = 'โรงพยาบาลส่งเสริมสุขภาพตำบลหนองทุ่ม'; dept.textContent = 'อำเภอเซกา จังหวัดบึงกาฬ'; } }
+
+    function checkLoginStatus() { const token = localStorage.getItem('auth_token'); const userDataStr = localStorage.getItem('user_data'); if (token && userDataStr) { try { const u = JSON.parse(userDataStr); updateWordmark(u); updateUIForLogin(u); } catch { updateUIForLogout(); } } else { updateUIForLogout(); } }
 
     function updateUIForLogin(u) {
-      document.getElementById('authSection').style.display = 'none';
-      const app = document.getElementById('appSection');
-      app.style.display = 'block';
-      app.classList.add('fade-section');
-
+      document.getElementById('authSection').style.display = 'none'; const app = document.getElementById('appSection'); app.style.display = 'block'; app.classList.add('fade-section');
       const name = `${u.prefix||''} ${u.firstName||''} ${u.lastName||''}`.trim() || u.email || '—';
-      document.getElementById('userName').textContent = name;
-      document.getElementById('userEmail').textContent = u.email || u.position || '—';
-      document.getElementById('userGreeting').textContent = getGreeting();
-
-      const roleMap = {
-        user: '<i class="fa-solid fa-user"></i> บุคลากร',
-        admin: '<i class="fa-solid fa-user-shield"></i> ผู้ดูแลระบบ',
-        manager: '<i class="fa-solid fa-list-check"></i> ผู้จัดการระบบ',
-        supervisor: '<i class="fa-solid fa-user-tie"></i> หัวหน้าส่วนราชการ',
-      };
+      document.getElementById('userName').textContent = name; document.getElementById('userEmail').textContent = u.email || u.position || '—'; document.getElementById('userGreeting').textContent = getGreeting();
+      const roleMap = { user: '<i class="fa-solid fa-user"></i> บุคลากร', admin: '<i class="fa-solid fa-user-shield"></i> ผู้ดูแลระบบ', manager: '<i class="fa-solid fa-list-check"></i> ผู้จัดการระบบ', supervisor: '<i class="fa-solid fa-user-tie"></i> หัวหน้าส่วนราชการ' };
       document.getElementById('userRole').innerHTML = roleMap[u.role] || roleMap.user;
-
-      const avatar = document.getElementById('userAvatar');
-      avatar.src = u.picture || `https://ui-avatars.com/api/?background=059669&color=fff&bold=true&size=128&name=${encodeURIComponent(name)}`;
-
-      // Re-bind logout buttons
-      const btn = document.getElementById('logoutBtn');
-      if (btn) {
-        const fresh = btn.cloneNode(true);
-        btn.parentNode.replaceChild(fresh, btn);
-        fresh.addEventListener('click', () => logout(false));
-      }
-      const btnAll = document.getElementById('logoutAllBtn');
-      if (btnAll) {
-        const freshAll = btnAll.cloneNode(true);
-        btnAll.parentNode.replaceChild(freshAll, btnAll);
-        freshAll.addEventListener('click', () => logout(true));
-      }
+      const avatar = document.getElementById('userAvatar'); avatar.src = u.picture || `https://ui-avatars.com/api/?background=059669&color=fff&bold=true&size=128&name=${encodeURIComponent(name)}`;
+      const btn = document.getElementById('logoutBtn'); if (btn) { const fresh = btn.cloneNode(true); btn.parentNode.replaceChild(fresh, btn); fresh.addEventListener('click', () => logout(false)); }
+      const btnAll = document.getElementById('logoutAllBtn'); if (btnAll) { const freshAll = btnAll.cloneNode(true); btnAll.parentNode.replaceChild(freshAll, btnAll); freshAll.addEventListener('click', () => logout(true)); }
     }
 
-    function updateUIForLogout() {
-      updateWordmark(null);
-      const auth = document.getElementById('authSection');
-      const app = document.getElementById('appSection');
-      auth.style.display = 'block';
-      auth.classList.add('fade-section');
-      app.style.display = 'none';
-    }
+    function updateUIForLogout() { updateWordmark(null); const auth = document.getElementById('authSection'); const app = document.getElementById('appSection'); auth.style.display = 'block'; auth.classList.add('fade-section'); app.style.display = 'none'; }
 
     // ═══════════════════════════════════
-    //  Theme Toggle
+    //  Theme Toggle + Theme Color Update
     // ═══════════════════════════════════
     (function() {
       const btn = document.getElementById('themeBtn');
+      const metaThemeColor = document.getElementById('themeColorMeta');
       const saved = localStorage.getItem('theme') || 'light';
-      if (saved === 'light') {
-        document.documentElement.setAttribute('data-theme', 'light');
-        if (btn) btn.innerHTML = '<i class="fas fa-sun"></i>';
+      
+      function applyTheme(isLight) {
+        if (isLight) {
+          document.documentElement.setAttribute('data-theme', 'light');
+          btn.innerHTML = '<i class="fas fa-sun"></i>';
+          metaThemeColor.content = '#f0f4f8'; // Update status bar color
+        } else {
+          document.documentElement.removeAttribute('data-theme');
+          btn.innerHTML = '<i class="fas fa-moon"></i>';
+          metaThemeColor.content = '#020617'; // Update status bar color
+        }
       }
-      if (btn) btn.addEventListener('click', () => {
+
+      applyTheme(saved === 'light');
+      
+      btn.addEventListener('click', () => {
         const isLight = document.documentElement.getAttribute('data-theme') === 'light';
-        document.documentElement.setAttribute('data-theme', isLight ? '' : 'light');
         localStorage.setItem('theme', isLight ? 'dark' : 'light');
-        btn.innerHTML = isLight ? '<i class="fas fa-moon"></i>' : '<i class="fas fa-sun"></i>';
+        applyTheme(!isLight);
       });
     })();
 
-    // ═══════════════════════════════════
-    //  Init
-    // ═══════════════════════════════════
     document.addEventListener('DOMContentLoaded', checkLoginStatus);
   </script>
 </body>
