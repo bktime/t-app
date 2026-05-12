@@ -5,525 +5,838 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <title>จัดการอุปกรณ์ | ระบบลงเวลาปฏิบัติงาน</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700;800&family=Noto+Sans+Thai:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <style>
     :root {
-      --bg:           #0a0a0f;
-      --surface:      #111118;
-      --surface2:     #18181f;
-      --border:       rgba(255,255,255,0.07);
-      --border-hover: rgba(255,255,255,0.13);
-      --text-primary: #f0f0f5;
-      --text-secondary:#7a7a8a;
-      --text-muted:   #3d3d50;
-      --accent:       #6366f1;
-      --accent-glow:  rgba(99,102,241,0.2);
-      --green:        #10b981;
-      --green-bg:     rgba(16,185,129,0.1);
-      --green-border: rgba(16,185,129,0.3);
-      --red:          #f43f5e;
-      --red-bg:       rgba(244,63,94,0.08);
-      --red-border:   rgba(244,63,94,0.25);
-      --amber:        #f59e0b;
-      --amber-bg:     rgba(245,158,11,0.1);
-      --google:       #ea4335;
-      --line-c:       #06c755;
-      --telegram-c:   #2aabee;
+      --bg-primary: #020617;
+      --bg-secondary: #0a0f1e;
+      --bg-card: rgba(10, 15, 35, 0.7);
+      --bg-card-solid: #0a0f1e;
+      --bg-surface: rgba(255,255,255,0.03);
+      --bg-surface2: rgba(255,255,255,0.05);
+      --border-color: rgba(255,255,255,0.06);
+      --border-subtle: rgba(255,255,255,0.03);
+      --border-hover: rgba(255,255,255,0.12);
+      --border-accent: rgba(16, 185, 129, 0.25);
+      --text-primary: #f1f5f9;
+      --text-secondary: #94a3b8;
+      --text-muted: #85888b;
+      --accent: #10b981;
+      --accent-hover: #34d399;
+      --accent-deep: #059669;
+      --accent-glow: rgba(16, 185, 129, 0.25);
+      --accent-bg: rgba(16, 185, 129, 0.08);
+      --danger: #ef4444;
+      --danger-bg: rgba(239, 68, 68, 0.06);
+      --danger-border: rgba(239, 68, 68, 0.15);
+      --success-border: rgba(16, 185, 129, 0.4);
+      --indigo: #818cf8;
+      --indigo-bg: rgba(129, 140, 248, 0.08);
+      --indigo-border: rgba(129, 140, 248, 0.2);
+      --amber: #fbbf24;
+      --amber-bg: rgba(251, 191, 36, 0.08);
+      --amber-border: rgba(251, 191, 36, 0.2);
+      --google: #ea4335;
+      --google-bg: rgba(234, 67, 53, 0.07);
+      --google-border: rgba(234, 67, 53, 0.2);
+      --line: #06c755;
+      --line-bg: rgba(6, 199, 85, 0.07);
+      --line-border: rgba(6, 199, 85, 0.2);
+      --telegram: #2AABEE;
+      --telegram-bg: rgba(42, 171, 238, 0.07);
+      --telegram-border: rgba(42, 171, 238, 0.2);
+      --radius-xs: 8px;
+      --radius-sm: 12px;
+      --radius-md: 16px;
+      --radius-lg: 24px;
+      --radius-xl: 32px;
+      --shadow-card: 0 16px 40px -8px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.03);
+      --transition: 0.25s cubic-bezier(0.16, 1, 0.3, 1);
     }
+
     [data-theme="light"] {
-      --bg:           #f1f5f9;
-      --surface:      #ffffff;
-      --surface2:     #f8fafc;
-      --border:       rgba(0,0,0,0.08);
-      --border-hover: rgba(0,0,0,0.14);
+      --bg-primary: #f0f4f8;
+      --bg-secondary: #e2e8f0;
+      --bg-card: rgba(255, 255, 255, 0.92);
+      --bg-card-solid: #ffffff;
+      --bg-surface: rgba(0,0,0,0.02);
+      --bg-surface2: rgba(0,0,0,0.04);
+      --border-color: rgba(0,0,0,0.06);
+      --border-subtle: rgba(0,0,0,0.03);
+      --border-hover: rgba(0,0,0,0.1);
+      --border-accent: rgba(5, 150, 105, 0.25);
       --text-primary: #0f172a;
-      --text-secondary:#64748b;
-      --text-muted:   #94a3b8;
-      --accent:       #4f46e5;
-      --accent-glow:  rgba(79,70,229,0.15);
-      --green:        #059669;
-      --green-bg:     rgba(5,150,105,0.08);
-      --green-border: rgba(5,150,105,0.25);
-      --red:          #dc2626;
-      --red-bg:       rgba(220,38,38,0.06);
-      --red-border:   rgba(220,38,38,0.2);
-      --amber:        #d97706;
-      --amber-bg:     rgba(217,119,6,0.08);
-      --grid-line:    rgba(0,0,0,0.04);
+      --text-secondary: #475569;
+      --text-muted: #41454b;
+      --accent: #059669;
+      --accent-hover: #047857;
+      --accent-deep: #047857;
+      --accent-glow: rgba(5, 150, 105, 0.15);
+      --accent-bg: rgba(5, 150, 105, 0.06);
+      --danger-bg: rgba(220, 38, 38, 0.05);
+      --danger-border: rgba(220, 38, 38, 0.12);
+      --success-border: rgba(5, 150, 105, 0.3);
+      --indigo-bg: rgba(99, 102, 241, 0.06);
+      --indigo-border: rgba(99, 102, 241, 0.15);
+      --amber-bg: rgba(217, 119, 6, 0.06);
+      --amber-border: rgba(217, 119, 6, 0.15);
+      --google-bg: rgba(234, 67, 53, 0.05);
+      --google-border: rgba(234, 67, 53, 0.15);
+      --line-bg: rgba(6, 199, 85, 0.05);
+      --line-border: rgba(6, 199, 85, 0.15);
+      --telegram-bg: rgba(42, 171, 238, 0.05);
+      --telegram-border: rgba(42, 171, 238, 0.15);
+      --shadow-card: 0 16px 40px -8px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.04);
     }
-    .theme-toggle-btn{position:fixed;top:1rem;right:1rem;z-index:100;background:var(--surface);
-      border:1px solid var(--border);color:var(--text-secondary);cursor:pointer;
-      border-radius:10px;padding:8px 12px;font-size:.85rem;transition:all .2s;line-height:1;
-      display:flex;align-items:center;gap:6px;box-shadow:0 2px 8px rgba(0,0,0,.15)}
-    .theme-toggle-btn:hover{background:var(--surface2);color:var(--text-primary)}
+
+    [data-theme="light"] body { background: var(--bg-primary); }
+    [data-theme="light"] .orb { opacity: 0.1; filter: blur(100px); }
 
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
     html { scroll-behavior: smooth; }
 
     body {
       font-family: 'Noto Sans Thai', sans-serif;
-      background: var(--bg);
+      background: var(--bg-primary);
       min-height: 100vh;
       color: var(--text-primary);
       padding-bottom: 3rem;
+      -webkit-font-smoothing: antialiased;
     }
 
-    /* ── Background ── */
-    .bg-wrap { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
-    .bg-grid {
-      position: absolute; inset: 0;
-      background-image:
-        linear-gradient(var(--grid-line,rgba(255,255,255,0.018)) 1px, transparent 1px),
-        linear-gradient(90deg, var(--grid-line,rgba(255,255,255,0.018)) 1px, transparent 1px);
-      background-size: 56px 56px;
+    /* ═══════════════════════════════════
+       Background
+    ═══════════════════════════════════ */
+    .bg-layer {
+      position: fixed; inset: 0; z-index: 0;
+      overflow: hidden; pointer-events: none;
     }
-    .bg-orb {
-      position: absolute; border-radius: 50%; filter: blur(90px); opacity: 0.08;
-      animation: drift 14s ease-in-out infinite;
+    .orb {
+      position: absolute; border-radius: 50%;
+      filter: blur(90px); opacity: 0.25;
+      animation: orbFloat 20s infinite cubic-bezier(0.45, 0, 0.55, 1);
     }
-    .o1 { width:500px;height:500px;background:radial-gradient(circle,#6366f1,transparent);top:-150px;left:-100px; }
-    .o2 { width:350px;height:350px;background:radial-gradient(circle,#10b981,transparent);bottom:-80px;right:-60px;animation-delay:-5s;animation-direction:reverse; }
-    @keyframes drift { 0%,100%{transform:translate(0,0)} 50%{transform:translate(18px,-22px)} }
+    .orb-1 { width: 450px; height: 450px; background: #059669; top: -12%; left: -8%; animation-duration: 22s; }
+    .orb-2 { width: 350px; height: 350px; background: #1d4ed8; bottom: -8%; right: -5%; animation-duration: 26s; animation-delay: -5s; }
+    .orb-3 { width: 280px; height: 280px; background: #9333ea; top: 45%; left: 55%; opacity: 0.12; animation-duration: 30s; animation-delay: -10s; }
+    @keyframes orbFloat {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      25% { transform: translate(35px, -25px) scale(1.06); }
+      50% { transform: translate(-15px, 35px) scale(0.96); }
+      75% { transform: translate(25px, 15px) scale(1.02); }
+    }
 
-    /* ── Header ── */
+    /* ═══════════════════════════════════
+       Theme Toggle
+    ═══════════════════════════════════ */
+    #themeBtn {
+      position: fixed; top: 1rem; right: 1rem; z-index: 999;
+      background: var(--bg-card); border: 1px solid var(--border-color);
+      color: var(--text-secondary); cursor: pointer;
+      border-radius: var(--radius-sm); padding: 8px 12px;
+      font-size: 0.85rem; transition: all var(--transition);
+      backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+      display: flex; align-items: center; gap: 6px;
+    }
+    #themeBtn:hover { color: var(--text-primary); border-color: var(--border-accent); }
+
+    /* ═══════════════════════════════════
+       Header
+    ═══════════════════════════════════ */
     .header {
       position: relative; z-index: 10;
-      padding: 1.5rem 1.25rem 0;
-      max-width: 680px; margin: 0 auto;
+      max-width: 640px; margin: 0 auto;
+      padding: 1.25rem 1.25rem 0;
+      animation: fadeDown 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
     }
+    @keyframes fadeDown {
+      from { opacity: 0; transform: translateY(-12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .header-top {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+
     .back-btn {
       display: inline-flex; align-items: center; gap: 8px;
-      color: var(--text-secondary); font-size: .82rem;
-      text-decoration: none; border: none; background: none;
-      cursor: pointer; padding: .4rem 0; transition: color .2s;
+      color: var(--text-secondary); font-size: 0.82rem;
+      font-family: 'Kanit', sans-serif; font-weight: 500;
+      text-decoration: none; border: 1px solid var(--border-color);
+      background: var(--bg-surface); cursor: pointer;
+      padding: 0.45rem 0.85rem; border-radius: var(--radius-sm);
+      transition: all var(--transition);
+      backdrop-filter: blur(12px);
     }
-    .back-btn:hover { color: var(--text-primary); }
+    .back-btn:hover { color: var(--text-primary); border-color: var(--border-hover); background: var(--bg-surface2); }
+    .back-btn:active { transform: scale(0.97); }
 
-    .page-title-wrap { margin-top: 1.25rem; }
+    /* Mini Clock */
+    .mini-clock {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.82rem; font-weight: 600;
+      color: var(--text-secondary);
+      font-variant-numeric: tabular-nums;
+      letter-spacing: -0.01em;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .mini-clock i { color: var(--accent); font-size: 0.72rem; }
+    .mini-clock .mc-colon { animation: colonBlink 2s step-end infinite; }
+    @keyframes colonBlink { 50% { opacity: 0.3; } }
+
     .page-title {
-      font-family: 'Syne', sans-serif;
-      font-size: 1.55rem; font-weight: 800;
-      color: var(--text-primary); letter-spacing: -.04em;
+      font-family: 'Kanit', sans-serif;
+      font-size: 1.5rem; font-weight: 700;
+      color: var(--text-primary); letter-spacing: -0.01em;
+      line-height: 1.2;
     }
-    .page-sub { font-size: .82rem; color: var(--text-secondary); margin-top: .3rem; }
+    .page-sub {
+      font-size: 0.82rem; color: var(--text-secondary);
+      margin-top: 0.3rem;
+    }
 
-    /* ── Content ── */
+    /* ═══════════════════════════════════
+       Content
+    ═══════════════════════════════════ */
     .content {
       position: relative; z-index: 10;
-      max-width: 680px; margin: 1.75rem auto 0;
+      max-width: 640px; margin: 1.5rem auto 0;
       padding: 0 1.25rem;
     }
 
-    /* ── Summary bar ── */
+    /* ═══════════════════════════════════
+       Summary Bar
+    ═══════════════════════════════════ */
     .summary {
       display: flex; align-items: center; justify-content: space-between;
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: 16px; padding: 1rem 1.25rem;
+      background: var(--bg-card); border: 1px solid var(--border-color);
+      border-radius: var(--radius-md); padding: 1rem 1.25rem;
       margin-bottom: 1.25rem;
+      backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+      animation: fadeUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both;
     }
-    .summary-left { display: flex; align-items: center; gap: 10px; }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .summary-left { display: flex; align-items: center; gap: 12px; }
     .summary-icon {
-      width: 38px; height: 38px; border-radius: 10px;
-      background: var(--accent-glow); border: 1px solid rgba(99,102,241,.3);
+      width: 40px; height: 40px; border-radius: var(--radius-sm);
+      background: var(--accent-bg); border: 1px solid var(--border-accent);
       display: flex; align-items: center; justify-content: center;
-      color: var(--accent); font-size: .9rem;
+      color: var(--accent); font-size: 0.9rem;
     }
-    .summary-label { font-size: .82rem; color: var(--text-secondary); }
-    .summary-count { font-size: 1.05rem; font-weight: 700; color: var(--text-primary); line-height: 1.2; }
+    .summary-label { font-size: 0.78rem; color: var(--text-secondary); }
+    .summary-count {
+      font-family: 'Kanit', sans-serif;
+      font-size: 1.05rem; font-weight: 700;
+      color: var(--text-primary); line-height: 1.2;
+    }
+
     .btn-revoke-all {
       display: flex; align-items: center; gap: 6px;
-      background: var(--red-bg); border: 1px solid var(--red-border);
-      color: var(--red); border-radius: 10px;
-      padding: .5rem .9rem; font-family: inherit; font-size: .78rem;
-      font-weight: 600; cursor: pointer; transition: all .2s;
+      background: var(--danger-bg); border: 1px solid var(--danger-border);
+      color: var(--danger); border-radius: var(--radius-sm);
+      padding: 0.5rem 0.9rem;
+      font-family: 'Kanit', sans-serif; font-size: 0.76rem;
+      font-weight: 600; cursor: pointer;
+      transition: all var(--transition);
     }
-    .btn-revoke-all:hover { background: rgba(244,63,94,.14); }
-    .btn-revoke-all:disabled { opacity: .4; cursor: not-allowed; }
+    .btn-revoke-all:hover { background: rgba(239, 68, 68, 0.12); border-color: var(--danger); }
+    .btn-revoke-all:disabled { opacity: 0.4; cursor: not-allowed; }
+    .btn-revoke-all:active:not(:disabled) { transform: scale(0.97); }
 
-    /* ── Section label ── */
+    /* ═══════════════════════════════════
+       Section Label
+    ═══════════════════════════════════ */
     .section-label {
-      font-size: .7rem; font-weight: 700; letter-spacing: .1em;
-      text-transform: uppercase; color: var(--text-muted);
-      margin-bottom: .75rem; margin-top: 1.5rem;
+      font-family: 'Kanit', sans-serif;
+      font-size: 0.62rem; font-weight: 500;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 0.75rem; margin-top: 1.5rem;
+      display: flex; align-items: center; gap: 0.6rem;
+    }
+    .section-label::after {
+      content: ''; flex: 1; height: 1px;
+      background: linear-gradient(90deg, var(--border-color), transparent);
     }
     .section-label:first-child { margin-top: 0; }
 
-    /* ── Device card ── */
+    /* ═══════════════════════════════════
+       Device Card
+    ═══════════════════════════════════ */
     .device-card {
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: 16px; padding: 1rem 1.25rem;
-      margin-bottom: .65rem; transition: border-color .2s;
-      animation: cardIn .35s cubic-bezier(.4,0,.2,1) both;
+      background: var(--bg-card); border: 1px solid var(--border-color);
+      border-radius: var(--radius-md); padding: 1rem 1.15rem;
+      margin-bottom: 0.6rem;
+      backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+      transition: border-color var(--transition);
+      animation: cardIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
     }
-    @keyframes cardIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes cardIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
     .device-card:hover { border-color: var(--border-hover); }
-    .device-card.current { border-color: rgba(99,102,241,.35); background: rgba(99,102,241,.04); }
+    .device-card.current {
+      border-color: var(--border-accent);
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.04), var(--bg-card));
+    }
 
     .dc-top { display: flex; align-items: flex-start; gap: 12px; }
+
     .dc-icon {
-      width: 44px; height: 44px; flex-shrink: 0; border-radius: 12px;
+      width: 44px; height: 44px; flex-shrink: 0;
+      border-radius: var(--radius-sm);
       display: flex; align-items: center; justify-content: center;
-      font-size: 1.1rem; border: 1px solid var(--border);
-      background: var(--surface2);
+      font-size: 1.1rem; transition: transform var(--transition);
     }
-    .dc-icon.mobile   { background: rgba(99,102,241,.08); border-color: rgba(99,102,241,.2); color: #818cf8; }
-    .dc-icon.desktop  { background: rgba(16,185,129,.08); border-color: rgba(16,185,129,.2); color: #34d399; }
-    .dc-icon.tablet   { background: rgba(245,158,11,.08); border-color: rgba(245,158,11,.2); color: #fbbf24; }
-    .dc-icon.unknown  { background: var(--surface2); color: var(--text-muted); }
+    .device-card:hover .dc-icon { transform: scale(1.05); }
+
+    .dc-icon.mobile {
+      background: var(--indigo-bg); border: 1px solid var(--indigo-border);
+      color: var(--indigo);
+    }
+    .dc-icon.desktop {
+      background: var(--accent-bg); border: 1px solid var(--border-accent);
+      color: var(--accent);
+    }
+    .dc-icon.tablet {
+      background: var(--amber-bg); border: 1px solid var(--amber-border);
+      color: var(--amber);
+    }
+    .dc-icon.unknown {
+      background: var(--bg-surface); border: 1px solid var(--border-color);
+      color: var(--text-muted);
+    }
 
     .dc-info { flex: 1; min-width: 0; }
     .dc-name-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-    .dc-name { font-size: .92rem; font-weight: 600; color: var(--text-primary); }
-    .badge-current {
-      font-size: .65rem; font-weight: 700; letter-spacing: .06em;
-      text-transform: uppercase; padding: 2px 7px; border-radius: 99px;
-      background: var(--accent-glow); border: 1px solid rgba(99,102,241,.4);
-      color: #a5b4fc; flex-shrink: 0;
+    .dc-name {
+      font-family: 'Kanit', sans-serif;
+      font-size: 0.9rem; font-weight: 600;
+      color: var(--text-primary);
     }
+
+    /* Badges */
+    .badge-current {
+      font-family: 'Kanit', sans-serif;
+      font-size: 0.6rem; font-weight: 600;
+      letter-spacing: 0.06em; text-transform: uppercase;
+      padding: 2px 7px; border-radius: 99px;
+      background: var(--accent-bg); border: 1px solid var(--border-accent);
+      color: var(--accent); flex-shrink: 0;
+      display: inline-flex; align-items: center; gap: 3px;
+    }
+    .badge-current::before {
+      content: ''; width: 5px; height: 5px; border-radius: 50%;
+      background: var(--accent); animation: statusPulse 2s ease-in-out infinite;
+    }
+    @keyframes statusPulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+      50% { box-shadow: 0 0 0 4px rgba(16, 185, 129, 0); }
+    }
+
     .badge-social {
-      font-size: .65rem; font-weight: 600; padding: 2px 7px; border-radius: 99px;
+      font-family: 'Kanit', sans-serif;
+      font-size: 0.6rem; font-weight: 600;
+      padding: 2px 7px; border-radius: 99px;
       flex-shrink: 0;
     }
-    .badge-google   { background:rgba(234,67,53,.1);  border:1px solid rgba(234,67,53,.25);  color:#f87171; }
-    .badge-line     { background:rgba(6,199,85,.1);   border:1px solid rgba(6,199,85,.25);   color:#4ade80; }
-    .badge-telegram { background:rgba(42,171,238,.1); border:1px solid rgba(42,171,238,.25); color:#67e8f9; }
+    .badge-google {
+      background: var(--google-bg); border: 1px solid var(--google-border);
+      color: var(--google);
+    }
+    .badge-line {
+      background: var(--line-bg); border: 1px solid var(--line-border);
+      color: var(--line);
+    }
+    .badge-telegram {
+      background: var(--telegram-bg); border: 1px solid var(--telegram-border);
+      color: var(--telegram);
+    }
 
-    .dc-meta { font-size: .75rem; color: var(--text-secondary); margin-top: .35rem; display: flex; flex-wrap: wrap; gap: 4px 12px; }
+    .dc-meta {
+      font-size: 0.72rem; color: var(--text-secondary);
+      margin-top: 0.3rem;
+      display: flex; flex-wrap: wrap; gap: 3px 12px;
+    }
     .dc-meta span { display: flex; align-items: center; gap: 4px; }
-    .dc-meta i { font-size: .65rem; opacity: .6; }
+    .dc-meta i { font-size: 0.62rem; opacity: 0.5; }
 
-    .dc-bottom { display: flex; align-items: center; justify-content: space-between; margin-top: .85rem; padding-top: .75rem; border-top: 1px solid var(--border); }
-    .dc-active { font-size: .72rem; color: var(--text-muted); }
-    .dc-active .dot-live { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--green); margin-right: 4px; box-shadow: 0 0 6px var(--green); animation: pulse 2s ease-in-out infinite; }
-    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+    .dc-bottom {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-top: 0.8rem; padding-top: 0.7rem;
+      border-top: 1px solid var(--border-subtle);
+    }
+    .dc-active {
+      font-size: 0.7rem; color: var(--text-muted);
+      display: flex; align-items: center; gap: 4px; flex-wrap: wrap;
+    }
+    .dc-active .dot-live {
+      display: inline-block; width: 6px; height: 6px;
+      border-radius: 50%; background: var(--accent);
+      box-shadow: 0 0 6px var(--accent-glow);
+      animation: statusPulse 2s ease-in-out infinite;
+    }
+    .dc-active .login-time { opacity: 0.6; margin-left: 4px; }
 
+    /* Kick Button */
     .btn-kick {
       display: flex; align-items: center; gap: 5px;
-      background: none; border: 1px solid var(--border);
-      color: var(--text-secondary); border-radius: 8px;
-      padding: .4rem .75rem; font-family: inherit; font-size: .75rem;
-      cursor: pointer; transition: all .2s;
+      background: none; border: 1px solid var(--border-color);
+      color: var(--text-secondary); border-radius: var(--radius-xs);
+      padding: 0.4rem 0.7rem;
+      font-family: 'Kanit', sans-serif; font-size: 0.72rem;
+      font-weight: 500; cursor: pointer;
+      transition: all var(--transition);
     }
-    .btn-kick:hover { background: var(--red-bg); border-color: var(--red-border); color: var(--red); }
+    .btn-kick:hover {
+      background: var(--danger-bg); border-color: var(--danger-border);
+      color: var(--danger);
+    }
+    .btn-kick:active:not(:disabled) { transform: scale(0.97); }
+    .btn-kick:disabled { opacity: 0.4; cursor: not-allowed; }
 
-    /* ── Empty & Loading ── */
-    .skeleton { background: linear-gradient(90deg,var(--surface),var(--surface2),var(--surface)); background-size: 200%; animation: shimmer 1.4s infinite; border-radius: 16px; height: 110px; margin-bottom: .65rem; }
+    /* ═══════════════════════════════════
+       Empty & Loading States
+    ═══════════════════════════════════ */
+    .skeleton {
+      background: linear-gradient(90deg, var(--bg-surface), var(--bg-surface2), var(--bg-surface));
+      background-size: 200%; border-radius: var(--radius-md);
+      height: 110px; margin-bottom: 0.6rem;
+      border: 1px solid var(--border-subtle);
+      animation: shimmer 1.4s infinite;
+    }
     @keyframes shimmer { 0%{background-position:200%} 100%{background-position:-200%} }
-    .empty-state { text-align: center; padding: 3rem 1rem; color: var(--text-muted); font-size: .85rem; }
-    .empty-state i { font-size: 2rem; margin-bottom: 1rem; display: block; }
 
-    /* ── Toast ── */
-    .toast {
-      position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%);
-      background: var(--surface2); border: 1px solid var(--border);
-      color: var(--text-primary); font-size: .82rem; padding: .75rem 1.25rem;
-      border-radius: 12px; z-index: 999; white-space: nowrap;
-      box-shadow: 0 8px 32px rgba(0,0,0,.4);
-      animation: toastIn .3s ease both;
+    .empty-state {
+      text-align: center; padding: 3rem 1rem;
+      color: var(--text-muted); font-size: 0.85rem;
     }
-    @keyframes toastIn { from{opacity:0;transform:translateX(-50%) translateY(10px)} to{opacity:1;transform:translateX(-50%) translateY(0)} }
+    .empty-state i { font-size: 2rem; margin-bottom: 1rem; display: block; opacity: 0.5; }
+
+    /* ═══════════════════════════════════
+       Toast
+    ═══════════════════════════════════ */
+    .toast {
+      position: fixed; bottom: 1.5rem; left: 50%;
+      transform: translateX(-50%);
+      background: var(--bg-card-solid); border: 1px solid var(--border-color);
+      color: var(--text-primary); font-size: 0.82rem;
+      padding: 0.75rem 1.25rem; border-radius: var(--radius-sm);
+      z-index: 999; white-space: nowrap;
+      box-shadow: var(--shadow-card);
+      animation: toastIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+      font-family: 'Kanit', sans-serif; font-weight: 500;
+      display: flex; align-items: center; gap: 8px;
+    }
+    @keyframes toastIn {
+      from { opacity: 0; transform: translateX(-50%) translateY(10px); }
+      to { opacity: 1; transform: translateX(-50%) translateY(0); }
+    }
+
+    /* ═══════════════════════════════════
+       SweetAlert Custom
+    ═══════════════════════════════════ */
+    .swal2-popup {
+      background: var(--bg-card-solid) !important;
+      color: var(--text-primary) !important;
+      border: 1px solid var(--border-color) !important;
+      border-radius: var(--radius-lg) !important;
+      box-shadow: var(--shadow-card) !important;
+      font-family: 'Noto Sans Thai', sans-serif !important;
+    }
+    .swal2-title {
+      font-family: 'Kanit', sans-serif !important;
+      color: var(--text-primary) !important;
+    }
+    .swal2-html-container { color: var(--text-secondary) !important; }
+    .swal2-confirm {
+      background: linear-gradient(135deg, var(--accent-deep), var(--accent)) !important;
+      border-radius: var(--radius-sm) !important;
+      font-family: 'Kanit', sans-serif !important;
+      box-shadow: 0 4px 15px var(--accent-glow) !important;
+    }
+    .swal2-cancel {
+      background: var(--bg-surface) !important;
+      border: 1px solid var(--border-color) !important;
+      color: var(--text-secondary) !important;
+      border-radius: var(--radius-sm) !important;
+      font-family: 'Kanit', sans-serif !important;
+    }
+    .swal2-icon { border-color: var(--border-color) !important; }
+
+    /* ═══════════════════════════════════
+       Responsive
+    ═══════════════════════════════════ */
+    @media (max-width: 480px) {
+      .content { padding: 0 0.85rem; }
+      .header { padding: 1rem 0.85rem 0; }
+      .summary { padding: 0.85rem 1rem; flex-direction: column; gap: 0.75rem; align-items: stretch; }
+      .summary-left { justify-content: center; }
+      .btn-revoke-all { justify-content: center; }
+      .device-card { padding: 0.85rem 1rem; }
+      .dc-meta { gap: 3px 10px; }
+      .dc-bottom { flex-direction: column; gap: 0.6rem; align-items: flex-start; }
+      .btn-kick { align-self: flex-end; }
+    }
+
+    /* ═══════════════════════════════════
+       Accessibility
+    ═══════════════════════════════════ */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
   </style>
 </head>
 <body>
 
-<div class="bg-wrap">
-  <div class="bg-grid"></div>
-  <div class="bg-orb o1"></div>
-  <div class="bg-orb o2"></div>
-</div>
-
-<div class="header">
-  <button class="back-btn" onclick="history.back()">
-    <i class="fas fa-arrow-left"></i> กลับ
-  </button>
-  <div class="page-title-wrap">
-    <div class="page-title">อุปกรณ์ที่เข้าสู่ระบบ</div>
-    <div class="page-sub">จัดการเซสชันทั้งหมดของคุณ</div>
+  <!-- Background -->
+  <div class="bg-layer" aria-hidden="true">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
   </div>
-</div>
 
-<button class="theme-toggle-btn" id="themeBtn" title="เปลี่ยนธีม">
-  <i class="fas fa-sun"></i> สว่าง
-</button>
+  <!-- Theme Toggle -->
+  <button id="themeBtn" title="เปลี่ยนธีม" aria-label="เปลี่ยนธีม"><i class="fas fa-sun"></i></button>
 
-<div class="content">
-  <!-- Summary -->
-  <div class="summary" id="summaryBar" style="display:none">
-    <div class="summary-left">
-      <div class="summary-icon"><i class="fas fa-mobile-screen-button"></i></div>
-      <div>
-        <div class="summary-count" id="deviceCount">-</div>
-        <div class="summary-label">อุปกรณ์ที่เข้าสู่ระบบอยู่</div>
+  <!-- Header -->
+  <header class="header">
+    <div class="header-top">
+      <a href="index.html" class="back-btn">
+        <i class="fas fa-arrow-left"></i> กลับ
+      </a>
+      <div class="mini-clock" aria-live="polite">
+        <i class="fas fa-clock"></i>
+        <span id="mcHM">--:--</span><span class="mc-colon">:</span><span id="mcSec">00</span>
       </div>
     </div>
-    <button class="btn-revoke-all" id="btnRevokeAll" onclick="revokeAllOthers()">
-      <i class="fas fa-right-from-bracket"></i> ออกทั้งหมด
-    </button>
-  </div>
+    <h1 class="page-title">อุปกรณ์ที่เข้าสู่ระบบ</h1>
+    <p class="page-sub">จัดการเซสชันทั้งหมดของคุณ</p>
+  </header>
 
-  <!-- Device list -->
-  <div id="deviceList">
-    <!-- skeleton -->
-    <div class="skeleton" id="sk1"></div>
-    <div class="skeleton" id="sk2" style="animation-delay:.15s"></div>
-    <div class="skeleton" id="sk3" style="animation-delay:.3s"></div>
-  </div>
-</div>
+  <!-- Content -->
+  <main class="content">
 
-<script>
-const API = '/api/user';
-const token = localStorage.getItem('auth_token');
-
-if (!token) window.location.href = 'login.html';
-
-// ── Helpers ────────────────────────────────────────────────────────────────
-function deviceIcon(type) {
-  switch (type) {
-    case 'mobile':  return { cls: 'mobile',  icon: 'fa-mobile-screen-button' };
-    case 'tablet':  return { cls: 'tablet',  icon: 'fa-tablet-screen-button' };
-    case 'desktop': return { cls: 'desktop', icon: 'fa-desktop' };
-    default:        return { cls: 'unknown', icon: 'fa-question' };
-  }
-}
-
-function socialBadge(type) {
-  if (!type) return '';
-  const map = { google: ['Google','badge-google'], line: ['LINE','badge-line'], telegram: ['Telegram','badge-telegram'] };
-  const [label, cls] = map[type] || [type, ''];
-  return `<span class="badge-social ${cls}">${label}</span>`;
-}
-
-function timeAgo(dateStr) {
-  if (!dateStr) return 'ไม่ทราบ';
-  const diff = (Date.now() - new Date(dateStr).getTime()) / 1000;
-  if (diff < 60)           return 'เมื่อสักครู่';
-  if (diff < 3600)         return `${Math.floor(diff/60)} นาทีที่แล้ว`;
-  if (diff < 86400)        return `${Math.floor(diff/3600)} ชั่วโมงที่แล้ว`;
-  if (diff < 86400*30)     return `${Math.floor(diff/86400)} วันที่แล้ว`;
-  return new Date(dateStr).toLocaleDateString('th-TH', { year:'numeric', month:'short', day:'numeric' });
-}
-
-function formatDate(dateStr) {
-  if (!dateStr) return '-';
-  return new Date(dateStr).toLocaleDateString('th-TH', { year:'numeric', month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' });
-}
-
-function showToast(msg, duration = 2500) {
-  const old = document.getElementById('toast');
-  if (old) old.remove();
-  const t = document.createElement('div');
-  t.id = 'toast'; t.className = 'toast'; t.textContent = msg;
-  document.body.appendChild(t);
-  setTimeout(() => t.style.animation = 'toastIn .3s ease reverse both', duration - 300);
-  setTimeout(() => t.remove(), duration);
-}
-
-// ── Render ─────────────────────────────────────────────────────────────────
-function renderDevices(devices, currentId) {
-  // แยก current กับ others
-  const current = devices.filter(d => d.is_current);
-  const others  = devices.filter(d => !d.is_current);
-
-  const list  = document.getElementById('deviceList');
-  const bar   = document.getElementById('summaryBar');
-  const count = document.getElementById('deviceCount');
-
-  list.innerHTML = '';
-  bar.style.display   = 'flex';
-  count.textContent   = `${devices.length} อุปกรณ์`;
-
-  // ซ่อนปุ่ม "ออกทั้งหมด" ถ้าไม่มีอุปกรณ์อื่น
-  document.getElementById('btnRevokeAll').style.display = others.length ? 'flex' : 'none';
-
-  // ── อุปกรณ์ปัจจุบัน ─────────────────────────────────────────────────────
-  if (current.length) {
-    const lbl = document.createElement('div');
-    lbl.className = 'section-label'; lbl.textContent = 'อุปกรณ์นี้';
-    list.appendChild(lbl);
-    current.forEach(d => list.appendChild(buildCard(d, true)));
-  }
-
-  // ── อุปกรณ์อื่น ──────────────────────────────────────────────────────────
-  if (others.length) {
-    const lbl = document.createElement('div');
-    lbl.className = 'section-label'; lbl.textContent = 'อุปกรณ์อื่น';
-    list.appendChild(lbl);
-    others.forEach((d, i) => {
-      const card = buildCard(d, false);
-      card.style.animationDelay = `${i * 0.06}s`;
-      list.appendChild(card);
-    });
-  }
-
-  if (!devices.length) {
-    list.innerHTML = `<div class="empty-state"><i class="fas fa-ghost"></i>ไม่มีเซสชันที่ใช้งานอยู่</div>`;
-  }
-}
-
-function buildCard(d, isCurrent) {
-  const card = document.createElement('div');
-  card.className = `device-card${isCurrent ? ' current' : ''}`;
-  card.id = `card-${d.id}`;
-
-  const { cls, icon } = deviceIcon(d.device_type);
-
-  card.innerHTML = `
-    <div class="dc-top">
-      <div class="dc-icon ${cls}"><i class="fas ${icon}"></i></div>
-      <div class="dc-info">
-        <div class="dc-name-row">
-          <span class="dc-name">${escHtml(d.device_name || 'Unknown Device')}</span>
-          ${isCurrent ? '<span class="badge-current">อุปกรณ์นี้</span>' : ''}
-          ${socialBadge(d.social_type)}
-        </div>
-        <div class="dc-meta">
-          ${d.os      ? `<span><i class="fas fa-layer-group"></i>${escHtml(d.os)}</span>` : ''}
-          ${d.browser ? `<span><i class="fas fa-globe"></i>${escHtml(d.browser)}</span>` : ''}
-          ${d.ip      ? `<span><i class="fas fa-location-dot"></i>${escHtml(d.ip)}</span>` : ''}
+    <!-- Summary -->
+    <div class="summary" id="summaryBar" style="display:none">
+      <div class="summary-left">
+        <div class="summary-icon"><i class="fas fa-mobile-screen-button"></i></div>
+        <div>
+          <div class="summary-count" id="deviceCount">-</div>
+          <div class="summary-label">อุปกรณ์ที่เข้าสู่ระบบอยู่</div>
         </div>
       </div>
+      <button class="btn-revoke-all" id="btnRevokeAll" onclick="revokeAllOthers()">
+        <i class="fas fa-right-from-bracket"></i> ออกทั้งหมด
+      </button>
     </div>
-    <div class="dc-bottom">
-      <div class="dc-active">
-        ${isCurrent
-          ? `<span class="dot-live"></span>ใช้งานอยู่ขณะนี้`
-          : `ใช้งานล่าสุด ${timeAgo(d.last_active_at)}`
-        }
-        <span style="margin-left:8px;opacity:.5">· เข้าสู่ระบบ ${formatDate(d.created_at)}</span>
-      </div>
-      ${!isCurrent
-        ? `<button class="btn-kick" onclick="kickDevice(${d.id}, this)">
-             <i class="fas fa-right-from-bracket"></i> นำออก
-           </button>`
-        : ''
+
+    <!-- Device List -->
+    <div id="deviceList">
+      <div class="skeleton" id="sk1"></div>
+      <div class="skeleton" id="sk2" style="animation-delay:.15s"></div>
+      <div class="skeleton" id="sk3" style="animation-delay:.3s"></div>
+    </div>
+
+  </main>
+
+  <script>
+    // ==================== Configuration ====================
+    const API = '/api/user';
+    const token = localStorage.getItem('auth_token');
+
+    if (!token) window.location.href = 'login.html';
+
+    // ==================== Live Clock ====================
+    function updateClock() {
+      const now = new Date();
+      const h = String(now.getHours()).padStart(2, '0');
+      const m = String(now.getMinutes()).padStart(2, '0');
+      const s = String(now.getSeconds()).padStart(2, '0');
+      document.getElementById('mcHM').textContent = `${h}:${m}`;
+      document.getElementById('mcSec').textContent = s;
+    }
+    updateClock();
+    setInterval(updateClock, 1000);
+
+    // ==================== Helpers ====================
+    function deviceIcon(type) {
+      switch (type) {
+        case 'mobile':  return { cls: 'mobile',  icon: 'fa-mobile-screen-button' };
+        case 'tablet':  return { cls: 'tablet',  icon: 'fa-tablet-screen-button' };
+        case 'desktop': return { cls: 'desktop', icon: 'fa-desktop' };
+        default:        return { cls: 'unknown', icon: 'fa-question' };
       }
-    </div>
-  `;
-  return card;
-}
+    }
 
-function escHtml(str) {
-  return (str || '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-}
+    function socialBadge(type) {
+      if (!type) return '';
+      const map = {
+        google:   ['Google',   'badge-google'],
+        line:     ['LINE',     'badge-line'],
+        telegram: ['Telegram', 'badge-telegram']
+      };
+      const [label, cls] = map[type] || [type, ''];
+      return `<span class="badge-social ${cls}">${label}</span>`;
+    }
 
-// ── API calls ──────────────────────────────────────────────────────────────
-async function loadDevices() {
-  try {
-    const res  = await fetch(`${API}/devices`, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-    const data = await res.json();
+    function timeAgo(dateStr) {
+      if (!dateStr) return 'ไม่ทราบ';
+      const diff = (Date.now() - new Date(dateStr).getTime()) / 1000;
+      if (diff < 60)       return 'เมื่อสักครู่';
+      if (diff < 3600)     return `${Math.floor(diff / 60)} นาทีที่แล้ว`;
+      if (diff < 86400)    return `${Math.floor(diff / 3600)} ชั่วโมงที่แล้ว`;
+      if (diff < 86400*30) return `${Math.floor(diff / 86400)} วันที่แล้ว`;
+      return new Date(dateStr).toLocaleDateString('th-TH', { year: 'numeric', month: 'short', day: 'numeric' });
+    }
 
-    // ลบ skeleton
-    ['sk1','sk2','sk3'].forEach(id => { const el = document.getElementById(id); if(el) el.remove(); });
+    function formatDate(dateStr) {
+      if (!dateStr) return '-';
+      return new Date(dateStr).toLocaleDateString('th-TH', {
+        year: 'numeric', month: 'short', day: 'numeric',
+        hour: '2-digit', minute: '2-digit'
+      });
+    }
 
-    if (!data.success) throw new Error(data.message);
-    renderDevices(data.devices, data.current_session_id);
+    function escHtml(str) {
+      return (str || '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+    }
 
-  } catch (err) {
-    document.getElementById('deviceList').innerHTML =
-      `<div class="empty-state"><i class="fas fa-triangle-exclamation"></i>${err.message || 'โหลดข้อมูลไม่ได้'}</div>`;
-  }
-}
+    function showToast(msg, duration = 2500) {
+      const old = document.getElementById('toast');
+      if (old) old.remove();
+      const t = document.createElement('div');
+      t.id = 'toast'; t.className = 'toast'; t.textContent = msg;
+      document.body.appendChild(t);
+      setTimeout(() => {
+        t.style.animation = 'toastIn 0.25s ease reverse both';
+        setTimeout(() => t.remove(), 250);
+      }, duration);
+    }
 
-async function kickDevice(sessionId, btn) {
-  const confirmed = await Swal.fire({
-    title: 'นำอุปกรณ์ออก?',
-    text: 'อุปกรณ์นั้นจะถูกออกจากระบบทันที',
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonText: 'นำออก',
-    cancelButtonText: 'ยกเลิก',
-    confirmButtonColor: '#f43f5e',
-    cancelButtonColor: '#3d3d50',
-    background: '#111118',
-    color: '#f0f0f5',
-  });
-  if (!confirmed.isConfirmed) return;
+    // ==================== Render ====================
+    function renderDevices(devices) {
+      const current = devices.filter(d => d.is_current);
+      const others  = devices.filter(d => !d.is_current);
 
-  btn.disabled = true;
-  try {
-    const res  = await fetch(`${API}/devices`, {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ session_id: sessionId }),
-    });
-    const data = await res.json();
-    if (!data.success) throw new Error(data.message);
+      const list  = document.getElementById('deviceList');
+      const bar   = document.getElementById('summaryBar');
+      const count = document.getElementById('deviceCount');
 
-    // ลบ card ออก
-    const card = document.getElementById(`card-${sessionId}`);
-    if (card) { card.style.transition = 'all .3s ease'; card.style.opacity = '0'; card.style.transform = 'translateX(20px)'; setTimeout(() => { card.remove(); recount(); }, 300); }
-    showToast('✓ นำอุปกรณ์ออกจากระบบแล้ว');
+      list.innerHTML = '';
+      bar.style.display = 'flex';
+      count.textContent = `${devices.length} อุปกรณ์`;
 
-  } catch (err) {
-    showToast(`⚠ ${err.message}`);
-    btn.disabled = false;
-  }
-}
+      document.getElementById('btnRevokeAll').style.display = others.length ? 'flex' : 'none';
 
-async function revokeAllOthers() {
-  const confirmed = await Swal.fire({
-    title: 'ออกจากระบบทุกอุปกรณ์อื่น?',
-    text: 'อุปกรณ์อื่นทั้งหมดจะถูกออกจากระบบทันที',
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonText: 'ยืนยัน',
-    cancelButtonText: 'ยกเลิก',
-    confirmButtonColor: '#f43f5e',
-    cancelButtonColor: '#3d3d50',
-    background: '#111118',
-    color: '#f0f0f5',
-  });
-  if (!confirmed.isConfirmed) return;
+      if (current.length) {
+        const lbl = document.createElement('div');
+        lbl.className = 'section-label'; lbl.textContent = 'อุปกรณ์นี้';
+        list.appendChild(lbl);
+        current.forEach(d => list.appendChild(buildCard(d, true)));
+      }
 
-  const btn = document.getElementById('btnRevokeAll');
-  btn.disabled = true;
+      if (others.length) {
+        const lbl = document.createElement('div');
+        lbl.className = 'section-label'; lbl.textContent = 'อุปกรณ์อื่น';
+        list.appendChild(lbl);
+        others.forEach((d, i) => {
+          const card = buildCard(d, false);
+          card.style.animationDelay = `${i * 0.06}s`;
+          list.appendChild(card);
+        });
+      }
 
-  try {
-    const res  = await fetch(`${API}/devices`, {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ revoke_all_others: true }),
-    });
-    const data = await res.json();
-    if (!data.success) throw new Error(data.message);
+      if (!devices.length) {
+        list.innerHTML = `<div class="empty-state"><i class="fas fa-ghost"></i>ไม่มีเซสชันที่ใช้งานอยู่</div>`;
+      }
+    }
 
-    showToast('✓ นำออกจากระบบทุกอุปกรณ์อื่นแล้ว');
-    setTimeout(loadDevices, 600);
+    function buildCard(d, isCurrent) {
+      const card = document.createElement('div');
+      card.className = `device-card${isCurrent ? ' current' : ''}`;
+      card.id = `card-${d.id}`;
 
-  } catch (err) {
-    showToast(`⚠ ${err.message}`);
-    btn.disabled = false;
-  }
-}
+      const { cls, icon } = deviceIcon(d.device_type);
 
-function recount() {
-  const cards  = document.querySelectorAll('.device-card:not(.current)');
-  const total  = document.querySelectorAll('.device-card').length;
-  const count  = document.getElementById('deviceCount');
-  if (count) count.textContent = `${total} อุปกรณ์`;
-  const revBtn = document.getElementById('btnRevokeAll');
-  if (revBtn) revBtn.style.display = cards.length ? 'flex' : 'none';
-}
+      card.innerHTML = `
+        <div class="dc-top">
+          <div class="dc-icon ${cls}"><i class="fas ${icon}"></i></div>
+          <div class="dc-info">
+            <div class="dc-name-row">
+              <span class="dc-name">${escHtml(d.device_name || 'Unknown Device')}</span>
+              ${isCurrent ? '<span class="badge-current">อุปกรณ์นี้</span>' : ''}
+              ${socialBadge(d.social_type)}
+            </div>
+            <div class="dc-meta">
+              ${d.os      ? `<span><i class="fas fa-layer-group"></i>${escHtml(d.os)}</span>` : ''}
+              ${d.browser ? `<span><i class="fas fa-globe"></i>${escHtml(d.browser)}</span>` : ''}
+              ${d.ip      ? `<span><i class="fas fa-location-dot"></i>${escHtml(d.ip)}</span>` : ''}
+            </div>
+          </div>
+        </div>
+        <div class="dc-bottom">
+          <div class="dc-active">
+            ${isCurrent
+              ? `<span class="dot-live"></span>ใช้งานอยู่ขณะนี้`
+              : `ใช้งานล่าสุด ${timeAgo(d.last_active_at)}`
+            }
+            <span class="login-time">· เข้าสู่ระบบ ${formatDate(d.created_at)}</span>
+          </div>
+          ${!isCurrent
+            ? `<button class="btn-kick" onclick="kickDevice(${d.id}, this)">
+                 <i class="fas fa-right-from-bracket"></i> นำออก
+               </button>`
+            : ''
+          }
+        </div>
+      `;
+      return card;
+    }
 
-// ── Init ──────────────────────────────────────────────────────────────────
-loadDevices();
+    // ==================== API ====================
+    async function loadDevices() {
+      try {
+        const res  = await fetch(`${API}/devices`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        const data = await res.json();
 
-// ── Theme Toggle ──
-(function(){
-  const btn=document.getElementById('themeBtn');
-  const saved=localStorage.getItem('theme')||'light';
-  if(saved==='light'){document.documentElement.setAttribute('data-theme','light');btn.innerHTML='<i class="fas fa-moon"></i> มืด';}
-  btn.addEventListener('click',()=>{
-    const light=document.documentElement.getAttribute('data-theme')==='light';
-    document.documentElement.setAttribute('data-theme',light?'':'light');
-    localStorage.setItem('theme',light?'dark':'light');
-    btn.innerHTML=light?'<i class="fas fa-sun"></i> สว่าง':'<i class="fas fa-moon"></i> มืด';
-  });
-})();
-</script>
+        ['sk1','sk2','sk3'].forEach(id => {
+          const el = document.getElementById(id);
+          if (el) el.remove();
+        });
+
+        if (!data.success) throw new Error(data.message);
+        renderDevices(data.devices);
+
+      } catch (err) {
+        document.getElementById('deviceList').innerHTML =
+          `<div class="empty-state"><i class="fas fa-triangle-exclamation"></i>${err.message || 'โหลดข้อมูลไม่ได้'}</div>`;
+      }
+    }
+
+    async function kickDevice(sessionId, btn) {
+      const confirmed = await Swal.fire({
+        title: 'นำอุปกรณ์ออก?',
+        text: 'อุปกรณ์นั้นจะถูกออกจากระบบทันที',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'นำออก',
+        cancelButtonText: 'ยกเลิก',
+        confirmButtonColor: '#ef4444',
+      });
+      if (!confirmed.isConfirmed) return;
+
+      btn.disabled = true;
+      try {
+        const res  = await fetch(`${API}/devices`, {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ session_id: sessionId }),
+        });
+        const data = await res.json();
+        if (!data.success) throw new Error(data.message);
+
+        const card = document.getElementById(`card-${sessionId}`);
+        if (card) {
+          card.style.transition = 'all 0.3s ease';
+          card.style.opacity = '0';
+          card.style.transform = 'translateX(20px)';
+          setTimeout(() => { card.remove(); recount(); }, 300);
+        }
+        showToast('นำอุปกรณ์ออกจากระบบแล้ว');
+
+      } catch (err) {
+        showToast(err.message || 'เกิดข้อผิดพลาด');
+        btn.disabled = false;
+      }
+    }
+
+    async function revokeAllOthers() {
+      const confirmed = await Swal.fire({
+        title: 'ออกจากระบบทุกอุปกรณ์อื่น?',
+        text: 'อุปกรณ์อื่นทั้งหมดจะถูกออกจากระบบทันที',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'ยืนยัน',
+        cancelButtonText: 'ยกเลิก',
+        confirmButtonColor: '#ef4444',
+      });
+      if (!confirmed.isConfirmed) return;
+
+      const btn = document.getElementById('btnRevokeAll');
+      btn.disabled = true;
+
+      try {
+        const res  = await fetch(`${API}/devices`, {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ revoke_all_others: true }),
+        });
+        const data = await res.json();
+        if (!data.success) throw new Error(data.message);
+
+        showToast('นำออกจากระบบทุกอุปกรณ์อื่นแล้ว');
+        setTimeout(loadDevices, 600);
+
+      } catch (err) {
+        showToast(err.message || 'เกิดข้อผิดพลาด');
+        btn.disabled = false;
+      }
+    }
+
+    function recount() {
+      const others = document.querySelectorAll('.device-card:not(.current)');
+      const total  = document.querySelectorAll('.device-card').length;
+      const count  = document.getElementById('deviceCount');
+      if (count) count.textContent = `${total} อุปกรณ์`;
+      const revBtn = document.getElementById('btnRevokeAll');
+      if (revBtn) revBtn.style.display = others.length ? 'flex' : 'none';
+
+      // ซ่อน section label "อุปกรณ์อื่น" ถ้าไม่มี card เหลือ
+      const labels = document.querySelectorAll('.section-label');
+      labels.forEach(lbl => {
+        let next = lbl.nextElementSibling;
+        let hasCards = false;
+        while (next && !next.classList.contains('section-label')) {
+          if (next.classList.contains('device-card')) { hasCards = true; break; }
+          next = next.nextElementSibling;
+        }
+        if (!hasCards) lbl.remove();
+      });
+    }
+
+    // ==================== Init ====================
+    loadDevices();
+
+    // ==================== Theme Toggle ====================
+    (function() {
+      const btn = document.getElementById('themeBtn');
+      const saved = localStorage.getItem('theme') || 'light';
+      if (saved === 'light') {
+        document.documentElement.setAttribute('data-theme', 'light');
+        if (btn) btn.innerHTML = '<i class="fas fa-moon"></i>';
+      }
+      if (btn) btn.addEventListener('click', () => {
+        const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+        document.documentElement.setAttribute('data-theme', isLight ? '' : 'light');
+        localStorage.setItem('theme', isLight ? 'dark' : 'light');
+        btn.innerHTML = isLight ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+      });
+    })();
+  </script>
 </body>
 </html>

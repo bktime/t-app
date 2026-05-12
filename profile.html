@@ -384,7 +384,7 @@
       </div>
       <div class="sc-body">
         <div class="ot-chip"><i class="fas fa-circle-info"></i>ข้อมูลนี้ใช้คำนวณค่าตอบแทน OT โดยอัตโนมัติ</div>
-        <div class="fg">
+        <div class="fg" hidden>
           <label>เลขที่หนังสือ</label>
           <div class="ig"><i class="fas fa-hashtag ii"></i><input type="text" id="otDocNumber" class="fc" placeholder="เช่น สธ 0032.006/1234"></div>
         </div>
@@ -396,7 +396,7 @@
           <label>จำกัดชั่วโมงต่อวัน <span style="font-weight:400;text-transform:none;font-size:.67rem;color:var(--text-muted)">(สำหรับบวกเวลา)</span></label>
           <div class="ig"><i class="fas fa-stopwatch ii"></i><input type="number" id="otMaxHoursPerDay" class="fc" placeholder="เช่น 8" min="1" max="24" step="1"></div>
         </div>
-        <div class="fg">
+        <div class="fg" hidden>
           <label>เลขบัญชี ธ.กรุงไทย</label>
           <div class="ig"><i class="fas fa-building-columns ii"></i><input type="text" id="otBankAccount" class="fc" maxlength="20" placeholder="XXX-X-XXXXX-X" oninput="this.value=this.value.replace(/[^0-9\-]/g,'')"></div>
         </div>
@@ -952,27 +952,72 @@ async function linkSoc(platform, sid, profile) {
 
 async function discSoc(platform) {
   const result = await Swal.fire({
-    icon: 'warning', title: `ยกเลิกการเชื่อมต่อ ${platform}?`,
-    showCancelButton: true, confirmButtonText: 'ยืนยัน', cancelButtonText: 'ยกเลิก', confirmButtonColor: '#f43f5e',
+    icon: 'warning',
+    title: `ยกเลิกการเชื่อมต่อ ${platform}?`,
+    text: 'คุณยังต้องมีบัญชีโซเชียลอย่างน้อย 1 บัญชี',
+    showCancelButton: true,
+    confirmButtonText: 'ยืนยัน',
+    cancelButtonText: 'ยกเลิก',
+    confirmButtonColor: '#f43f5e',
+    reverseButtons: true,
   });
+
   if (!result.isConfirmed) return;
 
   try {
     const res = await fetch(`${API_BASE_URL}/user/unlink-social`, {
       method: 'POST',
       headers: authHeaders(),
-      body: JSON.stringify({ uuid: userData.uuid, platform }),
+      body: JSON.stringify({
+        uuid: userData.uuid,
+        platform,
+      }),
     });
-    if (!res.ok) { const e = await res.json().catch(() => ({})); throw new Error(e.message || `HTTP ${res.status}`); }
-  } catch (err) {
-    Swal.fire({ icon: 'error', title: 'ไม่สำเร็จ', text: err.message || 'กรุณาลองใหม่อีกครั้ง' });
-    return;
-  }
 
-  if (platform === 'google')   { userData.social_id_google   = null; userData.email_google      = null; }
-  if (platform === 'line')     { userData.social_id_line     = null; userData.name_line          = null; }
-  if (platform === 'telegram') { userData.social_id_telegram = null; userData.username_telegram = null; }
-  setUD(userData); renderSocial(); toast(`ยกเลิก ${platform} สำเร็จ`);
+    let data = {};
+
+    try {
+      data = await res.json();
+    } catch (_) {}
+
+    if (!res.ok || !data.success) {
+      throw new Error(data.message || `HTTP ${res.status}`);
+    }
+
+    // update local userData
+    if (platform === 'google') {
+      userData.social_id_google = null;
+      userData.email_google = null;
+    }
+
+    if (platform === 'line') {
+      userData.social_id_line = null;
+      userData.name_line = null;
+    }
+
+    if (platform === 'telegram') {
+      userData.social_id_telegram = null;
+      userData.username_telegram = null;
+    }
+
+    setUD(userData);
+
+    if (typeof renderSocial === 'function') {
+      renderSocial();
+    }
+
+    toast(`ยกเลิก ${platform} สำเร็จ`);
+
+  } catch (err) {
+    console.error('[discSoc]', err);
+
+    Swal.fire({
+      icon: 'error',
+      title: 'ยกเลิกการเชื่อมต่อไม่สำเร็จ',
+      text: err.message || 'กรุณาลองใหม่อีกครั้ง',
+      confirmButtonColor: '#ef4444',
+    });
+  }
 }
 
 // ── Section UI ────────────────────────────────────────────────────────────────

@@ -105,8 +105,12 @@ export async function onRequest(context) {
     return json({ success: false, message: 'รูปแบบเวลาไม่ถูกต้อง' }, 400);
   }
 
-  const dateISO = now.toISOString().slice(0, 10);
-  const timeStr = now.toTimeString().slice(0, 8);
+  // UTC+7
+  const offsetMs = 7 * 60 * 60 * 1000;
+  const thaiNow = new Date(Date.now() + offsetMs);
+
+  const dateISO = thaiNow.toISOString().slice(0, 10);
+  const timeStr = thaiNow.toISOString().slice(11, 19);
 
   const todayISO = new Date().toISOString().slice(0, 10);
   if (dateISO !== todayISO) {

@@ -244,7 +244,7 @@
   </button>
   <div class="nav-title">
     <i class="fa-solid fa-business-time"></i>
-    <span id="navTitle">OT นอกเวลาราชการ</span>
+    <span id="navTitle">การอยู่เวร</span>
   </div>
   <div class="nav-tab-wrap">
     <button class="nav-tab-btn active" id="tabMine" onclick="switchTab('mine')">
@@ -382,15 +382,15 @@ window.addEventListener('DOMContentLoaded', () => {
   document.getElementById('tabSup').style.display = '';
 
   const now = new Date();
-  const pastDate = new Date();
-  pastDate.setDate(now.getDate() - 30); // ย้อนหลัง 30 วัน
   
-  const y = pastDate.getFullYear();
-  const m = String(pastDate.getMonth()+1).padStart(2,'0');
-  const d = String(pastDate.getDate()).padStart(2,'0');
-  
+  const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+
+  const y = firstDay.getFullYear();
+  const m = String(firstDay.getMonth() + 1).padStart(2, '0');
+  const d = String(firstDay.getDate()).padStart(2, '0');
+
   document.getElementById('dateFrom').value = `${y}-${m}-${d}`;
-  document.getElementById('dateTo').value   = now.toISOString().slice(0,10);
+  document.getElementById('dateTo').value   = now.toISOString().slice(0, 10);
 
   loadList();
 });
@@ -406,7 +406,7 @@ function switchTab(tab) {
   document.getElementById('tabSup').classList.toggle('active', tab === 'supervisor');
   document.getElementById('fabBtn').style.display = tab === 'mine' ? 'flex' : 'none';
   document.getElementById('navTitle').textContent =
-    tab === 'mine' ? 'OT นอกเวลาราชการ' : 'รับรองการอยู่เวรนอกเวลาราชการ';
+    tab === 'mine' ? 'การอยู่เวร' : 'รับรองเวร';
 
   updateSummaryCards();
   loadList();
