@@ -1,7 +1,7 @@
 // POST /api/user/check-social
 export async function onRequest(context) {
   const { request, env } = context;
-  
+
   const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'POST, OPTIONS',
@@ -13,10 +13,7 @@ export async function onRequest(context) {
   }
 
   if (request.method !== 'POST') {
-    return new Response(JSON.stringify({ error: 'Method not allowed' }), {
-      status: 405,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    return json({ error: 'Method not allowed' }, 405);
   }
 
   try {
@@ -24,31 +21,52 @@ export async function onRequest(context) {
     const { social_id, social_type } = body;
 
     if (!social_id || !social_type) {
-      return new Response(JSON.stringify({ error: 'Missing required fields' }), {
-        status: 400,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
+      return json({ error: 'Missing required fields' }, 400);
     }
 
-    // ตรวจสอบใน D1
-    let exists = false;
-    if (env.DB) {
-      const result = await env.DB.prepare(
-        'SELECT id FROM users WHERE social_id = ? AND social_type = ?'
-      ).bind(social_id, social_type).first();
-      exists = !!result;
+    // map column
+    const socialMap = {
+      google: 'social_id_google',
+      line: 'social_id_line',
+      telegram: 'social_id_telegram',
+    };
+
+    const column = socialMap[social_type];
+
+    if (!column) {
+      return json({ error: 'Invalid social_type' }, 400);
     }
 
-    return new Response(JSON.stringify({ exists }), {
-      status: 200,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    // ตรวจสอบว่ามี social นี้อยู่ไหม
+    const result = await env.DB.prepare(`
+      SELECT id, uuid, name
+      FROM users
+      WHERE ${column} = ?
+      LIMIT 1
+    `)
+      .bind(social_id)
+      .first();
+
+    return json({
+      exists: !!result,
+      user: result || null,
     });
 
   } catch (error) {
     console.error('Check social error:', error);
-    return new Response(JSON.stringify({ error: 'Internal Server Error' }), {
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+
+    return json({
+      error: 'Internal Server Error',
+    }, 500);
+  }
+
+  function json(data, status = 200) {
+    return new Response(JSON.stringify(data), {
+      status,
+      headers: {
+        ...corsHeaders,
+        'Content-Type': 'application/json',
+      },
     });
   }
 }
