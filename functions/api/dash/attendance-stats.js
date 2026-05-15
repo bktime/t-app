@@ -1,8 +1,8 @@
 // functions/api/dash/attendance-stats.js
-// GET /api/dash/attendance-stats?from=YYYY-MM-DD&to=YYYY-MM-DD
-// import { authUser, extractToken, unauthorized } from '../../_auth.js';
+// GET /api/dash/attendance-stats?from=YYYY-MM-DD&to=YYYY-MM-DD[&aff=xxx][&dep=xxx]
 
-import { authUser, extractToken } from '../_auth.js';
+import { authUser, extractToken, unauthorized } from '../_auth.js';
+import { buildScope, getMe, scopedUUIDsSQL } from './_scope.js';
 
 const CORS = {
   'Access-Control-Allow-Origin': '*',
@@ -24,74 +24,85 @@ export async function onRequestGet({ request, env }) {
   const token = extractToken(request);
   const session = await authUser(env, token);
   if (!session) return unauthorized(CORS);
-  if (!['admin', 'supervisor'].includes(session.role)) {
-    return Response.json({ success: false, message: 'Forbidden' }, { status: 403, headers: CORS });
-  }
 
-  const url  = new URL(request.url);
+  const me = await getMe(env, session.uuid);
+  if (!me) return unauthorized(CORS);
+
+  const url   = new URL(request.url);
   const today = new Date().toISOString().slice(0, 10);
-  const from = url.searchParams.get('from') || today;
-  const to   = url.searchParams.get('to')   || today;
+  const from  = url.searchParams.get('from') || today;
+  const to    = url.searchParams.get('to')   || today;
+
+  const { scopeSQL, scopeParams, scopeMeta, canFilter } = buildScope(me, url);
+  const inUUIDs = scopedUUIDsSQL(scopeSQL);
 
   try {
     const [workTypes, supervisorStatus, dailyCounts, inRangeStats, checkoutTypes] = await Promise.all([
 
-      // จำนวนเช็คอินแยกตามประเภทงาน
+      // ประเภทงาน
       env.DB.prepare(`
         SELECT
-          COALESCE(checkin_work_type, 'ไม่ระบุ') AS type,
+          COALESCE(a.checkin_work_type, 'ไม่ระบุ') AS type,
           COUNT(*) AS count
-        FROM attendance
-        WHERE date BETWEEN ? AND ? AND checkin_time IS NOT NULL
-        GROUP BY checkin_work_type
+        FROM attendance a
+        WHERE a.date BETWEEN ? AND ?
+          AND a.checkin_time IS NOT NULL AND a.supervisor_status <> 'cancelled'
+          AND a.uuid IN (${inUUIDs})
+        GROUP BY a.checkin_work_type
         ORDER BY count DESC
-      `).bind(from, to).all(),
+      `).bind(from, to, ...scopeParams).all(),
 
-      // สถานะ supervisor แยกกลุ่ม
+      // สถานะ supervisor
       env.DB.prepare(`
         SELECT
-          COALESCE(supervisor_status, 'none') AS status,
+          COALESCE(a.supervisor_status, 'none') AS status,
           COUNT(*) AS count
-        FROM attendance
-        WHERE date BETWEEN ? AND ?
-        GROUP BY supervisor_status
+        FROM attendance a
+        WHERE a.date BETWEEN ? AND ? AND a.supervisor_status <> 'cancelled'
+          AND a.uuid IN (${inUUIDs})
+        GROUP BY a.supervisor_status
         ORDER BY count DESC
-      `).bind(from, to).all(),
+      `).bind(from, to, ...scopeParams).all(),
 
-      // จำนวนเข้างานรายวัน + มาสาย
+      // รายวัน
       env.DB.prepare(`
         SELECT
-          date,
-          COUNT(*)                                                            AS total,
-          SUM(CASE WHEN checkin_time IS NOT NULL THEN 1 ELSE 0 END)          AS checkins,
-          SUM(CASE WHEN checkin_time > '08:30:00' THEN 1 ELSE 0 END)         AS late,
-          SUM(CASE WHEN checkout_type = 'manual' THEN 1 ELSE 0 END)          AS manual_checkout,
-          SUM(CASE WHEN checkin_in_range = 1 THEN 1 ELSE 0 END)              AS in_range
-        FROM attendance
-        WHERE date BETWEEN ? AND ?
-        GROUP BY date
-        ORDER BY date ASC
-      `).bind(from, to).all(),
+          a.date,
+          COUNT(*)                                                           AS total,
+          SUM(CASE WHEN a.checkin_time IS NOT NULL THEN 1 ELSE 0 END)       AS checkins,
+          SUM(CASE WHEN a.checkin_time > '08:30:00' THEN 1 ELSE 0 END)      AS late,
+          SUM(CASE WHEN a.checkout_type = 'manual' THEN 1 ELSE 0 END)       AS manual_checkout,
+          SUM(CASE WHEN a.checkin_in_range = 1 THEN 1 ELSE 0 END)           AS in_range
+        FROM attendance a
+        WHERE a.date BETWEEN ? AND ? AND a.supervisor_status <> 'cancelled'
+          AND a.uuid IN (${inUUIDs})
+        GROUP BY a.date
+        ORDER BY a.date ASC
+      `).bind(from, to, ...scopeParams).all(),
 
-      // เช็คอินในพื้นที่ vs นอกพื้นที่
+      // ในพื้นที่ vs นอก
       env.DB.prepare(`
         SELECT
-          SUM(CASE WHEN checkin_in_range = 1 THEN 1 ELSE 0 END)  AS in_range,
-          SUM(CASE WHEN checkin_in_range = 0 THEN 1 ELSE 0 END)  AS out_range,
-          SUM(CASE WHEN checkin_in_range IS NULL THEN 1 ELSE 0 END) AS unknown
-        FROM attendance
-        WHERE date BETWEEN ? AND ? AND checkin_time IS NOT NULL
-      `).bind(from, to).first(),
+          SUM(CASE WHEN a.checkin_in_range = 1    THEN 1 ELSE 0 END) AS in_range,
+          SUM(CASE WHEN a.checkin_in_range = 0    THEN 1 ELSE 0 END) AS out_range,
+          SUM(CASE WHEN a.checkin_in_range IS NULL THEN 1 ELSE 0 END) AS unknown
+        FROM attendance a
+        WHERE a.date BETWEEN ? AND ?
+          AND a.checkin_time IS NOT NULL AND a.supervisor_status <> 'cancelled'
+          AND a.uuid IN (${inUUIDs})
+      `).bind(from, to, ...scopeParams).first(),
 
-      // ประเภท checkout (manual / auto)
+      // ประเภท checkout
       env.DB.prepare(`
         SELECT
-          COALESCE(checkout_type, 'auto') AS type,
+          COALESCE(a.checkout_type, 'auto') AS type,
           COUNT(*) AS count
-        FROM attendance
-        WHERE date BETWEEN ? AND ? AND checkout_time IS NOT NULL
-        GROUP BY checkout_type
-      `).bind(from, to).all(),
+        FROM attendance a
+        WHERE a.date BETWEEN ? AND ? AND a.supervisor_status <> 'cancelled'
+          AND a.checkout_time IS NOT NULL
+          AND a.uuid IN (${inUUIDs})
+        GROUP BY a.checkout_type
+      `).bind(from, to, ...scopeParams).all(),
     ]);
 
     return Response.json({
@@ -107,7 +118,7 @@ export async function onRequestGet({ request, env }) {
         },
         checkoutTypes: checkoutTypes.results ?? [],
       },
-      meta: { from, to },
+      meta: { from, to, role: me.role, canFilter, ...scopeMeta },
     }, { headers: CORS });
 
   } catch (err) {

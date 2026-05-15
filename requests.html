@@ -42,9 +42,52 @@
     .sv{font-family:'K2D',sans-serif;font-size:1.3rem;font-weight:800;line-height:1}.sl{font-size:.72rem;color:var(--sub);margin-top:2px}
     .tb{background:var(--sur);border:1px solid var(--bd);border-radius:var(--r);padding:.75rem 1rem;display:flex;gap:.6rem;flex-wrap:wrap;align-items:center;margin-bottom:1rem}
     .sw{flex:1;min-width:160px;position:relative;display:flex;align-items:center}
-    .sw i{position:absolute;left:10px;color:var(--mt);font-size:.82rem}
-    .sw input{width:100%;padding:.5rem .75rem .5rem 2rem;border:1px solid var(--bd);border-radius:8px;font-size:.85rem;font-family:'Sarabun',sans-serif;background:var(--sur2);outline:none;transition:border-color .15s}
-    .sw input:focus{border-color:var(--pri);background:#fff}
+.sw{
+  flex:1;
+  min-width:160px;
+  position:relative;
+  display:flex;
+  align-items:center
+}
+
+.sw i{
+  position:absolute;
+  left:10px;
+  color:var(--mt);
+  font-size:.82rem;
+  transition:color .15s;
+}
+
+.sw input{
+  width:100%;
+  padding:.5rem .75rem .5rem 2rem;
+  border:1px solid var(--bd);
+  border-radius:8px;
+  font-size:.85rem;
+  font-family:'Sarabun',sans-serif;
+  background:var(--sur2);
+  color:var(--tx);
+  outline:none;
+  transition:
+    border-color .15s,
+    background .15s,
+    color .15s,
+    box-shadow .15s;
+}
+
+.sw input::placeholder{
+  color:var(--mt);
+}
+
+.sw input:focus{
+  border-color:var(--pri);
+  background:var(--sur);
+  box-shadow:0 0 0 3px rgba(59,130,246,.12);
+}
+
+.sw:focus-within i{
+  color:var(--pri);
+}
     .tbb{display:flex;align-items:center;gap:5px;padding:.48rem .85rem;border-radius:8px;font-size:.82rem;font-weight:600;font-family:'Sarabun',sans-serif;cursor:pointer;border:1px solid var(--bd);background:var(--sur2);color:var(--sub);transition:all .15s;white-space:nowrap}
     .tbb:hover{background:var(--bg);color:var(--tx)}.tbb.pri{background:var(--pri);color:#fff;border-color:var(--pri)}.tbb.pri:hover{background:var(--prih)}
     .cbadge{font-size:.68rem;padding:1px 6px;border-radius:20px;background:var(--ora);color:#fff;font-weight:700;line-height:1.4}
@@ -62,7 +105,16 @@
     .rbody{padding:.65rem 1.1rem;border-top:1px solid var(--bd);background:var(--sur2)}
     .rrow{display:flex;gap:1.5rem;flex-wrap:wrap;margin-bottom:.45rem}
     .rfl label{font-size:.68rem;color:var(--mt);text-transform:uppercase;letter-spacing:.04em;display:block}.rfl span{font-size:.85rem;font-weight:500}
-    .rrea{font-size:.82rem;color:var(--sub);background:#fff;border:1px solid var(--bd);border-radius:8px;padding:.5rem .75rem;margin-top:.5rem;line-height:1.6}
+    .rrea{
+  font-size:.82rem;
+  color:var(--sub);
+  background:var(--sur);
+  border:1px solid var(--bd);
+  border-radius:8px;
+  padding:.5rem .75rem;
+  margin-top:.5rem;
+  line-height:1.6;
+}
     .tlc{display:flex;gap:.45rem;flex-wrap:wrap;margin-top:.5rem}
     .tlch{display:inline-flex;align-items:center;gap:4px;font-size:.7rem;padding:3px 8px;border-radius:20px;border:1px solid var(--bd);background:#fff;font-weight:500;color:var(--sub)}
     .tlch.in{border-color:var(--gbd);color:var(--grn);background:var(--gbg)}.tlch.oa{border-color:var(--obd);color:var(--ora);background:var(--obg)}.tlch.om{border-color:var(--bbd);color:var(--blu);background:var(--bbg)}
@@ -81,15 +133,213 @@
     .empty{text-align:center;padding:3rem 1rem;color:var(--mt);font-size:.9rem}.empty i{font-size:2.8rem;display:block;margin-bottom:.75rem;opacity:.35}
     .loading{text-align:center;padding:2rem;color:var(--sub)}
     .swal2-popup{border-radius:16px!important;font-family:'Sarabun',sans-serif!important}.swal2-confirm,.swal2-cancel{border-radius:8px!important}
+        .nav-back {
+      width:36px; height:36px; border-radius:10px; border:none;
+      background:var(--sur2); color:var(--tx); font-size:1rem; cursor:pointer;
+      display:flex; align-items:center; justify-content:center; flex-shrink:0;
+      transition:background .15s;
+    }
+    .nav-back:hover { background:var(--bd); }
     @media(max-width:640px){.stats-row{grid-template-columns:repeat(2,1fr)}.nr{display:none}.rrow{gap:.75rem}}
     .spin{animation:sp .7s linear infinite}
     @keyframes sp{to{transform:rotate(360deg)}}
     @keyframes fu{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-  </style>
+  
+  /* ═══════════════════════════════════
+   SweetAlert2 Theme Custom
+═══════════════════════════════════ */
+
+.swal2-popup{
+  background:var(--sur)!important;
+  color:var(--tx)!important;
+  border:1px solid var(--bd)!important;
+  box-shadow:var(--shm)!important;
+  border-radius:18px!important;
+}
+
+.swal2-title{
+  color:var(--tx)!important;
+  font-family:'K2D',sans-serif!important;
+  font-weight:700!important;
+}
+
+.swal2-html-container,
+.swal2-content{
+  color:var(--sub)!important;
+  font-size:.92rem!important;
+  line-height:1.7!important;
+}
+
+.swal2-icon.swal2-success{
+  border-color:rgba(5,150,105,.25)!important;
+  color:var(--grn)!important;
+}
+
+.swal2-icon.swal2-error{
+  border-color:rgba(220,38,38,.25)!important;
+  color:var(--red)!important;
+}
+
+.swal2-icon.swal2-warning{
+  border-color:rgba(217,119,6,.25)!important;
+  color:var(--ora)!important;
+}
+
+.swal2-icon.swal2-question{
+  border-color:rgba(37,99,235,.25)!important;
+  color:var(--blu)!important;
+}
+
+.swal2-confirm,
+.swal2-cancel,
+.swal2-deny{
+  border-radius:10px!important;
+  font-family:'Sarabun',sans-serif!important;
+  font-weight:600!important;
+  padding:.62rem 1.2rem!important;
+  box-shadow:none!important;
+}
+
+.swal2-confirm:focus,
+.swal2-cancel:focus,
+.swal2-deny:focus{
+  box-shadow:0 0 0 3px rgba(59,130,246,.22)!important;
+}
+
+.swal2-confirm{
+  background:var(--pri)!important;
+}
+
+.swal2-confirm:hover{
+  background:var(--prih)!important;
+}
+
+.swal2-cancel{
+  background:var(--sur2)!important;
+  color:var(--tx)!important;
+  border:1px solid var(--bd)!important;
+}
+
+.swal2-cancel:hover{
+  background:var(--bg)!important;
+}
+
+.swal2-input,
+.swal2-textarea,
+.swal2-select{
+  background:var(--sur2)!important;
+  color:var(--tx)!important;
+  border:1px solid var(--bd)!important;
+  border-radius:10px!important;
+  font-family:'Sarabun',sans-serif!important;
+}
+
+.swal2-input:focus,
+.swal2-textarea:focus,
+.swal2-select:focus{
+  border-color:var(--pri)!important;
+  box-shadow:0 0 0 3px rgba(59,130,246,.15)!important;
+}
+
+.swal2-loader{
+  border-color:var(--pri) transparent var(--pri) transparent!important;
+}
+
+.swal2-timer-progress-bar{
+  background:var(--pri)!important;
+}
+
+.swal2-close{
+  color:var(--mt)!important;
+  transition:.15s;
+}
+
+.swal2-close:hover{
+  color:var(--tx)!important;
+  transform:scale(1.08);
+}
+
+.swal2-popup pre,
+.swal2-popup code{
+  background:var(--sur2)!important;
+  color:var(--tx)!important;
+  border:1px solid var(--bd)!important;
+  border-radius:8px!important;
+  padding:.15rem .4rem!important;
+}
+/* ═══════════════════════════════════
+   Textarea Custom
+═══════════════════════════════════ */
+
+textarea{
+  width:100%;
+  min-height:110px;
+  padding:.8rem .95rem;
+  border:1px solid var(--bd);
+  border-radius:12px;
+  background:var(--sur2);
+  color:var(--tx);
+  font-size:.9rem;
+  line-height:1.7;
+  font-family:'Sarabun',sans-serif;
+  resize:vertical;
+  outline:none;
+  transition:
+    border-color .18s,
+    background .18s,
+    box-shadow .18s,
+    transform .12s;
+}
+
+/* Focus */
+textarea:focus{
+  background:var(--sur);
+  border-color:var(--pri);
+  box-shadow:0 0 0 4px rgba(59,130,246,.12);
+}
+
+/* Hover */
+textarea:hover{
+  border-color:color-mix(in srgb, var(--pri) 20%, var(--bd));
+}
+
+/* Placeholder */
+textarea::placeholder{
+  color:var(--mt);
+  opacity:1;
+}
+
+/* Disabled */
+textarea:disabled{
+  opacity:.65;
+  cursor:not-allowed;
+  background:var(--bg);
+}
+
+/* Scrollbar */
+textarea::-webkit-scrollbar{
+  width:10px;
+}
+
+textarea::-webkit-scrollbar-track{
+  background:transparent;
+}
+
+textarea::-webkit-scrollbar-thumb{
+  background:var(--bd);
+  border-radius:10px;
+}
+
+textarea::-webkit-scrollbar-thumb:hover{
+  background:var(--mt);
+}
+</style>
 </head>
 <body>
 <nav>
-  <a href="attendance.html" class="nb"><i class="fas fa-arrow-left"></i> กลับ</a>
+    <button class="nav-back" onclick="history.length>1?history.back():location.href='index.html'" title="ย้อนกลับ">
+    <i class="fa-solid fa-arrow-left"></i>
+  </button>
   <div class="nt"><i class="fas fa-inbox" style="color:var(--pri);margin-right:6px"></i>จัดการคำขอ</div>
   <span class="nr" id="navRole">—</span>
   <button class="theme-btn" id="themeBtn" title="เปลี่ยนธีม"><i class="fas fa-moon"></i></button>
@@ -105,7 +355,7 @@
     <div class="sc"        id="sc-cancelled" onclick="filterSt('cancelled')"><div class="si" style="background:#f5f5f5;color:#9e9e9e;border-color:#e0e0e0"><i class="fas fa-ban"></i></div><div><div class="sv" id="cnt-cancelled">—</div><div class="sl">ยกเลิกแล้ว</div></div></div>
   </div>
   <div class="tb">
-    <div class="sw"><i class="fas fa-magnifying-glass"></i><input type="text" id="si" placeholder="ค้นหาชื่อ, เลขอ้างอิง, ประเภท..." oninput="debS()"></div>
+    <div class="sw"><i class="fas fa-magnifying-glass"></i><input type="search" id="si" placeholder="ค้นหาชื่อ, เลขอ้างอิง, ประเภท..." oninput="debS()"></div>
     <div class="drf">
       <label><i class="fas fa-calendar-days" style="font-size:.7rem"></i> ระหว่าง</label>
       <input type="date" id="df" onchange="load(true)" title="วันเริ่มต้น">
@@ -114,6 +364,13 @@
       <button class="clr" onclick="clearDate()" title="ล้างวันที่"><i class="fas fa-xmark"></i></button>
     </div>
     <button class="tbb" onclick="load(true)"><i class="fas fa-rotate-right"></i> รีเฟรช</button>
+    <button class="tbb" id="selAllBtn" style="display:none" onclick="selectAllVisible()">
+  <i class="fas fa-check-double"></i> เลือกทั้งหมด
+</button>
+
+<button class="tbb" id="unselAllBtn" style="display:none" onclick="unselectAll()">
+  <i class="fas fa-xmark"></i> ยกเลิกเลือก
+</button>
     <button class="tbb pri" id="batchBtn" style="display:none" onclick="batchApp()">
       <i class="fas fa-check-double"></i> อนุมัติที่เลือก <span class="cbadge" id="batchCnt">0</span>
     </button>
@@ -254,6 +511,7 @@ function renderList(items){
           :`<span class="dl"><i class="fas ${it.status==='approved'?'fa-circle-check':it.status==='cancelled'?'fa-ban':'fa-circle-xmark'}"></i> ${it.status==='cancelled'?'ผู้ขอยกเลิกแล้ว':'ดำเนินการแล้ว'} ${it.reviewed_at?fmtD(it.reviewed_at):''}</span>`}
       </div>
     </div>`).join('');
+    updSelectTools();
 }
 
 function renderPg(){
@@ -276,6 +534,65 @@ function debS(){clearTimeout(stTimer);stTimer=setTimeout(()=>load(true),380)}
 
 function togSel(ref,checked){if(checked)sel.add(ref);else sel.delete(ref);updBatch()}
 function updBatch(){const b=document.getElementById('batchBtn'),c=document.getElementById('batchCnt');b.style.display=sel.size>0?'flex':'none';c.textContent=sel.size}
+
+function updBatch() {
+  const b = document.getElementById('batchBtn');
+  const c = document.getElementById('batchCnt');
+
+  b.style.display =
+    sel.size > 0 ? 'flex' : 'none';
+
+  c.textContent = sel.size;
+
+  updSelectTools();
+}
+
+function updSelectTools() {
+  const hasPending =
+    document.querySelectorAll(
+      '.rc.pending input[type=checkbox]'
+    ).length > 0;
+
+  document.getElementById('selAllBtn').style.display =
+    hasPending ? 'inline-flex' : 'none';
+
+  document.getElementById('unselAllBtn').style.display =
+    sel.size > 0 ? 'inline-flex' : 'none';
+
+}
+
+function selectAllVisible() {
+  document.querySelectorAll(
+    '.rc.pending input[type=checkbox]'
+  ).forEach(cb => {
+    cb.checked = true;
+
+    const card = cb.closest('.rc');
+
+    if (!card) return;
+
+    const ref =
+      card.id.replace('card-', '');
+
+    sel.add(ref);
+  });
+
+  updBatch();
+}
+
+function unselectAll() {
+  document.querySelectorAll(
+    '.rc.pending input[type=checkbox]'
+  ).forEach(cb => {
+    cb.checked = false;
+  });
+
+  sel.clear();
+
+  updBatch();
+}
+
+
 
 async function batchApp(){
   if(!sel.size)return;
@@ -316,12 +633,49 @@ async function review(reference,action){
       const foot=card.querySelector('.rf');if(foot)foot.innerHTML=`<span class="dl"><i class="fas ${isA?'fa-circle-check':'fa-circle-xmark'}"></i> ดำเนินการแล้ว</span>`;
       const cb=card.querySelector('input[type=checkbox]');if(cb)cb.remove();
     }
-    await loadCounts();
-    Swal.fire({icon:'success',title:isA?'อนุมัติสำเร็จ':'ปฏิเสธสำเร็จ',html:`<code style="font-size:.82rem">${esc(reference)}</code>`,timer:2000,showConfirmButton:false});
+   await loadCounts();
+
+Swal.fire({
+  icon:'success',
+  title:isA?'อนุมัติสำเร็จ':'ปฏิเสธสำเร็จ',
+  html:`<code style="font-size:.82rem">${esc(reference)}</code>`,
+  timer:1400,
+  showConfirmButton:false
+}).then(() => load(true));
   }catch(err){Swal.fire({icon:'error',title:'เกิดข้อผิดพลาด',text:err.message,confirmButtonColor:'#dc2626'})}
 }
 
-document.addEventListener('DOMContentLoaded',()=>{initUser();load(true)});
+function stickSearchToTop(){
+  const tb = document.querySelector('.tb');
+  if(!tb) return;
+
+  const top = tb.getBoundingClientRect().top + window.scrollY - 70;
+
+  window.scrollTo({
+    top,
+    behavior:'smooth'
+  });
+}
+
+document.addEventListener('DOMContentLoaded', async () => {
+  initUser();
+
+  const params = new URLSearchParams(location.search);
+  const ref = params.get('ref');
+
+  if (ref) {
+    document.getElementById('si').value = ref;
+
+    await load(true);
+
+    // เลื่อนแถบค้นหาไปชิด nav
+    setTimeout(() => {
+      stickSearchToTop();
+    }, 120);
+  } else {
+    load(true);
+  }
+});
 
 // ── Theme Toggle ──
 (function(){

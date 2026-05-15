@@ -141,11 +141,6 @@
     }
 
     .text-select { -webkit-user-select: text; user-select: text; }
-    .sr-only {
-      position: absolute; width: 1px; height: 1px;
-      padding: 0; margin: -1px; overflow: hidden;
-      clip: rect(0,0,0,0); border: 0;
-    }
 
     /* ═══════════ BACKGROUND SYSTEM ═══════════ */
     .bg-scene {
@@ -417,7 +412,7 @@
       height: 38px;
     }
 
-   .progress-svg circle {
+    .progress-svg circle {
       transform-origin: center;
       transform: rotate(-90deg);
       fill: none;
@@ -1214,6 +1209,7 @@
       .action-label { font-size: 0.7rem; }
     }
 
+
     /* ═══════════ NOTIFICATION PANEL ═══════════ */
     .notif-overlay {
       position: fixed;
@@ -1401,6 +1397,7 @@
     }
     .notif-footer a:hover { opacity: 1; }
 
+    /* notif dot count badge */
     .notif-dot-count {
       position: absolute;
       top: 2px;
@@ -1422,101 +1419,6 @@
     }
     .notif-dot-count.show { display: flex; }
 
-    /* ═══════════════════════════════════
-   SweetAlert & Select Theme (เซกา)
-═══════════════════════════════════ */
-
-/* ── SweetAlert ── */
-.swal2-container { z-index: 999999 !important; }
-
-.swal2-popup {
-  background: var(--bg-surface) !important;
-  backdrop-filter: blur(40px) saturate(160%) !important;
-  -webkit-backdrop-filter: blur(40px) saturate(160%) !important;
-  color: var(--t1) !important;
-  border: 1px solid var(--b1) !important;
-  border-radius: var(--r-xl) !important;
-  box-shadow: 0 24px 60px rgba(0,0,0,0.45) !important;
-  font-family: 'IBM Plex Sans Thai', 'Sarabun', sans-serif !important;
-}
-
-.swal2-title {
-  font-family: 'Outfit', sans-serif !important;
-  color: var(--t1) !important;
-}
-
-.swal2-html-container { 
-  color: var(--t2) !important; 
-}
-
-.swal2-confirm {
-  background: linear-gradient(135deg, var(--mint-dim), var(--mint)) !important;
-  color: #020c18 !important;
-  border: none !important;
-  border-radius: var(--r-lg) !important;
-  font-family: 'IBM Plex Sans Thai', sans-serif !important;
-  font-weight: 600 !important;
-  box-shadow: 0 6px 24px var(--mint-glow) !important;
-}
-
-.swal2-cancel {
-  background: var(--bg-glass) !important;
-  color: var(--t2) !important;
-  border: 1px solid var(--b1) !important;
-  border-radius: var(--r-lg) !important;
-  font-family: 'IBM Plex Sans Thai', sans-serif !important;
-  font-weight: 600 !important;
-}
-
-.swal2-icon { border-color: var(--b1) !important; }
-.swal2-success { border-color: var(--mint-border) !important; color: var(--mint) !important; }
-.swal2-error { border-color: var(--rose-border) !important; color: var(--rose) !important; }
-.swal2-warning { border-color: var(--amber-border) !important; color: var(--amber) !important; }
-
-
-/* ── Select Dropdown ── */
-#typea {
-  width: 100%;
-  padding: 0.85rem 2.5rem 0.85rem 1.25rem; /* เว้นที่ขวาให้ลูกศร */
-  background: var(--bg-glass);
-  color: var(--t1);
-  border: 1px solid var(--b1);
-  border-radius: var(--r-lg);
-  font-family: 'IBM Plex Sans Thai', sans-serif;
-  font-size: 0.9rem;
-  font-weight: 500;
-  cursor: pointer;
-  appearance: none; /* ซ่อนลูกศรเริ่มต้น */
-  -webkit-appearance: none;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  transition: all 0.2s var(--ease-out);
-  /* ใส่ลูกศรสี Mint แบบ Custom */
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2300f5b0' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 1rem center;
-}
-
-#typea:hover {
-  background-color: var(--bg-glass-hover);
-  border-color: var(--mint-border);
-}
-
-#typea:focus {
-  outline: none;
-  border-color: var(--mint-text);
-  box-shadow: 0 0 0 3px var(--mint-glow);
-}
-
-/* สีพื้นหลังตอนเปิดเมนู dropdown */
-#typea option {
-  background: var(--bg-deep);
-  color: var(--t1);
-  padding: 8px;
-}
-
-
-
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after {
         animation-duration: 0.01ms !important;
@@ -1533,10 +1435,10 @@
     <div class="bg-gradient-base"></div>
     <div class="bg-noise"></div>
     <div class="bg-grid"></div>
-    <div id="particleContainer"></div>
+    <div id="particleCanvas"></div>
   </div>
 
-  <!-- Notification Overlay + Panel -->
+  <!-- Notification Overlay + Panel (ported from attendance.html) -->
   <div class="notif-overlay" id="notifOverlay" onclick="closeNotifPanel()"></div>
 
   <div class="notif-panel" id="notifPanel">
@@ -1605,11 +1507,9 @@
       <div class="clock-arc" aria-hidden="true"></div>
       <div class="clock-eyebrow">SYSTEM CLOCK</div>
       <div class="clock-face">
-        <span class="clock-hm text-select" id="clockHM" aria-hidden="true">--:--</span>
-        <span class="clock-sep" id="clockSep" aria-hidden="true">:</span>
-        <span class="clock-sec text-select" id="clockSec" aria-hidden="true">00</span>
-        <!-- Screen Reader Only Text -->
-        <span class="sr-only" id="clockSrOnly">เวลาปัจจุบัน --:--:--</span>
+        <span class="clock-hm text-select" id="clockHM" aria-live="polite">--:--</span>
+        <span class="clock-sep" aria-hidden="true">:</span>
+        <span class="clock-sec text-select" id="clockSec">00</span>
       </div>
 
       <!-- Second progress ring -->
@@ -1656,8 +1556,7 @@
     </div>
 
     <!-- APP SECTION (logged in) -->
-    <!-- FIX: Removed conflicting display:none and display:flex -->
-    <div id="appSection" style="flex-direction:column; gap:0.75rem;">
+    <div id="appSection" style="display:none; display:flex; flex-direction:column; gap:0.75rem;">
 
       <!-- Identity -->
       <div class="card card-anim-1">
@@ -1680,40 +1579,39 @@
         <!-- Stats Strip -->
         <div class="stats-strip" style="margin-top:0.85rem;">
           <div class="stat-cell">
-            <div class="stat-num" id="statWorkDays">—</div>
-            <div class="stat-label">เดือนนี้</div>
-            <div class="stat-change stat-up"><i class="fas fa-clock" aria-hidden="true"></i> ปกติ</div>
+            <div class="stat-num" id="statDays">—</div>
+            <div class="stat-label">วันทำงาน</div>
+            <div class="stat-change stat-up"><i class="fas fa-arrow-up" aria-hidden="true"></i> เดือนนี้</div>
           </div>
           <div class="stat-cell">
-            <div class="stat-num" id="statOutOffice">—</div>
-            <div class="stat-label">เดือนนี้</div>
-            <div class="stat-change stat-up"><i class="fas fa-plane" aria-hidden="true"></i> ไปราชการ</div>
+            <div class="stat-num" id="statOT">—</div>
+            <div class="stat-label">ชั่วโมง OT</div>
+            <div class="stat-change stat-warn"><i class="fas fa-clock" aria-hidden="true"></i> สะสม</div>
           </div>
           <div class="stat-cell">
-            <div class="stat-num" id="statWfh">—</div>
-            <div class="stat-label">เดือนนี้</div>
-            <div class="stat-change stat-up"><i class="fas fa-house" aria-hidden="true"></i> Work From Home</div>
+            <div class="stat-num" id="statLeave">—</div>
+            <div class="stat-label">วันลาคงเหลือ</div>
+            <div class="stat-change stat-up"><i class="fas fa-calendar-check" aria-hidden="true"></i> ปีนี้</div>
           </div>
         </div>
       </div>
 
-<!-- Hero CTA -->
-<div class="card-anim-2" style="position:relative;">
-  <div class="pulse-rings" aria-hidden="true">
-    <div class="pulse-ring"></div>
-    <div class="pulse-ring"></div>
-    <div class="pulse-ring"></div>
-  </div>
-  <a href="attendance.html" class="hero-cta" aria-label="ลงเวลาเข้า-ออกงาน"
-     id="attendanceBtn" onclick="handleAttendanceClick(event)">
-    <span class="hero-icon" aria-hidden="true"><i class="fas fa-fingerprint"></i></span>
-    <div class="hero-text">
-      <span class="hero-label">ลงเวลาเข้า-ออกงาน</span>
-      <span class="hero-sub" id="attendanceSubLabel">บันทึกเวลาปฏิบัติงานรายวัน</span>
-    </div>
-    <i class="fas fa-chevron-right hero-arrow" aria-hidden="true"></i>
-  </a>
-</div>
+      <!-- Hero CTA -->
+      <div class="card-anim-2" style="position:relative;">
+        <div class="pulse-rings" aria-hidden="true">
+          <div class="pulse-ring"></div>
+          <div class="pulse-ring"></div>
+          <div class="pulse-ring"></div>
+        </div>
+        <a href="attendance.html" class="hero-cta" aria-label="ลงเวลาเข้า-ออกงาน">
+          <span class="hero-icon" aria-hidden="true"><i class="fas fa-fingerprint"></i></span>
+          <div class="hero-text">
+            <span class="hero-label">ลงเวลาเข้า-ออกงาน</span>
+            <span class="hero-sub">บันทึกเวลาปฏิบัติงานรายวัน</span>
+          </div>
+          <i class="fas fa-chevron-right hero-arrow" aria-hidden="true"></i>
+        </a>
+      </div>
 
       <!-- Quick Actions -->
       <div class="card card-anim-3">
@@ -1785,7 +1683,7 @@
 
     /* ═══════════ PARTICLES ═══════════ */
     function spawnParticles() {
-      const c = document.getElementById('particleContainer');
+      const c = document.getElementById('particleCanvas');
       const colors = ['rgba(0,245,176,', 'rgba(34,211,240,', 'rgba(139,124,248,'];
       for (let i = 0; i < 18; i++) {
         const p = document.createElement('div');
@@ -1823,14 +1721,8 @@
       const h = String(now.getHours()).padStart(2,'0');
       const m = String(now.getMinutes()).padStart(2,'0');
       const s = now.getSeconds();
-      const ss = String(s).padStart(2,'0');
-      
       document.getElementById('clockHM').textContent = `${h}:${m}`;
-      document.getElementById('clockSec').textContent = ss;
-      
-      // Accessibility: update screen reader text every minute
-      document.getElementById('clockSrOnly').textContent = `เวลาปัจจุบัน ${h} นาฬิกา ${m} นาที`;
-      
+      document.getElementById('clockSec').textContent = String(s).padStart(2,'0');
       const offset = circumference - (s / 60) * circumference;
       secRing.style.strokeDashoffset = offset;
       const be = now.getFullYear() + 543;
@@ -1875,39 +1767,13 @@
     }
 
     /* ═══════════ GREETING ═══════════ */
-function getGreeting() {
-  const h = new Date().getHours();
-
-  if (h >= 4 && h < 6) {
-    return '<i class="fa-solid fa-mug-hot" style="color:#f59e0b"></i> เช้าตรู่ พร้อมเริ่มวันใหม่';
-  }
-
-  if (h >= 6 && h < 9) {
-    return '<i class="fa-solid fa-sun" style="color:#facc15"></i> สวัสดีตอนเช้า';
-  }
-
-  if (h >= 9 && h < 12) {
-    return '<i class="fa-solid fa-cloud-sun" style="color:#fb923c"></i> ช่วงสาย ทำงานอย่างมีพลัง';
-  }
-
-  if (h >= 12 && h < 14) {
-    return '<i class="fa-solid fa-sun-plant-wilt" style="color:#f97316"></i> สวัสดีตอนเที่ยง';
-  }
-
-  if (h >= 14 && h < 17) {
-    return '<i class="fa-solid fa-cloud-sun" style="color:#38bdf8"></i> สวัสดีตอนบ่าย';
-  }
-
-  if (h >= 17 && h < 19) {
-    return '<i class="fa-solid fa-sunset" style="color:#fb7185"></i> สวัสดีตอนเย็น';
-  }
-
-  if (h >= 19 && h < 22) {
-    return '<i class="fa-solid fa-moon" style="color:#a78bfa"></i> ค่ำแล้ว พักผ่อนบ้างนะ';
-  }
-
-  return '<i class="fa-solid fa-stars" style="color:#818cf8"></i> ดึกแล้ว อย่าลืมพักผ่อน';
-}
+    function getGreeting() {
+      const h = new Date().getHours();
+      if (h >= 5 && h < 12) return 'สวัสดีตอนเช้า ☀️';
+      if (h >= 12 && h < 17) return 'สวัสดีตอนบ่าย 🌤️';
+      if (h >= 17 && h < 21) return 'สวัสดีตอนเย็น 🌆';
+      return 'สวัสดีตอนดึก 🌙';
+    }
 
     /* ═══════════ WORDMARK ═══════════ */
     const prefixMap = [
@@ -1940,9 +1806,9 @@ function getGreeting() {
 
     /* ═══════════ STATS ═══════════ */
     function setStats(s) {
-      document.getElementById('statWorkDays').textContent  = s?.workDays  ?? '—';
-      document.getElementById('statOutOffice').textContent = s?.outOffice ?? '—';
-      document.getElementById('statWfh').textContent      = s?.wfh       ?? '—';
+      document.getElementById('statDays').textContent  = s?.workDays  ?? '—';
+      document.getElementById('statOT').textContent    = s?.otHours   ?? '—';
+      document.getElementById('statLeave').textContent = s?.leaveLeft ?? '—';
     }
 
     async function fetchStats(token) {
@@ -1962,29 +1828,39 @@ function getGreeting() {
     }
 
     /* ═══════════ NOTIFICATION SYSTEM ═══════════ */
+    // ── ดึงจาก 3 API endpoints (เหมือน attendance.html) ──────────────────
+    // GET /api/request?uuid=&limit=20           → คำขอของฉัน
+    // GET /api/request-manage?status=pending    → รออนุมัติ (approver)
+    // GET /api/supervisor-pending?limit=50      → รับรองเวลา (supervisor)
+    // ไม่ใช้ DB notifications table สำหรับ panel นี้
+    // read-state บันทึกใน localStorage['notifRead'] เหมือน attendance.html
+
     let _notifTab    = 'mine';
     let _notifLoaded = false;
-    let _mineItems   = [];   
-    let _pendItems   = [];   
-    let _supItems    = [];   
+    let _mineItems   = [];   // คำขอของฉัน
+    let _pendItems   = [];   // รออนุมัติ (approver)
+    let _supItems    = [];   // รับรองเวลา (supervisor)
 
     function AUTH_HEADER() {
       const t = localStorage.getItem('auth_token');
       return t ? { 'Authorization': `Bearer ${t}` } : {};
     }
 
+    // ── โหลดข้อมูลทั้งหมด ────────────────────────────────────────────────
     async function loadNotifications() {
       const raw = localStorage.getItem('user_data');
       const ud  = raw ? JSON.parse(raw) : null;
       const uuid = ud?.uuid || '';
       if (!uuid) return;
 
+      // 1. คำขอของฉัน
       try {
         const res = await fetch(`${API_BASE}/attendance/request?uuid=${encodeURIComponent(uuid)}&limit=20`, { headers: AUTH_HEADER() });
         const d   = await res.json();
         if (d.success) _mineItems = d.data || [];
       } catch (_) {}
 
+      // 2. รออนุมัติ (request-manage)
       _pendItems = [];
       try {
         const res = await fetch(`${API_BASE}/attendance/request-manage?status=pending&limit=50`, { headers: AUTH_HEADER() });
@@ -1992,45 +1868,15 @@ function getGreeting() {
         if (d.success) _pendItems = d.data || [];
       } catch (_) {}
 
-_supItems = [];
+      // 3. รอรับรองเวลา (supervisor-pending)
+      _supItems = [];
+      try {
+        const res = await fetch(`${API_BASE}/attendance/supervisor-pending?limit=50`, { headers: AUTH_HEADER() });
+        const d   = await res.json();
+        if (d.success) _supItems = d.data || [];
+      } catch (_) {}
 
-try {
-  const res = await fetch(
-    `${API_BASE}/attendance/supervisor-pending?status=pending&limit=50`,
-    {
-      headers: AUTH_HEADER()
-    }
-  );
-
-  if (res.status === 401) {
-    console.warn('Unauthorized');
-    return;
-  }
-
-  if (!res.ok) {
-    throw new Error(`HTTP ${res.status}`);
-  }
-
-  const text = await res.text();
-
-  let d;
-  try {
-    d = JSON.parse(text);
-  } catch {
-    console.error('Response is not JSON:', text);
-    return;
-  }
-
-  if (!d.success) {
-    throw new Error(d.message || 'โหลดข้อมูลไม่สำเร็จ');
-  }
-
-  _supItems = d.data || [];
-
-} catch (err) {
-  console.error('load supervisor pending error:', err);
-}
-
+      // ── คำนวณ unread ──────────────────────────────────────────────────
       const prevRead   = new Set(JSON.parse(localStorage.getItem('notifRead') || '[]'));
       const unreadMine = _mineItems.filter(i => ['approved','rejected'].includes(i.status) && !prevRead.has(i.reference)).length;
       const unreadPend = _pendItems.filter(i => !prevRead.has(i.reference)).length;
@@ -2060,6 +1906,7 @@ try {
       if (sc) { sc.textContent = unreadSup || ''; sc.classList.toggle('show', unreadSup > 0); }
     }
 
+    // ── เปิด/ปิด/switch tab ───────────────────────────────────────────────
     function openNotifPanel() {
       document.getElementById('notifPanel').classList.add('open');
       document.getElementById('notifOverlay').classList.add('open');
@@ -2089,6 +1936,7 @@ try {
       loadNotifications();
     }
 
+    // ── render body ───────────────────────────────────────────────────────
     function renderNotifBody() {
       const body = document.getElementById('notifBody');
       if (!_notifLoaded) {
@@ -2102,34 +1950,15 @@ try {
       };
       const items = _notifTab === 'mine' ? _mineItems
                   : _notifTab === 'pending' ? _pendItems : _supItems;
-                  
       if (!items.length) {
         body.innerHTML = `<div class="notif-empty">${emptyMap[_notifTab] || ''}</div>`;
         return;
       }
-      
       const read = new Set(JSON.parse(localStorage.getItem('notifRead') || '[]'));
       body.innerHTML = items.map(item => renderNotifItem(item, read)).join('');
-
-      // FIX: Attach click handlers for "mine" tab items
-      if (_notifTab === 'mine') {
-        body.querySelectorAll('.nitem[data-ref]').forEach(el => {
-          el.addEventListener('click', () => {
-            showMineDetail(el.dataset.ref);
-          });
-        });
-      }
     }
 
-    // FIX: Escape single quotes for inline handlers to prevent XSS
-    function _esc(s) { 
-      return String(s||'')
-        .replace(/&/g,'&amp;')
-        .replace(/</g,'&lt;')
-        .replace(/>/g,'&gt;')
-        .replace(/"/g,'&quot;')
-        .replace(/'/g, '&#39;'); 
-    }
+    function _esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
     function _fmtDate(s) {
       try { return new Date(s+'T00:00:00').toLocaleDateString('th-TH',{day:'numeric',month:'short',year:'numeric'}); }
@@ -2153,11 +1982,13 @@ try {
       const stLabel = { pending:'รอดำเนินการ', approved:'อนุมัติแล้ว', rejected:'ปฏิเสธ', cancelled:'ยกเลิกแล้ว' };
       const stPill  = { pending:'nis-pending', approved:'nis-approved', rejected:'nis-rejected', cancelled:'nis-cancelled' };
 
+      // ── Tab: คำขอของฉัน ────────────────────────────────────────────────
       if (_notifTab === 'mine') {
         const typ   = item.status || 'pending';
         const isNew = !read.has(item.reference) && ['approved','rejected'].includes(typ);
         const ago   = _ago(item.submitted_at);
 
+        // supervisor badge
         const supSt = item.status === 'cancelled' ? 'cancelled' : (item.supervisor_status || 'none');
         const supCfg = {
           pending:   { c:'var(--amber)',    i:'fa-hourglass-half', l:'รอรับรอง' },
@@ -2168,11 +1999,13 @@ try {
         const sb = supSt !== 'none' && supCfg[supSt]
           ? `<span style="display:inline-flex;align-items:center;gap:3px;font-size:.63rem;padding:1px 7px;border-radius:20px;background:${supCfg[supSt].c}20;color:${supCfg[supSt].c};border:1px solid ${supCfg[supSt].c}50;margin-left:4px;font-weight:600"><i class="fas ${supCfg[supSt].i}" style="font-size:.5rem" aria-hidden="true"></i>${supCfg[supSt].l}</span>` : '';
 
+        // ปุ่มยกเลิก (pending เท่านั้น) — แสดงแค่ปุ่ม ไม่จัดการ popup ใน index
         const cancelBtn = typ === 'pending'
           ? `<button onclick="event.stopPropagation();cancelRequest('${_esc(item.reference||'')}','${_esc(item.request_type||'')}','${_esc(item.req_date||'')}')"
                style="margin-top:6px;display:inline-flex;align-items:center;gap:4px;font-size:.7rem;padding:3px 10px;border-radius:20px;background:rgba(248,113,113,0.1);color:var(--rose);border:1px solid var(--rose-border);font-weight:700;cursor:pointer;line-height:1.4">
                <i class="fas fa-xmark" style="font-size:.65rem" aria-hidden="true"></i> ยกเลิกคำขอ</button>` : '';
 
+        // คลิก item → popup รายละเอียด
         return `<div class="nitem${isNew?' unread':''}" data-ref="${_esc(item.reference||'')}">
           <div class="ni-icon ${stColor[typ]||'ni-info'}" aria-hidden="true"><i class="fas ${stIcon[typ]||'fa-file'}"></i></div>
           <div class="ni-body">
@@ -2186,6 +2019,7 @@ try {
           </div></div>`;
       }
 
+      // ── Tab: รออนุมัติ → คลิกแล้วไปหน้า requests ──────────────────────
       if (_notifTab === 'pending') {
         const isNew = !read.has(item.reference);
         const avSrc = item.profileImage || item.picture ||
@@ -2195,7 +2029,7 @@ try {
           <img src="${_esc(avSrc)}" style="width:36px;height:36px;border-radius:50%;object-fit:cover;border:2px solid var(--b1);flex-shrink:0;margin-top:1px"
             onerror="this.src='https://ui-avatars.com/api/?background=8b7cf8&color=fff&size=64&bold=true&name=U'" alt="">
           <div class="ni-body">
-            <div class="ni-title">${_esc(((item.firstName||'') + ' ' + (item.lastName||'')).trim() || item.name||'—')}</div>
+            <div class="ni-title">${_esc(item.name||'—')}</div>
             <div class="ni-sub">${_esc(item.request_type||'')} · ${item.req_date ? _fmtDate(item.req_date) : ''}</div>
             <div class="ni-sub" style="color:var(--t3)">${_esc(item.reason||'')}</div>
             <div class="ni-time">${ago} &nbsp;<span class="ni-status nis-pending"><i class="fas fa-hourglass-half" style="font-size:.55rem" aria-hidden="true"></i> รอดำเนินการ</span></div>
@@ -2204,10 +2038,11 @@ try {
           </div>`;
       }
 
+      // ── Tab: รับรองเวลา → คลิกแล้วไปหน้า supervisor ───────────────────
       if (_notifTab === 'supervisor') {
         const key    = 'sup-' + item.id;
         const isNew  = !read.has(key);
-        const fname  = ((item.firstName||'') + ' ' + (item.lastName||'')).trim()  || item.name || '—';
+        const fname  = item.name || ((item.firstName||'') + ' ' + (item.lastName||'')).trim() || '—';
         const avSrc  = item.picture ||
           `https://ui-avatars.com/api/?background=60a5fa&color=fff&size=64&bold=true&name=${encodeURIComponent((fname||'U').charAt(0))}`;
         const ciTime = item.checkin_time  || '—';
@@ -2219,9 +2054,7 @@ try {
               : item.checkin_distance_m+' ม.') + (item.checkin_in_range ? ' ✅' : ' ⚠️')
           : '';
         const ago = _ago(item.checkin_at || item.submitted_at);
-        return `
-<div class="nitem${isNew ? ' unread' : ''}"
-     onclick='gotoSupervisor(${JSON.stringify(item.checkin_reference)})'>
+        return `<div class="nitem${isNew?' unread':''}" onclick="gotoSupervisor(${item.id},'${_esc(item.uuid||'')}','${_esc(item.date||'')}')">
           <img src="${_esc(avSrc)}" style="width:36px;height:36px;border-radius:50%;object-fit:cover;border:2px solid var(--b1);flex-shrink:0;margin-top:1px"
             onerror="this.src='https://ui-avatars.com/api/?background=60a5fa&color=fff&size=64&bold=true&name=U'" alt="">
           <div class="ni-body">
@@ -2237,6 +2070,7 @@ try {
       return '';
     }
 
+    // ── คลิก Tab mine → popup รายละเอียดคำขอ ─────────────────────────────
     function showMineDetail(reference) {
       const item = _mineItems.find(i => i.reference === reference);
       if (!item) return;
@@ -2291,6 +2125,7 @@ try {
       });
     }
 
+    // ── ยกเลิกคำขอ ────────────────────────────────────────────────────────
     async function cancelRequest(reference, reqType, reqDate) {
       const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
       const cf = await Swal.fire({
@@ -2322,18 +2157,22 @@ try {
       }
     }
 
+    // ── Tab pending → ไปหน้า requests พร้อม reference param ──────────────
     function gotoRequests(reference) {
       closeNotifPanel();
+      // mark read ก่อน navigate
       markCurrentTabRead();
       window.location.href = `requests.html?ref=${encodeURIComponent(reference)}`;
     }
 
-function gotoSupervisor(ref) {
-  closeNotifPanel();
-  markCurrentTabRead();
-  window.location.href = `supervisor.html?ref=${ref}`;
-}
+    // ── Tab supervisor → ไปหน้า supervisor พร้อม param ───────────────────
+    function gotoSupervisor(attId, empUuid, date) {
+      closeNotifPanel();
+      markCurrentTabRead();
+      window.location.href = `supervisor.html?id=${attId}&uuid=${encodeURIComponent(empUuid)}&date=${encodeURIComponent(date)}`;
+    }
 
+    // ── notifBtn click ────────────────────────────────────────────────────
     document.getElementById('notifBtn').addEventListener('click', (e) => {
       e.stopPropagation();
       const panel = document.getElementById('notifPanel');
@@ -2385,6 +2224,7 @@ function gotoSupervisor(ref) {
       const token = localStorage.getItem('auth_token');
       if (!token) { renderLoggedOut(); return; }
 
+      // แสดง cached data ก่อน (perceived performance)
       const cached = (() => { try { return JSON.parse(localStorage.getItem('user_data') || 'null'); } catch { return null; } })();
       if (cached) { setWordmark(cached); renderLoggedIn(cached); }
 
@@ -2413,40 +2253,30 @@ function gotoSupervisor(ref) {
     function renderLoggedIn(u) {
       document.getElementById('authSection').style.display = 'none';
       const app = document.getElementById('appSection');
-      app.style.display = 'flex'; // FIX: Ensure it shows up properly
+      app.style.display = 'flex';
 
-      const fullName =  `${u.firstName||''} ${u.lastName||''}`.trim() || u.email || u.name || '—';
+      const fullName = u.name || `${u.prefix||''} ${u.firstName||''} ${u.lastName||''}`.trim() || u.email || '—';
       document.getElementById('userName').textContent     = fullName;
-      document.getElementById('userGreeting').innerHTML   = getGreeting();
+      document.getElementById('userGreeting').textContent = getGreeting();
       document.getElementById('userEmail').textContent    = u.position || u.email || '—';
 
       const roleMap = {
         user:       '<i class="fa-solid fa-user" aria-hidden="true"></i> บุคลากร',
-        staff:     '<i class="fa-solid fa-user" aria-hidden="true"></i> เจ้าหน้าที่',
         admin:      '<i class="fa-solid fa-user-shield" aria-hidden="true"></i> ผู้ดูแลระบบ',
         manager:    '<i class="fa-solid fa-list-check" aria-hidden="true"></i> ผู้จัดการ',
-        hr:        '<i class="fa-solid fa-user-tie" aria-hidden="true"></i> ฝ่ายทรัพยากรบุคคล',
-        it:        '<i class="fa-solid fa-laptop-code" aria-hidden="true"></i> ฝ่ายเทคโนโลยีสารสนเทศ',
-        support:   '<i class="fa-solid fa-headset" aria-hidden="true"></i> ฝ่ายสนับสนุน',
-        legal:     '<i class="fa-solid fa-gavel" aria-hidden="true"></i> ฝ่ายกฎหมาย',
-        finance:   '<i class="fa-solid fa-money-bill-wave" aria-hidden="true"></i> ฝ่ายการเงิน',
         supervisor: '<i class="fa-solid fa-user-tie" aria-hidden="true"></i> หัวหน้า',
-        executive:  '<i class="fa-solid fa-user-crown" aria-hidden="true"></i> ผู้บริหาร',
-        ceo:       '<i class="fa-solid fa-user-crown" aria-hidden="true"></i> ผู้บริหารสูงสุด'
       };
       document.getElementById('userRole').innerHTML = roleMap[u.role] || roleMap.user;
 
       const av = document.getElementById('userAvatar');
-      // FIX: Add onerror fallback for avatar
-      av.onerror = function() {
-        this.src = `https://ui-avatars.com/api/?background=00f5b0&color=020c18&bold=true&size=128&name=${encodeURIComponent(fullName)}`;
-        this.onerror = null;
-      };
-      av.src = u.profileImage || u.picture || `https://ui-avatars.com/api/?background=00f5b0&color=020c18&bold=true&size=128&name=${encodeURIComponent(fullName)}`;
+      av.src = u.profileImage || u.picture ||
+        `https://ui-avatars.com/api/?background=00f5b0&color=020c18&bold=true&size=128&name=${encodeURIComponent(fullName)}`;
 
+      // stats (non-blocking)
       const tok = localStorage.getItem('auth_token');
       if (tok) fetchStats(tok);
 
+      // notifications (non-blocking)
       loadNotifications();
 
       bindLogout();
@@ -2455,19 +2285,18 @@ function gotoSupervisor(ref) {
     function renderLoggedOut() {
       setWordmark(null);
       document.getElementById('authSection').style.display = 'block';
-      document.getElementById('appSection').style.display  = 'none'; // FIX: Correctly hides app section
+      document.getElementById('appSection').style.display  = 'none';
     }
+
 
     function bindLogout() {
       const btn    = document.getElementById('logoutBtn');
       const btnAll = document.getElementById('logoutAllBtn');
-      // FIX: Use onclick to prevent handler stacking
-      if (btn)    btn.onclick    = () => logout(false);
-      if (btnAll) btnAll.onclick = () => logout(true);
+      if (btn)    btn.onclick    = () => doLogout(false);
+      if (btnAll) btnAll.onclick = () => doLogout(true);
     }
 
-    /* ═══════════ LOGOUT IMPLEMENTATION ═══════════ */
-   async function logout(logoutAll = false) {
+    async function doLogout(logoutAll = false) {
       const result = await Swal.fire({
         icon: 'warning', title: logoutAll ? 'ออกจากระบบทุกอุปกรณ์?' : 'ออกจากระบบ?',
         text: logoutAll ? 'คุณต้องเข้าสู่ระบบใหม่ทุกอุปกรณ์' : 'คุณต้องเข้าสู่ระบบใหม่อีกครั้ง',
@@ -2488,58 +2317,9 @@ function gotoSupervisor(ref) {
         else { showToast(data.message || 'ออกจากระบบไม่สำเร็จ', 'error'); if (btn) { btn.classList.remove('loading'); btn.querySelector('span:last-child').textContent = originalText; } }
       } catch { showToast('ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้', 'error'); if (btn) { btn.classList.remove('loading'); btn.querySelector('span:last-child').textContent = originalText; } }
     }
-    
-    /* ═══════════ NETWORK STATUS ═══════════ */
-    function updateConnectionStatus() {
-      if (!navigator.onLine) {
-        showToast('ไม่มีการเชื่อมต่ออินเทอร์เน็ต — ข้อมูลอาจไม่อัปเดต', 'error');
-      }
-    }
-    window.addEventListener('offline', updateConnectionStatus);
-    window.addEventListener('online', () => showToast('เชื่อมต่ออินเทอร์เน็ตแล้ว', 'success'));
 
     /* ═══════════ INIT ═══════════ */
     document.addEventListener('DOMContentLoaded', checkAuth);
-
-    /* ═══════════ ATTENDANCE ACTION ROUTING ═══════════ */
-function getAttendanceAction() {
-  const now  = new Date();
-  const h    = now.getHours();
-  const m    = now.getMinutes();
-  const total = h * 60 + m; // นาทีรวมตั้งแต่ 00:00
-
-  // ก่อน 08:31 → checkIn
-  if (total < 8 * 60 + 31) return 'checkIn';
-
-  // 08:31 – 16:30 → sendRequest
-  if (total <= 16 * 60 + 30) return 'sendRequest';
-
-  // หลัง 16:30 → checkOut
-  return 'checkOut';
-}
-
-function updateAttendanceBtnLabel() {
-  const action = getAttendanceAction();
-  const subEl  = document.getElementById('attendanceSubLabel');
-  if (!subEl) return;
-  const labels = {
-checkIn:     '<i class="fa-solid fa-circle-check" style="color:#22c55e"></i> แตะเพื่อลงเวลาเข้างาน',
-sendRequest: '<i class="fa-solid fa-file-pen" style="color:#eab308"></i> แตะเพื่อส่งคำขอ / แก้ไขเวลา',
-checkOut:   '<i class="fa-solid fa-circle-xmark" style="color:#ef4444"></i> แตะเพื่อลงเวลาออกงาน',
-  };
-  subEl.innerHTML = labels[action] || 'บันทึกเวลาปฏิบัติงานรายวัน';
-}
-
-function handleAttendanceClick(event) {
-  event.preventDefault();
-  const action = getAttendanceAction();
-  window.location.href = `attendance.html?action=${action}`;
-}
-
-// อัปเดต label ทันทีและทุก 1 นาที
-updateAttendanceBtnLabel();
-setInterval(updateAttendanceBtnLabel, 60000);
-
   </script>
 
 </body>

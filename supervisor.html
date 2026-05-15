@@ -44,10 +44,77 @@
     .sv{font-family:'K2D',sans-serif;font-size:1.3rem;font-weight:800;line-height:1}.sl{font-size:.72rem;color:var(--sub);margin-top:2px}
     /* Toolbar */
     .tb{background:var(--sur);border:1px solid var(--bd);border-radius:var(--r);padding:.75rem 1rem;display:flex;gap:.6rem;flex-wrap:wrap;align-items:center;margin-bottom:1rem}
-    .sw{flex:1;min-width:160px;position:relative;display:flex;align-items:center}
-    .sw i{position:absolute;left:10px;color:var(--mt);font-size:.82rem}
-    .sw input{width:100%;padding:.5rem .75rem .5rem 2rem;border:1px solid var(--bd);border-radius:8px;font-size:.85rem;font-family:'Sarabun',sans-serif;background:var(--sur2);outline:none;transition:border-color .15s}
-    .sw input:focus{border-color:var(--pri);background:var(--sur)}
+.sw{
+  flex:1;
+  min-width:160px;
+  position:relative;
+  display:flex;
+  align-items:center;
+}
+
+.sw i{
+  position:absolute;
+  left:12px;
+  color:var(--mt);
+  font-size:.82rem;
+  pointer-events:none;
+  transition:color .18s ease;
+}
+
+.sw input,
+.sw textarea{
+  width:100%;
+  padding:.62rem .85rem .62rem 2.2rem;
+
+  border:1px solid var(--bd);
+  border-radius:10px;
+
+  font-size:.88rem;
+  font-family:'Sarabun',sans-serif;
+
+  background:var(--sur2);
+  color:var(--tx);
+
+  outline:none;
+
+  transition:
+    border-color .18s ease,
+    background .18s ease,
+    box-shadow .18s ease;
+}
+
+.sw textarea{
+  min-height:110px;
+  resize:vertical;
+  line-height:1.55;
+}
+
+.sw input::placeholder,
+.sw textarea::placeholder{
+  color:var(--mt);
+}
+
+.sw:focus-within i{
+  color:var(--pri);
+}
+
+.sw input:focus,
+.sw textarea:focus{
+  border-color:var(--pri);
+  background:var(--sur);
+
+  box-shadow:
+    0 0 0 3px rgba(59,130,246,.14),
+    0 2px 10px rgba(0,0,0,.04);
+}
+
+/* Dark mode */
+[data-theme="dark"] .sw input:focus,
+[data-theme="dark"] .sw textarea:focus{
+  box-shadow:
+    0 0 0 3px rgba(96,165,250,.18),
+    0 2px 12px rgba(0,0,0,.25);
+}
     .tbb{display:flex;align-items:center;gap:5px;padding:.48rem .85rem;border-radius:8px;font-size:.82rem;font-weight:600;
       font-family:'Sarabun',sans-serif;cursor:pointer;border:1px solid var(--bd);background:var(--sur2);color:var(--sub);transition:all .15s;white-space:nowrap}
     .tbb:hover{background:var(--bg);color:var(--tx)}.tbb.pri{background:var(--pri);color:#fff;border-color:var(--pri)}.tbb.pri:hover{background:var(--prih)}
@@ -107,15 +174,130 @@
     .empty{text-align:center;padding:3rem 1rem;color:var(--mt);font-size:.9rem}.empty i{font-size:2.8rem;display:block;margin-bottom:.75rem;opacity:.35}
     .loading{text-align:center;padding:2rem;color:var(--sub)}
     .swal2-popup{border-radius:16px!important;font-family:'Sarabun',sans-serif!important}.swal2-confirm,.swal2-cancel{border-radius:8px!important}
+        .nav-back {
+      width:36px; height:36px; border-radius:10px; border:none;
+      background:var(--sur2); color:var(--tx); font-size:1rem; cursor:pointer;
+      display:flex; align-items:center; justify-content:center; flex-shrink:0;
+      transition:background .15s;
+    }
+    .nav-back:hover { background:var(--bd); }
     @media(max-width:640px){.stats-row{grid-template-columns:repeat(3,1fr)}.nr{display:none}.rrow{gap:.75rem}.dr{flex-wrap:wrap}}
     .spin{animation:sp .7s linear infinite}
     @keyframes sp{to{transform:rotate(360deg)}}
     @keyframes fu{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+    /* ═══════════════════════════════════════
+   SweetAlert2 Theme Custom
+═══════════════════════════════════════ */
+
+.swal2-popup{
+  background:var(--sur)!important;
+  color:var(--tx)!important;
+  border:1px solid var(--bd)!important;
+  border-radius:18px!important;
+  box-shadow:var(--shm)!important;
+  font-family:'Sarabun',sans-serif!important;
+}
+
+.swal2-title{
+  color:var(--tx)!important;
+  font-weight:700!important;
+}
+
+.swal2-html-container{
+  color:var(--sub)!important;
+  font-size:.95rem!important;
+}
+
+.swal2-icon{
+  border-width:.2em!important;
+}
+
+.swal2-confirm,
+.swal2-cancel,
+.swal2-deny{
+  border-radius:10px!important;
+  font-family:'Sarabun',sans-serif!important;
+  font-weight:600!important;
+  padding:.62rem 1.2rem!important;
+  transition:.18s ease!important;
+  box-shadow:none!important;
+}
+
+.swal2-confirm:focus,
+.swal2-cancel:focus,
+.swal2-deny:focus{
+  box-shadow:0 0 0 3px rgba(59,130,246,.22)!important;
+}
+
+.swal2-confirm:hover,
+.swal2-cancel:hover,
+.swal2-deny:hover{
+  transform:translateY(-1px);
+}
+
+.swal2-input,
+.swal2-textarea,
+.swal2-select{
+  background:var(--sur2)!important;
+  color:var(--tx)!important;
+  border:1px solid var(--bd)!important;
+  border-radius:10px!important;
+  font-family:'Sarabun',sans-serif!important;
+  box-shadow:none!important;
+}
+
+.swal2-input:focus,
+.swal2-textarea:focus,
+.swal2-select:focus{
+  border-color:var(--pri)!important;
+  box-shadow:0 0 0 3px rgba(59,130,246,.15)!important;
+}
+
+.swal2-loader{
+  border-color:var(--pri) transparent var(--pri) transparent!important;
+}
+
+.swal2-timer-progress-bar{
+  background:var(--pri)!important;
+}
+
+.swal2-close{
+  color:var(--sub)!important;
+  transition:.15s!important;
+}
+
+.swal2-close:hover{
+  color:var(--tx)!important;
+  transform:scale(1.08);
+}
+
+/* Dark Overlay */
+.swal2-container.swal2-backdrop-show{
+  background:rgba(0,0,0,.55)!important;
+}
+
+/* Toast */
+.swal2-toast{
+  background:var(--sur)!important;
+  color:var(--tx)!important;
+  border:1px solid var(--bd)!important;
+  box-shadow:var(--sh)!important;
+}
+
+.swal2-toast .swal2-title,
+.swal2-toast .swal2-html-container{
+  color:var(--tx)!important;
+}
+
+
   </style>
 </head>
 <body>
 <nav>
-  <a href="attendance.html" class="nb"><i class="fas fa-arrow-left"></i> กลับ</a>
+    <button class="nav-back" onclick="history.length>1?history.back():location.href='index.html'" title="ย้อนกลับ">
+    <i class="fa-solid fa-arrow-left"></i>
+  </button>
   <div class="nt"><i class="fas fa-shield-halved" style="color:var(--pri);margin-right:6px"></i>รับรองการลงเวลา</div>
   <span class="nr" id="navRole">—</span>
   <button class="theme-btn" id="themeBtn" title="เปลี่ยนธีม"><i class="fas fa-moon"></i></button>
@@ -143,7 +325,7 @@
   <div class="tb">
     <div class="sw">
       <i class="fas fa-magnifying-glass"></i>
-      <input type="text" id="si" placeholder="ค้นหาชื่อ..." oninput="debS()">
+      <input type="search" id="si" placeholder="ค้นหา..." oninput="debS()">
     </div>
     <div class="dr">
       <i class="fas fa-calendar" style="font-size:.8rem"></i>
@@ -152,6 +334,13 @@
       <input type="date" id="dt" onchange="load(true)" title="ถึงวันที่">
     </div>
     <button class="tbb" onclick="load(true)"><i class="fas fa-rotate-right"></i> รีเฟรช</button>
+<button class="tbb" id="selAllBtn" onclick="selectAllVisible()">
+  <i class="fas fa-check-double"></i> เลือกทั้งหมด
+</button>
+
+<button class="tbb" id="unselAllBtn" onclick="unselectAll()">
+  <i class="fas fa-xmark"></i> ยกเลิกเลือก
+</button>
     <button class="tbb pri" id="batchBtn" style="display:none" onclick="batchApprove()">
       <i class="fas fa-shield-check"></i> รับรองที่เลือก <span class="cbadge" id="batchCnt">0</span>
     </button>
@@ -192,7 +381,7 @@ async function load(reset = false) {
   if (reset) { curPg = 0; sel.clear(); updBatch(); }
   const rl = document.getElementById('rl');
   rl.innerHTML = '<div class="loading"><i class="fas fa-spinner spin"></i> กำลังโหลด...</div>';
-  const q  = document.getElementById('si').value.trim();
+  const q = document.getElementById('si').value.trim();
   const df = document.getElementById('df').value;
   const dt = document.getElementById('dt').value;
   const p  = new URLSearchParams({ status: curSt, limit: LIMIT, offset: curPg * LIMIT, ...(q?{search:q}:{}), ...(df?{date_from:df}:{}), ...(dt?{date_to:dt}:{}) });
@@ -260,7 +449,7 @@ function renderList(items) {
           <span class="sp ${SPCL[st]}">
             <i class="fas ${SPIC[st]}" style="font-size:.65rem"></i> ${SPLB[st]}
           </span>
-          <div class="rref">${fmtS(it.date)}</div>
+          <div class="rref">${esc(it.checkin_reference || '')}</div>
           <div class="rag">${ago(it.checkin_at||it.created_at)}</div>
         </div>
       </div>
@@ -297,6 +486,7 @@ function renderList(items) {
       </div>
     </div>`;
   }).join('');
+  updSelectTools();
 }
 
 function renderPg() {
@@ -322,10 +512,73 @@ function togSel(id, uuid, date, checked) {
   else { sel.delete(id); delete selData[id]; }
   updBatch();
 }
+
 function updBatch() {
-  const b = document.getElementById('batchBtn'), c = document.getElementById('batchCnt');
-  b.style.display = sel.size > 0 ? 'flex' : 'none';
-  c.textContent   = sel.size;
+  const b = document.getElementById('batchBtn');
+  const c = document.getElementById('batchCnt');
+
+  b.style.display =
+    sel.size > 0 ? 'flex' : 'none';
+
+  c.textContent = sel.size;
+
+  updSelectTools();
+}
+
+function updSelectTools() {
+  const hasPending =
+    document.querySelectorAll(
+      '.rc.pending input[type=checkbox]'
+    ).length > 0;
+
+  document.getElementById('selAllBtn').style.display =
+    hasPending ? 'inline-flex' : 'none';
+
+  document.getElementById('unselAllBtn').style.display =
+    sel.size > 0 ? 'inline-flex' : 'none';
+}
+
+function selectAllVisible() {
+  document.querySelectorAll('.rc.pending').forEach(card => {
+    const cb = card.querySelector('input[type=checkbox]');
+    if (!cb || cb.checked) return;
+
+    cb.checked = true;
+
+    const id = Number(
+      card.id.replace('card-', '')
+    );
+
+    const onclick =
+      card.querySelector('.act.app')
+        ?.getAttribute('onclick') || '';
+
+    const m = onclick.match(
+      /review\((\d+),'([^']+)','([^']+)'/
+    );
+
+    if (!m) return;
+
+    const [, , uuid, date] = m;
+
+    sel.add(id);
+    selData[id] = { uuid, date };
+  });
+
+  updBatch();
+}
+
+function unselectAll() {
+  document.querySelectorAll(
+    '.rc.pending input[type=checkbox]'
+  ).forEach(cb => {
+    cb.checked = false;
+  });
+
+  sel.clear();
+  selData = {};
+
+  updBatch();
 }
 
 async function batchApprove() {
@@ -370,8 +623,7 @@ async function review(id, uuid, date, action) {
       : '<i class="fas fa-shield-xmark" style="color:#dc2626"></i> ยืนยันไม่รับรอง',
     html: `<label style="display:block;text-align:left;font-size:.82rem;color:#6b7280;margin-bottom:4px">หมายเหตุ (ไม่บังคับ)</label>
       <textarea id="ni" rows="2" placeholder="ระบุหมายเหตุ..."
-        style="width:100%;padding:8px 10px;border:1px solid #e4e8ef;border-radius:8px;font-size:.88rem;font-family:Sarabun,sans-serif;resize:vertical;outline:none"></textarea>`,
-    showCancelButton: true,
+        style="width:100%;padding:.5rem;border:1px solid var(--bd);border-radius:8px;background:var(--sur2);color:var(--tx);font-family:'Sarabun',sans-serif;box-shadow:none;resize:none"></textarea>`,
     confirmButtonText: isA ? '<i class="fas fa-shield-check"></i> รับรอง' : '<i class="fas fa-shield-xmark"></i> ไม่รับรอง',
     cancelButtonText:  'ยกเลิก',
     confirmButtonColor: isA ? '#059669' : '#dc2626',
@@ -415,7 +667,54 @@ async function review(id, uuid, date, action) {
   }
 }
 
-document.addEventListener('DOMContentLoaded', () => { initUser(); load(true); });
+document.addEventListener('DOMContentLoaded', async () => {
+  initUser();
+
+  await load(true);
+
+  const ref = new URLSearchParams(location.search).get('ref');
+
+  if (!ref) return;
+
+  // ใส่ค่าในช่องค้นหา
+  const input = document.getElementById('si');
+  input.value = ref;
+
+  // โหลดใหม่ด้วย ref
+  await load(true);
+
+  // รอ render เสร็จ
+  requestAnimationFrame(() => {
+    const card = [...document.querySelectorAll('.rref')]
+      .find(el => el.textContent.includes(ref))
+      ?.closest('.rc');
+
+    if (!card) return;
+
+    const navH = document.querySelector('nav')?.offsetHeight || 70;
+
+    const top =
+      card.getBoundingClientRect().top +
+      window.pageYOffset -
+      navH -
+      12;
+
+    window.scrollTo({
+      top,
+      behavior: 'smooth'
+    });
+
+    // highlight
+    card.style.transition = 'box-shadow .25s,border-color .25s';
+    card.style.boxShadow = '0 0 0 3px rgba(37,99,235,.25)';
+    card.style.borderColor = 'var(--pri)';
+
+    setTimeout(() => {
+      card.style.boxShadow = '';
+      card.style.borderColor = '';
+    }, 3000);
+  });
+});
 
 // ── Theme Toggle ──
 (function(){

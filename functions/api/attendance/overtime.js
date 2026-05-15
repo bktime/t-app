@@ -11,35 +11,57 @@ const json = (d, s = 200) => Response.json(d, { status: s, headers: CORS });
 const DEFAULT_OT_MAX_HOURS  = 7;
 const OT_DEFAULT_START_TIME = '16:30';
 
-function generateRef(uuid = '', workType = '') {
-  const now = new Date();
-  const prefix = workType === 'เวรวันหยุด' ? 'PH' : 'OT';
+function getThaiDateTime() {
+  const parts = new Intl.DateTimeFormat('sv-SE', {
+    timeZone: 'Asia/Bangkok',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false
+  }).formatToParts(new Date());
 
-  // YYMMDD
-  const d = now.toISOString().slice(2, 10).replace(/-/g, '');
+  const get = type =>
+    parts.find(p => p.type === type)?.value || '';
 
-  // HHMMSS
-  const t = now.toTimeString().slice(0, 8).replace(/:/g, '');
+  const dateISO =
+    `${get('year')}-${get('month')}-${get('day')}`;
 
-  // UUID 8 ตัว
-  const u = (uuid || 'NOUID')
+  const timeStr =
+    `${get('hour')}:${get('minute')}:${get('second')}`;
+
+  const isoString =
+    `${dateISO}T${timeStr}+07:00`;
+
+  return {
+    dateISO,
+    timeStr,
+    isoString
+  };
+}
+
+function generateRef(workType = '') {
+    const { dateISO } = getThaiDateTime();
+
+  const prefix = workType === 'เวรวันหยุด'
+    ? 'PH'
+    : 'OT';
+
+  const datePart = dateISO
     .replace(/-/g, '')
-    .slice(0, 8)
+    .slice(2);
+
+  const randPart = crypto.randomUUID()
+    .replace(/-/g, '')
+    .slice(0, 4)
     .toUpperCase();
 
-  const base = d + t; // ใช้คำนวณ checksum
-
-  // 🔢 checksum (mod 11 แบบ ISBN)
-  let sum = 0;
-  for (let i = 0; i < base.length; i++) {
-    sum += parseInt(base[i]) * (i + 1);
-  }
-
-  let check = sum % 11;
-  if (check === 10) check = 'X';
-
-  return `${prefix}-${d}-${t}-${u}-${check}`;
+  return `${prefix}-${datePart}-${randPart}`;
 }
+
+
 
 function calcOtHours(start, end) {
   const [sh, sm] = start.split(':').map(Number);
@@ -322,7 +344,7 @@ export async function onRequest(context) {
 
     const inRange = finalIsInRange != null ? (finalIsInRange ? 1 : 0) : null;
     const now     = timestamp_iso ? new Date(timestamp_iso) : new Date();
-    const ref     = generateRef(uuid, workType);
+    const ref     = generateRef(workType);
 
     try {
       await env.DB.prepare(`

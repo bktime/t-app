@@ -9,39 +9,50 @@ const CORS = {
 };
 const json = (d, s = 200) => Response.json(d, { status: s, headers: CORS });
 
+function getThaiDateTime() {
+  const parts = new Intl.DateTimeFormat('sv-SE', {
+    timeZone: 'Asia/Bangkok',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false
+  }).formatToParts(new Date());
 
-function generateRef(uuid = '') {
-  const now = new Date();
-  const d = now.toISOString().slice(2, 10).replace(/-/g, '');
-  const t = now.toTimeString().slice(0, 8).replace(/:/g, '');
-  const u = (uuid || 'NOUID').replace(/-/g, '').slice(0, 8).toUpperCase();
-  const base = d + t;
+  const get = type =>
+    parts.find(p => p.type === type)?.value || '';
 
-  let sum = 0;
-  for (let i = 0; i < base.length; i++) {
-    sum += parseInt(base[i]) * (i + 1);
-  }
-  let check = sum % 11;
-  if (check === 10) check = 'X';
+  const dateISO =
+    `${get('year')}-${get('month')}-${get('day')}`;
 
-  return `REQ-${d}-${t}-${u}-${check}`;
+  const timeStr =
+    `${get('hour')}:${get('minute')}:${get('second')}`;
+
+  const isoString =
+    `${dateISO}T${timeStr}+07:00`;
+
+  return {
+    dateISO,
+    timeStr,
+    isoString
+  };
 }
 
-function generateRefAT(uuid = '') {
-  const now = new Date();
-  const d = now.toISOString().slice(2, 10).replace(/-/g, '');
-  const t = now.toTimeString().slice(0, 8).replace(/:/g, '');
-  const u = (uuid || 'NOUID').replace(/-/g, '').slice(0, 8).toUpperCase();
-  const base = d + t;
+function generateRef(prefix = 'REQ') {
+  const { dateISO } = getThaiDateTime();
 
-  let sum = 0;
-  for (let i = 0; i < base.length; i++) {
-    sum += parseInt(base[i]) * (i + 1);
-  }
-  let check = sum % 11;
-  if (check === 10) check = 'X';
+  const datePart = dateISO
+    .replace(/-/g, '')
+    .slice(2);
 
-  return `ATT-${d}-${t}-${u}-${check}`;
+  const randPart = crypto.randomUUID()
+    .replace(/-/g, '')
+    .slice(0, 4)
+    .toUpperCase();
+
+  return `${prefix}-${datePart}-${randPart}`;
 }
 
 // ===== ฟังก์ชันเกี่ยวกับพื้นที่ =====
@@ -182,8 +193,8 @@ export async function onRequest(context) {
       SELECT name FROM users WHERE uuid = ?
     `).bind(approver_uuid).first();
 
-    const ref = generateRef(uuid);
-    const refAT = generateRefAT(uuid);
+    const ref = generateRef('REQ');
+    const refAT = generateRef('ATT');
     const supName = supervisor_name || approver?.name;
 
     // ── ตรวจสอบพื้นที่ จ.บึงกาฬ ──────────────────────────────────────────────
@@ -192,10 +203,21 @@ export async function onRequest(context) {
     let locationDisplay = null;
     let locationCheckResult = null; // เก็บรายละเอียดเพิ่มเติม
 
+    let lat = latitude != null ? parseFloat(latitude) : null;
+let lon = longitude != null ? parseFloat(longitude) : null;
+
+if (lat !== null && (isNaN(lat) || lat < -90 || lat > 90)) {
+  lat = null;
+}
+
+if (lon !== null && (isNaN(lon) || lon < -180 || lon > 180)) {
+  lon = null;
+}
+
     // ✅ ส่ง env เข้าไปในฟังก์ชัน checkBuengKan
-    if (latitude && longitude) {
-      const loc = await checkBuengKan(latitude, longitude, env);
-      
+    if (lat !== null && lon !== null) {
+      const loc = await checkBuengKan(lat, lon, env);
+
       if (loc.inProvince) {
         // อยู่ใน จ.บึงกาฬ บังคับ distance = 0 และ in_range = 1
         finalDistanceM = 0;
@@ -258,8 +280,8 @@ export async function onRequest(context) {
         `).bind(
           work_type || 'ปกติ',
           note || null,
-          latitude ?? null,
-          longitude ?? null,
+          lat,
+          lon,
           finalDistanceM ?? null,
           inRangeVal,
           ref, request_type, reason,
@@ -292,8 +314,8 @@ export async function onRequest(context) {
         `).bind(
           work_type || 'ปกติ',
           note || null,
-          latitude ?? null,
-          longitude ?? null,
+          lat,
+          lon,
           finalDistanceM ?? null,
           inRangeVal,
           ref, request_type, reason,
@@ -320,8 +342,8 @@ export async function onRequest(context) {
         uuid, req_date,
         work_type || 'ปกติ',
         note || null,
-        latitude ?? null,
-        longitude ?? null,
+        lat,
+        lon,
         finalDistanceM ?? null,
         inRangeVal,
         refAT,

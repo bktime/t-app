@@ -1,8 +1,8 @@
 // functions/api/dash/recent-activity.js
-// GET /api/dash/recent-activity?from=YYYY-MM-DD&to=YYYY-MM-DD&limit=20
+// GET /api/dash/recent-activity?from=YYYY-MM-DD&to=YYYY-MM-DD[&aff=xxx][&dep=xxx][&limit=20]
 
-
-import { authUser, extractToken } from '../_auth.js';
+import { authUser, extractToken, unauthorized } from '../_auth.js';
+import { buildScope, getMe, scopedUUIDsSQL } from './_scope.js';
 
 const CORS = {
   'Access-Control-Allow-Origin': '*',
@@ -24,15 +24,18 @@ export async function onRequestGet({ request, env }) {
   const token = extractToken(request);
   const session = await authUser(env, token);
   if (!session) return unauthorized(CORS);
-  if (!['admin', 'supervisor'].includes(session.role)) {
-    return Response.json({ success: false, message: 'Forbidden' }, { status: 403, headers: CORS });
-  }
+
+  const me = await getMe(env, session.uuid);
+  if (!me) return unauthorized(CORS);
 
   const url   = new URL(request.url);
   const today = new Date().toISOString().slice(0, 10);
   const from  = url.searchParams.get('from')  || today;
   const to    = url.searchParams.get('to')    || today;
   const limit = Math.min(parseInt(url.searchParams.get('limit') || '20'), 50);
+
+  const { scopeSQL, scopeParams, scopeMeta, canFilter } = buildScope(me, url);
+  const inUUIDs = scopedUUIDsSQL(scopeSQL);
 
   try {
     const [recentCheckins, recentRequests, recentOt] = await Promise.all([
@@ -51,12 +54,14 @@ export async function onRequestGet({ request, env }) {
           u.position
         FROM attendance a
         JOIN users u ON u.uuid = a.uuid
-        WHERE a.date BETWEEN ? AND ? AND a.checkin_time IS NOT NULL
+        WHERE a.date BETWEEN ? AND ?
+          AND a.checkin_time IS NOT NULL AND a.supervisor_status <> 'cancelled'
+          AND a.uuid IN (${inUUIDs})
         ORDER BY a.checkin_at DESC
         LIMIT ?
-      `).bind(from, to, limit).all(),
+      `).bind(from, to, ...scopeParams, limit).all(),
 
-      // คำขอแก้ไขเวลาล่าสุด (attendance)
+      // คำขอแก้ไขเวลา
       env.DB.prepare(`
         SELECT
           a.date,
@@ -67,17 +72,19 @@ export async function onRequestGet({ request, env }) {
           a.supervisor_status,
           a.supervisor_note,
           a.reviewed_at,
-          u.firstName || ' ' || u.lastName AS name,
+          u.firstName || ' ' || u.lastName   AS name,
           u.department,
           u.position,
           sv.firstName || ' ' || sv.lastName AS supervisor_name
         FROM attendance a
-        JOIN users u ON u.uuid = a.uuid
+        JOIN users u  ON u.uuid  = a.uuid
         LEFT JOIN users sv ON sv.uuid = a.approver_uuid
-        WHERE a.date BETWEEN ? AND ? AND a.request_ref IS NOT NULL
+        WHERE a.date BETWEEN ? AND ?
+          AND a.request_ref IS NOT NULL AND a.supervisor_status <> 'cancelled'
+          AND a.uuid IN (${inUUIDs})
         ORDER BY a.request_at DESC
         LIMIT ?
-      `).bind(from, to, limit).all(),
+      `).bind(from, to, ...scopeParams, limit).all(),
 
       // คำขอ OT ล่าสุด
       env.DB.prepare(`
@@ -93,13 +100,14 @@ export async function onRequestGet({ request, env }) {
           o.reviewed_at,
           o.submitted_at,
           COALESCE(o.name, u.firstName || ' ' || u.lastName) AS name,
-          COALESCE(o.department, u.department) AS department
+          COALESCE(o.department, u.department)               AS department
         FROM attendance_overtime o
         LEFT JOIN users u ON u.uuid = o.uuid
-        WHERE o.ot_date BETWEEN ? AND ?
+        WHERE o.ot_date BETWEEN ? AND ? AND o.supervisor_status <> 'cancelled'
+          AND o.uuid IN (${inUUIDs})
         ORDER BY o.submitted_at DESC
         LIMIT ?
-      `).bind(from, to, limit).all(),
+      `).bind(from, to, ...scopeParams, limit).all(),
     ]);
 
     return Response.json({
@@ -109,7 +117,7 @@ export async function onRequestGet({ request, env }) {
         recentRequests:  recentRequests.results  ?? [],
         recentOt:        recentOt.results        ?? [],
       },
-      meta: { from, to, limit },
+      meta: { from, to, limit, role: me.role, canFilter, ...scopeMeta },
     }, { headers: CORS });
 
   } catch (err) {

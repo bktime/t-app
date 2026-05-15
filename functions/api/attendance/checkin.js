@@ -10,22 +10,50 @@ const CORS = {
 };
 const json = (d, s = 200) => Response.json(d, { status: s, headers: CORS });
 
-// ref: AT-{UUID8}-{YYYYMMDD}-{HHmmss}
-function generateRef(uuid = '') {
-  const now = new Date();
-  const d = now.toISOString().slice(2, 10).replace(/-/g, '');
-  const t = now.toTimeString().slice(0, 8).replace(/:/g, '');
-  const u = (uuid || 'NOUID').replace(/-/g, '').slice(0, 8).toUpperCase();
-  const base = d + t;
+function getThaiDateTime() {
+  const parts = new Intl.DateTimeFormat('sv-SE', {
+    timeZone: 'Asia/Bangkok',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false
+  }).formatToParts(new Date());
 
-  let sum = 0;
-  for (let i = 0; i < base.length; i++) {
-    sum += parseInt(base[i]) * (i + 1);
-  }
-  let check = sum % 11;
-  if (check === 10) check = 'X';
+  const get = type =>
+    parts.find(p => p.type === type)?.value || '';
 
-  return `ATT-${d}-${t}-${u}-${check}`;
+  const dateISO =
+    `${get('year')}-${get('month')}-${get('day')}`;
+
+  const timeStr =
+    `${get('hour')}:${get('minute')}:${get('second')}`;
+
+  const isoString =
+    `${dateISO}T${timeStr}+07:00`;
+
+  return {
+    dateISO,
+    timeStr,
+    isoString
+  };
+}
+
+function generateRef(prefix = 'ATT') {
+  const { dateISO } = getThaiDateTime();
+
+  const datePart = dateISO
+    .replace(/-/g, '')
+    .slice(2);
+
+  const randPart = crypto.randomUUID()
+    .replace(/-/g, '')
+    .slice(0, 4)
+    .toUpperCase();
+
+  return `${prefix}-${datePart}-${randPart}`;
 }
 
 // ===== ฟังก์ชันเกี่ยวกับพื้นที่ =====
@@ -38,10 +66,8 @@ function cleanText(text) {
     .trim();
 }
 
-// ✅ แก้ไข: ส่ง env เข้าไปในฟังก์ชัน
 async function checkBuengKan(lat, lon, env) {
   try {
-    // ✅ ใช้ env ที่ส่งเข้ามา
     const apiKey = env.LOCATIONIQ_KEY;
     
     const res = await fetch(
@@ -91,31 +117,16 @@ export async function onRequest(context) {
 
   const {
     uuid, action, work_type, note,
-    latitude, longitude, distance_m, is_in_range,
-    timestamp_iso
+    latitude, longitude, distance_m, is_in_range
+    // ✅ ลบ timestamp_iso ออกเพื่อความปลอดภัย (ป้องกันการปลอมเวลา)
   } = body;
 
   if (!uuid || !action) return json({ success: false, message: 'ข้อมูลไม่ครบถ้วน' }, 400);
   if (uuid !== userRow.uuid) return json({ success: false, message: 'UUID ไม่ตรงกัน' }, 403);
   if (!['checkin', 'checkout'].includes(action)) return json({ success: false, message: 'action ไม่ถูกต้อง' }, 400);
 
-  const now = timestamp_iso ? new Date(timestamp_iso) : new Date();
-
-  if (isNaN(now.getTime())) {
-    return json({ success: false, message: 'รูปแบบเวลาไม่ถูกต้อง' }, 400);
-  }
-
-  // UTC+7
-  const offsetMs = 7 * 60 * 60 * 1000;
-  const thaiNow = new Date(Date.now() + offsetMs);
-
-  const dateISO = thaiNow.toISOString().slice(0, 10);
-  const timeStr = thaiNow.toISOString().slice(11, 19);
-
-  const todayISO = new Date().toISOString().slice(0, 10);
-  if (dateISO !== todayISO) {
-    return json({ success: false, message: 'ไม่สามารถลงเวลาย้อนหลังหรือข้ามวันได้' }, 400);
-  }
+  // เรียกจากฟังก์ชัน getThaiDateTime
+  const { dateISO, timeStr, isoString } = getThaiDateTime();
 
   // ── อ่าน approver_uuid จาก user_data (supervisor_code)
   const userInfo = await env.DB.prepare(
@@ -124,18 +135,22 @@ export async function onRequest(context) {
   const approverUuid   = userInfo?.supervisor_code || null;
   const supervisorName = userInfo?.supervisor || null;
 
+  // ✅ เพิ่ม Validation: ตรวจสอบค่าพิกัดให้ถูกต้องก่อนไปใช้งาน
+  let lat = latitude ? parseFloat(latitude) : null;
+  let lon = longitude ? parseFloat(longitude) : null;
+  if (lat !== null && (isNaN(lat) || lat < -90 || lat > 90)) lat = null;
+  if (lon !== null && (isNaN(lon) || lon < -180 || lon > 180)) lon = null;
+
   // ── ตรวจสอบพื้นที่ จ.บึงกาฬ ──────────────────────────────────────────────
-  let finalDistanceM = distance_m;
+  let finalDistanceM = distance_m != null ? parseFloat(distance_m) : null;
   let finalIsInRange = is_in_range;
   let locationDisplay = null;
   let locationDetail = null;
 
-  // ✅ ส่ง env เข้าไปในฟังก์ชัน checkBuengKan
-  if (latitude && longitude) {
-    const loc = await checkBuengKan(latitude, longitude, env);
+ if (lat !== null && lon !== null) {
+    const loc = await checkBuengKan(lat, lon, env);
     
     if (loc.inProvince) {
-      // อยู่ใน จ.บึงกาฬ บังคับ distance = 0 และ in_range = 1
       finalDistanceM = 0;
       finalIsInRange = true;
       locationDisplay = `📍 อยู่ในพื้นที่จังหวัดบึงกาฬ`;
@@ -158,7 +173,6 @@ export async function onRequest(context) {
     }
   }
 
-  // แปลงค่าให้เหมาะสมกับ Database (1/0/null)
   const inRangeVal = finalIsInRange != null ? (finalIsInRange ? 1 : 0) : null;
 
   // ── CHECKIN ───────────────────────────────────────────────────────────────
@@ -171,7 +185,7 @@ export async function onRequest(context) {
       return json({ success: false, message: 'คุณได้ลงเวลาเข้าในวันนี้แล้ว', duplicate: true }, 409);
     }
 
-    const ref = generateRef(uuid, now);
+    const ref = generateRef('ATT');
 
     try {
       if (existing) {
@@ -191,9 +205,9 @@ export async function onRequest(context) {
           WHERE uuid = ? AND date = ?
         `).bind(
           timeStr, work_type || 'ปกติ', note || null,
-          latitude ?? null, longitude ?? null,
-          finalDistanceM ?? null, inRangeVal,
-          ref, now.toISOString(),
+          lat, lon,
+          finalDistanceM, inRangeVal,
+          ref, isoString, // ✅ ใช้ isoString ที่คำนวณไว้
           uuid, dateISO
         ).run();
       } else {
@@ -212,20 +226,19 @@ export async function onRequest(context) {
             ?, ?, ?, ?,
             ?, ?, CURRENT_TIMESTAMP,
             '16:30:00', 'auto', ?, ?,
-            ?, ?, 'none',
+            ?, ?, 'pending',
             CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
           )
         `).bind(
           uuid, dateISO,
           timeStr, work_type || 'ปกติ', note || null,
-          latitude ?? null, longitude ?? null, finalDistanceM ?? null, inRangeVal,
-          ref, now.toISOString(),
-          work_type || 'ปกติ', `${dateISO}T16:30:00`,
+          lat, lon, finalDistanceM, inRangeVal,
+          ref, isoString, // ✅ ใช้ isoString ที่คำนวณไว้
+          work_type || 'ปกติ', `${dateISO}T16:30:00+07:00`,
           approverUuid, supervisorName
         ).run();
       }
 
-      // ✅ ส่งข้อมูล location กลับไปด้วย
       return json({
         success: true,
         message: locationDetail?.inBuengKan 
@@ -237,9 +250,9 @@ export async function onRequest(context) {
           date: dateISO,
           time_str: timeStr,
           auto_checkout_at: '16:30',
-          supervisor_status: 'none',
+          supervisor_status: 'pending',
           location_display: locationDisplay,
-          location_detail: locationDetail // ส่งรายละเอียดเพิ่มเติม
+          location_detail: locationDetail
         },
       });
     } catch (err) {
@@ -278,13 +291,12 @@ export async function onRequest(context) {
         WHERE uuid = ? AND date = ?
       `).bind(
         timeStr, work_type || 'ปกติ', note || null,
-        latitude ?? null, longitude ?? null,
-        finalDistanceM ?? null, inRangeVal,
-        now.toISOString(),
+        lat, lon,
+        finalDistanceM, inRangeVal,
+        isoString, // ✅ ใช้ isoString ที่คำนวณไว้
         uuid, dateISO
       ).run();
 
-      // ✅ ส่งข้อมูล location กลับไปด้วย
       return json({
         success: true,
         message: locationDetail?.inBuengKan
@@ -296,7 +308,7 @@ export async function onRequest(context) {
           date: dateISO, 
           time_str: timeStr,
           location_display: locationDisplay,
-          location_detail: locationDetail // ส่งรายละเอียดเพิ่มเติม
+          location_detail: locationDetail
         },
       });
     } catch (err) {

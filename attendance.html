@@ -2715,14 +2715,37 @@ async function loadNotifications() {
     if (d.success) _pendItems = d.data || [];
   } catch (_) {}
 
-  // 3. รอรับรองเวลา (attendance ที่ approver_uuid=ตัวเอง และ supervisor_status=pending)
-  _supItems = [];
-  try {
-    const res = await fetch(`${API_BASE}/supervisor-pending?limit=50`, { headers: AUTH_HEADER() });
-    const d   = await res.json();
-    if (d.success) _supItems = d.data || [];
-  } catch (_) {}
+// 3. รอรับรองเวลา
+_supItems = [];
 
+try {
+  const res = await fetch(
+    `${API_BASE}/supervisor-pending?status=pending&limit=50`,
+    { headers: AUTH_HEADER() }
+  );
+
+  if (res.status === 401) {
+    console.warn('Unauthorized');
+    return;
+  }
+
+  if (!res.ok) {
+    throw new Error(`HTTP ${res.status}`);
+  }
+
+  const d = await res.json();
+
+  console.log('supervisor-pending:', d);
+
+  if (!d.success) {
+    throw new Error(d.message || 'โหลดข้อมูลไม่สำเร็จ');
+  }
+
+  _supItems = d.data || [];
+
+} catch (err) {
+  console.error('load supervisor pending error:', err);
+}
   // นับ unread
   const prevRead   = new Set(JSON.parse(localStorage.getItem('notifRead') || '[]'));
   const unreadMine = _mineItems.filter(i => ['approved','rejected'].includes(i.status) && !prevRead.has(i.reference)).length;
@@ -4186,6 +4209,7 @@ async function verifyToken() {
 }
 
 
+
 // ===================== INIT =====================
 document.addEventListener('DOMContentLoaded', async () => {
   const ud   = getUserData();
@@ -4216,6 +4240,29 @@ document.addEventListener('DOMContentLoaded', async () => {
   // refresh notif ทุก 60 วินาที
   setInterval(loadNotifications, 60000);
 });
+
+/* ═══════════ AUTO ACTION FROM URL PARAM ═══════════ */
+(function autoActionFromParam() {
+  const params = new URLSearchParams(window.location.search);
+  const action = params.get('action');
+  if (!action) return;
+
+  // รอให้หน้าโหลดและ auth เสร็จก่อนเรียก function
+  const actionMap = {
+    checkIn:     () => typeof checkIn     === 'function' && checkIn(),
+    sendRequest: () => typeof sendRequest === 'function' && sendRequest(),
+    checkOut:    () => typeof checkOut    === 'function' && checkOut(),
+  };
+
+  if (actionMap[action]) {
+    // delay เล็กน้อยเพื่อรอ DOM + auth state พร้อม
+    setTimeout(() => {
+      actionMap[action]();
+    }, 800);
+  }
+})();
+
+
 </script>
 </body>
 </html>

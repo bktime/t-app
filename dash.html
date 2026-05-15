@@ -3,993 +3,802 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dashboard — สรุปสถิติผู้ใช้</title>
+<title>Dashboard · ระบบบริหารงานบุคคล</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500;600;700;800&family=Noto+Sans+Thai:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700;800&family=Sarabun:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <style>
-  :root {
-    --bg-primary: #020617;
-    --bg-secondary: #0a0f1e;
-    --bg-card: rgba(10, 15, 35, 0.75);
-    --bg-card-solid: #0d1326;
-    --bg-surface: rgba(255,255,255,0.03);
-    --bg-surface2: rgba(255,255,255,0.06);
-    --border-color: rgba(255,255,255,0.07);
-    --border-hover: rgba(255,255,255,0.14);
-    --border-accent: rgba(16, 185, 129, 0.3);
-    --text-primary: #f1f5f9;
-    --text-secondary: #94a3b8;
-    --text-muted: #64748b;
-    --accent: #10b981;
-    --accent-hover: #34d399;
-    --accent-deep: #059669;
-    --accent-glow: rgba(16, 185, 129, 0.2);
-    --accent-bg: rgba(16, 185, 129, 0.08);
-    --blue: #3b82f6;
-    --blue-bg: rgba(59, 130, 246, 0.08);
-    --blue-border: rgba(59, 130, 246, 0.25);
-    --indigo: #818cf8;
-    --indigo-bg: rgba(129, 140, 248, 0.08);
-    --indigo-border: rgba(129, 140, 248, 0.22);
-    --amber: #f59e0b;
-    --amber-bg: rgba(245, 158, 11, 0.08);
-    --amber-border: rgba(245, 158, 11, 0.22);
-    --rose: #f43f5e;
-    --rose-bg: rgba(244, 63, 94, 0.08);
-    --rose-border: rgba(244, 63, 94, 0.22);
-    --purple: #a855f7;
-    --purple-bg: rgba(168, 85, 247, 0.08);
-    --purple-border: rgba(168, 85, 247, 0.22);
-    --cyan: #06b6d4;
-    --cyan-bg: rgba(6, 182, 212, 0.08);
-    --cyan-border: rgba(6, 182, 212, 0.22);
-    --danger: #ef4444;
-    --danger-bg: rgba(239, 68, 68, 0.08);
-    --radius-xs: 8px;
-    --radius-sm: 12px;
-    --radius-md: 16px;
-    --radius-lg: 24px;
-    --shadow-card: 0 20px 50px -10px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.04);
-    --transition: 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-  }
+/* ══ Variables ══ */
+:root{
+  --bg:#07090f;--bg2:#0c1018;--bg3:#111827;
+  --card:rgba(17,24,39,0.82);--card-s:#111827;
+  --sur:rgba(255,255,255,0.03);--sur2:rgba(255,255,255,0.055);
+  --bd:rgba(255,255,255,0.07);--bd2:rgba(255,255,255,0.13);--bda:rgba(16,185,129,0.28);
+  --tx:#f1f5f9;--tx2:#94a3b8;--tx3:#4b5563;
+  --em:#10b981;--em2:#34d399;--emd:#059669;--emg:rgba(16,185,129,0.18);--embg:rgba(16,185,129,0.07);
+  --bl:#60a5fa;--blbg:rgba(96,165,250,0.07);--blb:rgba(96,165,250,0.22);
+  --in:#818cf8;--inbg:rgba(129,140,248,0.07);--inb:rgba(129,140,248,0.22);
+  --am:#fbbf24;--ambg:rgba(251,191,36,0.07);--amb:rgba(251,191,36,0.22);
+  --ro:#fb7185;--robg:rgba(251,113,133,0.07);--rob:rgba(251,113,133,0.22);
+  --pu:#c084fc;--pubg:rgba(192,132,252,0.07);--pub:rgba(192,132,252,0.22);
+  --cy:#22d3ee;--cybg:rgba(34,211,238,0.07);--cyb:rgba(34,211,238,0.22);
+  --rr-xs:8px;--rr-sm:12px;--rr-md:16px;--rr-lg:22px;
+  --shad:0 20px 60px -15px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.04);
+  --ease:cubic-bezier(0.16,1,0.3,1);--T:.22s;
+  --sw:240px;
+}
+[data-theme="light"]{
+  --bg:#f0f4fb;--bg2:#e4eaf5;--bg3:#dde5f0;
+  --card:rgba(255,255,255,.92);--card-s:#fff;
+  --sur:rgba(0,0,0,.02);--sur2:rgba(0,0,0,.045);
+  --bd:rgba(0,0,0,.07);--bd2:rgba(0,0,0,.13);--bda:rgba(5,150,105,.25);
+  --tx:#0f172a;--tx2:#475569;--tx3:#94a3b8;
+  --em:#059669;--em2:#047857;--emd:#047857;--emg:rgba(5,150,105,.14);--embg:rgba(5,150,105,.07);
+  --bl:#2563eb;--blbg:rgba(37,99,235,.06);--blb:rgba(37,99,235,.2);
+  --in:#6366f1;--inbg:rgba(99,102,241,.06);--inb:rgba(99,102,241,.2);
+  --am:#d97706;--ambg:rgba(217,119,6,.06);--amb:rgba(217,119,6,.2);
+  --ro:#e11d48;--robg:rgba(225,29,72,.06);--rob:rgba(225,29,72,.2);
+  --pu:#9333ea;--pubg:rgba(147,51,234,.06);--pub:rgba(147,51,234,.2);
+  --cy:#0891b2;--cybg:rgba(8,145,178,.06);--cyb:rgba(8,145,178,.2);
+  --shad:0 8px 30px -6px rgba(0,0,0,.1),0 0 0 1px rgba(0,0,0,.05);
+}
+[data-theme="light"] .orb{opacity:.05;}
+[data-theme="light"] body{background:var(--bg);}
+[data-theme="light"] .topbar{background:rgba(240,244,251,.9);}
 
-  [data-theme="light"] {
-    --bg-primary: #f0f4f8;
-    --bg-secondary: #e2e8f0;
-    --bg-card: rgba(255,255,255,0.9);
-    --bg-card-solid: #ffffff;
-    --bg-surface: rgba(0,0,0,0.02);
-    --bg-surface2: rgba(0,0,0,0.04);
-    --border-color: rgba(0,0,0,0.07);
-    --border-hover: rgba(0,0,0,0.12);
-    --border-accent: rgba(5,150,105,0.25);
-    --text-primary: #0f172a;
-    --text-secondary: #475569;
-    --text-muted: #94a3b8;
-    --accent: #059669;
-    --accent-hover: #047857;
-    --accent-deep: #047857;
-    --accent-glow: rgba(5,150,105,0.15);
-    --accent-bg: rgba(5,150,105,0.07);
-    --blue-bg: rgba(37,99,235,0.07);
-    --blue-border: rgba(37,99,235,0.2);
-    --indigo-bg: rgba(99,102,241,0.07);
-    --indigo-border: rgba(99,102,241,0.18);
-    --amber-bg: rgba(217,119,6,0.07);
-    --amber-border: rgba(217,119,6,0.18);
-    --rose-bg: rgba(225,29,72,0.06);
-    --rose-border: rgba(225,29,72,0.18);
-    --purple-bg: rgba(147,51,234,0.06);
-    --purple-border: rgba(147,51,234,0.18);
-    --cyan-bg: rgba(8,145,178,0.06);
-    --cyan-border: rgba(8,145,178,0.18);
-    --danger-bg: rgba(220,38,38,0.06);
-    --shadow-card: 0 8px 30px -6px rgba(0,0,0,0.1), 0 0 0 1px rgba(0,0,0,0.05);
-  }
-  [data-theme="light"] body { background: var(--bg-primary); }
-  [data-theme="light"] .orb { opacity: 0.06; filter: blur(100px); }
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;display:flex;-webkit-font-smoothing:antialiased;overflow-x:hidden;}
 
-  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-  html { scroll-behavior: smooth; }
-  body {
-    font-family: 'Noto Sans Thai', sans-serif;
-    background: var(--bg-primary);
-    min-height: 100vh;
-    color: var(--text-primary);
-    padding-bottom: 4rem;
-    -webkit-font-smoothing: antialiased;
-  }
+/* ══ Orbs ══ */
+.bg-l{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none;}
+.orb{position:absolute;border-radius:50%;filter:blur(110px);opacity:.18;animation:oF 28s infinite ease-in-out;}
+.o1{width:600px;height:600px;background:#059669;top:-20%;left:-15%;animation-duration:24s;}
+.o2{width:450px;height:450px;background:#1e40af;bottom:-15%;right:-10%;animation-duration:30s;animation-delay:-8s;}
+.o3{width:300px;height:300px;background:#7c3aed;top:40%;left:45%;opacity:.08;animation-duration:36s;animation-delay:-16s;}
+@keyframes oF{0%,100%{transform:translate(0,0)scale(1);}33%{transform:translate(40px,-30px)scale(1.06);}66%{transform:translate(-25px,35px)scale(.95);}}
 
-  /* ── Background ── */
-  .bg-layer { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
-  .orb { position: absolute; border-radius: 50%; filter: blur(90px); opacity: 0.22; animation: orbFloat 24s infinite ease-in-out; }
-  .orb-1 { width: 500px; height: 500px; background: #059669; top: -15%; left: -10%; animation-duration: 22s; }
-  .orb-2 { width: 400px; height: 400px; background: #1d4ed8; bottom: -10%; right: -8%; animation-duration: 28s; animation-delay: -7s; }
-  .orb-3 { width: 300px; height: 300px; background: #7c3aed; top: 40%; left: 50%; opacity: 0.1; animation-duration: 32s; animation-delay: -14s; }
-  @keyframes orbFloat {
-    0%,100% { transform: translate(0,0) scale(1); }
-    33% { transform: translate(30px,-20px) scale(1.05); }
-    66% { transform: translate(-20px,25px) scale(0.97); }
-  }
+/* ══ Sidebar ══ */
+.sidebar{
+  position:fixed;left:0;top:0;bottom:0;width:var(--sw);
+  background:var(--card);border-right:1px solid var(--bd);
+  backdrop-filter:blur(24px);z-index:100;
+  display:flex;flex-direction:column;
+  transition:transform var(--T) var(--ease);
+}
+.sb-logo{padding:1.4rem 1.2rem 1rem;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--bd);}
+.logo-mk{width:38px;height:38px;border-radius:var(--rr-sm);background:linear-gradient(135deg,var(--emd),var(--em));display:flex;align-items:center;justify-content:center;color:#fff;font-size:1rem;flex-shrink:0;box-shadow:0 6px 20px var(--emg);}
+.logo-tx{font-family:'Kanit',sans-serif;font-size:.88rem;font-weight:700;color:var(--tx);line-height:1.2;}
+.logo-sub{font-size:.62rem;color:var(--tx3);}
+.nav{flex:1;padding:.9rem .7rem;overflow-y:auto;}
+.nav-sec{font-family:'Kanit',sans-serif;font-size:.57rem;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--tx3);padding:.45rem .5rem .35rem;margin-top:.4rem;}
+.ni{display:flex;align-items:center;gap:9px;padding:.55rem .7rem;border-radius:var(--rr-sm);font-size:.8rem;color:var(--tx2);cursor:pointer;transition:all var(--T) var(--ease);margin-bottom:2px;text-decoration:none;font-family:'Sarabun',sans-serif;font-weight:500;}
+.ni i{font-size:.77rem;width:15px;text-align:center;opacity:.65;transition:opacity var(--T);}
+.ni:hover{background:var(--sur2);color:var(--tx);}
+.ni:hover i{opacity:1;}
+.ni.active{background:var(--embg);color:var(--em);border:1px solid var(--bda);}
+.ni.active i{opacity:1;}
+.nav-badge{margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:.58rem;font-weight:600;background:var(--robg);border:1px solid var(--rob);color:var(--ro);padding:1px 6px;border-radius:99px;}
+.sb-foot{padding:.9rem .7rem;border-top:1px solid var(--bd);}
+.user-pill{display:flex;align-items:center;gap:9px;padding:.55rem .7rem;border-radius:var(--rr-sm);background:var(--sur);border:1px solid var(--bd);cursor:pointer;transition:all var(--T);}
+.user-pill:hover{border-color:var(--bd2);}
+.u-av{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--emd),var(--em));display:flex;align-items:center;justify-content:center;color:#fff;font-size:.68rem;font-weight:700;flex-shrink:0;}
+.u-nm{font-size:.73rem;font-weight:600;color:var(--tx);line-height:1.2;}
+.u-rl{font-size:.6rem;color:var(--tx3);}
+.u-arr{margin-left:auto;font-size:.62rem;color:var(--tx3);}
 
-  /* ── Theme Toggle ── */
-  #themeBtn {
-    position: fixed; top: 1rem; right: 1rem; z-index: 999;
-    background: var(--bg-card); border: 1px solid var(--border-color);
-    color: var(--text-secondary); cursor: pointer;
-    border-radius: var(--radius-sm); padding: 8px 12px;
-    font-size: 0.82rem; transition: all var(--transition);
-    backdrop-filter: blur(16px);
-    display: flex; align-items: center; gap: 6px;
-    font-family: 'Kanit', sans-serif;
-  }
-  #themeBtn:hover { color: var(--text-primary); border-color: var(--border-accent); }
+/* Mobile */
+.sb-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:99;backdrop-filter:blur(4px);}
+.sb-ov.show{display:block;}
+.menu-btn{display:none;position:fixed;top:1rem;left:1rem;z-index:101;background:var(--card);border:1px solid var(--bd);color:var(--tx2);cursor:pointer;border-radius:var(--rr-sm);padding:8px 10px;font-size:.9rem;backdrop-filter:blur(16px);transition:all var(--T);}
+.menu-btn:hover{color:var(--tx);border-color:var(--bd2);}
+@media(max-width:900px){
+  .sidebar{transform:translateX(-100%);}
+  .sidebar.open{transform:translateX(0);}
+  .menu-btn{display:flex;align-items:center;}
+  .main{margin-left:0!important;}
+}
 
-  /* ── Layout ── */
-  .wrapper { position: relative; z-index: 10; max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; }
+/* ══ Main ══ */
+.main{margin-left:var(--sw);flex:1;min-width:0;position:relative;z-index:10;padding-bottom:3rem;}
 
-  /* ── Header ── */
-  .header {
-    padding: 2rem 0 1.5rem;
-    animation: fadeDown 0.5s cubic-bezier(0.16,1,0.3,1) both;
-  }
-  @keyframes fadeDown { from{opacity:0;transform:translateY(-14px)} to{opacity:1;transform:translateY(0)} }
-  .header-top { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
-  .logo-row { display: flex; align-items: center; gap: 14px; }
-  .logo-icon {
-    width: 48px; height: 48px; border-radius: var(--radius-sm);
-    background: linear-gradient(135deg, var(--accent-deep), var(--accent));
-    display: flex; align-items: center; justify-content: center;
-    font-size: 1.3rem; color: #fff;
-    box-shadow: 0 8px 24px var(--accent-glow);
-  }
-  .page-title { font-family: 'Kanit', sans-serif; font-size: 1.6rem; font-weight: 800; color: var(--text-primary); letter-spacing: -0.02em; line-height: 1.1; }
-  .page-sub { font-size: 0.78rem; color: var(--text-secondary); margin-top: 2px; }
+/* ══ Topbar ══ */
+.topbar{
+  position:sticky;top:0;z-index:50;
+  background:rgba(7,9,15,.88);
+  border-bottom:1px solid var(--bd);
+  backdrop-filter:blur(20px);
+  padding:.8rem 1.6rem;
+  display:flex;align-items:center;gap:1rem;flex-wrap:wrap;
+}
+.tb-left{flex:1;min-width:0; }
+.tb-title{font-family:'Kanit',sans-serif;font-size:1.1rem;font-weight:700;color:var(--tx);letter-spacing:-.01em;display:flex;align-items:center;gap:8px;}
+.tb-sub{font-size:.7rem;color:var(--tx3);margin-top:1px;}
+.tb-right{display:flex;align-items:center;gap:7px;flex-wrap:wrap;}
 
-  /* Period Selector */
-  .period-bar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-  .period-btn {
-    font-family: 'Kanit', sans-serif; font-size: 0.75rem; font-weight: 600;
-    padding: 0.45rem 0.9rem; border-radius: var(--radius-xs);
-    border: 1px solid var(--border-color); background: var(--bg-surface);
-    color: var(--text-secondary); cursor: pointer; transition: all var(--transition);
-  }
-  .period-btn:hover { border-color: var(--border-hover); color: var(--text-primary); }
-  .period-btn.active { background: var(--accent-bg); border-color: var(--border-accent); color: var(--accent); }
+/* Period */
+.pg{display:flex;gap:3px;background:var(--sur);border:1px solid var(--bd);border-radius:var(--rr-sm);padding:3px;}
+.pb{font-family:'Kanit',sans-serif;font-size:.7rem;font-weight:500;padding:.3rem .65rem;border-radius:7px;border:none;background:none;color:var(--tx2);cursor:pointer;transition:all var(--T);}
+.pb:hover{color:var(--tx);}
+.pb.active{background:var(--card-s);color:var(--tx);box-shadow:0 2px 8px rgba(0,0,0,.2);}
+.month-in{font-family:'Kanit',sans-serif;font-size:.7rem;padding:.38rem .65rem;border-radius:var(--rr-sm);border:1px solid var(--bd);background:var(--sur);color:var(--tx2);outline:none;transition:all var(--T);display:none;}
+.month-in:focus{border-color:var(--bda);color:var(--tx);}
+.icon-btn{width:33px;height:33px;border-radius:var(--rr-sm);border:1px solid var(--bd);background:var(--sur);color:var(--tx2);cursor:pointer;font-size:.78rem;display:flex;align-items:center;justify-content:center;transition:all var(--T);flex-shrink:0;}
+.icon-btn:hover{color:var(--tx);border-color:var(--bd2);background:var(--sur2);}
+.icon-btn.spin i{animation:spin .7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
 
-  .month-picker {
-    font-family: 'Kanit', sans-serif; font-size: 0.75rem;
-    padding: 0.45rem 0.9rem; border-radius: var(--radius-xs);
-    border: 1px solid var(--border-color); background: var(--bg-surface);
-    color: var(--text-secondary); cursor: pointer;
-    outline: none; transition: all var(--transition);
-  }
-  .month-picker:focus { border-color: var(--border-accent); color: var(--text-primary); }
+/* ══ Filter Bar ══ */
+.filter-bar{
+  padding:.65rem 1.6rem;
+  background:var(--sur);
+  border-bottom:1px solid var(--bd);
+  display:flex;align-items:center;gap:.65rem;flex-wrap:wrap;
+  min-height:52px;
+}
+.filter-label{font-family:'Kanit',sans-serif;font-size:.65rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--tx3);display:flex;align-items:center;gap:5px;flex-shrink:0;}
+.fsel{
+  font-family:'Kanit',sans-serif;font-size:.75rem;
+  padding:.38rem .75rem;border-radius:var(--rr-sm);
+  border:1px solid var(--bd);background:var(--card);
+  color:var(--tx2);outline:none;cursor:pointer;
+  transition:all var(--T);min-width:160px;max-width:240px;
+}
+.fsel:focus,.fsel:hover{border-color:var(--bda);color:var(--tx);}
+.fsel:disabled{opacity:.4;cursor:not-allowed;}
+.scope-badge{
+  display:inline-flex;align-items:center;gap:5px;
+  font-family:'Kanit',sans-serif;font-size:.65rem;font-weight:600;
+  padding:3px 10px;border-radius:99px;
+  background:var(--embg);border:1px solid var(--bda);color:var(--em);
+  flex-shrink:0;
+}
+.scope-badge i{font-size:.6rem;}
+.filter-bar.hidden{display:none;}
 
-  .btn-refresh {
-    font-family: 'Kanit', sans-serif; font-size: 0.75rem;
-    padding: 0.45rem 0.9rem; border-radius: var(--radius-xs);
-    border: 1px solid var(--border-accent); background: var(--accent-bg);
-    color: var(--accent); cursor: pointer; transition: all var(--transition);
-    display: flex; align-items: center; gap: 5px;
-  }
-  .btn-refresh:hover { background: rgba(16,185,129,0.15); }
-  .btn-refresh.loading i { animation: spin 0.8s linear infinite; }
-  @keyframes spin { to { transform: rotate(360deg); } }
+/* ══ Content ══ */
+.content{padding:1.4rem 1.6rem;}
 
-  /* ── KPI Grid ── */
-  .kpi-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 1rem; margin: 1.5rem 0;
-  }
-  .kpi-card {
-    background: var(--bg-card); border: 1px solid var(--border-color);
-    border-radius: var(--radius-md); padding: 1.2rem 1.25rem;
-    backdrop-filter: blur(20px);
-    transition: border-color var(--transition), transform var(--transition);
-    animation: cardIn 0.4s cubic-bezier(0.16,1,0.3,1) both;
-    cursor: default;
-  }
-  .kpi-card:hover { border-color: var(--border-hover); transform: translateY(-2px); }
-  @keyframes cardIn { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
+/* ══ Section head ══ */
+.sh{display:flex;align-items:center;justify-content:space-between;margin-bottom:.9rem;margin-top:1.8rem;}
+.sh:first-child{margin-top:0;}
+.sh-t{font-family:'Kanit',sans-serif;font-size:.6rem;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--tx3);display:flex;align-items:center;gap:7px;}
+.sh-t::after{content:'';width:24px;height:1px;background:var(--bd);}
+.sh-m{font-size:.67rem;color:var(--tx3);font-family:'JetBrains Mono',monospace;}
 
-  .kpi-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
-  .kpi-icon {
-    width: 40px; height: 40px; border-radius: var(--radius-xs);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 0.95rem; flex-shrink: 0;
-  }
-  .kpi-trend {
-    font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; font-weight: 600;
-    padding: 3px 7px; border-radius: 99px;
-    display: flex; align-items: center; gap: 3px;
-  }
-  .trend-up { background: var(--accent-bg); color: var(--accent); }
-  .trend-down { background: var(--danger-bg); color: var(--danger); }
-  .trend-neutral { background: var(--bg-surface2); color: var(--text-muted); }
+/* ══ KPI Grid ══ */
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:.8rem;}
+.kpi{
+  background:var(--card);border:1px solid var(--bd);border-radius:var(--rr-md);
+  padding:1.05rem 1.15rem;backdrop-filter:blur(20px);
+  transition:border-color var(--T),transform var(--T);
+  animation:fu .4s var(--ease) both;cursor:default;
+  position:relative;overflow:hidden;
+}
+.kpi::before{content:'';position:absolute;inset:0;opacity:0;transition:opacity var(--T);background:radial-gradient(circle at 50% 0,var(--g,transparent),transparent 70%);}
+.kpi:hover{border-color:var(--bd2);transform:translateY(-2px);}
+.kpi:hover::before{opacity:1;}
+@keyframes fu{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.kpi-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:.85rem;}
+.kpi-ico{width:36px;height:36px;border-radius:var(--rr-xs);display:flex;align-items:center;justify-content:center;font-size:.85rem;flex-shrink:0;}
+.kpi-bdg{font-family:'JetBrains Mono',monospace;font-size:.6rem;font-weight:600;padding:2px 6px;border-radius:99px;display:flex;align-items:center;gap:3px;}
+.bd-up{background:var(--embg);border:1px solid var(--bda);color:var(--em);}
+.bd-dn{background:var(--robg);border:1px solid var(--rob);color:var(--ro);}
+.bd-w{background:var(--ambg);border:1px solid var(--amb);color:var(--am);}
+.kpi-val{font-family:'Kanit',sans-serif;font-size:1.9rem;font-weight:800;color:var(--tx);line-height:1;letter-spacing:-.03em;}
+.kpi-val sub{font-size:.8rem;font-weight:600;color:var(--tx2);margin-left:1px;vertical-align:baseline;}
+.kpi-lbl{font-size:.7rem;color:var(--tx2);margin-top:.25rem;}
+.cg{--g:rgba(16,185,129,.07);}.cg .kpi-ico{background:var(--embg);border:1px solid var(--bda);color:var(--em);}
+.cb{--g:rgba(96,165,250,.07);}.cb .kpi-ico{background:var(--blbg);border:1px solid var(--blb);color:var(--bl);}
+.ci{--g:rgba(129,140,248,.07);}.ci .kpi-ico{background:var(--inbg);border:1px solid var(--inb);color:var(--in);}
+.ca{--g:rgba(251,191,36,.07);}.ca .kpi-ico{background:var(--ambg);border:1px solid var(--amb);color:var(--am);}
+.cr{--g:rgba(251,113,133,.07);}.cr .kpi-ico{background:var(--robg);border:1px solid var(--rob);color:var(--ro);}
+.cp{--g:rgba(192,132,252,.07);}.cp .kpi-ico{background:var(--pubg);border:1px solid var(--pub);color:var(--pu);}
+.cc{--g:rgba(34,211,238,.07);}.cc .kpi-ico{background:var(--cybg);border:1px solid var(--cyb);color:var(--cy);}
 
-  .kpi-value {
-    font-family: 'Kanit', sans-serif; font-size: 2rem; font-weight: 800;
-    color: var(--text-primary); line-height: 1; letter-spacing: -0.03em;
-  }
-  .kpi-value span { font-size: 1rem; font-weight: 600; color: var(--text-secondary); margin-left: 2px; }
-  .kpi-label { font-size: 0.74rem; color: var(--text-secondary); margin-top: 0.35rem; }
+/* ══ Panels ══ */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.8rem;}
+.panel{background:var(--card);border:1px solid var(--bd);border-radius:var(--rr-md);padding:1.2rem;backdrop-filter:blur(20px);animation:fu .4s var(--ease) .08s both;}
+.ph{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;}
+.pt{font-family:'Kanit',sans-serif;font-size:.83rem;font-weight:700;color:var(--tx);display:flex;align-items:center;gap:7px;}
+.pt i{font-size:.75rem;opacity:.55;}
+.pm{font-size:.63rem;color:var(--tx3);font-family:'JetBrains Mono',monospace;}
 
-  /* Colors */
-  .c-green .kpi-icon { background: var(--accent-bg); border: 1px solid var(--border-accent); color: var(--accent); }
-  .c-blue .kpi-icon { background: var(--blue-bg); border: 1px solid var(--blue-border); color: var(--blue); }
-  .c-indigo .kpi-icon { background: var(--indigo-bg); border: 1px solid var(--indigo-border); color: var(--indigo); }
-  .c-amber .kpi-icon { background: var(--amber-bg); border: 1px solid var(--amber-border); color: var(--amber); }
-  .c-rose .kpi-icon { background: var(--rose-bg); border: 1px solid var(--rose-border); color: var(--rose); }
-  .c-purple .kpi-icon { background: var(--purple-bg); border: 1px solid var(--purple-border); color: var(--purple); }
-  .c-cyan .kpi-icon { background: var(--cyan-bg); border: 1px solid var(--cyan-border); color: var(--cyan); }
+/* Bar chart */
+.br{display:flex;align-items:center;gap:9px;margin-bottom:.6rem;}
+.br:last-child{margin-bottom:0;}
+.bl{font-size:.7rem;color:var(--tx2);width:95px;flex-shrink:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.bt{flex:1;height:7px;background:var(--sur2);border-radius:99px;overflow:hidden;}
+.bf{height:100%;border-radius:99px;transition:width .9s var(--ease);}
+.bv{font-family:'JetBrains Mono',monospace;font-size:.66rem;font-weight:600;color:var(--tx2);width:32px;text-align:right;flex-shrink:0;}
 
-  /* ── Section Title ── */
-  .section-head {
-    display: flex; align-items: center; justify-content: space-between;
-    margin-bottom: 1rem; margin-top: 2rem;
-  }
-  .section-title {
-    font-family: 'Kanit', sans-serif; font-size: 0.65rem; font-weight: 600;
-    letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-muted);
-    display: flex; align-items: center; gap: 8px;
-  }
-  .section-title::after { content: ''; width: 40px; height: 1px; background: var(--border-color); }
+/* Donut */
+.dw{display:flex;align-items:center;gap:1.3rem;flex-wrap:wrap;}
+.dl{flex:1;min-width:85px;}
+.lr{display:flex;align-items:center;gap:6px;font-size:.7rem;color:var(--tx2);margin-bottom:.45rem;}
+.lr:last-child{margin-bottom:0;}
+.ld{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.lv{margin-left:auto;font-family:'JetBrains Mono',monospace;font-weight:600;color:var(--tx);font-size:.7rem;}
 
-  /* ── Two-column layout ── */
-  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-  @media(max-width: 700px) { .two-col { grid-template-columns: 1fr; } }
-  .three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; }
-  @media(max-width: 900px) { .three-col { grid-template-columns: 1fr 1fr; } }
-  @media(max-width: 560px) { .three-col { grid-template-columns: 1fr; } }
+/* Daily sparkbar */
+.dbars{display:flex;align-items:flex-end;gap:3px;height:48px;margin-top:.7rem;}
+.dbar{flex:1;border-radius:3px 3px 0 0;min-height:3px;transition:height .8s var(--ease),opacity var(--T);cursor:default;position:relative;}
+.dbar:hover{opacity:.75;}
+.dtt{position:absolute;bottom:calc(100% + 5px);left:50%;transform:translateX(-50%);background:var(--card-s);border:1px solid var(--bd);font-size:.58rem;color:var(--tx);padding:3px 6px;border-radius:5px;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .15s;z-index:20;font-family:'JetBrains Mono',monospace;}
+.dbar:hover .dtt{opacity:1;}
 
-  /* ── Panel Card ── */
-  .panel {
-    background: var(--bg-card); border: 1px solid var(--border-color);
-    border-radius: var(--radius-md); padding: 1.25rem;
-    backdrop-filter: blur(20px);
-    animation: cardIn 0.4s cubic-bezier(0.16,1,0.3,1) 0.1s both;
-  }
-  .panel-title {
-    font-family: 'Kanit', sans-serif; font-size: 0.9rem; font-weight: 700;
-    color: var(--text-primary); margin-bottom: 1rem;
-    display: flex; align-items: center; gap: 8px;
-  }
-  .panel-title i { font-size: 0.85rem; opacity: 0.7; }
+/* Table */
+.mt{width:100%;border-collapse:collapse;}
+.mt th{font-family:'Kanit',sans-serif;font-size:.58rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--tx3);text-align:left;padding:.42rem .45rem;border-bottom:1px solid var(--bd);}
+.mt td{font-size:.73rem;color:var(--tx2);padding:.48rem .45rem;border-bottom:1px solid rgba(255,255,255,.025);transition:background var(--T);}
+[data-theme="light"] .mt td{border-bottom-color:rgba(0,0,0,.03);}
+.mt tr:last-child td{border-bottom:none;}
+.mt tr:hover td{background:var(--sur);}
+td.hl{color:var(--tx);font-weight:600;}
+td.mn{font-family:'JetBrains Mono',monospace;font-weight:600;color:var(--tx);}
+td.mu{color:var(--tx3);font-size:.66rem;}
 
-  /* Bar Chart */
-  .bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 0.7rem; }
-  .bar-label { font-size: 0.72rem; color: var(--text-secondary); width: 90px; flex-shrink: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .bar-track { flex: 1; height: 8px; background: var(--bg-surface2); border-radius: 99px; overflow: hidden; }
-  .bar-fill { height: 100%; border-radius: 99px; transition: width 0.8s cubic-bezier(0.16,1,0.3,1); }
-  .bar-val { font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; font-weight: 600; color: var(--text-secondary); width: 36px; text-align: right; flex-shrink: 0; }
+.rank{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:.6rem;font-weight:700;background:var(--sur2);color:var(--tx3);}
+.rg{background:var(--ambg);border:1px solid var(--amb);color:var(--am);}
+.rs{background:var(--inbg);border:1px solid var(--inb);color:var(--in);}
+.rb{background:var(--cybg);border:1px solid var(--cyb);color:var(--cy);}
 
-  /* Donut Chart */
-  .donut-wrap { display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap; }
-  .donut-svg { flex-shrink: 0; }
-  .donut-legend { flex: 1; min-width: 100px; }
-  .legend-row { display: flex; align-items: center; gap: 8px; margin-bottom: 0.55rem; font-size: 0.72rem; color: var(--text-secondary); }
-  .legend-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-  .legend-val { margin-left: auto; font-family: 'JetBrains Mono', monospace; font-weight: 600; color: var(--text-primary); }
+/* Pill */
+.pill{display:inline-flex;align-items:center;gap:3px;font-family:'Kanit',sans-serif;font-size:.58rem;font-weight:600;padding:2px 7px;border-radius:99px;white-space:nowrap;}
+.pg{background:var(--embg);border:1px solid var(--bda);color:var(--em);}
+.pa{background:var(--ambg);border:1px solid var(--amb);color:var(--am);}
+.pr{background:var(--robg);border:1px solid var(--rob);color:var(--ro);}
+.pi{background:var(--inbg);border:1px solid var(--inb);color:var(--in);}
+.pn{background:var(--sur2);border:1px solid var(--bd);color:var(--tx3);}
 
-  /* Table */
-  .mini-table { width: 100%; border-collapse: collapse; }
-  .mini-table th {
-    font-family: 'Kanit', sans-serif; font-size: 0.65rem; font-weight: 600;
-    letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted);
-    text-align: left; padding: 0.5rem 0.6rem; border-bottom: 1px solid var(--border-color);
-  }
-  .mini-table td {
-    font-size: 0.76rem; color: var(--text-secondary);
-    padding: 0.55rem 0.6rem; border-bottom: 1px solid var(--border-subtle, rgba(255,255,255,0.02));
-  }
-  .mini-table tr:last-child td { border-bottom: none; }
-  .mini-table tr:hover td { background: var(--bg-surface); }
-  .mini-table td.name { color: var(--text-primary); font-weight: 600; }
+/* Activity */
+.ai{display:flex;align-items:flex-start;gap:9px;padding:.6rem 0;border-bottom:1px solid var(--bd);}
+.ai:last-child{border-bottom:none;}
+.aic{width:29px;height:29px;border-radius:var(--rr-xs);display:flex;align-items:center;justify-content:center;font-size:.7rem;flex-shrink:0;margin-top:1px;}
+.aib{flex:1;min-width:0;}
+.ait{font-size:.73rem;color:var(--tx);line-height:1.4;}
+.ait strong{color:var(--tx);}
+.aim{font-size:.63rem;color:var(--tx3);margin-top:2px;font-family:'JetBrains Mono',monospace;display:flex;align-items:center;gap:5px;flex-wrap:wrap;}
 
-  /* Status Pill */
-  .pill {
-    display: inline-flex; align-items: center; gap: 4px;
-    font-family: 'Kanit', sans-serif; font-size: 0.6rem; font-weight: 600;
-    padding: 2px 8px; border-radius: 99px;
-  }
-  .pill-green { background: var(--accent-bg); border: 1px solid var(--border-accent); color: var(--accent); }
-  .pill-amber { background: var(--amber-bg); border: 1px solid var(--amber-border); color: var(--amber); }
-  .pill-rose { background: var(--rose-bg); border: 1px solid var(--rose-border); color: var(--rose); }
-  .pill-blue { background: var(--blue-bg); border: 1px solid var(--blue-border); color: var(--blue); }
+    .nav-back {
+      width:36px; height:36px; border-radius:10px; border:none; margin-left: 2rem;
+      background:var(--sur2); color:var(--tx); font-size:1rem; cursor:pointer;
+      display:flex; align-items:center; justify-content:center; flex-shrink:0;
+      transition:background .15s;
+    }
+    .nav-back:hover { background:var(--bd); }
 
-  /* Timeline / Activity */
-  .activity-item { display: flex; align-items: flex-start; gap: 12px; padding: 0.65rem 0; border-bottom: 1px solid var(--border-color); }
-  .activity-item:last-child { border-bottom: none; }
-  .act-icon { width: 32px; height: 32px; border-radius: var(--radius-xs); display: flex; align-items: center; justify-content: center; font-size: 0.75rem; flex-shrink: 0; margin-top: 1px; }
-  .act-body { flex: 1; min-width: 0; }
-  .act-text { font-size: 0.76rem; color: var(--text-primary); line-height: 1.4; }
-  .act-time { font-size: 0.67rem; color: var(--text-muted); margin-top: 2px; font-family: 'JetBrains Mono', monospace; }
+/* Skeleton */
+.sk{background:linear-gradient(90deg,var(--sur),var(--sur2),var(--sur));background-size:200%;border-radius:var(--rr-xs);animation:shimmer 1.4s infinite;}
+@keyframes shimmer{0%{background-position:200%}100%{background-position:-200%}}
 
-  /* Loading Skeleton */
-  .skel { background: linear-gradient(90deg, var(--bg-surface), var(--bg-surface2), var(--bg-surface)); background-size: 200%; border-radius: var(--radius-xs); animation: shimmer 1.4s infinite; }
-  @keyframes shimmer { 0%{background-position:200%} 100%{background-position:-200%} }
+/* Empty */
+.empty{text-align:center;padding:2rem 1rem;color:var(--tx3);font-size:.76rem;}
+.empty i{font-size:1.5rem;margin-bottom:.5rem;display:block;opacity:.35;}
 
-  /* API Endpoint badge */
-  .api-path {
-    font-family: 'JetBrains Mono', monospace; font-size: 0.7rem;
-    color: var(--text-muted); background: var(--bg-surface2);
-    padding: 3px 8px; border-radius: 6px;
-    border: 1px solid var(--border-color);
-    margin-left: auto;
-  }
+/* Live dot */
+.live{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--em);box-shadow:0 0 6px var(--emg);animation:pulse 2s ease-in-out infinite;}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(16,185,129,.4)}50%{box-shadow:0 0 0 4px rgba(16,185,129,0)}}
 
-  /* Responsive */
-  @media(max-width: 600px) {
-    .kpi-grid { grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
-    .wrapper { padding: 0 1rem; }
-    .header { padding: 1.5rem 0 1rem; }
-  }
-  @media(max-width: 360px) { .kpi-grid { grid-template-columns: 1fr; } }
+/* Toast */
+.toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);background:var(--card-s);border:1px solid var(--bd);color:var(--tx);font-size:.78rem;padding:.65rem 1rem;border-radius:var(--rr-sm);z-index:9999;white-space:nowrap;box-shadow:var(--shad);font-family:'Kanit',sans-serif;font-weight:500;display:flex;align-items:center;gap:7px;animation:tIn .3s var(--ease) both;}
+@keyframes tIn{from{opacity:0;transform:translateX(-50%) translateY(8px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+.toast.err{border-color:var(--rob);color:var(--ro);}
+.toast.ok{border-color:var(--bda);color:var(--em);}
 
-  @media(prefers-reduced-motion:reduce) { *,*::before,*::after { animation-duration:0.01ms!important; transition-duration:0.01ms!important; } }
+/* Responsive */
+@media(max-width:1100px){.g3{grid-template-columns:1fr 1fr;} .tb-left{padding-left:2.5rem;} .sb-logo{padding-left: 3.2rem;} .nav-back{margin-left: 0.1rem;}}
+@media(max-width:760px){.g2,.g3{grid-template-columns:1fr;}.kpi-grid{grid-template-columns:repeat(2,1fr);}.content{padding:1rem 1rem;}.topbar{padding:.7rem 1rem;}.filter-bar{padding:.6rem 1rem;}}
+@media(max-width:420px){.kpi-grid{grid-template-columns:1fr;}.pg{display:none;}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important;}}
 </style>
 </head>
 <body>
 
-<div class="bg-layer">
-  <div class="orb orb-1"></div>
-  <div class="orb orb-2"></div>
-  <div class="orb orb-3"></div>
-</div>
+<div class="bg-l"><div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div></div>
 
-<button id="themeBtn" onclick="toggleTheme()">
-  <i class="fa-solid fa-circle-half-stroke"></i> <span id="themeLabel">Light</span>
-</button>
+<button class="menu-btn" onclick="toggleSb()"><i class="fa-solid fa-bars"></i></button>
+<div class="sb-ov" id="sbOv" onclick="toggleSb()"></div>
 
-<div class="wrapper">
+<!-- ══ SIDEBAR ══ -->
+<aside class="sidebar" id="sidebar">
+  <div class="sb-logo">
+    <div class="logo-mk"><i class="fa-solid fa-chart-line"></i></div>
+    <div><div class="logo-tx">HR System</div><div class="logo-sub">บริหารงานบุคคล</div></div>
+      <button class="nav-back" onclick="history.length>1?history.back():location.href='index.html'" title="ย้อนกลับ">
+    <i class="fa-solid fa-home"></i>
+  </button>
+  </div>
+  <nav class="nav">
+    <div class="nav-sec">หลัก</div>
+    <a class="ni active" href="dash.html"><i class="fa-solid fa-gauge-high"></i>Dashboard</a>
+    <a class="ni" href="#" onclick="return false"><i class="fa-solid fa-clock"></i>สรุป</a>
+    <a class="ni" href="#" onclick="return false"><i class="fa-solid fa-bolt"></i>โอที (OT)<span class="nav-badge" id="navOt" style="display:none"></span></a>
+    <div class="nav-sec">ระบบ</div>
+    <a class="ni" href="#" onclick="return false"><i class="fa-solid fa-users"></i>ผู้ใช้งาน</a>
+    <a class="ni" href="#" onclick="return false"><i class="fa-solid fa-file-pen"></i>คำขออนุมัติ<span class="nav-badge" id="navReq" style="display:none"></span></a>
+    <a class="ni" href="#" onclick="return false"><i class="fa-solid fa-gear"></i>ตั้งค่า</a>
+  </nav>
+  <div class="sb-foot">
+    <div class="user-pill">
+      <div class="u-av" id="uAv">A</div>
+      <div><div class="u-nm" id="uNm">กำลังโหลด…</div><div class="u-rl" id="uRl">—</div></div>
+      <i class="fa-solid fa-chevron-right u-arr"></i>
+    </div>
+  </div>
+</aside>
 
-  <!-- Header -->
-  <div class="header">
-    <div class="header-top">
-      <div class="logo-row">
-        <div class="logo-icon"><i class="fa-solid fa-chart-line"></i></div>
-        <div>
-          <div class="page-title">Dashboard</div>
-          <div class="page-sub">สรุปสถิติผู้ใช้งาน · อัปเดต <span id="lastUpdate">—</span></div>
-        </div>
+<!-- ══ MAIN ══ -->
+<main class="main">
+
+  <!-- Topbar -->
+  <div class="topbar">
+    <div class="tb-left">
+      <div class="tb-title">Dashboard <span class="live" style="margin-left:4px"></span></div>
+      <div class="tb-sub" id="tbSub">—</div>
+    </div>
+    <div class="tb-right">
+      <div class="pg">
+        <button class="pb" id="pToday" onclick="setPeriod('today')">วันนี้</button>
+        <button class="pb active" id="pMonth" onclick="setPeriod('month')">เดือนนี้</button>
+        <button class="pb" id="pCustom" onclick="setPeriod('custom')">กำหนดเอง</button>
       </div>
-      <div class="period-bar">
-        <button class="period-btn" onclick="setPeriod('today')">วันนี้</button>
-        <button class="period-btn active" onclick="setPeriod('month')">เดือนนี้</button>
-        <button class="period-btn" onclick="setPeriod('custom')">กำหนดเอง</button>
-        <input type="month" id="monthPicker" class="month-picker" style="display:none">
-        <button class="btn-refresh" id="refreshBtn" onclick="loadData()">
-          <i class="fa-solid fa-rotate-right"></i> รีเฟรช
-        </button>
+      <input type="month" id="mPick" class="month-in" onchange="onMonthChange()">
+      <button class="icon-btn" id="refBtn" onclick="loadAll()" title="รีเฟรช"><i class="fa-solid fa-rotate-right"></i></button>
+      <button class="icon-btn" onclick="toggleTheme()" title="ธีม"><i class="fa-solid fa-circle-half-stroke"></i></button>
+    </div>
+  </div>
+
+  <!-- Filter Bar -->
+  <div class="filter-bar" id="filterBar">
+    <span class="filter-label"><i class="fa-solid fa-filter"></i>กรอง</span>
+    <!-- scope badge (แสดง scope ที่ lock อยู่สำหรับ user/supervisor) -->
+    <span class="scope-badge" id="scopeBadge" style="display:none"><i class="fa-solid fa-lock"></i><span id="scopeText"></span></span>
+    <!-- aff select (admin only) -->
+    <select class="fsel" id="selAff" onchange="onAffChange()" style="display:none">
+      <option value="">— ทุกหน่วยงานหลัก —</option>
+    </select>
+    <!-- dep select (admin & supervisor) -->
+    <select class="fsel" id="selDep" onchange="onDepChange()" style="display:none">
+      <option value="">— ทุกกอง/แผนก —</option>
+    </select>
+    <!-- loading state -->
+    <span id="filterLoading" style="font-size:.7rem;color:var(--tx3);display:none"><i class="fa-solid fa-circle-notch fa-spin"></i> กำลังโหลด…</span>
+  </div>
+
+  <!-- Content -->
+  <div class="content">
+
+    <!-- KPI -->
+    <div class="sh">
+      <div class="sh-t"><i class="fa-solid fa-square-poll-vertical" style="opacity:.4"></i>ภาพรวม</div>
+      <div class="sh-m" id="lastUp">—</div>
+    </div>
+    <div class="kpi-grid" id="kpiGrid">
+      <div class="kpi"><div class="sk" style="height:85px"></div></div>
+      <div class="kpi"><div class="sk" style="height:85px"></div></div>
+      <div class="kpi"><div class="sk" style="height:85px"></div></div>
+      <div class="kpi"><div class="sk" style="height:85px"></div></div>
+      <div class="kpi"><div class="sk" style="height:85px"></div></div>
+      <div class="kpi"><div class="sk" style="height:85px"></div></div>
+      <div class="kpi"><div class="sk" style="height:85px"></div></div>
+    </div>
+
+    <!-- Attendance -->
+    <div class="sh">
+      <div class="sh-t"><i class="fa-solid fa-chart-bar" style="opacity:.4"></i>การเข้างาน</div>
+      <div class="sh-m">attendance-stats</div>
+    </div>
+    <div class="g2">
+      <div class="panel"><div class="ph"><div class="pt"><i class="fa-solid fa-briefcase"></i>ประเภทการทำงาน</div></div><div id="wtChart"><div class="sk" style="height:130px"></div></div></div>
+      <div class="panel"><div class="ph"><div class="pt"><i class="fa-solid fa-chart-pie"></i>สถานะการอนุมัติ</div></div><div id="svDonut"><div class="sk" style="height:130px"></div></div></div>
+    </div>
+    <div class="g2" style="margin-top:.8rem">
+      <div class="panel">
+        <div class="ph"><div class="pt"><i class="fa-solid fa-calendar-days"></i>เช็คอินรายวัน</div><div class="pm" id="daySubLbl">—</div></div>
+        <div id="dayBars"><div class="sk" style="height:60px"></div></div>
+        <div id="dayLeg" style="display:flex;gap:14px;margin-top:.65rem;flex-wrap:wrap;"></div>
       </div>
+      <div class="panel"><div class="ph"><div class="pt"><i class="fa-solid fa-location-dot"></i>ในพื้นที่ vs นอกพื้นที่</div></div><div id="irDonut"><div class="sk" style="height:130px"></div></div></div>
     </div>
-  </div>
 
-  <!-- KPI Row -->
-  <div class="kpi-grid" id="kpiGrid">
-    <!-- Skeleton -->
-    <div class="kpi-card"><div class="skel" style="height:80px"></div></div>
-    <div class="kpi-card"><div class="skel" style="height:80px"></div></div>
-    <div class="kpi-card"><div class="skel" style="height:80px"></div></div>
-    <div class="kpi-card"><div class="skel" style="height:80px"></div></div>
-    <div class="kpi-card"><div class="skel" style="height:80px"></div></div>
-    <div class="kpi-card"><div class="skel" style="height:80px"></div></div>
-    <div class="kpi-card"><div class="skel" style="height:80px"></div></div>
-  </div>
+    <!-- OT -->
+    <div class="sh">
+      <div class="sh-t"><i class="fa-solid fa-bolt" style="opacity:.4"></i>โอที (OT)</div>
+      <div class="sh-m">ot-stats</div>
+    </div>
+    <div class="g3">
+      <div class="panel"><div class="ph"><div class="pt"><i class="fa-solid fa-building"></i>เข้างานตามหน่วยงาน</div></div><div id="deptChart"><div class="sk" style="height:175px"></div></div></div>
+      <div class="panel"><div class="ph"><div class="pt"><i class="fa-solid fa-list-check"></i>ประเภท OT</div></div><div id="otTChart"><div class="sk" style="height:175px"></div></div></div>
+      <div class="panel"><div class="ph"><div class="pt"><i class="fa-solid fa-ranking-star"></i>Top OT ชั่วโมงสูงสุด</div></div><div id="topOt"><div class="sk" style="height:175px"></div></div></div>
+    </div>
 
-  <!-- Charts Row -->
-  <div class="section-head">
-    <div class="section-title"><i class="fa-solid fa-chart-bar" style="opacity:.5"></i>วิเคราะห์การเข้างาน</div>
-    <span class="api-path">GET /api/dash/attendance-stats</span>
-  </div>
-  <div class="two-col">
-    <div class="panel">
-      <div class="panel-title"><i class="fa-solid fa-clock"></i>สถิติการเข้างาน (ตามประเภทงาน)</div>
-      <div id="workTypeChart">
-        <div class="skel" style="height:160px"></div>
-      </div>
+    <!-- Recent -->
+    <div class="sh">
+      <div class="sh-t"><i class="fa-solid fa-wave-square" style="opacity:.4"></i>กิจกรรมล่าสุด</div>
+      <div class="sh-m">recent-activity</div>
     </div>
-    <div class="panel">
-      <div class="panel-title"><i class="fa-solid fa-chart-pie"></i>สถานะการอนุมัติ Supervisor</div>
-      <div id="supervisorChart">
-        <div class="skel" style="height:160px"></div>
-      </div>
+    <div class="g2">
+      <div class="panel"><div class="ph"><div class="pt"><i class="fa-solid fa-arrow-right-to-bracket"></i>เช็คอินล่าสุด</div></div><div id="recCin"><div class="sk" style="height:200px"></div></div></div>
+      <div class="panel"><div class="ph"><div class="pt"><i class="fa-solid fa-file-pen"></i>คำขอล่าสุด</div></div><div id="recReq"><div class="sk" style="height:200px"></div></div></div>
     </div>
-  </div>
 
-  <!-- OT + Users Row -->
-  <div class="section-head" style="margin-top:2rem">
-    <div class="section-title"><i class="fa-solid fa-user-group" style="opacity:.5"></i>ผู้ใช้งาน & โอที</div>
-    <span class="api-path">GET /api/dash/ot-stats</span>
   </div>
-  <div class="three-col">
-    <div class="panel">
-      <div class="panel-title"><i class="fa-solid fa-building"></i>เข้างานตามหน่วยงาน</div>
-      <div id="deptChart"><div class="skel" style="height:180px"></div></div>
-    </div>
-    <div class="panel">
-      <div class="panel-title"><i class="fa-solid fa-bolt"></i>OT ยอดนิยมตามประเภท</div>
-      <div id="otTypeChart"><div class="skel" style="height:180px"></div></div>
-    </div>
-    <div class="panel">
-      <div class="panel-title"><i class="fa-solid fa-ranking-star"></i>Top OT ชั่วโมง</div>
-      <div id="topOtTable"><div class="skel" style="height:180px"></div></div>
-    </div>
-  </div>
-
-  <!-- Recent Activity -->
-  <div class="section-head" style="margin-top:2rem">
-    <div class="section-title"><i class="fa-solid fa-wave-square" style="opacity:.5"></i>กิจกรรมล่าสุด</div>
-    <span class="api-path">GET /api/dash/recent-activity</span>
-  </div>
-  <div class="two-col">
-    <div class="panel">
-      <div class="panel-title"><i class="fa-solid fa-arrow-right-to-bracket"></i>เข้างานล่าสุด</div>
-      <div id="recentCheckin"><div class="skel" style="height:200px"></div></div>
-    </div>
-    <div class="panel">
-      <div class="panel-title"><i class="fa-solid fa-file-circle-check"></i>คำขออนุมัติล่าสุด</div>
-      <div id="recentRequests"><div class="skel" style="height:200px"></div></div>
-    </div>
-  </div>
-
-</div><!-- end wrapper -->
+</main>
 
 <script>
-// ═══════════════════════════════════
-// Theme
-// ═══════════════════════════════════
-function toggleTheme() {
-  const html = document.documentElement;
-  const isDark = html.dataset.theme === 'dark';
-  html.dataset.theme = isDark ? 'light' : 'dark';
-  document.getElementById('themeLabel').textContent = isDark ? 'Dark' : 'Light';
+/* ════════════════════════════════════════════════
+   Helpers
+════════════════════════════════════════════════ */
+const $  = id => document.getElementById(id);
+const fmt  = n => Number(n||0).toLocaleString('th-TH');
+const fmtH = n => parseFloat(n||0).toFixed(1);
+
+function toggleTheme(){
+  document.documentElement.dataset.theme =
+    document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
 }
-
-// ═══════════════════════════════════
-// Period State
-// ═══════════════════════════════════
-let period = 'month';
-let customMonth = '';
-
-function setPeriod(p) {
-  period = p;
-  document.querySelectorAll('.period-btn').forEach((b, i) => {
-    b.classList.toggle('active', ['today','month','custom'][i] === p);
-  });
-  const picker = document.getElementById('monthPicker');
-  picker.style.display = p === 'custom' ? 'block' : 'none';
-  if (p !== 'custom') loadData();
+function toggleSb(){
+  $('sidebar').classList.toggle('open');
+  $('sbOv').classList.toggle('show');
 }
-
-document.getElementById('monthPicker').addEventListener('change', function() {
-  customMonth = this.value;
-  loadData();
-});
-
-// ═══════════════════════════════════
-// API Helper
-// ═══════════════════════════════════
-function getToken() {
+function getToken(){
   return localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token') || '';
 }
 
-function getDateRange() {
+/* ════════════════════════════════════════════════
+   Period
+════════════════════════════════════════════════ */
+let period = 'month', customMonth = '';
+
+function setPeriod(p){
+  period = p;
+  ['Today','Month','Custom'].forEach(k => $('p'+k).classList.toggle('active', k.toLowerCase()===p));
+  $('mPick').style.display = p==='custom' ? 'block' : 'none';
+  if(p !== 'custom') loadAll();
+}
+function onMonthChange(){ customMonth=$('mPick').value; loadAll(); }
+
+function getRange(){
   const now = new Date();
-  if (period === 'today') {
-    const d = now.toISOString().slice(0,10);
-    return { from: d, to: d };
+  if(period==='today'){ const d=now.toISOString().slice(0,10); return{from:d,to:d}; }
+  if(period==='custom'&&customMonth){
+    const [y,m]=customMonth.split('-');
+    const last=new Date(y,m,0).getDate();
+    return{from:`${y}-${m}-01`,to:`${y}-${m}-${String(last).padStart(2,'0')}`};
   }
-  if (period === 'custom' && customMonth) {
-    const [y, m] = customMonth.split('-');
-    const last = new Date(y, m, 0).getDate();
-    return { from: `${y}-${m}-01`, to: `${y}-${m}-${String(last).padStart(2,'0')}` };
-  }
-  // month (default)
-  const y = now.getFullYear(), m = String(now.getMonth()+1).padStart(2,'0');
-  const last = new Date(y, now.getMonth()+1, 0).getDate();
-  return { from: `${y}-${m}-01`, to: `${y}-${m}-${String(last).padStart(2,'0')}` };
+  const y=now.getFullYear(), m=String(now.getMonth()+1).padStart(2,'0');
+  const last=new Date(y,now.getMonth()+1,0).getDate();
+  return{from:`${y}-${m}-01`,to:`${y}-${m}-${String(last).padStart(2,'0')}`};
 }
 
-async function apiFetch(path, params = {}) {
-  const { from, to } = getDateRange();
-  const url = new URL(path, window.location.origin);
-  url.searchParams.set('from', from);
-  url.searchParams.set('to', to);
-  Object.entries(params).forEach(([k,v]) => url.searchParams.set(k, v));
+/* ════════════════════════════════════════════════
+   Filter State
+════════════════════════════════════════════════ */
+let filterState = { aff:'', dep:'' };
+let canFilter   = { aff:false, dep:false };
 
-  const res = await fetch(url.toString(), {
-    headers: {
-      'Authorization': `Bearer ${getToken()}`,
-      'Content-Type': 'application/json'
-    }
+function getFilterParams(){
+  const p = {};
+  if(canFilter.aff && filterState.aff) p.aff = filterState.aff;
+  if(canFilter.dep && filterState.dep) p.dep = filterState.dep;
+  return p;
+}
+
+/* ════════════════════════════════════════════════
+   API
+════════════════════════════════════════════════ */
+async function apiFetch(path, extra={}){
+  const {from,to} = getRange();
+  const url = new URL(path, window.location.origin);
+  url.searchParams.set('from',from);
+  url.searchParams.set('to',to);
+  Object.entries(extra).forEach(([k,v])=>url.searchParams.set(k,v));
+  const res = await fetch(url.toString(),{
+    headers:{'Authorization':`Bearer ${getToken()}`,'Content-Type':'application/json'},
+    signal:AbortSignal.timeout(15000),
   });
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  if(res.status===401){ toast('กรุณาเข้าสู่ระบบใหม่','err'); throw new Error('401'); }
+  if(!res.ok) throw new Error(`HTTP ${res.status}`);
   return res.json();
 }
 
-// ═══════════════════════════════════
-// Load All
-// ═══════════════════════════════════
-async function loadData() {
-  const btn = document.getElementById('refreshBtn');
-  btn.classList.add('loading');
-  showSkeletons();
-
-  try {
-    // Parallel requests
-    const [summary, attendStats, otStats, recent] = await Promise.allSettled([
-      apiFetch('/api/dash/summary'),
-      apiFetch('/api/dash/attendance-stats'),
-      apiFetch('/api/dash/ot-stats'),
-      apiFetch('/api/dash/recent-activity'),
-    ]);
-
-    if (summary.status === 'fulfilled') renderKPIs(summary.value?.data || summary.value);
-    if (attendStats.status === 'fulfilled') renderAttendCharts(attendStats.value?.data || attendStats.value);
-    if (otStats.status === 'fulfilled') renderOtCharts(otStats.value?.data || otStats.value);
-    if (recent.status === 'fulfilled') renderRecent(recent.value?.data || recent.value);
-
-    document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString('th-TH');
-  } catch(e) {
-    console.error('loadData error', e);
-  } finally {
-    btn.classList.remove('loading');
-  }
+/* ════════════════════════════════════════════════
+   Toast
+════════════════════════════════════════════════ */
+let toastT;
+function toast(msg, type=''){
+  clearTimeout(toastT);
+  document.querySelector('.toast')?.remove();
+  const t = document.createElement('div');
+  t.className=`toast ${type}`;
+  t.innerHTML=`<i class="fa-solid fa-${type==='err'?'triangle-exclamation':type==='ok'?'check':'circle-info'}"></i>${msg}`;
+  document.body.appendChild(t);
+  toastT=setTimeout(()=>t.remove(),3000);
 }
 
-function showSkeletons() {
-  ['workTypeChart','supervisorChart','deptChart','otTypeChart','topOtTable','recentCheckin','recentRequests'].forEach(id => {
-    document.getElementById(id).innerHTML = '<div class="skel" style="height:180px"></div>';
+/* ════════════════════════════════════════════════
+   Filter Options — โหลด aff/dep dropdown
+════════════════════════════════════════════════ */
+async function loadFilterOptions(affOverride){
+  $('filterLoading').style.display='';
+  try{
+    const extra = {};
+    if(affOverride) extra.aff = affOverride;
+    const r = await apiFetch('/api/dash/filter-options', extra);
+    const d = r.data;
+
+    canFilter = d.canFilter || {aff:false,dep:false};
+
+    // Scope badge (user = locked)
+    if(!canFilter.aff && !canFilter.dep){
+      // user — แสดง badge dep ตัวเอง
+      const sc = r.meta?.department || r.meta?.dep_code || 'กอง/แผนกของคุณ';
+      $('scopeBadge').style.display='';
+      $('scopeText').textContent = sc;
+      $('selAff').style.display='none';
+      $('selDep').style.display='none';
+    } else {
+      $('scopeBadge').style.display='none';
+
+      // aff select (admin only)
+      if(canFilter.aff && d.affiliations){
+        $('selAff').style.display='';
+        $('selAff').innerHTML = '<option value="">— ทุกหน่วยงานหลัก —</option>' +
+          d.affiliations.map(a=>`<option value="${a.aff_code}" ${a.aff_code===filterState.aff?'selected':''}>${a.affiliation||a.aff_code}</option>`).join('');
+      } else if(!canFilter.aff && d.affiliation){
+        // supervisor — แสดง badge aff แต่กรองไม่ได้
+        $('scopeBadge').style.display='';
+        $('scopeText').textContent = d.affiliation.affiliation || d.affiliation.aff_code || '';
+      }
+
+      // dep select
+      if(canFilter.dep && d.departments?.length){
+        $('selDep').style.display='';
+        $('selDep').innerHTML = '<option value="">— ทุกกอง/แผนก —</option>' +
+          d.departments.map(dep=>`<option value="${dep.dep_code}" ${dep.dep_code===filterState.dep?'selected':''}>${dep.department||dep.dep_code}</option>`).join('');
+      } else {
+        $('selDep').style.display='none';
+      }
+    }
+  }catch(e){ console.error('filter-options',e); }
+  finally{ $('filterLoading').style.display='none'; }
+}
+
+function onAffChange(){
+  filterState.aff = $('selAff').value;
+  filterState.dep = '';
+  $('selDep').value='';
+  // reload dep list สำหรับ aff ที่เลือก
+  loadFilterOptions(filterState.aff).then(()=>loadAll());
+}
+function onDepChange(){
+  filterState.dep = $('selDep').value;
+  loadAll();
+}
+
+/* ════════════════════════════════════════════════
+   Skeletons
+════════════════════════════════════════════════ */
+function showSkels(){
+  ['wtChart','svDonut','dayBars','irDonut','deptChart','otTChart','topOt','recCin','recReq'].forEach(id=>{
+    $(id).innerHTML=`<div class="sk" style="height:160px"></div>`;
   });
+  $('dayLeg').innerHTML='';
+  $('kpiGrid').innerHTML=Array(7).fill(`<div class="kpi"><div class="sk" style="height:85px"></div></div>`).join('');
 }
 
-// ═══════════════════════════════════
-// Render KPIs
-// ═══════════════════════════════════
-function renderKPIs(d) {
-  if (!d) return;
-  const cards = [
-    { icon:'fa-users', color:'c-blue', value: d.totalUsers ?? 0, label:'ผู้ใช้งานทั้งหมด', unit:'คน', trend: d.newUsers ? `+${d.newUsers}` : null, trendDir:'up' },
-    { icon:'fa-circle-check', color:'c-green', value: d.checkinCount ?? 0, label:'เช็คอินวันนี้/ช่วงนี้', unit:'ครั้ง', trend: d.checkinRate ? `${d.checkinRate}%` : null, trendDir:'up' },
-    { icon:'fa-clock-rotate-left', color:'c-amber', value: d.lateCount ?? 0, label:'มาสาย', unit:'คน', trend: null, trendDir:'neutral' },
-    { icon:'fa-right-from-bracket', color:'c-indigo', value: d.checkoutCount ?? 0, label:'เช็คเอาท์', unit:'ครั้ง', trend: null, trendDir:'neutral' },
-    { icon:'fa-bolt', color:'c-purple', value: d.otCount ?? 0, label:'คำขอ OT', unit:'รายการ', trend: d.otPending ? `${d.otPending} pending` : null, trendDir:'neutral' },
-    { icon:'fa-hourglass-half', color:'c-cyan', value: d.otHours ? d.otHours.toFixed(1) : 0, label:'ชั่วโมง OT รวม', unit:'ชม.', trend: null, trendDir:'neutral' },
-    { icon:'fa-file-pen', color:'c-rose', value: d.requestCount ?? 0, label:'คำขอแก้ไขเวลา', unit:'รายการ', trend: d.pendingRequests ? `${d.pendingRequests} รอ` : null, trendDir:'down' },
-  ];
+/* ════════════════════════════════════════════════
+   Load All
+════════════════════════════════════════════════ */
+async function loadAll(){
+  const btn=$('refBtn'); btn.classList.add('spin');
+  const {from,to}=getRange();
+  $('tbSub').textContent=`${from===to?from:from+' — '+to}`;
+  showSkels();
 
-  const grid = document.getElementById('kpiGrid');
-  grid.innerHTML = cards.map((c, i) => `
-    <div class="kpi-card ${c.color}" style="animation-delay:${i*0.06}s">
-      <div class="kpi-top">
-        <div class="kpi-icon"><i class="fa-solid ${c.icon}"></i></div>
-        ${c.trend ? `<div class="kpi-trend trend-${c.trendDir}"><i class="fa-solid fa-arrow-${c.trendDir === 'up' ? 'up' : c.trendDir === 'down' ? 'down' : 'right'}"></i>${c.trend}</div>` : ''}
-      </div>
-      <div class="kpi-value">${Number(c.value).toLocaleString('th-TH')}<span>${c.unit}</span></div>
-      <div class="kpi-label">${c.label}</div>
-    </div>
-  `).join('');
+  const fp = getFilterParams();
+  const [s,a,o,rc] = await Promise.allSettled([
+    apiFetch('/api/dash/summary',fp),
+    apiFetch('/api/dash/attendance-stats',fp),
+    apiFetch('/api/dash/ot-stats',fp),
+    apiFetch('/api/dash/recent-activity',{...fp,limit:20}),
+  ]);
+
+  if(s.status==='fulfilled')  renderKPIs(s.value?.data, s.value?.meta);
+  else renderKPIsErr();
+
+  if(a.status==='fulfilled')  renderAttend(a.value?.data);
+  else ['wtChart','svDonut','dayBars','irDonut'].forEach(id=>$(id).innerHTML=emptyH());
+
+  if(o.status==='fulfilled')  renderOt(o.value?.data);
+  else ['deptChart','otTChart','topOt'].forEach(id=>$(id).innerHTML=emptyH());
+
+  if(rc.status==='fulfilled') renderRecent(rc.value?.data);
+  else ['recCin','recReq'].forEach(id=>$(id).innerHTML=emptyH());
+
+  $('lastUp').textContent='อัปเดต '+new Date().toLocaleTimeString('th-TH');
+  btn.classList.remove('spin');
 }
 
-// ═══════════════════════════════════
-// Bar Chart Helper
-// ═══════════════════════════════════
-function renderBarChart(containerId, items, color) {
-  const max = Math.max(...items.map(i => i.value), 1);
-  document.getElementById(containerId).innerHTML = items.map(item => `
-    <div class="bar-row">
-      <div class="bar-label" title="${item.label}">${item.label}</div>
-      <div class="bar-track"><div class="bar-fill" style="width:${(item.value/max*100).toFixed(1)}%;background:${color}"></div></div>
-      <div class="bar-val">${item.value.toLocaleString('th-TH')}</div>
-    </div>
-  `).join('') || '<div style="color:var(--text-muted);font-size:.75rem;text-align:center;padding:2rem 0">ไม่มีข้อมูล</div>';
-}
-
-// ═══════════════════════════════════
-// Donut Chart Helper
-// ═══════════════════════════════════
-function renderDonut(containerId, segments) {
-  const total = segments.reduce((s, x) => s + x.value, 0) || 1;
-  const r = 54, cx = 64, cy = 64, circ = 2 * Math.PI * r;
-  let offset = 0;
-  const paths = segments.map(seg => {
-    const frac = seg.value / total;
-    const dash = frac * circ;
-    const gap = circ - dash;
-    const path = `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${seg.color}" stroke-width="14"
-      stroke-dasharray="${dash.toFixed(2)} ${gap.toFixed(2)}"
-      stroke-dashoffset="${(-offset * circ / total).toFixed(2)}"
-      transform="rotate(-90 ${cx} ${cy})" style="transition:stroke-dasharray 0.8s cubic-bezier(0.16,1,0.3,1)"/>`;
-    offset += seg.value;
-    return path;
+/* ════════════════════════════════════════════════
+   KPIs
+════════════════════════════════════════════════ */
+const KPIS=[
+  {k:'totalUsers',   ico:'fa-users',                 c:'cb', lbl:'ผู้ใช้งาน Active',    unit:'คน',   bdg:d=>d.newUsers>0?{t:`+${d.newUsers}`,c:'bd-up'}:null},
+  {k:'checkinCount', ico:'fa-arrow-right-to-bracket', c:'cg', lbl:'เช็คอินในช่วงนี้',   unit:'ครั้ง',bdg:d=>d.checkinRate?{t:`${d.checkinRate}%`,c:'bd-up'}:null},
+  {k:'lateCount',    ico:'fa-clock',                 c:'ca', lbl:'มาสาย (หลัง 08:30)', unit:'คน',   bdg:d=>d.lateCount>0?{t:'⚠',c:'bd-w'}:null},
+  {k:'checkoutCount',ico:'fa-right-from-bracket',    c:'ci', lbl:'เช็คเอาท์ (manual)', unit:'ครั้ง',bdg:()=>null},
+  {k:'otCount',      ico:'fa-bolt',                  c:'cp', lbl:'คำขอ OT',            unit:'รายการ',bdg:d=>d.otPending>0?{t:`${d.otPending} รอ`,c:'bd-w'}:null},
+  {k:'otHours',      ico:'fa-hourglass-half',        c:'cc', lbl:'ชั่วโมง OT รวม',     unit:'ชม.',  bdg:()=>null, f:v=>fmtH(v)},
+  {k:'requestCount', ico:'fa-file-pen',              c:'cr', lbl:'คำขอแก้ไขเวลา',      unit:'รายการ',bdg:d=>d.pendingRequests>0?{t:`${d.pendingRequests} รอ`,c:'bd-dn'}:null},
+];
+function renderKPIs(d, meta){
+  if(!d){renderKPIsErr();return;}
+  if(d.otPending>0){$('navOt').textContent=d.otPending;$('navOt').style.display='';}
+  if(d.pendingRequests>0){$('navReq').textContent=d.pendingRequests;$('navReq').style.display='';}
+  $('kpiGrid').innerHTML=KPIS.map((k,i)=>{
+    const val=d[k.k]??0;
+    const bdg=k.bdg?k.bdg(d):null;
+    const disp=k.f?k.f(val):fmt(val);
+    return`<div class="kpi ${k.c}" style="animation-delay:${i*.05}s">
+      <div class="kpi-top"><div class="kpi-ico"><i class="fa-solid ${k.ico}"></i></div>
+      ${bdg?`<div class="kpi-bdg ${bdg.c}">${bdg.t}</div>`:''}</div>
+      <div class="kpi-val">${disp}<sub>${k.unit}</sub></div>
+      <div class="kpi-lbl">${k.lbl}</div></div>`;
   }).join('');
-
-  const legend = segments.map(s => `
-    <div class="legend-row">
-      <div class="legend-dot" style="background:${s.color}"></div>
-      <span>${s.label}</span>
-      <span class="legend-val">${s.value}</span>
-    </div>
-  `).join('');
-
-  document.getElementById(containerId).innerHTML = `
-    <div class="donut-wrap">
-      <svg width="128" height="128" viewBox="0 0 128 128" class="donut-svg">
-        <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="var(--bg-surface2)" stroke-width="14"/>
-        ${paths}
-        <text x="${cx}" y="${cy+5}" text-anchor="middle" fill="var(--text-primary)" font-family="Kanit,sans-serif" font-size="18" font-weight="700">${total}</text>
-      </svg>
-      <div class="donut-legend">${legend}</div>
-    </div>
-  `;
+}
+function renderKPIsErr(){
+  $('kpiGrid').innerHTML=KPIS.map(k=>`<div class="kpi"><div class="kpi-top"><div class="kpi-ico"><i class="fa-solid ${k.ico}"></i></div></div><div class="kpi-val" style="color:var(--tx3)">—<sub>${k.unit}</sub></div><div class="kpi-lbl">${k.lbl}</div></div>`).join('');
 }
 
-// ═══════════════════════════════════
-// Render Attendance Charts
-// ═══════════════════════════════════
-function renderAttendCharts(d) {
-  if (!d) { ['workTypeChart','supervisorChart'].forEach(id => { document.getElementById(id).innerHTML = noData(); }); return; }
+/* ════════════════════════════════════════════════
+   Attendance Charts
+════════════════════════════════════════════════ */
+function renderAttend(d){
+  if(!d){['wtChart','svDonut','dayBars','irDonut'].forEach(id=>$(id).innerHTML=emptyH());return;}
+  renderBar('wtChart',(d.workTypes||[]).map(x=>({lbl:x.type||'ไม่ระบุ',val:x.count||0})),'var(--em)');
+  const svM={approved:'var(--em)',pending:'var(--am)',rejected:'var(--ro)',none:'var(--cy)'};
+  const svL={approved:'อนุมัติ',pending:'คำขอ',rejected:'ปฏิเสธ',none:'รอ'};
+  renderDonut('svDonut',(d.supervisorStatus||[]).map(x=>({lbl:svL[x.status]||x.status,val:x.count||0,c:svM[x.status]||'var(--tx3)'})));
 
-  // Work type bar
-  const wtItems = (d.workTypes || []).map(x => ({ label: x.type || x.checkin_work_type || 'ไม่ระบุ', value: x.count || 0 }));
-  if (wtItems.length) renderBarChart('workTypeChart', wtItems, 'var(--accent)');
-  else document.getElementById('workTypeChart').innerHTML = noData();
+  // Daily bars
+  const daily=d.dailyCounts||[];
+  if(daily.length){
+    const mx=Math.max(...daily.map(x=>x.checkins||0),1);
+    $('dayBars').innerHTML=`<div class="dbars">${daily.map(x=>`
+      <div class="dbar" style="height:${Math.max(5,((x.checkins||0)/mx*100)).toFixed(0)}%;background:var(--em);opacity:.72">
+        <div class="dtt">${x.date}<br>✓${x.checkins||0} ⚠${x.late||0}</div>
+      </div>`).join('')}</div>`;
+    $('dayLeg').innerHTML=`
+      <span style="font-size:.63rem;color:var(--tx3);display:flex;align-items:center;gap:4px"><span style="width:7px;height:7px;border-radius:2px;background:var(--em);display:inline-block"></span>เช็คอิน</span>
+      <span style="font-size:.63rem;color:var(--tx3)">${daily.length} วัน · รวม ${daily.reduce((s,x)=>s+(x.checkins||0),0)} ครั้ง · สาย ${daily.reduce((s,x)=>s+(x.late||0),0)} ครั้ง</span>`;
+    $('daySubLbl').textContent=`${daily.length} วัน`;
+  } else { $('dayBars').innerHTML=emptyH(); $('dayLeg').innerHTML=''; }
 
-  // Supervisor donut
-  const svColors = { approved: '#10b981', pending: '#f59e0b', rejected: '#f43f5e', none: '#64748b' };
-  const svSegs = (d.supervisorStatus || []).map(x => ({
-    label: x.status || x.supervisor_status || 'ไม่มี',
-    value: x.count || 0,
-    color: svColors[x.status || x.supervisor_status] || '#64748b'
-  }));
-  if (svSegs.length) renderDonut('supervisorChart', svSegs);
-  else document.getElementById('supervisorChart').innerHTML = noData();
+  const ir=d.inRangeStats||{};
+  renderDonut('irDonut',[{lbl:'ในพื้นที่',val:ir.inRange||0,c:'var(--em)'},{lbl:'นอกพื้นที่',val:ir.outRange||0,c:'var(--am)'},{lbl:'ไม่ทราบ',val:ir.unknown||0,c:'var(--tx3)'}]);
 }
 
-// ═══════════════════════════════════
-// Render OT Charts
-// ═══════════════════════════════════
-function renderOtCharts(d) {
-  if (!d) { ['deptChart','otTypeChart','topOtTable'].forEach(id => { document.getElementById(id).innerHTML = noData(); }); return; }
-
-  // Dept bar
-  const deptItems = (d.departments || []).map(x => ({ label: x.department || 'ไม่ระบุ', value: x.count || 0 }));
-  if (deptItems.length) renderBarChart('deptChart', deptItems, 'var(--blue)');
-  else document.getElementById('deptChart').innerHTML = noData();
-
-  // OT type bar
-  const otItems = (d.otTypes || []).map(x => ({ label: x.work_type || 'ไม่ระบุ', value: x.count || 0 }));
-  if (otItems.length) renderBarChart('otTypeChart', otItems, 'var(--purple)');
-  else document.getElementById('otTypeChart').innerHTML = noData();
-
-  // Top OT table
-  const tops = (d.topOt || []).slice(0,8);
-  if (tops.length) {
-    document.getElementById('topOtTable').innerHTML = `
-      <table class="mini-table">
-        <thead><tr><th>#</th><th>ชื่อ</th><th>ชม.</th><th>สถานะ</th></tr></thead>
-        <tbody>${tops.map((u,i) => `
-          <tr>
-            <td style="color:var(--text-muted);font-family:'JetBrains Mono',monospace">${i+1}</td>
-            <td class="name">${u.name || u.uuid?.slice(0,8) || '-'}</td>
-            <td style="font-family:'JetBrains Mono',monospace;font-weight:600;color:var(--text-primary)">${(u.total_hours || 0).toFixed(1)}</td>
-            <td><span class="pill ${u.supervisor_status === 'approved' ? 'pill-green' : u.supervisor_status === 'pending' ? 'pill-amber' : 'pill-rose'}">${u.supervisor_status || 'none'}</span></td>
-          </tr>
-        `).join('')}</tbody>
-      </table>
-    `;
-  } else document.getElementById('topOtTable').innerHTML = noData();
+/* ════════════════════════════════════════════════
+   OT Charts
+════════════════════════════════════════════════ */
+function renderOt(d){
+  if(!d){['deptChart','otTChart','topOt'].forEach(id=>$(id).innerHTML=emptyH());return;}
+  renderBar('deptChart',(d.departments||[]).map(x=>({lbl:x.department||'ไม่ระบุ',val:x.count||0})),'var(--bl)');
+  renderBar('otTChart',(d.otTypes||[]).map(x=>({lbl:x.work_type||'ไม่ระบุ',val:x.count||0})),'var(--pu)');
+  const tops=(d.topOt||[]).slice(0,8);
+  if(tops.length){
+    $('topOt').innerHTML=`<table class="mt"><thead><tr><th>#</th><th>ชื่อ</th><th>ชม.</th><th>สถานะ</th></tr></thead><tbody>
+      ${tops.map((u,i)=>`<tr>
+        <td><span class="rank ${i===0?'rg':i===1?'rs':i===2?'rb':''}">${i+1}</span></td>
+        <td class="hl">${u.name||'-'}<br><span class="mu">${u.department||''}</span></td>
+        <td class="mn">${fmtH(u.total_hours)}</td>
+        <td>${pillSt(u.supervisor_status)}</td></tr>`).join('')}
+    </tbody></table>`;
+  } else $('topOt').innerHTML=emptyH();
 }
 
-// ═══════════════════════════════════
-// Render Recent
-// ═══════════════════════════════════
-function renderRecent(d) {
-  if (!d) { ['recentCheckin','recentRequests'].forEach(id => { document.getElementById(id).innerHTML = noData(); }); return; }
-
-  const actColors = ['c-green','c-blue','c-amber','c-indigo','c-purple'];
-
-  // Recent checkins
-  const checkins = (d.recentCheckins || []).slice(0,6);
-  document.getElementById('recentCheckin').innerHTML = checkins.length
-    ? checkins.map((x, i) => `
-        <div class="activity-item">
-          <div class="act-icon ${actColors[i%actColors.length]}"><i class="fa-solid fa-arrow-right-to-bracket"></i></div>
-          <div class="act-body">
-            <div class="act-text"><strong>${x.name || x.uuid?.slice(0,8) || 'ผู้ใช้'}</strong> เช็คอิน ${x.checkin_work_type || 'ปกติ'}</div>
-            <div class="act-time">${x.date || ''} · ${x.checkin_time || ''} ${x.checkin_in_range ? '<span style="color:var(--accent)">✓ ในพื้นที่</span>' : '<span style="color:var(--amber)">⚠ นอกพื้นที่</span>'}</div>
-          </div>
+/* ════════════════════════════════════════════════
+   Recent Activity
+════════════════════════════════════════════════ */
+const ACT_COLORS=[
+  ['var(--embg)','var(--bda)','var(--em)'],
+  ['var(--blbg)','var(--blb)','var(--bl)'],
+  ['var(--inbg)','var(--inb)','var(--in)'],
+  ['var(--pubg)','var(--pub)','var(--pu)'],
+];
+function renderRecent(d){
+  if(!d){['recCin','recReq'].forEach(id=>$(id).innerHTML=emptyH());return;}
+  const cin=(d.recentCheckins||[]).slice(0,8);
+  $('recCin').innerHTML=cin.length?cin.map((x,i)=>{
+    const [bg,b,c]=ACT_COLORS[i%4];
+    return`<div class="ai">
+      <div class="aic" style="background:${bg};border:1px solid ${b}"><i class="fa-solid fa-arrow-right-to-bracket" style="color:${c}"></i></div>
+      <div class="aib">
+        <div class="ait"><strong>${x.name||'ผู้ใช้'}</strong> · ${x.checkin_work_type||'ปกติ'}</div>
+        <div class="aim">${x.date||''} ${x.checkin_time||''}
+          <span>${x.checkin_in_range==1?'<span style="color:var(--em)">✓ ในพื้นที่</span>':'<span style="color:var(--am)">⚠ นอกพื้นที่</span>'}</span>
+          ${x.department?`<span>${x.department}</span>`:''}
         </div>
-      `).join('')
-    : noData();
+      </div></div>`;}).join(''):emptyH();
 
-  // Recent requests
-  const reqs = (d.recentRequests || []).slice(0,6);
-  document.getElementById('recentRequests').innerHTML = reqs.length
-    ? reqs.map(x => `
-        <div class="activity-item">
-          <div class="act-icon c-amber"><i class="fa-solid fa-file-pen"></i></div>
-          <div class="act-body">
-            <div class="act-text"><strong>${x.name || x.uuid?.slice(0,8) || 'ผู้ใช้'}</strong> · ${x.request_type || x.ot_type || '-'}</div>
-            <div class="act-time">${x.date || x.ot_date || ''} <span class="pill ${x.supervisor_status === 'approved' ? 'pill-green' : x.supervisor_status === 'pending' ? 'pill-amber' : 'pill-rose'}" style="margin-left:4px">${x.supervisor_status || 'none'}</span></div>
-          </div>
-        </div>
-      `).join('')
-    : noData();
+  const reqs=[...(d.recentRequests||[]),...(d.recentOt||[])]
+    .sort((a,b)=>(b.request_at||b.submitted_at||'').localeCompare(a.request_at||a.submitted_at||''))
+    .slice(0,8);
+  $('recReq').innerHTML=reqs.length?reqs.map(x=>`<div class="ai">
+    <div class="aic" style="background:var(--ambg);border:1px solid var(--amb)"><i class="fa-solid fa-file-pen" style="color:var(--am)"></i></div>
+    <div class="aib">
+      <div class="ait"><strong>${x.name||'ผู้ใช้'}</strong> · ${x.request_type||x.work_type||'OT'}</div>
+      <div class="aim">${x.date||x.ot_date||''} ${pillSt(x.supervisor_status)} ${x.department?`<span>${x.department}</span>`:''}</div>
+    </div></div>`).join(''):emptyH();
 }
 
-function noData() {
-  return `<div style="text-align:center;padding:2rem 0;color:var(--text-muted);font-size:.78rem"><i class="fa-solid fa-inbox" style="display:block;font-size:1.5rem;margin-bottom:8px;opacity:.4"></i>ไม่มีข้อมูลในช่วงนี้</div>`;
+/* ════════════════════════════════════════════════
+   Chart Helpers
+════════════════════════════════════════════════ */
+function renderBar(id,items,color){
+  if(!items?.length){$(id).innerHTML=emptyH();return;}
+  const mx=Math.max(...items.map(i=>i.val),1);
+  $(id).innerHTML=items.slice(0,8).map(it=>`
+    <div class="br">
+      <div class="bl" title="${it.lbl}">${it.lbl}</div>
+      <div class="bt"><div class="bf" style="width:${(it.val/mx*100).toFixed(1)}%;background:${color}"></div></div>
+      <div class="bv">${fmt(it.val)}</div>
+    </div>`).join('');
+}
+function renderDonut(id,segs){
+  const tot=segs.reduce((s,x)=>s+x.val,0)||1;
+  const r=50,cx=64,cy=64,circ=2*Math.PI*r;
+  let off=0;
+  const paths=segs.map(s=>{
+    const dash=(s.val/tot)*circ;
+    const p=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${s.c}" stroke-width="13"
+      stroke-dasharray="${dash.toFixed(2)} ${(circ-dash).toFixed(2)}"
+      stroke-dashoffset="${(-off*circ/tot).toFixed(2)}"
+      transform="rotate(-90 ${cx} ${cy})"
+      style="transition:stroke-dasharray .9s var(--ease)"/>`;
+    off+=s.val; return p;
+  }).join('');
+  const leg=segs.map(s=>`<div class="lr"><div class="ld" style="background:${s.c}"></div><span>${s.lbl}</span><span class="lv">${fmt(s.val)}</span></div>`).join('');
+  $(id).innerHTML=`<div class="dw"><svg width="128" height="128" viewBox="0 0 128 128">
+    <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="var(--sur2)" stroke-width="13"/>
+    ${paths}
+    <text x="${cx}" y="${cy+6}" text-anchor="middle" fill="var(--tx)" font-family="Kanit,sans-serif" font-size="16" font-weight="700">${fmt(tot)}</text>
+  </svg><div class="dl">${leg}</div></div>`;
+}
+function pillSt(s){
+  const m={approved:'pg',pending:'pa',rejected:'pr',none:'pn'};
+  const l={approved:'อนุมัติ',pending:'รอ',rejected:'ปฏิเสธ',none:'ไม่มี'};
+  return`<span class="pill ${m[s]||'pn'}">${l[s]||s||'—'}</span>`;
+}
+function emptyH(){return`<div class="empty"><i class="fa-solid fa-inbox"></i>ไม่มีข้อมูลในช่วงนี้</div>`;}
+
+/* ════════════════════════════════════════════════
+   User Info
+════════════════════════════════════════════════ */
+function loadUser(){
+  const name=localStorage.getItem('user_name')||sessionStorage.getItem('user_name')||'Admin';
+  const role=localStorage.getItem('user_role')||sessionStorage.getItem('user_role')||'admin';
+  $('uNm').textContent=name;
+  $('uRl').textContent={admin:'ผู้ดูแลระบบ',supervisor:'หัวหน้างาน',user:'พนักงาน'}[role]||role;
+  $('uAv').textContent=name.charAt(0).toUpperCase();
 }
 
-// ═══════════════════════════════════
-// Init
-// ═══════════════════════════════════
-document.addEventListener('DOMContentLoaded', loadData);
+/* ════════════════════════════════════════════════
+   Init
+════════════════════════════════════════════════ */
+document.addEventListener('DOMContentLoaded',()=>{
+  loadUser();
+  // default month picker value
+  const now=new Date();
+  $('mPick').value=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+  // load filter options ก่อน แล้วค่อย load data
+  loadFilterOptions().then(()=>loadAll());
+  // auto refresh ทุก 5 นาที
+  setInterval(loadAll, 5*60*1000);
+});
 </script>
-
-<!-- ════════════════════════════════════════════════════════
-     API: /api/dash/summary
-     File: functions/api/dash/summary.js
-════════════════════════════════════════════════════════ -->
-<script type="text/template" id="api-summary">
-/*
- * functions/api/dash/summary.js
- * GET /api/dash/summary?from=YYYY-MM-DD&to=YYYY-MM-DD
- */
-import { authUser, extractToken, unauthorized } from '../../_auth.js';
-
-const CORS = {
-  'Access-Control-Allow-Origin': '*',
-  'Content-Type': 'application/json',
-};
-
-export async function onRequestGet({ request, env }) {
-  const token = extractToken(request);
-  const session = await authUser(env, token);
-  if (!session) return unauthorized(CORS);
-  if (!['admin', 'supervisor'].includes(session.role))
-    return Response.json({ success: false, message: 'Forbidden' }, { status: 403, headers: CORS });
-
-  const url = new URL(request.url);
-  const from = url.searchParams.get('from') || new Date().toISOString().slice(0, 10);
-  const to   = url.searchParams.get('to')   || from;
-
-  const [
-    totalUsers,
-    newUsers,
-    checkinCount,
-    lateCount,
-    checkoutCount,
-    otData,
-    requestCount,
-    pendingRequests,
-  ] = await Promise.all([
-    env.DB.prepare(`SELECT COUNT(*) AS c FROM users WHERE status = 'Active'`).first('c'),
-    env.DB.prepare(`SELECT COUNT(*) AS c FROM users WHERE DATE(created_at) BETWEEN ? AND ?`).bind(from, to).first('c'),
-    env.DB.prepare(`SELECT COUNT(*) AS c FROM attendance WHERE date BETWEEN ? AND ? AND checkin_time IS NOT NULL`).bind(from, to).first('c'),
-    env.DB.prepare(`SELECT COUNT(*) AS c FROM attendance WHERE date BETWEEN ? AND ? AND checkin_time > '08:30:00'`).bind(from, to).first('c'),
-    env.DB.prepare(`SELECT COUNT(*) AS c FROM attendance WHERE date BETWEEN ? AND ? AND checkout_time IS NOT NULL`).bind(from, to).first('c'),
-    env.DB.prepare(`SELECT COUNT(*) AS cnt, COALESCE(SUM(ot_hours),0) AS hrs, SUM(CASE WHEN supervisor_status='pending' THEN 1 ELSE 0 END) AS pend FROM attendance_overtime WHERE ot_date BETWEEN ? AND ?`).bind(from, to).first(),
-    env.DB.prepare(`SELECT COUNT(*) AS c FROM attendance WHERE date BETWEEN ? AND ? AND request_ref IS NOT NULL`).bind(from, to).first('c'),
-    env.DB.prepare(`SELECT COUNT(*) AS c FROM attendance WHERE date BETWEEN ? AND ? AND supervisor_status = 'pending'`).bind(from, to).first('c'),
-  ]);
-
-  return Response.json({
-    success: true,
-    data: {
-      totalUsers,
-      newUsers,
-      checkinCount,
-      checkinRate: totalUsers > 0 ? ((checkinCount / totalUsers) * 100).toFixed(1) : 0,
-      lateCount,
-      checkoutCount,
-      otCount:   otData?.cnt  ?? 0,
-      otHours:   otData?.hrs  ?? 0,
-      otPending: otData?.pend ?? 0,
-      requestCount,
-      pendingRequests,
-    },
-  }, { headers: CORS });
-}
-
-export async function onRequestOptions() {
-  return new Response(null, { status: 204, headers: { ...CORS, 'Access-Control-Allow-Methods': 'GET,OPTIONS', 'Access-Control-Allow-Headers': 'Authorization' } });
-}
-</script>
-
-<!-- ════════════════════════════════════════════════════════
-     API: /api/dash/attendance-stats
-     File: functions/api/dash/attendance-stats.js
-════════════════════════════════════════════════════════ -->
-<script type="text/template" id="api-attendance-stats">
-/*
- * functions/api/dash/attendance-stats.js
- * GET /api/dash/attendance-stats?from=YYYY-MM-DD&to=YYYY-MM-DD
- */
-import { authUser, extractToken, unauthorized } from '../../_auth.js';
-
-const CORS = { 'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json' };
-
-export async function onRequestGet({ request, env }) {
-  const token = extractToken(request);
-  const session = await authUser(env, token);
-  if (!session) return unauthorized(CORS);
-  if (!['admin','supervisor'].includes(session.role))
-    return Response.json({ success:false, message:'Forbidden' }, { status:403, headers:CORS });
-
-  const url = new URL(request.url);
-  const from = url.searchParams.get('from');
-  const to   = url.searchParams.get('to');
-
-  const [workTypes, supervisorStatus, dailyCounts] = await Promise.all([
-    env.DB.prepare(`
-      SELECT checkin_work_type AS type, COUNT(*) AS count
-      FROM attendance
-      WHERE date BETWEEN ? AND ? AND checkin_time IS NOT NULL
-      GROUP BY checkin_work_type
-      ORDER BY count DESC
-    `).bind(from, to).all(),
-
-    env.DB.prepare(`
-      SELECT supervisor_status AS status, COUNT(*) AS count
-      FROM attendance
-      WHERE date BETWEEN ? AND ?
-      GROUP BY supervisor_status
-    `).bind(from, to).all(),
-
-    env.DB.prepare(`
-      SELECT date, COUNT(*) AS checkins,
-             SUM(CASE WHEN checkin_time > '08:30:00' THEN 1 ELSE 0 END) AS late
-      FROM attendance
-      WHERE date BETWEEN ? AND ?
-      GROUP BY date ORDER BY date
-    `).bind(from, to).all(),
-  ]);
-
-  return Response.json({
-    success: true,
-    data: {
-      workTypes:        workTypes.results  ?? [],
-      supervisorStatus: supervisorStatus.results ?? [],
-      dailyCounts:      dailyCounts.results ?? [],
-    },
-  }, { headers: CORS });
-}
-
-export async function onRequestOptions() {
-  return new Response(null, { status:204, headers:{ ...CORS,'Access-Control-Allow-Methods':'GET,OPTIONS','Access-Control-Allow-Headers':'Authorization' }});
-}
-</script>
-
-<!-- ════════════════════════════════════════════════════════
-     API: /api/dash/ot-stats
-     File: functions/api/dash/ot-stats.js
-════════════════════════════════════════════════════════ -->
-<script type="text/template" id="api-ot-stats">
-/*
- * functions/api/dash/ot-stats.js
- * GET /api/dash/ot-stats?from=YYYY-MM-DD&to=YYYY-MM-DD
- */
-import { authUser, extractToken, unauthorized } from '../../_auth.js';
-
-const CORS = { 'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json' };
-
-export async function onRequestGet({ request, env }) {
-  const token = extractToken(request);
-  const session = await authUser(env, token);
-  if (!session) return unauthorized(CORS);
-  if (!['admin','supervisor'].includes(session.role))
-    return Response.json({ success:false, message:'Forbidden' }, { status:403, headers:CORS });
-
-  const url  = new URL(request.url);
-  const from = url.searchParams.get('from');
-  const to   = url.searchParams.get('to');
-
-  const [departments, otTypes, topOt] = await Promise.all([
-    env.DB.prepare(`
-      SELECT a.department, COUNT(*) AS count
-      FROM attendance att
-      JOIN users a ON a.uuid = att.uuid
-      WHERE att.date BETWEEN ? AND ? AND att.checkin_time IS NOT NULL
-      GROUP BY a.department
-      ORDER BY count DESC LIMIT 10
-    `).bind(from, to).all(),
-
-    env.DB.prepare(`
-      SELECT work_type, COUNT(*) AS count, SUM(ot_hours) AS total_hours
-      FROM attendance_overtime
-      WHERE ot_date BETWEEN ? AND ?
-      GROUP BY work_type
-      ORDER BY count DESC
-    `).bind(from, to).all(),
-
-    env.DB.prepare(`
-      SELECT o.uuid, o.name, o.department, o.supervisor_status,
-             SUM(o.ot_hours) AS total_hours, COUNT(*) AS records
-      FROM attendance_overtime o
-      WHERE o.ot_date BETWEEN ? AND ?
-      GROUP BY o.uuid
-      ORDER BY total_hours DESC LIMIT 10
-    `).bind(from, to).all(),
-  ]);
-
-  return Response.json({
-    success: true,
-    data: {
-      departments: departments.results ?? [],
-      otTypes:     otTypes.results     ?? [],
-      topOt:       topOt.results       ?? [],
-    },
-  }, { headers: CORS });
-}
-
-export async function onRequestOptions() {
-  return new Response(null, { status:204, headers:{ ...CORS,'Access-Control-Allow-Methods':'GET,OPTIONS','Access-Control-Allow-Headers':'Authorization' }});
-}
-</script>
-
-<!-- ════════════════════════════════════════════════════════
-     API: /api/dash/recent-activity
-     File: functions/api/dash/recent-activity.js
-════════════════════════════════════════════════════════ -->
-<script type="text/template" id="api-recent-activity">
-/*
- * functions/api/dash/recent-activity.js
- * GET /api/dash/recent-activity?from=YYYY-MM-DD&to=YYYY-MM-DD
- */
-import { authUser, extractToken, unauthorized } from '../../_auth.js';
-
-const CORS = { 'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json' };
-
-export async function onRequestGet({ request, env }) {
-  const token = extractToken(request);
-  const session = await authUser(env, token);
-  if (!session) return unauthorized(CORS);
-  if (!['admin','supervisor'].includes(session.role))
-    return Response.json({ success:false, message:'Forbidden' }, { status:403, headers:CORS });
-
-  const url  = new URL(request.url);
-  const from = url.searchParams.get('from');
-  const to   = url.searchParams.get('to');
-
-  const [recentCheckins, recentRequests] = await Promise.all([
-    env.DB.prepare(`
-      SELECT a.date, a.checkin_time, a.checkin_work_type, a.checkin_in_range,
-             u.firstName || ' ' || u.lastName AS name
-      FROM attendance a
-      JOIN users u ON u.uuid = a.uuid
-      WHERE a.date BETWEEN ? AND ? AND a.checkin_time IS NOT NULL
-      ORDER BY a.checkin_at DESC LIMIT 20
-    `).bind(from, to).all(),
-
-    env.DB.prepare(`
-      SELECT a.date, a.request_type, a.supervisor_status,
-             u.firstName || ' ' || u.lastName AS name
-      FROM attendance a
-      JOIN users u ON u.uuid = a.uuid
-      WHERE a.date BETWEEN ? AND ? AND a.request_ref IS NOT NULL
-      ORDER BY a.request_at DESC LIMIT 10
-    `).bind(from, to).all(),
-  ]);
-
-  return Response.json({
-    success: true,
-    data: {
-      recentCheckins:  recentCheckins.results  ?? [],
-      recentRequests:  recentRequests.results  ?? [],
-    },
-  }, { headers: CORS });
-}
-
-export async function onRequestOptions() {
-  return new Response(null, { status:204, headers:{ ...CORS,'Access-Control-Allow-Methods':'GET,OPTIONS','Access-Control-Allow-Headers':'Authorization' }});
-}
-</script>
-
 </body>
 </html>
