@@ -111,8 +111,8 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--tx);min-h
   padding:.8rem 1.6rem;
   display:flex;align-items:center;gap:1rem;flex-wrap:wrap;
 }
-.tb-left{flex:1;min-width:0; }
-.tb-title{font-family:'Kanit',sans-serif;font-size:1.1rem;font-weight:700;color:var(--tx);letter-spacing:-.01em;display:flex;align-items:center;gap:8px;}
+.tb-left{flex:1;min-width:0;}
+.tb-title{font-family:'Kanit',sans-serif;font-size:1.1rem;font-weight:700;display:flex;align-items:center;gap:8px;letter-spacing:-.01em;}
 .tb-sub{font-size:.7rem;color:var(--tx3);margin-top:1px;}
 .tb-right{display:flex;align-items:center;gap:7px;flex-wrap:wrap;}
 
@@ -262,7 +262,7 @@ td.mu{color:var(--tx3);font-size:.66rem;}
 .aim{font-size:.63rem;color:var(--tx3);margin-top:2px;font-family:'JetBrains Mono',monospace;display:flex;align-items:center;gap:5px;flex-wrap:wrap;}
 
     .nav-back {
-      width:36px; height:36px; border-radius:10px; border:none; margin-left: 2rem;
+      width:36px; height:36px; border-radius:10px; border:none; 
       background:var(--sur2); color:var(--tx); font-size:1rem; cursor:pointer;
       display:flex; align-items:center; justify-content:center; flex-shrink:0;
       transition:background .15s;
@@ -288,7 +288,7 @@ td.mu{color:var(--tx3);font-size:.66rem;}
 .toast.ok{border-color:var(--bda);color:var(--em);}
 
 /* Responsive */
-@media(max-width:1100px){.g3{grid-template-columns:1fr 1fr;} .tb-left{padding-left:2.5rem;} .sb-logo{padding-left: 3.2rem;} .nav-back{margin-left: 0.1rem;}}
+@media(max-width:1100px){.g3{grid-template-columns:1fr 1fr;} .tb-left{padding-left:2.5rem;} .sb-logo{padding-left: 3.2rem;}}
 @media(max-width:760px){.g2,.g3{grid-template-columns:1fr;}.kpi-grid{grid-template-columns:repeat(2,1fr);}.content{padding:1rem 1rem;}.topbar{padding:.7rem 1rem;}.filter-bar{padding:.6rem 1rem;}}
 @media(max-width:420px){.kpi-grid{grid-template-columns:1fr;}.pg{display:none;}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important;}}
@@ -306,19 +306,24 @@ td.mu{color:var(--tx3);font-size:.66rem;}
   <div class="sb-logo">
     <div class="logo-mk"><i class="fa-solid fa-chart-line"></i></div>
     <div><div class="logo-tx">HR System</div><div class="logo-sub">บริหารงานบุคคล</div></div>
-      <button class="nav-back" onclick="history.length>1?history.back():location.href='index.html'" title="ย้อนกลับ">
-    <i class="fa-solid fa-home"></i>
-  </button>
   </div>
   <nav class="nav">
-    <div class="nav-sec">หลัก</div>
+    <div class="nav-sec">Main</div>
     <a class="ni active" href="dash.html"><i class="fa-solid fa-gauge-high"></i>Dashboard</a>
-    <a class="ni" href="#" onclick="return false"><i class="fa-solid fa-clock"></i>สรุป</a>
-    <a class="ni" href="#" onclick="return false"><i class="fa-solid fa-bolt"></i>โอที (OT)<span class="nav-badge" id="navOt" style="display:none"></span></a>
-    <div class="nav-sec">ระบบ</div>
-    <a class="ni" href="#" onclick="return false"><i class="fa-solid fa-users"></i>ผู้ใช้งาน</a>
-    <a class="ni" href="#" onclick="return false"><i class="fa-solid fa-file-pen"></i>คำขออนุมัติ<span class="nav-badge" id="navReq" style="display:none"></span></a>
-    <a class="ni" href="#" onclick="return false"><i class="fa-solid fa-gear"></i>ตั้งค่า</a>
+    <div class="nav-sec">HR</div>
+    <!-- <div class="ni" href="#" onclick="return false"><i class="fa-solid fa-clock"></i>การลงเวลารายวัน</div>
+    <div class="ni" href="#" onclick="return false"><i class="fa-solid fa-clock"></i>สรุปการลงเวลารายเดือน</div> -->
+    <!-- <a class="ni" href="#" onclick="return false"><i class="fa-solid fa-clock"></i>สรุป</a> -->
+    <!-- <a class="ni" href="#" onclick="return false"><i class="fa-solid fa-bolt"></i>โอที (OT)<span class="nav-badge" id="navOt" style="display:none"></span></a> -->
+     <div class="nav-sec">finance</div>
+     
+     <!-- <div class="ni" href="#" onclick="return false"><i class="fa-solid fa-file-invoice"></i>จัดการการเบิกค่าตอบแทน OT</div>
+    <div class="ni" href="#" onclick="return false"><i class="fa-solid fa-wallet"></i>หลักฐานการเบิกจ่าย OT</div> -->
+    <div class="nav-sec">System</div>
+    <a class="ni" href="users.html" ><i class="fa-solid fa-users"></i>ผู้ใช้งาน</a>
+    <a class="ni" href="organizations.html" ><i class="fa-solid fa-building"></i>หน่วยงาน</a>
+    <!-- <a class="ni" href="#" onclick="return false"><i class="fa-solid fa-file-pen"></i>คำขออนุมัติ<span class="nav-badge" id="navReq" style="display:none"></span></a> -->
+    <!-- <a class="ni" href="#" onclick="return false"><i class="fa-solid fa-gear"></i>ตั้งค่า</a> -->
   </nav>
   <div class="sb-foot">
     <div class="user-pill">
@@ -335,7 +340,12 @@ td.mu{color:var(--tx3);font-size:.66rem;}
   <!-- Topbar -->
   <div class="topbar">
     <div class="tb-left">
-      <div class="tb-title">Dashboard <span class="live" style="margin-left:4px"></span></div>
+      <div class="tb-title">
+ <button class="nav-back" onclick="history.length>1?history.back():location.href='index.html'" title="ย้อนกลับ">
+    <i class="fa-solid fa-arrow-left"></i>
+  </button>
+  <i class="fa-solid fa-chart-line" style="font-size:.85rem;opacity:.6"></i>
+  Dashboard <span class="live" style="margin-left:1px"></span></div>
       <div class="tb-sub" id="tbSub">—</div>
     </div>
     <div class="tb-right">
@@ -636,8 +646,8 @@ const KPIS=[
 ];
 function renderKPIs(d, meta){
   if(!d){renderKPIsErr();return;}
-  if(d.otPending>0){$('navOt').textContent=d.otPending;$('navOt').style.display='';}
-  if(d.pendingRequests>0){$('navReq').textContent=d.pendingRequests;$('navReq').style.display='';}
+  // if(d.otPending>0){$('navOt').textContent=d.otPending;$('navOt').style.display='';}
+  // if(d.pendingRequests>0){$('navReq').textContent=d.pendingRequests;$('navReq').style.display='';}
   $('kpiGrid').innerHTML=KPIS.map((k,i)=>{
     const val=d[k.k]??0;
     const bdg=k.bdg?k.bdg(d):null;

@@ -663,7 +663,7 @@
 <!-- Navbar -->
 <nav>
 <div class="nav-logo" onclick="location.href='index.html'" style="cursor:pointer;">
-  <i class="fa-solid fa-ribbon"></i>
+  <i class="fas fa-arrow-left"></i>
   <span>ลงเวลา</span>
 </div>
   <div class="nav-actions">
@@ -731,18 +731,13 @@
    <a class="drawer-item" href="index.html"><i class="fas fa-home"></i> หน้าหลัก</a>
      <div class="drawer-divider"></div>
     <a class="drawer-item" onclick="checktoday(); closeDrawer()"><i class="fas fa-clock"></i> ตรวจสอบการลงเวลา</a>
-    <a class="drawer-item" onclick="canceltoday(); closeDrawer()"><i class="fas fa-xmark"></i> ยกเลิกการลงเวลา</a>
-    <div class="drawer-divider"></div>
     <a class="drawer-item" onclick="sendRequest(); closeDrawer()"><i class="fas fa-paper-plane"></i> ส่งคำขอ</a>
     <a class="drawer-item" href="overtime.html"><i class="fa-solid fa-business-time"></i> OT นอกเวลาราชการ</a>
     <a class="drawer-item" onclick="openWebAdmin(); closeDrawer()"><i class="fas fa-chart-bar"></i> รายงาน</a>
     <div class="drawer-divider"></div>
     <a class="drawer-item" onclick="aboutme(); closeDrawer()"><i class="fas fa-user"></i> ข้อมูลของฉัน</a>
     <a class="drawer-item" onclick="checkSignature(); closeDrawer()"><i class="fa-solid fa-signature"></i> ลายเซ็น</a>
-    <a class="drawer-item" onclick="inputcid(); closeDrawer()"><i class="fas fa-id-card"></i> รหัสเข้าระบบ</a>
-    <a class="drawer-item" onclick="uploadImage(); closeDrawer()"><i class="fa-solid fa-gear"></i> ตั้งค่า</a>
     <div class="drawer-divider"></div>
-    <a class="drawer-item" href="https://drive.google.com/file/d/1vv9PcsMhtZrztWn3daz13PQUH2Pko71x/view" target="_blank"><i class="fas fa-book"></i> วิธีใช้งาน</a>
     <a class="drawer-item" onclick="clearLocal(); closeDrawer()" style="color:#e53935"><i class="fas fa-sign-out-alt" style="color:#e53935"></i> ออกจากระบบ</a>
   </div>
 </div>
@@ -2133,7 +2128,7 @@ function addHistoryEntry(entry) {
 /* ===================== HISTORY (API-driven) =====================
    - fetch /api/attendance/today สำหรับวันนี้
    - merge กับ localStorage สำหรับ 7 วันย้อนหลัง
-   - แสดงปุ่ม "ยกเลิกการลงเวลา" เมื่อ supervisor_status === 'none'
+   - แสดงปุ่ม "ยกเลิกการลงเวลา" เมื่อ supervisor_status === 'pending'
 */
 
 // ── render ──────────────────────────────────────────────────────
@@ -2166,10 +2161,10 @@ function renderHistory() {
     const supEntry = dayEntries.find(e => e.type === 'in' && e.supervisor_status);
     const supBadge = supEntry ? buildSupBadge(supEntry.supervisor_status, supEntry.supervisor_name) : '';
 
-    // ── ปุ่มยกเลิก: แสดงเฉพาะวันนี้ + supervisor_status === 'none' ──
+    // ── ปุ่มยกเลิก: แสดงเฉพาะวันนี้ + supervisor_status === 'pending' ──
     const todayStr = new Date().toLocaleDateString('th-TH');
     const isToday  = dateStr === todayStr;
-    const canCancelAttendance = isToday && supEntry?.supervisor_status === 'none';
+    const canCancelAttendance = isToday && supEntry?.supervisor_status === 'pending';
 
     const cancelAttBtn = canCancelAttendance
       ? `<button
@@ -2300,6 +2295,8 @@ async function cancelAttendance() {
 
 
 function buildSupBadge(status, supervisorName) {
+  console.log(status, supervisorName);
+
   const cfg = {
      none:  { color:'#b45309', bg:'#fffbeb', border:'#f59e0b40', icon:'fa-hourglass-half', label:'รอการตรวจสอบ' },
     pending:  { color:'#fb8c00', bg:'#fff8f0', border:'#fb8c0040', icon:'fa-hourglass-half', label:'รออนุมัติคำขอ' },
@@ -2499,36 +2496,6 @@ async function checktoday() {
   }
 }
 
-// ===================== CANCEL TODAY =====================
-async function canceltoday() {
-  Swal.fire(
-    'ยังไม่เปิดใช้งาน'
-  )
-
-
-
-  // const result = await Swal.fire({
-  //   icon:'warning', title:'ยืนยันการยกเลิก?',
-  //   text:'ต้องการยกเลิกการลงเวลาในวันนี้หรือไม่',
-  //   showCancelButton:true,
-  //   confirmButtonText:'ยืนยันยกเลิก',
-  //   cancelButtonText:'ไม่ยกเลิก',
-  //   position: 'center',
-  //   confirmButtonColor:'#e53935',
-  //   cancelButtonColor:'#6c757d'
-  // });
-  // if (result.isConfirmed) {
-  //   localStorage.removeItem('datecheck');
-  //   localStorage.removeItem('datecheckout');
-  //   localStorage.removeItem('timecheck');
-  //   localStorage.removeItem('timecheckout');
-  //   localStorage.removeItem(HISTORY_KEY);
-  //   toggleButtonsByTime();
-  //   renderHistory();
-  //   Swal.fire({ icon:'success', title:'ยกเลิกสำเร็จ', position: 'center',
-  //   timer:1500, showConfirmButton:false });
-  // }
-}
 
 // ===================== ABOUT ME =====================
 function aboutme() {
@@ -2637,19 +2604,7 @@ async function clearLocal() {
 
 // ===================== OPEN WEB ADMIN =====================
 function openWebAdmin() {
-  window.open('https://wisanusenhom.github.io/sekatime/', '_blank');
-}
-
-// ===================== UPLOAD IMAGE =====================
-function uploadImage() {
-  Swal.fire({ position: 'center',
-    icon:'info', title:'ตั้งค่า', text:'ฟังก์ชันนี้ใช้งานได้ในระบบหลัก' });
-}
-
-// ===================== INPUT CID =====================
-function inputcid() {
-  Swal.fire({ position: 'center',
-    icon:'info', title:'รหัสเข้าระบบ', text:'ฟังก์ชันนี้ใช้งานได้ในระบบหลัก' });
+  window.open('/dash', '_blank');
 }
 
 // ===================== CHECK SIGNATURE =====================
@@ -2835,7 +2790,7 @@ function renderNotifItem(item, read) {
     const typ   = item.status || 'pending';
     const isNew = !read.has(item.reference) && ['approved','rejected'].includes(typ);
     // supervisor badge
-    const supSt =  item.status === 'cancelled'    ? 'cancelled'    : (item.supervisor_status || 'none');
+    const supSt =  item.status === 'cancelled'    ? 'cancelled'    : (item.supervisor_status || 'pending');
     const supCfg = {
   pending:{
     c:'#fb8c00',
@@ -4014,9 +3969,9 @@ function renderRequestList(container, items) {
     const isNew = ['approved','rejected'].includes(r.status) && !read.has(r.reference);
     const supSt =
   r.status === 'cancelled'
-    ? 'none'
-    : (r.supervisor_status || 'none');
-    const supBadge = supSt !== 'none' ? `
+    ? 'pending'
+    : (r.supervisor_status || 'pending');
+    const supBadge = supSt !== 'pending' ? `
       <span style="display:inline-flex;align-items:center;gap:3px;font-size:0.68rem;padding:2px 8px;border-radius:20px;font-weight:600;margin-left:4px;background:${supColor[supSt]}15;color:${supColor[supSt]};border:1px solid ${supColor[supSt]}40">
         <i class="fa-solid ${supIcon[supSt]}" style="font-size:.55rem"></i> ${supLabel[supSt]}
       </span>` : '';
@@ -4134,7 +4089,7 @@ async function syncTodayState() {
           addHistoryEntry({
             type: 'in', time: ci.time_str, typea: ci.work_type,
             nte: ci.note || '', ref: ci.reference || '',
-            supervisor_status: sup?.status || 'none',
+            supervisor_status: sup?.status || 'pending',
             supervisor_name:   sup?.supervisor_name || '',
           });
         } else {
@@ -4169,41 +4124,100 @@ async function syncTodayState() {
 
 // ===================== VERIFY TOKEN =====================
 async function verifyToken() {
+
   const token = localStorage.getItem('auth_token');
 
-  // ไม่มี token → ไป login
+  // ไม่มี token จริง
   if (!token) {
+
+    // offline → อย่า redirect
+    if (!navigator.onLine) {
+      return false;
+    }
+
     window.location.href = 'login.html';
+
     return false;
   }
 
+  const cached = (() => {
+    try {
+      return JSON.parse(
+        localStorage.getItem('user_data') || 'null'
+      );
+    } catch {
+      return null;
+    }
+  })();
+
+  // offline → ใช้ cache ต่อ
+  if (!navigator.onLine) {
+
+    console.warn('Offline mode');
+
+    return !!cached;
+  }
+
   try {
+
     const res = await fetch('/api/user/verify', {
       method: 'GET',
       headers: {
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`
       }
     });
 
-    const data = await res.json();
+    // token invalid จริง
+    if (res.status === 401 || res.status === 403) {
 
-    if (!res.ok || !data.success) {
-      throw new Error(data.message || 'Token invalid');
+      localStorage.removeItem('auth_token');
+      localStorage.removeItem('user_data');
+
+      window.location.href = 'login.html';
+
+      return false;
     }
 
-    // ✅ อัปเดต user_data ใหม่ (กันข้อมูลเก่า)
-    localStorage.setItem('user_data', JSON.stringify(data.user));
+    const data = await res.json();
+
+    // response ผิดปกติ
+    if (!res.ok || !data.success) {
+
+      // มี cache → ใช้ต่อ
+      if (cached) {
+        return true;
+      }
+
+      throw new Error(
+        data.message || 'Token invalid'
+      );
+    }
+
+    // update cache
+    localStorage.setItem(
+      'user_data',
+      JSON.stringify(data.user)
+    );
 
     return true;
 
   } catch (err) {
-    console.warn('Verify failed:', err.message);
 
-    // ❌ token ใช้ไม่ได้ → ล้าง + redirect
-    localStorage.removeItem('auth_token');
-    localStorage.removeItem('user_data');
+    console.warn(
+      'Verify failed:',
+      err.message
+    );
 
-    window.location.href = 'login.html';
+    // network error ≠ logout
+    if (cached) {
+
+      console.warn(
+        'Using cached session'
+      );
+
+      return true;
+    }
+
     return false;
   }
 }
@@ -4252,12 +4266,25 @@ document.addEventListener('DOMContentLoaded', async () => {
     checkIn:     () => typeof checkIn     === 'function' && checkIn(),
     sendRequest: () => typeof sendRequest === 'function' && sendRequest(),
     checkOut:    () => typeof checkOut    === 'function' && checkOut(),
+    checktoday:  () => typeof checktoday  === 'function' && checktoday(),
   };
 
   if (actionMap[action]) {
-    // delay เล็กน้อยเพื่อรอ DOM + auth state พร้อม
     setTimeout(() => {
+
+      // เรียก fn
       actionMap[action]();
+
+      // ลบ param ออกจาก URL โดยไม่รีเฟรชหน้า
+      params.delete('action');
+
+      const newUrl =
+        window.location.pathname +
+        (params.toString() ? '?' + params.toString() : '') +
+        window.location.hash;
+
+      history.replaceState({}, '', newUrl);
+
     }, 800);
   }
 })();

@@ -49,7 +49,7 @@ function generateRef(prefix = 'REQ') {
 
   const randPart = crypto.randomUUID()
     .replace(/-/g, '')
-    .slice(0, 4)
+    .slice(0, 6)
     .toUpperCase();
 
   return `${prefix}-${datePart}-${randPart}`;
@@ -240,6 +240,7 @@ if (lon !== null && (isNaN(lon) || lon < -180 || lon > 180)) {
 
     // แปลงค่าให้เหมาะสมกับ Database (1/0/null)
     const inRangeVal = finalIsInRange != null ? (finalIsInRange ? 1 : 0) : null;
+    const { dateISO, timeStr, isoString } = getThaiDateTime();
 
     // ===== INSERT REQUEST =====
      await env.DB.prepare(`
@@ -328,7 +329,7 @@ if (lon !== null && (isNaN(lon) || lon < -180 || lon > 180)) {
       // ===== CREATE ROW =====
       await env.DB.prepare(`
         INSERT INTO attendance (
-          uuid, date,
+          uuid, date, checkin_time,
           checkin_work_type, checkin_note,
           checkin_latitude, checkin_longitude,
           checkin_distance_m, checkin_in_range,
@@ -337,9 +338,9 @@ if (lon !== null && (isNaN(lon) || lon < -180 || lon > 180)) {
           approver_uuid, supervisor_name, supervisor_status,
 
           created_at, updated_at
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, ?, ?, 'pending', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, ?, ?, 'pending', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
       `).bind(
-        uuid, req_date,
+        uuid, req_date, timeStr,
         work_type || 'ปกติ',
         note || null,
         lat,

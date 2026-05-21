@@ -228,6 +228,194 @@
     }
     .btn-cancel-ot:hover { opacity:.78; }
 
+    /* ═══════════════════════════════════
+       SweetAlert2 Theme Custom
+    ═══════════════════════════════════ */
+
+    .swal2-popup{
+      background:var(--sur)!important;
+      color:var(--tx)!important;
+      border:1px solid var(--bd)!important;
+      box-shadow:var(--shm)!important;
+      border-radius:18px!important;
+    }
+
+    .swal2-title{
+      color:var(--tx)!important;
+      font-family:'K2D',sans-serif!important;
+      font-weight:700!important;
+    }
+
+    .swal2-html-container,
+    .swal2-content{
+      color:var(--sub)!important;
+      font-size:.92rem!important;
+      line-height:1.7!important;
+    }
+
+    .swal2-icon.swal2-success{
+      border-color:rgba(56,142,60,.25)!important;
+      color:var(--grn)!important;
+    }
+
+    .swal2-icon.swal2-error{
+      border-color:rgba(198,40,40,.25)!important;
+      color:var(--red)!important;
+    }
+
+    .swal2-icon.swal2-warning{
+      border-color:rgba(230,81,0,.25)!important;
+      color:var(--ora)!important;
+    }
+
+    .swal2-icon.swal2-question{
+      border-color:rgba(142,36,170,.25)!important;
+      color:var(--pri)!important;
+    }
+
+    .swal2-confirm,
+    .swal2-cancel,
+    .swal2-deny{
+      border-radius:10px!important;
+      font-family:var(--font)!important;
+      font-weight:700!important;
+      padding:.62rem 1.2rem!important;
+      box-shadow:none!important;
+    }
+
+    .swal2-confirm:focus,
+    .swal2-cancel:focus,
+    .swal2-deny:focus{
+      box-shadow:0 0 0 3px rgba(142,36,170,.18)!important;
+    }
+
+    .swal2-confirm{
+      background:var(--pri)!important;
+    }
+
+    .swal2-confirm:hover{
+      background:var(--pri-d)!important;
+    }
+
+    .swal2-cancel{
+      background:var(--sur2)!important;
+      color:var(--tx)!important;
+      border:1px solid var(--bd)!important;
+    }
+
+    .swal2-cancel:hover{
+      background:var(--bg)!important;
+    }
+
+    .swal2-input,
+    .swal2-textarea,
+    .swal2-select{
+      background:var(--sur2)!important;
+      color:var(--tx)!important;
+      border:1px solid var(--bd)!important;
+      border-radius:10px!important;
+      font-family:var(--font)!important;
+    }
+
+    .swal2-input:focus,
+    .swal2-textarea:focus,
+    .swal2-select:focus{
+      border-color:var(--pri)!important;
+      box-shadow:0 0 0 3px rgba(142,36,170,.12)!important;
+    }
+
+    .swal2-loader{
+      border-color:var(--pri) transparent var(--pri) transparent!important;
+    }
+
+    .swal2-timer-progress-bar{
+      background:var(--pri)!important;
+    }
+
+    .swal2-close{
+      color:var(--mt)!important;
+      transition:
+        color .15s,
+        transform .15s;
+    }
+
+    .swal2-close:hover{
+      color:var(--tx)!important;
+      transform:scale(1.08);
+    }
+
+    .swal2-popup pre,
+    .swal2-popup code{
+      background:var(--sur2)!important;
+      color:var(--tx)!important;
+      border:1px solid var(--bd)!important;
+      border-radius:8px!important;
+      padding:.15rem .4rem!important;
+    }
+
+    /* ═══════════════════════════════════
+       Textarea Custom
+    ═══════════════════════════════════ */
+
+    textarea{
+      width:100%;
+      min-height:110px;
+      padding:.8rem .95rem;
+      border:1px solid var(--bd);
+      border-radius:12px;
+      background:var(--sur2);
+      color:var(--tx);
+      font-size:.9rem;
+      line-height:1.7;
+      font-family:var(--font);
+      resize:vertical;
+      outline:none;
+      transition:
+        border-color .18s,
+        background .18s,
+        box-shadow .18s,
+        transform .12s;
+    }
+
+    textarea:focus{
+      background:var(--sur);
+      border-color:var(--pri);
+      box-shadow:0 0 0 4px rgba(142,36,170,.10);
+    }
+
+    textarea:hover{
+      border-color:color-mix(in srgb, var(--pri) 20%, var(--bd));
+    }
+
+    textarea::placeholder{
+      color:var(--mt);
+      opacity:1;
+    }
+
+    textarea:disabled{
+      opacity:.65;
+      cursor:not-allowed;
+      background:var(--bg);
+    }
+
+    textarea::-webkit-scrollbar{
+      width:10px;
+    }
+
+    textarea::-webkit-scrollbar-track{
+      background:transparent;
+    }
+
+    textarea::-webkit-scrollbar-thumb{
+      background:var(--bd);
+      border-radius:10px;
+    }
+
+    textarea::-webkit-scrollbar-thumb:hover{
+      background:var(--mt);
+    }
+
+
     /* ── Responsive ── */
     @media(max-width:480px) {
       .summary-row { grid-template-columns:repeat(3,1fr); }

@@ -37,7 +37,7 @@ if (!reviewer) return json({ success: false, message: 'Token ไม่ถูก�
 cond.push('a.approver_uuid = ?');
 bind.push(reviewer.uuid);
 
-  cond.push('a.checkin_time IS NOT NULL');
+  cond.push('a.request_ref IS NULL');
 
   if (status !== 'all') { cond.push('a.supervisor_status = ?'); bind.push(status); }
   if (date_from)        { cond.push('a.date >= ?');             bind.push(date_from); }

@@ -55,7 +55,7 @@ function generateRef(workType = '') {
 
   const randPart = crypto.randomUUID()
     .replace(/-/g, '')
-    .slice(0, 4)
+    .slice(0, 6)
     .toUpperCase();
 
   return `${prefix}-${datePart}-${randPart}`;

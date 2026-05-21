@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>เซกา | ระบบลงเวลาปฏิบัติงาน</title>
-  <meta name="theme-color" content="#020818" id="themeColorMeta">
+  <meta name="theme-color" content="#0b1220" id="themeColorMeta">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="mobile-web-app-capable" content="yes">
@@ -19,12 +19,12 @@
   <style>
     :root {
       /* Core Palette */
-      --bg-void: #020818;
-      --bg-deep: #050e22;
-      --bg-surface: rgba(6, 14, 34, 0.85);
-      --bg-glass: rgba(255, 255, 255, 0.035);
-      --bg-glass-hover: rgba(255, 255, 255, 0.06);
-      --bg-glass-active: rgba(255, 255, 255, 0.09);
+      --bg-void: #0b1220;
+      --bg-deep: #111827;
+      --bg-surface: rgba(15, 23, 42, 0.82);
+      --bg-glass: rgba(255, 255, 255, 0.045);
+      --bg-glass-hover: rgba(255, 255, 255, 0.07);
+      --bg-glass-active: rgba(255, 255, 255, 0.1);
 
       /* Accent System */
       --mint: #00f5b0;
@@ -55,15 +55,15 @@
       --teal-glow: rgba(45, 212, 191, 0.15);
       --teal-border: rgba(45, 212, 191, 0.22);
 
-      /* Text */
-      --t1: rgba(240, 248, 255, 0.97);
-      --t2: rgba(148, 175, 210, 0.85);
-      --t3: rgba(90, 120, 160, 0.65);
-      --t4: rgba(60, 90, 130, 0.45);
+  /* Text */
+  --t1: rgba(248, 250, 252, 0.96);
+  --t2: rgba(180, 190, 210, 0.82);
+  --t3: rgba(120, 135, 160, 0.7);
+      --t4: rgba(110, 128, 158, 0.7);
 
       /* Borders */
-      --b1: rgba(255, 255, 255, 0.1);
-      --b2: rgba(255, 255, 255, 0.06);
+  --b1: rgba(255,255,255,0.12);
+  --b2: rgba(255,255,255,0.07);
       --b3: rgba(255, 255, 255, 0.03);
 
       /* Layout */
@@ -128,7 +128,8 @@
 
     body {
       font-family: 'IBM Plex Sans Thai', 'Sarabun', sans-serif;
-      background: var(--bg-void);
+      /* background: var(--bg-void); */
+      background:   radial-gradient(circle at top,var(--bg-void) 0%, var(--bg-void) 45%, var(--bg-void) 100%);
       min-height: 100dvh;
       display: flex;
       flex-direction: column;
@@ -1768,11 +1769,11 @@
 
     <!-- Footer -->
     <footer class="app-footer">
-      <span class="footer-chip">v2.1</span>
+      <span class="footer-chip">v2.0</span>
       <span class="footer-sep"></span>
       <span class="footer-chip">ATTENDANCE SYSTEM</span>
       <span class="footer-sep"></span>
-      <span class="footer-chip" id="footerYear">2568</span>
+      <span class="footer-chip" id="footerYear">2569</span>
     </footer>
 
   </div><!-- end app-shell -->
@@ -2388,19 +2389,43 @@ function gotoSupervisor(ref) {
       const cached = (() => { try { return JSON.parse(localStorage.getItem('user_data') || 'null'); } catch { return null; } })();
       if (cached) { setWordmark(cached); renderLoggedIn(cached); }
 
+         if (!navigator.onLine) {
+          return;
+        }
       try {
         const res = await fetch(`${API_BASE}/user/me`, {
           headers: { 'Authorization': `Bearer ${token}` },
           cache: 'no-store',
         });
-        if (res.status === 401 || res.status === 403) {
+        if (navigator.onLine && (res.status === 401 || res.status === 403)) {
           localStorage.removeItem('auth_token'); localStorage.removeItem('user_data');
           renderLoggedOut();
           if (cached) showToast('Session หมดอายุ กรุณาเข้าสู่ระบบใหม่', 'error');
           return;
         }
         const data = await res.json();
-        if (!data.success || !data.user) { localStorage.removeItem('auth_token'); renderLoggedOut(); return; }
+        if (!data.success || !data.user) {
+
+  // มี cache → ใช้ cache ต่อ
+  if (cached) {
+
+    showToast?.(
+      'ไม่สามารถตรวจสอบข้อมูลล่าสุดได้',
+      'error'
+    );
+
+    return;
+  }
+
+  // ไม่มี cache จริงๆ ค่อย logout
+  localStorage.removeItem('auth_token');
+  localStorage.removeItem('user_data');
+
+  renderLoggedOut();
+
+  return;
+}
+
         localStorage.setItem('user_data', JSON.stringify(data.user));
         setWordmark(data.user);
         renderLoggedIn(data.user);
@@ -2467,27 +2492,134 @@ function gotoSupervisor(ref) {
     }
 
     /* ═══════════ LOGOUT IMPLEMENTATION ═══════════ */
-   async function logout(logoutAll = false) {
-      const result = await Swal.fire({
-        icon: 'warning', title: logoutAll ? 'ออกจากระบบทุกอุปกรณ์?' : 'ออกจากระบบ?',
-        text: logoutAll ? 'คุณต้องเข้าสู่ระบบใหม่ทุกอุปกรณ์' : 'คุณต้องเข้าสู่ระบบใหม่อีกครั้ง',
-        showCancelButton: true, confirmButtonText: 'ยืนยัน', cancelButtonText: 'ยกเลิก',
-        confirmButtonColor: '#e53935', cancelButtonColor: '#6c757d', reverseButtons: true
-      });
-      if (!result.isConfirmed) return;
-      const token = localStorage.getItem('auth_token');
-      if (!token) { updateUIForLogout(); return; }
-      const btnId = logoutAll ? 'logoutAllBtn' : 'logoutBtn';
-      const btn = document.getElementById(btnId);
-      const originalText = logoutAll ? 'ลงชื่อออกทุกอุปกรณ์' : 'ออกจากระบบ';
-      if (btn) { btn.classList.add('loading'); btn.querySelector('span:last-child').textContent = 'กำลังออกจากระบบ...'; }
-      try {
-        const res = await fetch(`${API_BASE_URL}/user/logout`, { method: 'POST', headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ all: logoutAll }) });
-        const data = await res.json();
-        if (data.success) { localStorage.removeItem('auth_token'); localStorage.removeItem('user_data'); showToast(logoutAll ? 'ออกจากระบบทุกอุปกรณ์แล้ว' : 'ออกจากระบบสำเร็จ', 'success'); updateUIForLogout(); setTimeout(() => { window.location.href = '/'; }, 1000); }
-        else { showToast(data.message || 'ออกจากระบบไม่สำเร็จ', 'error'); if (btn) { btn.classList.remove('loading'); btn.querySelector('span:last-child').textContent = originalText; } }
-      } catch { showToast('ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้', 'error'); if (btn) { btn.classList.remove('loading'); btn.querySelector('span:last-child').textContent = originalText; } }
+async function logout(logoutAll = false) {
+
+  const result = await Swal.fire({
+    icon: 'warning',
+    title: logoutAll
+      ? 'ออกจากระบบทุกอุปกรณ์?'
+      : 'ออกจากระบบ?',
+
+    text: logoutAll
+      ? 'คุณต้องเข้าสู่ระบบใหม่ทุกอุปกรณ์'
+      : 'คุณต้องเข้าสู่ระบบใหม่อีกครั้ง',
+
+    showCancelButton: true,
+    confirmButtonText: 'ยืนยัน',
+    cancelButtonText: 'ยกเลิก',
+
+    confirmButtonColor: '#e53935',
+    cancelButtonColor: '#6c757d',
+    reverseButtons: true
+  });
+
+  if (!result.isConfirmed) return;
+
+  const token = localStorage.getItem('auth_token');
+
+  // ไม่มี token → logout local ทันที
+  if (!token) {
+    renderLoggedOut();
+    window.location.replace('/');
+    return;
+  }
+
+  const btnId = logoutAll
+    ? 'logoutAllBtn'
+    : 'logoutBtn';
+
+  const btn = document.getElementById(btnId);
+
+  const originalText = logoutAll
+    ? 'ลงชื่อออกทุกอุปกรณ์'
+    : 'ออกจากระบบ';
+
+  try {
+
+    // loading state
+    if (btn) {
+      btn.disabled = true;
+      btn.classList.add('loading');
+
+      const text = btn.querySelector('span:last-child');
+      if (text) {
+        text.textContent = 'กำลังออกจากระบบ...';
+      }
     }
+
+    const res = await fetch(`${API_BASE}/user/logout`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        all: logoutAll
+      })
+    });
+
+    // กัน API ส่ง html/error page กลับมา
+    let data = {};
+
+    try {
+      data = await res.json();
+    } catch (_) {}
+
+    // ถึง API fail ก็ล้าง local ออก
+    // เพื่อไม่ให้ user ค้างหน้า login
+    localStorage.removeItem('auth_token');
+    localStorage.removeItem('user_data');
+
+showToast(
+  logoutAll
+    ? 'ออกจากระบบทุกอุปกรณ์แล้ว'
+    : 'ออกจากระบบสำเร็จ',
+  'success'
+);
+
+setTimeout(() => {
+  window.location.reload();
+}, 500);
+
+    renderLoggedOut();
+
+    // sync ทุก tab
+    localStorage.setItem('logout_event', Date.now());
+
+    setTimeout(() => {
+      window.location.replace('/');
+    }, 700);
+
+  } catch (err) {
+
+    console.error('[logout]', err);
+
+    // offline ก็ logout local ได้
+    localStorage.removeItem('auth_token');
+    localStorage.removeItem('user_data');
+
+    renderLoggedOut();
+
+    showToast('ออกจากระบบสำเร็จ', 'success');
+
+    setTimeout(() => {
+      window.location.replace('/');
+    }, 700);
+
+  } finally {
+
+    if (btn) {
+      btn.disabled = false;
+      btn.classList.remove('loading');
+
+      const text = btn.querySelector('span:last-child');
+
+      if (text) {
+        text.textContent = originalText;
+      }
+    }
+  }
+}
     
     /* ═══════════ NETWORK STATUS ═══════════ */
     function updateConnectionStatus() {
@@ -2502,41 +2634,74 @@ function gotoSupervisor(ref) {
     document.addEventListener('DOMContentLoaded', checkAuth);
 
     /* ═══════════ ATTENDANCE ACTION ROUTING ═══════════ */
-function getAttendanceAction() {
-  const now  = new Date();
-  const h    = now.getHours();
-  const m    = now.getMinutes();
-  const total = h * 60 + m; // นาทีรวมตั้งแต่ 00:00
 
-  // ก่อน 08:31 → checkIn
+    function formatThaiDate(date = new Date()) {
+  return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear() + 543}`;
+}
+
+function getAttendanceAction() {
+  const now = new Date(),
+        total = now.getHours() * 60 + now.getMinutes(),
+        today = formatThaiDate(now),
+        dateCheckIn = localStorage.getItem('datecheck'),
+        dateCheckOut = localStorage.getItem('datecheckout');
+
+  if (dateCheckOut === today) return 'checktoday';
+
+  if (dateCheckIn === today) {
+    if (total <= 16 * 60 + 30) return 'checktoday';
+    return 'checkOut';
+  }
+
   if (total < 8 * 60 + 31) return 'checkIn';
 
-  // 08:31 – 16:30 → sendRequest
   if (total <= 16 * 60 + 30) return 'sendRequest';
 
-  // หลัง 16:30 → checkOut
   return 'checkOut';
 }
 
 function updateAttendanceBtnLabel() {
-  const action = getAttendanceAction();
-  const subEl  = document.getElementById('attendanceSubLabel');
-  if (!subEl) return;
+  const action = getAttendanceAction(),
+        subEl  = document.getElementById('attendanceSubLabel'),
+        btnEl  = document.getElementById('attendanceBtn');
+
+  if (!subEl || !btnEl) return;
+
   const labels = {
-checkIn:     '<i class="fa-solid fa-circle-check" style="color:#22c55e"></i> แตะเพื่อลงเวลาเข้างาน',
-sendRequest: '<i class="fa-solid fa-file-pen" style="color:#eab308"></i> แตะเพื่อส่งคำขอ / แก้ไขเวลา',
-checkOut:   '<i class="fa-solid fa-circle-xmark" style="color:#ef4444"></i> แตะเพื่อลงเวลาออกงาน',
+    checkIn:
+      '<i class="fa-solid fa-circle-check" style="color:#22c55e"></i> แตะเพื่อลงเวลาเข้างาน',
+
+    sendRequest:
+      '<i class="fa-solid fa-file-pen" style="color:#eab308"></i> แตะเพื่อส่งคำขอ / แก้ไขเวลา',
+
+    checkOut:
+      '<i class="fa-solid fa-circle-xmark" style="color:#ef4444"></i> แตะเพื่อลงเวลาออกงาน',
+
+    checktoday:
+      '<i class="fa-solid fa-calendar-check" style="color:#3b82f6"></i> วันนี้บันทึกเวลาแล้ว'
   };
+
+  const colors = {
+    checkIn:     'linear-gradient(135deg,#16a34a,#22c55e)',
+    sendRequest: 'linear-gradient(135deg,#ca8a04,#eab308)',
+    checkOut:    'linear-gradient(135deg,#dc2626,#ef4444)',
+    checktoday:  'linear-gradient(135deg,#2563eb,#3b82f6)'
+  };
+
   subEl.innerHTML = labels[action] || 'บันทึกเวลาปฏิบัติงานรายวัน';
+
+  btnEl.style.background = colors[action] ||
+    'linear-gradient(135deg,#1e293b,#334155)';
 }
+
 
 function handleAttendanceClick(event) {
   event.preventDefault();
+
   const action = getAttendanceAction();
   window.location.href = `attendance.html?action=${action}`;
 }
 
-// อัปเดต label ทันทีและทุก 1 นาที
 updateAttendanceBtnLabel();
 setInterval(updateAttendanceBtnLabel, 60000);
 
