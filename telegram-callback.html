@@ -3,9 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>เชื่อมต่อ Telegram - กำลังยืนยัน</title>
-  <!-- Font Awesome 6 (free) -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <title>เข้าสู่ระบบด้วย Telegram</title>
   <style>
     :root {
       --bg: #f1f5f9;
@@ -15,9 +13,6 @@
       --text-secondary: #64748b;
       --text-muted: #94a3b8;
       --spinner-track: rgba(0,0,0,0.08);
-      --success: #10b981;
-      --error: #ef4444;
-      --telegram: #2AABEE;
     }
     [data-theme="dark"] {
       --bg: #0a0a0f;
@@ -35,335 +30,209 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      font-family: system-ui, -apple-system, sans-serif;
       transition: background 0.2s;
     }
     .card {
       background: var(--surface);
-      border-radius: 28px;
-      padding: 2.2rem 1.8rem;
+      border-radius: 24px;
+      padding: 2.5rem 2rem;
       text-align: center;
       border: 1px solid var(--border);
-      max-width: 380px;
+      max-width: 360px;
       width: 90%;
-      box-shadow: 0 20px 35px -12px rgba(0,0,0,0.2);
-      transition: transform 0.2s ease;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.08);
     }
     .logo {
-      width: 64px;
-      height: 64px;
-      background: linear-gradient(135deg, var(--telegram), #1f8bcb);
-      border-radius: 20px;
+      width: 56px; height: 56px;
+      background: linear-gradient(135deg, #6366f1, #a855f7);
+      border-radius: 16px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      font-size: 2rem;
-      margin-bottom: 1.2rem;
-      box-shadow: 0 6px 12px -6px rgba(42,171,238,0.4);
-      color: white;
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
     }
-    h2 { color: var(--text-primary); font-size: 1.3rem; font-weight: 600; margin-bottom: 0.4rem; letter-spacing: -0.2px; }
-    .sub { color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 1.6rem; line-height: 1.45; }
+    h2 { color: var(--text-primary); font-size: 1.1rem; margin-bottom: 0.5rem; }
+    .sub { color: var(--text-secondary); font-size: 0.82rem; margin-bottom: 1.75rem; line-height: 1.5; }
 
     .widget-area {
       display: flex;
       justify-content: center;
       margin-bottom: 1.5rem;
-      min-height: 70px;
+      min-height: 48px;
       align-items: center;
     }
 
-    .fa-spinner-large {
-      font-size: 2.2rem;
-      color: var(--telegram);
+    .spinner {
+      width: 36px; height: 36px;
+      border: 3px solid var(--spinner-track);
+      border-top-color: #2AABEE;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
     }
+    @keyframes spin { to { transform: rotate(360deg); } }
 
-    .state-icon {
-      font-size: 3rem;
-      margin-bottom: 0.8rem;
-    }
-    .state-icon.success { color: var(--success); }
-    .state-icon.error  { color: var(--error); }
-
-    .state-title { color: var(--text-primary); font-size: 1.1rem; font-weight: 700; margin-bottom: 0.3rem; }
+    .state-icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
     .state-msg  { font-size: 0.85rem; color: var(--text-secondary); }
+    .state-title { color: var(--text-primary); font-size: 1rem; font-weight: 600; margin-bottom: 0.35rem; }
 
-    .btn-retry, .btn-close {
-      background: transparent;
-      border: 1px solid var(--border);
-      padding: 0.6rem 1.3rem;
-      border-radius: 40px;
-      font-size: 0.85rem;
-      font-weight: 500;
+    button.close-btn {
+      background: #2AABEE;
+      border: none;
+      color: white;
+      padding: 0.6rem 1.5rem;
+      border-radius: 10px;
       cursor: pointer;
-      margin-top: 0;
-      transition: all 0.2s;
-      color: var(--text-secondary);
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
+      font-size: 0.875rem;
+      margin-top: 1.25rem;
+      font-family: inherit;
     }
-    .btn-retry { background: rgba(239,68,68,0.05); border-color: rgba(239,68,68,0.3); color: #ef4444; }
-    .btn-retry:hover { background: rgba(239,68,68,0.12); }
-    .btn-close { background: var(--surface); }
-    .btn-close:hover { background: var(--bg); border-color: var(--text-muted); }
+    button.close-btn:hover { background: #1a90cc; }
 
     .note {
-      margin-top: 1.3rem;
+      margin-top: 1.25rem;
       font-size: 0.7rem;
       color: var(--text-muted);
     }
-    .flex-btns { display: flex; gap: 12px; justify-content: center; margin-top: 20px; }
   </style>
 </head>
 <body>
 <div class="card" id="card">
-  <div class="logo">
-    <i class="fab fa-telegram-plane"></i>
-  </div>
-  <h2 id="pageTitle">กำลังเชื่อมต่อ Telegram</h2>
-  <p class="sub" id="pageSub">กรุณารอสักครู่ กำลังโหลดปุ่มยืนยัน...</p>
+  <div class="logo">✈</div>
+  <h2 id="pageTitle">เข้าสู่ระบบด้วย Telegram</h2>
+  <p class="sub" id="pageSub">กดปุ่มด้านล่างและอนุมัติผ่านแอป Telegram ของคุณ</p>
 
+  <!-- Telegram Login Widget จะถูก inject ที่นี่ -->
   <div class="widget-area" id="widgetArea">
-    <i class="fas fa-circle-notch fa-spin fa-2x" style="color: var(--telegram);" id="loadingSpinner"></i>
+    <div class="spinner" id="loadingSpinner"></div>
   </div>
 
-  <div id="actionButtons" style="display: none;" class="flex-btns"></div>
-  <p class="note" id="footnote">ข้อมูลจะถูกส่งกลับไปยังหน้าเดิมโดยอัตโนมัติ</p>
+  <p class="note">ข้อมูลจะถูกส่งกลับไปยังหน้าเดิมโดยอัตโนมัติ</p>
 </div>
 
 <script>
-// ==================== ธีม (Dark / Light) ====================
+// ── Theme (sync with localStorage) ──
 (function(){
   const saved = localStorage.getItem('theme') || 'light';
   if (saved === 'dark') document.documentElement.setAttribute('data-theme','dark');
 })();
 
-// ==================== ตัวช่วย UI (ใช้ Font Awesome) ====================
-function escapeHtml(str) {
-  if (!str) return '';
-  return str.replace(/[&<>]/g, function(m) {
-    if (m === '&') return '&amp;';
-    if (m === '<') return '&lt;';
-    if (m === '>') return '&gt;';
-    return m;
-  }).replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, function(c) {
-    return c;
-  });
-}
+(function () {
+  'use strict';
 
-function setUIState(state, title, message, isError = false) {
-  const titleEl = document.getElementById('pageTitle');
-  const subEl = document.getElementById('pageSub');
-  const widgetArea = document.getElementById('widgetArea');
-  const card = document.getElementById('card');
-  
-  if (state === 'loading') {
-    if (titleEl) titleEl.textContent = title;
-    if (subEl) subEl.textContent = message;
-    if (widgetArea) {
-      widgetArea.style.display = 'flex';
-      widgetArea.innerHTML = '<i class="fas fa-circle-notch fa-spin fa-2x" style="color: var(--telegram);" id="loadingSpinner"></i>';
-    }
-  } 
-  else if (state === 'success') {
-    if (widgetArea) widgetArea.style.display = 'none';
-    // เปลี่ยนเนื้อหาทั้งการ์ด แต่คง ID actionButtons และ footnote
-    const oldFootnote = document.getElementById('footnote')?.innerHTML || '';
-    card.innerHTML = `
-      <div class="logo">
-        <i class="fab fa-telegram-plane"></i>
-      </div>
-      <div class="state-icon success">
-        <i class="fas fa-check-circle"></i>
-      </div>
-      <div class="state-title">${escapeHtml(title)}</div>
-      <p class="state-msg">${escapeHtml(message)}</p>
-      <div class="flex-btns" id="actionButtons"></div>
-      <p class="note" id="footnote">${oldFootnote}</p>
-    `;
-  } 
-  else if (state === 'error') {
-    if (widgetArea) widgetArea.style.display = 'none';
-    const oldFootnote = document.getElementById('footnote')?.innerHTML || '';
-    card.innerHTML = `
-      <div class="logo">
-        <i class="fab fa-telegram-plane"></i>
-      </div>
-      <div class="state-icon error">
-        <i class="fas fa-times-circle"></i>
-      </div>
-      <div class="state-title">${escapeHtml(title)}</div>
-      <p class="state-msg">${escapeHtml(message)}</p>
-      <div class="flex-btns" id="actionButtons"></div>
-      <p class="note" id="footnote">กรุณาลองอีกครั้งหรือปิดหน้าต่างนี้</p>
-    `;
-  }
-}
+  const params      = new URLSearchParams(window.location.search);
+  const botUsername = params.get('bot');
+  const page        = (params.get('page') || 'register').toLowerCase();
+  const origin      = params.get('origin') || window.location.origin;
 
-function showButtons(retryCallback, closeCallback) {
-  const btnContainer = document.getElementById('actionButtons');
-  if (!btnContainer) return;
-  btnContainer.style.display = 'flex';
-  btnContainer.innerHTML = `
-    <button class="btn-retry" id="retryBtn"><i class="fas fa-redo-alt"></i> ลองอีกครั้ง</button>
-    <button class="btn-close" id="closeBtn"><i class="fas fa-times"></i> ปิดหน้าต่าง</button>
-  `;
-  document.getElementById('retryBtn')?.addEventListener('click', () => { if (retryCallback) retryCallback(); });
-  document.getElementById('closeBtn')?.addEventListener('click', () => { if (closeCallback) closeCallback(); else window.close(); });
-}
+  const REDIRECT = {
+    register : '/register?tg_callback=1',
+    login    : '/login?tg_callback=1',
+    profile  : '/profile?tg_callback=1',
+  };
+  const fallbackPath = REDIRECT[page] || REDIRECT.register;
 
-// ==================== รับค่าจาก Query String ====================
-const urlParams = new URLSearchParams(window.location.search);
-const botUsername = urlParams.get('bot');
-const page = (urlParams.get('page') || 'register').toLowerCase();
-const origin = urlParams.get('origin') || window.location.origin;
+  const UI_TEXT = {
+    register : { title: 'สมัครสมาชิกด้วย Telegram',   sub: 'กดปุ่มด้านล่างและอนุมัติผ่านแอป Telegram ของคุณ' },
+    login    : { title: 'เข้าสู่ระบบด้วย Telegram',    sub: 'กดปุ่มด้านล่างและอนุมัติผ่านแอป Telegram ของคุณ' },
+    profile  : { title: 'เชื่อมต่อ Telegram',           sub: 'กดปุ่มด้านล่างเพื่อเชื่อมบัญชี Telegram กับโปรไฟล์ของคุณ' },
+  };
+  const uiText = UI_TEXT[page] || UI_TEXT.register;
+  document.getElementById('pageTitle').textContent = uiText.title;
+  document.getElementById('pageSub').textContent   = uiText.sub;
 
-// กำหนดหน้าที่จะส่งกลับ (path)
-const TARGET_PAGE = {
-  register: '/register.html',
-  login: '/login.html',
-  profile: '/profile.html'
-};
-const targetPath = TARGET_PAGE[page] || '/register.html';
-
-// ข้อความตามประเภทหน้า
-const textMap = {
-  register: { title: 'สมัครสมาชิกด้วย Telegram', sub: 'กดปุ่มด้านล่างเพื่อเชื่อมบัญชี Telegram ของคุณ' },
-  login: { title: 'เข้าสู่ระบบด้วย Telegram', sub: 'กดปุ่มด้านล่างเพื่อยืนยันตัวตน' },
-  profile: { title: 'เชื่อมต่อบัญชี Telegram', sub: 'กดปุ่มด้านล่างเพื่อเชื่อม Telegram กับโปรไฟล์ของคุณ' }
-};
-const ui = textMap[page] || textMap.register;
-document.getElementById('pageTitle').textContent = ui.title;
-document.getElementById('pageSub').textContent = ui.sub;
-
-if (!botUsername) {
-  setUIState('error', 'ข้อมูลไม่ครบถ้วน', 'ไม่พบ Bot Username กรุณาติดต่อผู้ดูแลระบบ');
-  showButtons(() => window.location.reload(), () => window.close());
-  throw new Error('Missing bot username');
-}
-
-// ==================== สร้าง URL สำหรับส่งกลับไปยังหน้าต้นทาง (แบบเดียวกับ google-callback) ====================
-function buildReturnUrl(user) {
-  const url = new URL(targetPath, window.location.origin);
-  url.searchParams.set('tg_callback', '1');
-  url.searchParams.set('telegramId', user.id);
-  if (user.first_name) url.searchParams.set('firstName', user.first_name);
-  if (user.last_name)  url.searchParams.set('lastName', user.last_name);
-  if (user.username)   url.searchParams.set('username', user.username);
-  if (user.photo_url)  url.searchParams.set('photoUrl', user.photo_url);
-  if (user.auth_date)  url.searchParams.set('authDate', user.auth_date);
-  if (user.hash)       url.searchParams.set('hash', user.hash);
-  url.searchParams.set('sourcePage', page);
-  return url.toString();
-}
-
-// ==================== กลไกส่งข้อมูลกลับ (Priority: opener → postMessage → redirect หน้าปัจจุบัน) ====================
-function sendToOpenerAndClose(user) {
-  const returnUrl = buildReturnUrl(user);
-  console.log('[Telegram] Sending data to parent, target URL:', returnUrl);
-  
-  // 1️⃣ ถ้ามี opener (popup) -> เปลี่ยน URL ของหน้าต่างแม่โดยตรง
-  if (window.opener && !window.opener.closed) {
-    try {
-      window.opener.location.href = returnUrl;
-      setUIState('success', 'เชื่อมต่อสำเร็จ!', `ยินดีต้อนรับ ${user.first_name || user.username || 'ผู้ใช้'} กำลังส่งข้อมูลกลับ...`);
-      setTimeout(() => window.close(), 800);
-      return;
-    } catch (e) {
-      console.warn('[Telegram] Cannot access opener.location, fallback to postMessage', e);
-      try {
-        window.opener.postMessage({
-          type: 'TELEGRAM_LOGIN_SUCCESS',
-          user: {
-            id: user.id,
-            first_name: user.first_name,
-            last_name: user.last_name,
-            username: user.username,
-            photo_url: user.photo_url,
-            auth_date: user.auth_date,
-            hash: user.hash
-          },
-          page: page,
-          returnUrl: returnUrl
-        }, origin);
-        setUIState('success', 'เชื่อมต่อสำเร็จ!', 'กำลังส่งข้อมูลกลับ...');
-        setTimeout(() => window.close(), 1000);
-        return;
-      } catch (postErr) {
-        console.error('[Telegram] postMessage also failed', postErr);
-      }
-    }
-  }
-  
-  // 2️⃣ กรณีไม่มี opener หรือ opener ล้มเหลว -> redirect หน้าปัจจุบัน
-  setUIState('success', 'เชื่อมต่อสำเร็จ', 'กำลังนำทางกลับสู่ระบบ...');
-  setTimeout(() => {
-    window.location.href = returnUrl;
-  }, 600);
-}
-
-// ==================== รับ callback จาก Telegram Widget ====================
-window.onTelegramAuth = function(user) {
-  console.log('[Telegram] Auth success, user data received:', user);
-  if (!user || !user.id) {
-    setUIState('error', 'ข้อมูลไม่ถูกต้อง', 'ไม่ได้รับข้อมูลผู้ใช้จาก Telegram กรุณาลองใหม่');
-    showButtons(() => window.location.reload(), () => window.close());
+  if (!botUsername) {
+    showError('ยังไม่ได้ตั้งค่า Bot Username', 'กรุณาแก้ไข TELEGRAM_BOT_USERNAME');
     return;
   }
-  sendToOpenerAndClose(user);
-};
 
-// ==================== โหลด Telegram Widget แบบ Inline ====================
-function injectTelegramWidget() {
-  const area = document.getElementById('widgetArea');
-  if (!area) return;
-  
-  area.innerHTML = ''; 
-  const script = document.createElement('script');
-  script.src = 'https://telegram.org/js/telegram-widget.js?22';
-  script.async = true;
-  script.setAttribute('data-telegram-login', botUsername);
-  script.setAttribute('data-size', 'large');
-  script.setAttribute('data-radius', '12');
-  script.setAttribute('data-onauth', 'onTelegramAuth(user)');
-  script.setAttribute('data-request-access', 'write');
-  script.setAttribute('data-userpic', 'true');
-  
-  script.onerror = () => {
-    setUIState('error', 'โหลด Widget ไม่สำเร็จ', 'กรุณาตรวจสอบการเชื่อมต่ออินเทอร์เน็ต หรือลองเปิดหน้าใหม่');
-    showButtons(() => window.location.reload(), () => window.close());
+  window.onTelegramAuth = function (user) {
+    console.log('[TG Popup] Auth success:', user);
+    sendToOpener(user);
   };
-  
-  area.appendChild(script);
-}
 
-// ==================== เริ่มต้นทำงาน ====================
-injectTelegramWidget();
-
-let widgetTimeout = setTimeout(() => {
-  const hasWidget = document.querySelector('#widgetArea script[data-telegram-login]');
-  if (hasWidget && !window.onTelegramAuthCalled) {
-    setUIState('error', 'เวลาหมด', 'การเชื่อมต่อล่าช้า กรุณาลองอีกครั้ง');
-    showButtons(() => window.location.reload(), () => window.close());
+  function injectWidget() {
+    const area   = document.getElementById('widgetArea');
+    const script = document.createElement('script');
+    script.async = true;
+    script.src   = 'https://telegram.org/js/telegram-widget.js?22';
+    script.setAttribute('data-telegram-login', botUsername);
+    script.setAttribute('data-size',           'large');
+    script.setAttribute('data-radius',         '10');
+    script.setAttribute('data-onauth',         'onTelegramAuth(user)');
+    script.setAttribute('data-request-access', 'write');
+    script.onload  = () => {
+      const spinner = document.getElementById('loadingSpinner');
+      if (spinner) spinner.style.display = 'none';
+    };
+    script.onerror = () => showError('โหลด Telegram Widget ไม่ได้', 'กรุณาตรวจสอบการเชื่อมต่ออินเทอร์เน็ต');
+    area.appendChild(script);
   }
-}, 15000);
 
-window.onTelegramAuthCalled = false;
-const origOnAuth = window.onTelegramAuth;
-window.onTelegramAuth = function(user) {
-  window.onTelegramAuthCalled = true;
-  clearTimeout(widgetTimeout);
-  origOnAuth(user);
-};
-
-window.addEventListener('load', () => {
-  setTimeout(() => {
-    if (!window.onTelegramAuthCalled && document.querySelector('#widgetArea script')) {
-      // ยังไม่ได้รับ callback -> รอผู้ใช้กดปุ่มต่อไป
+  function sendToOpener(user) {
+    showSuccess(user);
+    const openerWin = window.opener;
+    try {
+      if (openerWin && !openerWin.closed && typeof openerWin.handleTelegramCallback === 'function') {
+        openerWin.handleTelegramCallback(user, page);
+        setTimeout(() => window.close(), 1200);
+        return;
+      }
+    } catch (_) {}
+    try {
+      if (openerWin && !openerWin.closed) {
+        openerWin.postMessage({ type: 'TELEGRAM_LOGIN_SUCCESS', user, page }, origin);
+        setTimeout(() => window.close(), 1200);
+        return;
+      }
+    } catch (e) {
+      console.error('[TG Popup] postMessage failed:', e);
     }
-  }, 5000);
-});
+    sessionStorage.setItem('tg_auth_result', JSON.stringify({ user, page }));
+    window.location.href = fallbackPath;
+  }
+
+  function showSuccess(user) {
+    const name = [user.first_name, user.last_name].filter(Boolean).join(' ') || user.username || 'ผู้ใช้';
+    const msg  = page === 'profile' ? 'เชื่อมต่อบัญชีสำเร็จ!' : 'เข้าสู่ระบบสำเร็จ!';
+    document.getElementById('card').innerHTML = `
+      <div class="state-icon">✅</div>
+      <div class="state-title">${escHtml(msg)}</div>
+      <p class="state-msg">ยินดีต้อนรับ <strong>${escHtml(name)}</strong><br>กำลังส่งข้อมูลกลับ...</p>
+    `;
+  }
+
+  function showError(title, msg) {
+    document.getElementById('card').innerHTML = `
+      <div class="state-icon">❌</div>
+      <div class="state-title">${escHtml(title)}</div>
+      <p class="state-msg">${escHtml(msg)}</p>
+      <button class="close-btn" onclick="window.close()">ปิดหน้าต่าง</button>
+    `;
+  }
+
+  function escHtml(str) {
+    return (str || '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  }
+
+  function checkSessionFallback() {
+    const stored = sessionStorage.getItem('tg_auth_result');
+    if (!stored) return;
+    try {
+      const { user, page: storedPage } = JSON.parse(stored);
+      sessionStorage.removeItem('tg_auth_result');
+      if (user && user.id && typeof window.handleTelegramCallback === 'function') {
+        window.handleTelegramCallback(user, storedPage || page);
+      }
+    } catch (_) {}
+  }
+
+  injectWidget();
+  if (!window.opener) {
+    document.addEventListener('DOMContentLoaded', checkSessionFallback);
+  }
+})();
 </script>
 </body>
 </html>
