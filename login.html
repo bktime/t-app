@@ -731,19 +731,50 @@
 
 <!-- Hidden Form -->
 <div class="code-login-wrapper" id="codeLoginWrapper">
-  <form id="codeLoginForm" class="code-login-form" onsubmit="loginWithCode(event)">
-          <div class="input-group">
-            <label for="nationalId">เลขบัตรประชาชน 13 หลัก</label>
-            <input type="text" id="nationalId" inputmode="numeric" maxlength="13" required placeholder="กรอกเลข 13 หลัก" autocomplete="off">
-          </div>
-          <div class="input-group">
-            <label for="otpCode">รหัสเข้าสู่ระบบ 6 หลัก</label>
-            <input type="text" id="otpCode" inputmode="numeric" maxlength="6" required placeholder="ได้จากอุปกรณ์ที่ล็อกอินแล้ว" autocomplete="off">
-          </div>
-          <button type="submit" class="code-login-btn" id="codeLoginBtn">
-            <i class="fas fa-right-to-bracket"></i> เข้าสู่ระบบ
-          </button>
-        </form>
+<form id="codeLoginForm" class="code-login-form" onsubmit="loginWithCode(event)">
+  <div class="input-group">
+    <label for="nationalId">
+      <i class="fas fa-id-card"></i>
+      เลขประจำตัวประชาชน 13 หลัก
+    </label>
+    <input
+      type="text"
+      id="nationalId"
+      inputmode="numeric"
+      maxlength="13"
+      required
+      placeholder="กรอกเลขประจำตัวประชาชน 13 หลัก"
+      autocomplete="off"
+    >
+  </div>
+
+  <div class="input-group">
+    <label for="otpCode">
+      <i class="fas fa-shield-halved"></i>
+      รหัสยืนยันการเข้าสู่ระบบ 6 หลัก
+    </label>
+    <small class="input-description">
+      บนอุปกรณ์ที่ได้เข้าสู่ระบบไว้ก่อนหน้า กรุณาเลือกเมนู
+      <i class="fas fa-mobile-screen-button"></i>
+      การจัดการอุปกรณ์ของฉัน เลือกเมนู <i class="fas fa-key"></i> สร้างรหัสสำหรับเข้าสู่ระบบ
+    </small>
+
+    <input
+      type="text"
+      id="otpCode"
+      inputmode="numeric"
+      maxlength="6"
+      required
+      placeholder="กรอกรหัสยืนยัน 6 หลัก"
+      autocomplete="off"
+    >
+  </div>
+
+  <button type="submit" class="code-login-btn" id="codeLoginBtn">
+    <i class="fas fa-right-to-bracket"></i>
+    เข้าสู่ระบบ
+  </button>
+</form>
 </div>
 
         <!-- Security Note -->
