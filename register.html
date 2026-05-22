@@ -439,7 +439,7 @@
             <i class="fas fa-id-card input-icon"></i>
             <input type="text" id="idCard" class="form-control" maxlength="13" placeholder="X-XXXX-XXXXX-XX-X"
               oninput="this.value = this.value.replace(/[^0-9]/g, '')"
-              onfocus="if(!this.value && userData.idCard) this.value = userData.idCard;">
+              onfocus="if(!this.value && userData.idCard) this.value = userData.idCard;" disabled>
           </div>
           <div style="font-size:0.72rem;color:var(--green);margin-top:4px;" id="idCardVerifiedNote" style="display:none;">
             <i class="fas fa-circle-check"></i> ตรวจสอบแล้วใน Step 2
