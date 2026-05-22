@@ -514,7 +514,46 @@ async function handleCallback() {
 
   // ส่งข้อมูลกลับหน้าต้นทาง
   if (window.opener && typeof window.opener.handleLineCallback === 'function') {
+    try {
+
+  if (
+    window.opener &&
+    typeof window.opener.handleLineCallback === 'function'
+  ) {
+
     window.opener.handleLineCallback(user);
+
+    startCloseTimer(2.5);
+
+    return;
+  }
+
+} catch (e) {
+
+  console.warn(e);
+
+}
+
+// fallback mobile
+localStorage.setItem(
+  'line_callback',
+  JSON.stringify(user)
+);
+
+localStorage.setItem(
+  'line_callback_success',
+  '1'
+);
+
+const src = getSourcePage();
+
+setTimeout(() => {
+
+  window.location.replace(
+    `${src}?line=callback`
+  );
+
+}, 500);
     startCloseTimer(2.5);
   } else {
     // Redirect mode (กรณีไม่ได้เปิดเป็น popup)
