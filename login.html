@@ -900,69 +900,228 @@
     }
 
     // ==================== LINE Login ====================
-    function loginWithLine() {
-      if (isProcessing) return;
+// ==================== LINE Login ====================
 
-      const state = 'login_' + Math.random().toString(36).slice(2) + '_' + Date.now();
-      sessionStorage.setItem('line_state', state);
-      sessionStorage.setItem('line_login_time', Date.now().toString());
+function isLineBrowser() {
+  return /Line/i.test(navigator.userAgent);
+}
 
-      const lineUrl = 'https://access.line.me/oauth2/v2.1/authorize' +
-        '?response_type=code' +
-        `&client_id=${CONFIG.LINE_CHANNEL_ID}` +
-        `&redirect_uri=${encodeURIComponent(CONFIG.LINE_REDIRECT_URI)}` +
-        `&state=${encodeURIComponent(state)}` +
-        '&scope=profile%20openid%20email';
+function isIOS() {
+  return /iPhone|iPad|iPod/i.test(navigator.userAgent);
+}
 
-      window.location.href = lineUrl;
+function isAndroid() {
+  return /Android/i.test(navigator.userAgent);
+}
+
+function buildLineLoginUrl() {
+
+  const state =
+    'login|' +
+    Math.random().toString(36).slice(2) +
+    '_' +
+    Date.now();
+
+  sessionStorage.setItem('line_state', state);
+  sessionStorage.setItem(
+    'line_login_time',
+    Date.now().toString()
+  );
+
+  return (
+    'https://access.line.me/oauth2/v2.1/authorize' +
+    '?response_type=code' +
+    '&client_id=' +
+    encodeURIComponent(CONFIG.LINE_CHANNEL_ID) +
+    '&redirect_uri=' +
+    encodeURIComponent(CONFIG.LINE_REDIRECT_URI) +
+    '&scope=profile%20openid%20email' +
+    '&state=' +
+    encodeURIComponent(state) +
+    '&nonce=' +
+    crypto.randomUUID()
+  );
+}
+
+function loginWithLine() {
+
+  if (isProcessing) return;
+
+  const loginUrl = buildLineLoginUrl();
+
+  console.log('[LINE] login start');
+
+  // =========================
+  // เปิดจาก LINE Browser
+  // =========================
+  if (isLineBrowser()) {
+
+    console.log('[LINE] in-app browser');
+
+    // -------------------------
+    // iPhone / iPad
+    // -------------------------
+    if (isIOS()) {
+
+      console.log('[LINE] redirect safari');
+
+      window.location.href =
+        'x-safari-https://' +
+        loginUrl.replace(/^https:\/\//, '');
+
+      return;
     }
 
-    window.handleLineCallback = async function(userData) {
-      if (!userData || !userData.userId) {
-        showStatus('error', 'ไม่ได้รับข้อมูลจาก LINE กรุณาลองใหม่');
-        return;
-      }
+    // -------------------------
+    // Android
+    // -------------------------
+    if (isAndroid()) {
 
-      await processLogin('line', userData.userId, {
-        name: userData.displayName,
-        email: userData.email || null,
-        picture: userData.pictureUrl || null
-      });
-    };
+      console.log('[LINE] redirect chrome');
 
-    function detectGoogleCallback() {
-      const p = new URLSearchParams(window.location.search);
-      if (p.get('google') !== 'callback') return;
+      const chromeIntent =
+        'intent://' +
+        loginUrl.replace(/^https:\/\//, '') +
+        '#Intent;' +
+        'scheme=https;' +
+        'package=com.android.chrome;' +
+        'end';
 
-      const userId      = p.get('userId');
-      const displayName = p.get('displayName');
-      const email       = p.get('email');
-      const pictureUrl  = p.get('pictureUrl');
+      window.location.href = chromeIntent;
 
-      if (userId && displayName) {
-        history.replaceState({}, '', window.location.pathname);
-        processLogin('google', userId, {
-          name:    displayName,
-          email:   email   || null,
-          picture: pictureUrl || null,
-        });
-      }
+      // fallback
+      setTimeout(() => {
+        window.location.href = loginUrl;
+      }, 1200);
+
+      return;
     }
+  }
 
-    function detectLineCallback() {
-      const urlParams = new URLSearchParams(window.location.search);
-      if (urlParams.get('line') === 'callback') {
-        const userId = urlParams.get('userId');
-        const displayName = urlParams.get('displayName');
-        const email = urlParams.get('email');
-        const pictureUrl = urlParams.get('pictureUrl');
+  // =========================
+  // Browser ปกติ
+  // =========================
+  window.location.href = loginUrl;
+}
 
-        if (userId && displayName) {
-          window.handleLineCallback({ userId, displayName, email, pictureUrl });
-          history.replaceState({}, '', window.location.pathname);
-        }
-      }
+// ==================== Handle Callback ====================
+
+window.handleLineCallback = async function(userData) {
+
+  if (!userData || !userData.userId) {
+
+    showStatus(
+      'error',
+      'ไม่ได้รับข้อมูลจาก LINE กรุณาลองใหม่'
+    );
+
+    return;
+  }
+
+  await processLogin(
+    'line',
+    userData.userId,
+    {
+      name:
+        userData.displayName,
+
+      email:
+        userData.email || null,
+
+      picture:
+        userData.pictureUrl || null
     }
+  );
+};
+
+// ==================== Detect LINE Callback ====================
+
+function detectLineCallback() {
+
+  // =========================
+  // fallback จาก localStorage
+  // =========================
+  const saved =
+    localStorage.getItem('line_callback');
+
+  if (saved) {
+
+    try {
+
+      const user =
+        JSON.parse(saved);
+
+      localStorage.removeItem(
+        'line_callback'
+      );
+
+      localStorage.removeItem(
+        'line_callback_success'
+      );
+
+      history.replaceState(
+        {},
+        '',
+        window.location.pathname
+      );
+
+      window.handleLineCallback(user);
+
+      return;
+
+    } catch (e) {
+
+      console.error(e);
+
+    }
+  }
+
+  // =========================
+  // query string callback
+  // =========================
+  const urlParams =
+    new URLSearchParams(
+      window.location.search
+    );
+
+  if (
+    urlParams.get('line') !==
+    'callback'
+  ) {
+    return;
+  }
+
+  const userId =
+    urlParams.get('userId');
+
+  const displayName =
+    urlParams.get('displayName');
+
+  const email =
+    urlParams.get('email');
+
+  const pictureUrl =
+    urlParams.get('pictureUrl');
+
+  if (
+    userId &&
+    displayName
+  ) {
+
+    history.replaceState(
+      {},
+      '',
+      window.location.pathname
+    );
+
+    window.handleLineCallback({
+      userId,
+      displayName,
+      email,
+      pictureUrl
+    });
+  }
+}
 
     // ==================== Telegram Login ====================
     let telegramPopup = null;
