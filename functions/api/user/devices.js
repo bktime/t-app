@@ -10,15 +10,35 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'Content-Type, Authorization',
 };
 
+// ── Helper: แปลงเวลาจาก UTC เป็นเวลาประเทศไทย (UTC+7) ────────────────────────
+function toThaiTime(utcDateStr) {
+  if (!utcDateStr) return utcDateStr;
+  try {
+    // D1 ส่งมาเป็นรูปแบบ "YYYY-MM-DD HH:MM:SS" (ซึ่งเป็น UTC)
+    const utcStr = utcDateStr.endsWith('Z') ? utcDateStr : utcDateStr + 'Z';
+    const date = new Date(utcStr);
+    
+    // บวกเพิ่ม 7 ชั่วโมงสำหรับประเทศไทย
+    const thaiTimeMs = date.getTime() + (7 * 60 * 60 * 1000);
+    
+    // แปลงกลับเป็นรูปแบบ ISO String และเปลี่ยนตัว Z ท้ายสุดเป็น +07:00 
+    // เพื่อให้ Javascript บน Frontend รู้ว่านี่คือเวลา +7
+    return new Date(thaiTimeMs).toISOString().replace('Z', '+07:00');
+  } catch (e) {
+    return utcDateStr;
+  }
+}
+// ──────────────────────────────────────────────────────────────────────────────
+
 export async function onRequest(context) {
   const { request, env } = context;
 
   if (request.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
 
   // ── Auth ───────────────────────────────────────────────────────────────────
-const token          = extractToken(request);
-const currentSession = await authUser(env, token);
-if (!currentSession) return json({ success: false, message: 'Unauthorized' }, 401);
+  const token          = extractToken(request);
+  const currentSession = await authUser(env, token);
+  if (!currentSession) return json({ success: false, message: 'Unauthorized' }, 401);
 
   const uuid = currentSession.uuid;
   const url  = new URL(request.url);
@@ -44,7 +64,7 @@ if (!currentSession) return json({ success: false, message: 'Unauthorized' }, 40
       ORDER BY last_active_at DESC
     `).bind(uuid).all();
 
-    // ทำ mask token และ mark อุปกรณ์ปัจจุบัน
+    // ทำ mask token, mark อุปกรณ์ปัจจุบัน และ แปลงเวลาเป็น +7
     const devices = results.map(s => ({
       id:             s.id,
       is_current:     s.token === token,
@@ -54,9 +74,9 @@ if (!currentSession) return json({ success: false, message: 'Unauthorized' }, 40
       os:             s.os,
       ip:             s.ip,
       social_type:    s.social_type,
-      expires_at:     s.expires_at,
-      last_active_at: s.last_active_at,
-      created_at:     s.created_at,
+      expires_at:     toThaiTime(s.expires_at),      // ✅ แปลงเวลา
+      last_active_at: toThaiTime(s.last_active_at),  // ✅ แปลงเวลา
+      created_at:     toThaiTime(s.created_at),      // ✅ แปลงเวลา
     }));
 
     return json({ success: true, devices, current_session_id: currentSession.id });
@@ -70,7 +90,6 @@ if (!currentSession) return json({ success: false, message: 'Unauthorized' }, 40
     const { session_id, revoke_all_others } = body;
 
     if (revoke_all_others) {
-      // ลบทุก session ยกเว้นปัจจุบัน
       await env.DB.prepare(`
         DELETE FROM user_sessions WHERE uuid = ? AND token != ?
       `).bind(uuid, token).run();
@@ -82,7 +101,6 @@ if (!currentSession) return json({ success: false, message: 'Unauthorized' }, 40
       return json({ success: false, message: 'Missing session_id' }, 400);
     }
 
-    // ลบ session ที่ระบุ (ต้องเป็นของ user เดียวกัน ห้ามลบอุปกรณ์ปัจจุบัน)
     const target = await env.DB.prepare(`
       SELECT id, token FROM user_sessions WHERE id = ? AND uuid = ?
     `).bind(session_id, uuid).first();

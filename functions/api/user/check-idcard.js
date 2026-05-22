@@ -63,7 +63,7 @@ export async function onRequest(context) {
   }
 
   // ── 2. เรียก NHSO API ──────────────────────────────────────────────────────
-  const NHSO_TOKEN = env.NHSO_API_TOKEN ;
+  const NHSO_TOKEN = env.NHSO_API_TOKEN || '807f3e5f-1343-4afa-afc0-df2f13d0b2f3';
   const nhsoUrl    = `https://nhsoapi.nhso.go.th/nhsoendpoint/api/v2/right-search?pid=${encodeURIComponent(idCard)}&checkDate=${encodeURIComponent(checkDate)}`;
 
   try {

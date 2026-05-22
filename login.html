@@ -393,11 +393,141 @@
     }
 
     /* ═══════════════════════════════════
+   Toggle Code Login
+═══════════════════════════════════ */
+.toggle-code-btn {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 0.9rem 1.1rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  background: var(--bg-elevated);
+  cursor: pointer;
+  transition: all var(--transition);
+  user-select: none;
+  margin-bottom: 1rem;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.toggle-code-btn:hover {
+  border-color: var(--border-accent);
+  background: var(--accent-bg);
+  transform: translateY(-2px);
+}
+
+.toggle-code-btn .toggle-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--accent-bg);
+  color: var(--accent);
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+.toggle-code-btn .toggle-text {
+  flex: 1;
+}
+
+.toggle-code-btn .toggle-text strong {
+  display: block;
+  font-family: 'Kanit', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.toggle-code-btn .toggle-text span {
+  display: block;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  margin-top: 1px;
+}
+
+.toggle-code-btn .toggle-arrow {
+  color: var(--text-muted);
+  font-size: 0.7rem;
+  transition: transform var(--transition);
+}
+
+.toggle-code-btn.active .toggle-arrow {
+  transform: rotate(180deg);
+}
+
+/* ซ่อนฟอร์มเริ่มต้น */
+.code-login-wrapper {
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition:
+    max-height 0.35s ease,
+    opacity 0.25s ease,
+    margin-top 0.25s ease;
+}
+
+.code-login-wrapper.show {
+  max-height: 400px;
+  opacity: 1;
+  margin-top: 0.5rem;
+}
+
+
+    /* ═══════════════════════════════════
+       Code Login Form (NEW)
+    ═══════════════════════════════════ */
+    .code-login-form {
+      display: flex; flex-direction: column; gap: 0.85rem;
+      animation: gridIn 0.45s cubic-bezier(0.16,1,0.3,1) 0.34s both;
+    }
+    .input-group {
+      display: flex; flex-direction: column; gap: 0.35rem;
+    }
+    .input-group label {
+      font-family: 'Kanit', sans-serif; font-size: 0.72rem; font-weight: 500; color: var(--text-secondary);
+    }
+    .input-group input {
+      width: 100%; padding: 0.75rem 1rem; border-radius: var(--radius-sm);
+      background: var(--bg-elevated); border: 1px solid var(--border-color);
+      color: var(--text-primary); font-family: 'Inter', sans-serif; font-size: 1rem;
+      letter-spacing: 0.15em; font-weight: 500;
+      transition: all var(--transition); outline: none;
+    }
+    .input-group input:focus {
+      border-color: var(--border-accent); background: var(--accent-bg);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+    .input-group input::placeholder { 
+      color: var(--text-muted); font-size: 0.78rem; letter-spacing: 0.02em; font-weight: 400; 
+    }
+
+    .code-login-btn {
+      width: 100%; padding: 0.85rem; border-radius: var(--radius-sm); border: none;
+      background: linear-gradient(135deg, var(--accent-deep), var(--accent));
+      color: #fff; font-family: 'Kanit', sans-serif; font-size: 0.88rem; font-weight: 600;
+      cursor: pointer; transition: all var(--transition);
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      box-shadow: 0 4px 15px var(--accent-glow);
+      margin-top: 0.25rem;
+    }
+    .code-login-btn:hover { 
+      background: linear-gradient(135deg, var(--accent), var(--accent-hover)); 
+      transform: translateY(-2px); box-shadow: 0 8px 25px var(--accent-glow); 
+    }
+    .code-login-btn:active { transform: translateY(0); }
+    .code-login-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
+
+    /* ═══════════════════════════════════
        Register Link
     ═══════════════════════════════════ */
     .register-link {
       text-align: center;
       font-size: 0.82rem; color: var(--text-secondary);
+      margin-top: 1.25rem;
     }
     .register-link a {
       color: var(--accent); text-decoration: none;
@@ -550,7 +680,7 @@
 
       <div class="card-body">
 
-        <div class="section-label">เข้าสู่ระบบ</div>
+        <div class="section-label">เข้าสู่ระบบด้วยบัญชีสังคม</div>
 
         <!-- Status Messages -->
         <div id="loginStatus"></div>
@@ -584,6 +714,37 @@
             <i class="fas fa-chevron-right social-arrow"></i>
           </div>
         </div>
+<div class="divider">ทางเลือกอื่น</div>
+        <!-- Toggle Button -->
+<div class="toggle-code-btn" id="toggleCodeLogin" >
+  <div class="toggle-icon">
+    <i class="fas fa-key"></i>
+  </div>
+
+  <div class="toggle-text">
+    <strong>เข้าสู่ระบบด้วยรหัส</strong>
+    <span>ใช้เลขบัตรประชาชนและรหัส 6 หลัก</span>
+  </div>
+
+  <i class="fas fa-chevron-down toggle-arrow"></i>
+</div>
+
+<!-- Hidden Form -->
+<div class="code-login-wrapper" id="codeLoginWrapper">
+  <form id="codeLoginForm" class="code-login-form" onsubmit="loginWithCode(event)">
+          <div class="input-group">
+            <label for="nationalId">เลขบัตรประชาชน 13 หลัก</label>
+            <input type="text" id="nationalId" inputmode="numeric" maxlength="13" required placeholder="กรอกเลข 13 หลัก" autocomplete="off">
+          </div>
+          <div class="input-group">
+            <label for="otpCode">รหัสเข้าสู่ระบบ 6 หลัก</label>
+            <input type="text" id="otpCode" inputmode="numeric" maxlength="6" required placeholder="ได้จากอุปกรณ์ที่ล็อกอินแล้ว" autocomplete="off">
+          </div>
+          <button type="submit" class="code-login-btn" id="codeLoginBtn">
+            <i class="fas fa-right-to-bracket"></i> เข้าสู่ระบบ
+          </button>
+        </form>
+</div>
 
         <!-- Security Note -->
         <div class="security-note">
@@ -591,7 +752,6 @@
           การเข้าสู่ระบบปลอดภัยและเข้ารหัสตลอดเวลา
         </div>
 
-        <div class="divider">หรือ</div>
 
         <div class="register-link">
           ยังไม่มีบัญชี? <a href="register.html">สมัครสมาชิกที่นี่</a>
@@ -605,7 +765,7 @@
         <span class="footer-dot">●</span>
         <span>ระบบบริหารทรัพยากรบุคคล</span>
         <span class="footer-dot">●</span>
-        <span id="footerYear">2024</span>
+        <span id="footerYear">2026</span>
       </footer>
     </main>
   </div>
@@ -802,6 +962,92 @@
         isProcessing = false;
         disableButtons(false);
         setTimeout(() => showLoading(false), 500);
+      }
+    }
+
+    // ==================== Code Login (NEW) ====================
+    async function loginWithCode(e) {
+      e.preventDefault();
+      if (isProcessing) return;
+
+      const nationalId = document.getElementById('nationalId').value.trim();
+      const code = document.getElementById('otpCode').value.trim();
+
+      // Validation
+      if (!/^\d{13}$/.test(nationalId)) {
+        showStatus('error', 'เลขบัตรประชาชนต้องเป็นตัวเลข 13 หลัก');
+        document.getElementById('nationalId').focus();
+        return;
+      }
+      if (!/^\d{6}$/.test(code)) {
+        showStatus('error', 'รหัสเข้าสู่ระบบต้องเป็นตัวเลข 6 หลัก');
+        document.getElementById('otpCode').focus();
+        return;
+      }
+
+      isProcessing = true;
+      disableButtons(true);
+      document.getElementById('codeLoginBtn').disabled = true;
+      showLoading(true, 'กำลังยืนยันรหัสเข้าสู่ระบบ...');
+      showStatus('info', '<i class="fas fa-spinner fa-pulse"></i> กำลังตรวจสอบข้อมูล...', false);
+
+      try {
+        const deviceInfo = {
+          deviceName: /Mobi|Android/i.test(navigator.userAgent) ? 'Mobile Device' : 'Desktop Device',
+          os: navigator.platform,
+          browser: navigator.userAgent.split(') ')[0].split(' ').pop()
+        };
+
+        const res = await fetch(`${CONFIG.API_BASE_URL}/auth/code-verify`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ nationalId, code, deviceInfo })
+        });
+
+        const data = await res.json();
+
+        if (data.success && data.token) {
+          localStorage.setItem('auth_token', data.token);
+          
+          // Fetch user data after getting token (optional, if verify endpoint doesn't return user data)
+          try {
+            const verifyRes = await fetch(`${CONFIG.API_BASE_URL}/user/verify`, {
+              headers: { 'Authorization': `Bearer ${data.token}` }
+            });
+            const verifyData = await verifyRes.json();
+            if (verifyData.success && verifyData.user) {
+              localStorage.setItem('user_data', JSON.stringify(flattenUserData(verifyData.user)));
+            }
+          } catch (e) { console.warn('Auto fetch user data failed', e); }
+
+          showStatus('success', 'เข้าสู่ระบบสำเร็จ กำลังเปลี่ยนเส้นทาง...');
+          setTimeout(() => { window.location.href = 'index.html'; }, 1000);
+          
+        } else {
+          throw new Error(data.message || 'รหัสไม่ถูกต้อง หมดอายุ หรือเลขบัตรไม่ตรงกัน');
+        }
+
+      } catch (error) {
+        console.error('[Code Login Error]', error);
+        showLoading(false);
+        showStatus('error', error.message);
+        isProcessing = false;
+        document.getElementById('codeLoginBtn').disabled = false;
+        document.getElementById('otpCode').value = '';
+        document.getElementById('otpCode').focus();
+      } finally {
+        setTimeout(() => showLoading(false), 500);
+        disableButtons(false);
+      }
+    }
+
+    // Force numeric input only
+    function forceNumericInput(inputId) {
+      const el = document.getElementById(inputId);
+      if (el) {
+        el.addEventListener('input', function() {
+          this.value = this.value.replace(/[^0-9]/g, '');
+        });
       }
     }
 
@@ -1095,6 +1341,10 @@
       document.getElementById('lineLoginBtn').addEventListener('click', loginWithLine);
       document.getElementById('telegramLoginBtn').addEventListener('click', loginWithTelegram);
 
+      // Force numeric input
+      forceNumericInput('nationalId');
+      forceNumericInput('otpCode');
+
       // Keyboard support for social buttons
       document.querySelectorAll('.social-btn').forEach(btn => {
         btn.addEventListener('keydown', (e) => {
@@ -1118,6 +1368,18 @@
     document.addEventListener('keypress', function(e) {
       if (e.key === 'Enter') e.preventDefault();
     });
+
+    // ==================== Toggle Code Login ====================
+const toggleBtn = document.getElementById('toggleCodeLogin');
+const codeWrapper = document.getElementById('codeLoginWrapper');
+
+if (toggleBtn && codeWrapper) {
+  toggleBtn.addEventListener('click', () => {
+    codeWrapper.classList.toggle('show');
+    toggleBtn.classList.toggle('active');
+  });
+}
+
 
     // ==================== Theme Toggle ====================
     (function() {

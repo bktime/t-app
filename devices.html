@@ -47,6 +47,9 @@
       --telegram: #2AABEE;
       --telegram-bg: rgba(42, 171, 238, 0.07);
       --telegram-border: rgba(42, 171, 238, 0.2);
+      --code: #e879f9;
+      --code-bg: rgba(232, 121, 249, 0.08);
+      --code-border: rgba(232, 121, 249, 0.22);
       --radius-xs: 8px;
       --radius-sm: 12px;
       --radius-md: 16px;
@@ -360,6 +363,10 @@
       background: var(--telegram-bg); border: 1px solid var(--telegram-border);
       color: var(--telegram);
     }
+    .badge-code {
+      background: var(--code-bg); border: 1px solid var(--code-border);
+      color: var(--code);
+    }
 
     .dc-meta {
       font-size: 0.72rem; color: var(--text-secondary);
@@ -472,6 +479,51 @@
     }
     .swal2-icon { border-color: var(--border-color) !important; }
 
+    .btn-qr-login {
+  width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px;
+  background: var(--accent-bg); border: 1px dashed var(--border-accent);
+  color: var(--accent); border-radius: var(--radius-md);
+  padding: 0.85rem; font-family: 'Kanit', sans-serif; font-size: 0.82rem;
+  font-weight: 600; cursor: pointer; transition: all var(--transition);
+}
+.btn-qr-login:hover { background: rgba(16, 185, 129, 0.15); border-style: solid; }
+
+.qr-modal {
+  position: fixed; inset: 0; z-index: 1000;
+  background: rgba(0,0,0,0.7); backdrop-filter: blur(8px);
+  display: flex; align-items: center; justify-content: center;
+  padding: 1.5rem; animation: fadeIn 0.2s ease;
+}
+.qr-modal-content {
+  background: var(--bg-card-solid); border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg); width: 100%; max-width: 340px;
+  box-shadow: var(--shadow-card); overflow: hidden;
+}
+.qr-modal-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1rem 1.25rem; border-bottom: 1px solid var(--border-color);
+}
+.qr-modal-header h2 { font-family: 'Kanit', sans-serif; font-size: 1.05rem; font-weight: 700; color: var(--text-primary); }
+.qr-modal-close { background: none; border: none; color: var(--text-secondary); cursor: pointer; font-size: 1rem; padding: 4px; }
+.qr-modal-body { padding: 1.5rem 1.25rem; text-align: center; }
+
+.code-info { font-size: 0.78rem; color: var(--text-secondary); margin-bottom: 1.25rem; line-height: 1.5; }
+
+/* OTP Box Style */
+.otp-box {
+  font-family: 'Inter', sans-serif; font-size: 2.2rem; font-weight: 700;
+  letter-spacing: 0.35em; color: var(--accent); 
+  background: var(--accent-bg); border: 1px solid var(--border-accent);
+  padding: 0.9rem 1rem; border-radius: var(--radius-sm);
+  margin-bottom: 1.25rem; user-select: all;
+}
+
+.qr-timer {
+  font-family: 'Kanit', sans-serif; font-size: 0.75rem; color: var(--accent);
+  background: var(--accent-bg); display: inline-flex; align-items: center; gap: 5px;
+  padding: 5px 10px; border-radius: 99px; border: 1px solid var(--border-accent);
+}
+
     /* ═══════════════════════════════════
        Responsive
     ═══════════════════════════════════ */
@@ -528,6 +580,32 @@
 
   <!-- Content -->
   <main class="content">
+
+    <!-- Login Code Button -->
+<div style="margin-bottom: 1.25rem; animation: fadeUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.15s both;">
+  <button class="btn-qr-login" id="btnCodeLogin" onclick="openCodeModal()">
+    <i class="fas fa-key"></i> ล็อกอินอุปกรณ์อื่นด้วยรหัส
+  </button>
+</div>
+
+<!-- Code Modal -->
+<div class="qr-modal" id="codeModal" style="display:none">
+  <div class="qr-modal-content">
+    <div class="qr-modal-header">
+      <h2>รหัสเข้าสู่ระบบ</h2>
+      <button class="qr-modal-close" onclick="closeCodeModal()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="qr-modal-body">
+      <p class="code-info">ใช้รหัสนี้บนอุปกรณ์อื่นเพื่อเข้าสู่ระบบ<br>พร้อมยืนยันเลขบัตรประชาชน 13 หลัก</p>
+      <div id="otpCodeContainer" class="otp-box">
+        <!-- รหัส 6 หลักจะแสดงที่นี่ -->
+      </div>
+      <div class="qr-timer">
+        <i class="fas fa-clock"></i> หมดอายุใน <span id="codeCountdown">180</span> วินาที
+      </div>
+    </div>
+  </div>
+</div>
 
     <!-- Summary -->
     <div class="summary" id="summaryBar" style="display:none">
@@ -586,7 +664,8 @@
       const map = {
         google:   ['Google',   'badge-google'],
         line:     ['LINE',     'badge-line'],
-        telegram: ['Telegram', 'badge-telegram']
+        telegram: ['Telegram', 'badge-telegram'],
+        code:     ['Code',     'badge-code'],
       };
       const [label, cls] = map[type] || [type, ''];
       return `<span class="badge-social ${cls}">${label}</span>`;
@@ -798,6 +877,96 @@
       }
     }
 
+    // ==================== Login Code System ====================
+let codeCountdownInterval = null;
+let codePollInterval = null; // เพิ่มตัวแปรสำหรับตั้งเวลาถามเซิร์ฟเวอร์
+let currentActiveCode = null; // เก็บรหัส 6 หลักที่กำลังแสดงอยู่
+
+async function openCodeModal() {
+  const modal = document.getElementById('codeModal');
+  const container = document.getElementById('otpCodeContainer');
+  const countdownEl = document.getElementById('codeCountdown');
+  
+  container.innerHTML = '<div style="letter-spacing:0; font-size:0.85rem; color:var(--text-muted);">กำลังสร้างรหัส...</div>';
+  modal.style.display = 'flex';
+  
+  try {
+    const res = await fetch(`${API}/code-generate`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    const data = await res.json();
+    
+    if (!data.success) throw new Error(data.message);
+    
+    // แสดงรหัส 6 หลัก
+    container.textContent = data.code;
+    currentActiveCode = data.code; // เก็บรหัสไว้เพื่อเอาไปเช็คสถานะ
+    
+    // ตั้งเวลานับถอยหลัง
+    let timeLeft = data.expiresIn;
+    countdownEl.textContent = timeLeft;
+    
+    if (codeCountdownInterval) clearInterval(codeCountdownInterval);
+    if (codePollInterval) clearInterval(codePollInterval); // เคลียร์ Polling เก่า
+    
+    codeCountdownInterval = setInterval(() => {
+      timeLeft--;
+      countdownEl.textContent = timeLeft;
+      if (timeLeft <= 0) {
+        clearInterval(codeCountdownInterval);
+        clearInterval(codePollInterval); // หมดเวลาก็เลิก Poll ด้วย
+        closeCodeModal();
+        showToast('รหัสหมดอายุแล้ว');
+      }
+    }, 1000);
+
+    // เริ่ม Polling ถามเซิร์ฟเวอร์ทุกๆ 3 วินาที ว่ามีคนนำรหัสไปใช้หรือยัง
+    codePollInterval = setInterval(checkCodeStatus, 3000);
+
+  } catch (err) {
+    container.innerHTML = `<p style="color:var(--danger);font-size:0.82rem;letter-spacing:0">${err.message}</p>`;
+  }
+}
+
+// ฟังก์ชันสำหรับถามเซิร์ฟเวอร์ว่ารหัสถูกใช้แล้วหรือยัง
+async function checkCodeStatus() {
+  if (!currentActiveCode) return;
+
+  try {
+    const res = await fetch(`${API}/code-status?code=${currentActiveCode}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    const data = await res.json();
+
+    if (data.success && data.used) {
+      // ถ้ารหัสถูกใช้แล้ว (ล็อกอินสำเร็จจากเครื่องอื่น)
+      clearInterval(codePollInterval);
+      clearInterval(codeCountdownInterval);
+      
+      closeCodeModal();
+      showToast('มีอุปกรณ์ใหม่เข้าสู่ระบบสำเร็จแล้ว', 3000);
+      
+      // รีเฟรชรายการอุปกรณ์ในหน้าจอ
+      loadDevices(); 
+    }
+  } catch (err) {
+    console.error('Polling error:', err);
+  }
+}
+
+function closeCodeModal() {
+  const modal = document.getElementById('codeModal');
+  modal.style.display = 'none';
+  
+  // เคลียร์ตัวตั้งเวลาทั้งหมดเมื่อปิด Modal
+  if (codeCountdownInterval) clearInterval(codeCountdownInterval);
+  if (codePollInterval) clearInterval(codePollInterval);
+  
+  currentActiveCode = null;
+}
+
+// ฟังก์ชันสำหรับนับจำนวนอุปกรณ์
     function recount() {
       const others = document.querySelectorAll('.device-card:not(.current)');
       const total  = document.querySelectorAll('.device-card').length;
