@@ -48,51 +48,31 @@ export function buildScope(me, url) {
     };
   }
 
-  /* ─────────────────────────────
-   * หน่วยงาน
-   * staff / support / supervisor
-   * ───────────────────────────── */
-  if (scope === 'หน่วยงาน') {
+/* ─────────────────────────────
+ * หน่วยงาน
+ * staff / support / supervisor
+ * เห็นเฉพาะหน่วยงานตัวเอง
+ * ───────────────────────────── */
+if (scope === 'หน่วยงาน') {
 
-    if (dep) {
-      return {
-        scopeSQL: `
-          AND aff_code = ?
-          AND dep_code = ?
-        `,
-        scopeParams: [me.aff_code, dep],
+  return {
+    scopeSQL: `
+      AND dep_code = ?
+    `,
+    scopeParams: [me.dep_code],
 
-        scopeMeta: {
-          scope: 'department',
-          aff_code: me.aff_code,
-          dep_code: dep,
-        },
+    scopeMeta: {
+      scope: 'department',
+      dep_code: me.dep_code,
+      department: me.department,
+    },
 
-        canFilter: {
-          aff: false,
-          dep: true,
-        },
-      };
-    }
-
-    return {
-      scopeSQL: `
-        AND aff_code = ?
-      `,
-      scopeParams: [me.aff_code],
-
-      scopeMeta: {
-        scope: 'affiliation',
-        aff_code: me.aff_code,
-        affiliation: me.affiliation,
-      },
-
-      canFilter: {
-        aff: false,
-        dep: true,
-      },
-    };
-  }
+    canFilter: {
+      aff: false,
+      dep: false,
+    },
+  };
+}
 
   /* ─────────────────────────────
    * สังกัด
