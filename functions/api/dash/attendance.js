@@ -41,7 +41,7 @@ export async function onRequestGet({ request, env }) {
   const { scopeSQL, scopeParams, scopeMeta, canFilter } = buildScope(me, url);
 
   try {
-           const [attRes, affiliations, departments] = await Promise.all([
+      const [attRes, affiliations, departments] = await Promise.all([
 
         env.DB.prepare(`
           SELECT
@@ -94,7 +94,7 @@ export async function onRequestGet({ request, env }) {
             a.supervisor_note,
             a.reviewed_at,
 
-            -- ✅ ดึงเฉพาะ firstName ของผู้รับรอง
+            -- ✅ ดึงเฉพาะ firstName ของผู้รับรอง (ตัดลายเซ็นออก)
             uApv.firstName AS approver_first_name
 
           FROM users u
@@ -111,16 +111,16 @@ export async function onRequestGet({ request, env }) {
           ORDER BY u.department ASC, u.firstName ASC, u.lastName ASC
         `).bind(dateParam, ...scopeParams).all(),
 
-        /* filter options — เพิ่ม AS u */
+        /* filter options — เพิ่ม AS u และ u. prefix */
         env.DB.prepare(`
-          SELECT DISTINCT aff_code, affiliation FROM users AS u     /* ← เพิ่ม AS u */
-          WHERE u.aff_code IS NOT NULL AND u.status='Active' ${scopeSQL}
+          SELECT DISTINCT u.aff_code, u.affiliation FROM users AS u
+          WHERE u.aff_code IS NOT NULL AND u.status = 'Active' ${scopeSQL}
           ORDER BY u.affiliation ASC
         `).bind(...scopeParams).all(),
 
         env.DB.prepare(`
-          SELECT DISTINCT dep_code, department, aff_code FROM users AS u     /* ← เพิ่ม AS u */
-          WHERE u.dep_code IS NOT NULL AND u.status='Active' ${scopeSQL}
+          SELECT DISTINCT u.dep_code, u.department, u.aff_code FROM users AS u
+          WHERE u.dep_code IS NOT NULL AND u.status = 'Active' ${scopeSQL}
           ORDER BY u.department ASC
         `).bind(...scopeParams).all(),
       ]);
