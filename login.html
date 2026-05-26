@@ -1125,7 +1125,7 @@
 
       const params = new URLSearchParams({
         client_id:     CONFIG.GOOGLE_CLIENT_ID,
-        redirect_uri:  window.location.origin + '/google-callback.html',
+        redirect_uri:  window.location.origin + '/google-callback',
         response_type: 'code',
         scope:         'openid profile email',
         state:         state,
