@@ -1172,15 +1172,16 @@ async function safeJson(response) {
 
 /* ════════════ USER INFO ════════════ */
 function loadUser(){
-  const name =
-    localStorage.getItem('user_name') ||
-    sessionStorage.getItem('user_name') ||
-    'Admin';
+// ดึงข้อมูลจาก localStorage หรือ sessionStorage
+const userData =
+  JSON.parse(localStorage.getItem('user_data')) ||
+  JSON.parse(sessionStorage.getItem('user_data')) ||
+  {};
 
-  const role =
-    localStorage.getItem('user_role') ||
-    sessionStorage.getItem('user_role') ||
-    'admin';
+// ใช้งานข้อมูลจริง
+const name = `${userData.firstName || ''} ${userData.lastName || ''}`.trim() || 'ฉันเป็นใคร';
+  
+const role = userData.role || 'ไม่ทราบ';
 
   const roleMap = {
     user:        '<i class="fa-solid fa-user"></i> บุคลากร',
