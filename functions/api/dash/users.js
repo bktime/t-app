@@ -46,7 +46,7 @@ export async function onRequestGet({ request, env }) {
           u.supervisor,  u.supervisor_code,
           u.approver,    u.approver_code,
           u.payer,       u.payer_code,
-          u.social_type, u.social_id_google, u.social_id_line, u.social_id_telegram,
+          u.social_type, 
           u.ot_rate_per_day, u.ot_rate_per_hour, u.ot_max_hours_per_day,
           u.registered_at, u.last_login_at, u.created_at, u.updated_at
         FROM users u
