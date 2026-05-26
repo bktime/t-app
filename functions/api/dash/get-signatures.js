@@ -27,22 +27,23 @@ export async function onRequestGet({ request, env }) {
   const session = await authUser(env, token);
   if (!session) return unauthorized(CORS);
 
-// ✅ ตรวจสอบสิทธิ์: ต้องมีระดับ > 9 หรือเป็น hr เท่านั้นถึงจะดึงลายเซ็นได้
-if (
-  ( !session.role_level || Number(session.role_level) <= 8 ) &&
-  session.role !== 'hr'
-) {
-  return Response.json(
-    { success: false, message: 'ไม่มีสิทธิ์เข้าถึงข้อมูลลายเซ็น' },
-    { status: 403, headers: CORS }
-  );
-}
+  // ✅ ตรวจสอบสิทธิ์: ต้องมีระดับ > 9 หรือเป็น hr เท่านั้นถึงจะดึงลายเซ็นได้
+  if (
+    ( !session.role_level || Number(session.role_level) <= 8 ) &&
+    session.role !== 'hr'
+  ) {
+    return Response.json(
+      { success: false, message: 'ไม่มีสิทธิ์เข้าถึงข้อมูลลายเซ็น' },
+      { status: 403, headers: CORS }
+    );
+  }
 
   const me = session;
   const url = new URL(request.url);
   const dateParam = url.searchParams.get('date') || new Date().toISOString().slice(0, 10);
 
-  const { scopeSQL, scopeParams } = buildScope(me, url);
+  // ✅ เพิ่ม 'u' เข้าไปใน buildScope เพื่อให้ scopeSQL มีคำว่า u. นำหน้า
+  const { scopeSQL, scopeParams } = buildScope(me, url, 'u');
 
   try {
     const res = await env.DB.prepare(`
