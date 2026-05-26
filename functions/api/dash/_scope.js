@@ -1,25 +1,9 @@
 // functions/api/dash/_scope.js
 // Shared RBAC scope helper
 
-/**
- * buildScope(me, url)
- *
- * me:
- * {
- *   uuid,
- *   role,
- *   role_level,
- *   access_scope,
- *   can_edit,
- *   dep_code,
- *   aff_code,
- *   department,
- *   affiliation
- * }
- */
-
-export function buildScope(me, url) {
+export function buildScope(me, url, alias = '') {
   const scope = me.access_scope;
+  const c = alias ? `${alias}.` : ''; // ← สร้าง prefix ถ้ามี alias ก็จะเป็น "u." ถ้าไม่มีก็จะเป็น ""
 
   const aff = url?.searchParams.get('aff') || null;
   const dep = url?.searchParams.get('dep') || null;
@@ -31,7 +15,7 @@ export function buildScope(me, url) {
   if (scope === 'ตนเอง') {
     return {
       scopeSQL: `
-        AND u.dep_code = ?
+        AND ${c}dep_code = ?
       `,
       scopeParams: [me.dep_code],
 
@@ -57,7 +41,7 @@ if (scope === 'หน่วยงาน') {
 
   return {
     scopeSQL: `
-      AND u.dep_code = ?
+      AND ${c}dep_code = ?
     `,
     scopeParams: [me.dep_code],
 
@@ -80,15 +64,15 @@ if (scope === 'หน่วยงาน') {
    * ───────────────────────────── */
   if (scope === 'สังกัด') {
 
-    // ✅ ป้องกันช่องโหว่: บังคับใช้ me.aff_code เสมอ ห้ามให้ HR เห็นทั้งหมดถ้าไม่ส่ง Parameter
-    const baseSQL = `AND u.aff_code = ?`;
+    // ✅ ป้องกันช่องโหว่: บังคับใช้ me.aff_code เสมอ
+    const baseSQL = `AND ${c}aff_code = ?`;
     const baseParams = [me.aff_code];
 
     if (dep) {
       return {
         scopeSQL: `
           ${baseSQL}
-          AND u.dep_code = ?
+          AND ${c}dep_code = ?
         `,
         scopeParams: [...baseParams, dep],
 
@@ -100,7 +84,7 @@ if (scope === 'หน่วยงาน') {
 
         canFilter: {
           aff: false,
-          dep: true, // กรองหน่วยงานในสังกัดตัวเองได้
+          dep: true,
         },
       };
     }
@@ -116,7 +100,7 @@ if (scope === 'หน่วยงาน') {
 
       canFilter: {
         aff: false,
-        dep: true, // กรองหน่วยงานในสังกัดตัวเองได้
+        dep: true,
       },
     };
   }
@@ -129,8 +113,8 @@ if (scope === 'หน่วยงาน') {
   if (aff && dep) {
     return {
       scopeSQL: `
-        AND u.aff_code = ?
-        AND u.dep_code = ?
+        AND ${c}aff_code = ?
+        AND ${c}dep_code = ?
       `,
       scopeParams: [aff, dep],
 
@@ -150,7 +134,7 @@ if (scope === 'หน่วยงาน') {
   if (aff) {
     return {
       scopeSQL: `
-        AND u.aff_code = ?
+        AND ${c}aff_code = ?
       `,
       scopeParams: [aff],
 
@@ -169,7 +153,7 @@ if (scope === 'หน่วยงาน') {
   if (dep) {
     return {
       scopeSQL: `
-        AND u.dep_code = ?
+        AND ${c}dep_code = ?
       `,
       scopeParams: [dep],
 
@@ -232,17 +216,15 @@ export async function getMe(env, uuid) {
 }
 
 /**
- * scopedUUIDsSQL(scopeSQL)
- *
- * ใช้สำหรับ:
- *
- * AND a.uuid IN (${scopedUUIDsSQL(scopeSQL)})
+ * scopedUUIDsSQL(scopeSQL, alias)
  */
-export function scopedUUIDsSQL(scopeSQL = '') {
+export function scopedUUIDsSQL(scopeSQL = '', alias = '') {
+  const c = alias ? `${alias}.` : '';
+  const tbl = alias ? `AS ${alias}` : '';
   return `
     SELECT uuid
-    FROM users AS u
-    WHERE u.status = 'Active'
+    FROM users ${tbl}
+    WHERE ${c}status = 'Active'
     ${scopeSQL}
   `;
 }
