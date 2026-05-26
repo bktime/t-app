@@ -42,7 +42,7 @@ env.DB.prepare(`
     u.email, u.picture, u.profileImage,
     u.role, u.status, u.position, u.personnelType,
     u.dep_code, u.aff_code, u.department, u.affiliation,
-    u.idCard,
+    substr(u.idCard, 1, 4) || 'XXXXXXXX' || substr(u.idCard, -1) AS idCard,
     u.supervisor,  u.supervisor_code,
     u.approver,    u.approver_code,
     u.payer,       u.payer_code,
