@@ -812,8 +812,15 @@ function printPage(){
 
 /* ════════════ USER INFO ════════════ */
 function loadUser(){
-  const name=localStorage.getItem('user_name')||sessionStorage.getItem('user_name')||'Admin';
-  const role=localStorage.getItem('user_role')||sessionStorage.getItem('user_role')||'admin';
+ const userData =
+  JSON.parse(localStorage.getItem('user_data')) ||
+  JSON.parse(sessionStorage.getItem('user_data')) ||
+  {};
+
+// ใช้งานข้อมูลจริง
+const name = `${userData.firstName || ''} ${userData.lastName || ''}`.trim() || 'ฉันเป็นใคร';
+  
+const role = userData.role || 'ไม่ทราบ';
   const roleMap={
     user:'<i class="fa-solid fa-user"></i> บุคลากร',
     staff:'<i class="fa-solid fa-user"></i> เจ้าหน้าที่',
