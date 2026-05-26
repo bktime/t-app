@@ -36,23 +36,43 @@ export async function onRequestGet({ request, env }) {
   try {
     const [usersRes, summaryRow, affiliations, departments, personnelTypes] = await Promise.all([
 
-      env.DB.prepare(`
-        SELECT
-          u.uuid, u.prefix, u.firstName, u.lastName, u.name,
-          u.email, u.picture, u.profileImage,
-          u.role, u.status, u.position, u.personnelType,
-          u.dep_code, u.aff_code, u.department, u.affiliation,
-          u.idCard,
-          u.supervisor,  u.supervisor_code,
-          u.approver,    u.approver_code,
-          u.payer,       u.payer_code,
-          u.social_type, 
-          u.ot_rate_per_day, u.ot_rate_per_hour, u.ot_max_hours_per_day,
-          u.registered_at, u.last_login_at, u.created_at, u.updated_at
-        FROM users u
-        WHERE 1=1 ${scopeSQL}
-        ORDER BY u.firstName ASC, u.lastName ASC
-      `).bind(...scopeParams).all(),
+env.DB.prepare(`
+  SELECT
+    u.uuid, u.prefix, u.firstName, u.lastName, u.name,
+    u.email, u.picture, u.profileImage,
+    u.role, u.status, u.position, u.personnelType,
+    u.dep_code, u.aff_code, u.department, u.affiliation,
+    u.idCard,
+    u.supervisor,  u.supervisor_code,
+    u.approver,    u.approver_code,
+    u.payer,       u.payer_code,
+
+    CASE 
+      WHEN u.social_id_google IS NOT NULL 
+           AND u.social_id_google != '' 
+      THEN 1 ELSE '' 
+    END AS social_id_google,
+
+    CASE 
+      WHEN u.social_id_line IS NOT NULL 
+           AND u.social_id_line != '' 
+      THEN 1 ELSE '' 
+    END AS social_id_line,
+
+    CASE 
+      WHEN u.social_id_telegram IS NOT NULL 
+           AND u.social_id_telegram != '' 
+      THEN 1 ELSE '' 
+    END AS social_id_telegram,
+
+    u.social_type,
+    u.ot_rate_per_day, u.ot_rate_per_hour, u.ot_max_hours_per_day,
+    u.registered_at, u.last_login_at, u.created_at, u.updated_at
+
+  FROM users u
+  WHERE 1=1 ${scopeSQL}
+  ORDER BY u.firstName ASC, u.lastName ASC
+`).bind(...scopeParams).all(),
 
       env.DB.prepare(`
         SELECT
