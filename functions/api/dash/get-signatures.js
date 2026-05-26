@@ -27,13 +27,16 @@ export async function onRequestGet({ request, env }) {
   const session = await authUser(env, token);
   if (!session) return unauthorized(CORS);
 
-  // ✅ ตรวจสอบสิทธิ์: ต้องมีระดับ > 2 เท่านั้นถึงจะดึงลายเซ็นได้
-  if (!session.role_level || Number(session.role_level) <= 2) {
-    return Response.json(
-      { success: false, message: 'ไม่มีสิทธิ์เข้าถึงข้อมูลลายเซ็น' },
-      { status: 403, headers: CORS }
-    );
-  }
+// ✅ ตรวจสอบสิทธิ์: ต้องมีระดับ > 9 หรือเป็น hr เท่านั้นถึงจะดึงลายเซ็นได้
+if (
+  ( !session.role_level || Number(session.role_level) <= 8 ) &&
+  session.role !== 'hr'
+) {
+  return Response.json(
+    { success: false, message: 'ไม่มีสิทธิ์เข้าถึงข้อมูลลายเซ็น' },
+    { status: 403, headers: CORS }
+  );
+}
 
   const me = session;
   const url = new URL(request.url);
