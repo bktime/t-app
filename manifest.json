@@ -1,14 +1,16 @@
 {
-  "name": "ระบบลงเวลาปฏิบัติงาน",
-  "short_name": "ลงเวลา",
+  "name": "ระบบลงเวลาปฏิบัติงาน เซกา",
+  "short_name": "เซกา ลงเวลา",
   "description": "ระบบลงเวลาปฏิบัติงาน รพ.สต.หนองทุ่ม อำเภอเซกา จังหวัดบึงกาฬ",
-  "start_url": "/",
+  "id": "/?source=pwa",
+  "start_url": "/index.html?utm_source=pwa",
   "scope": "/",
   "display": "standalone",
   "background_color": "#020617",
   "theme_color": "#14B8A6",
-  "orientation": "any",
+  "orientation": "portrait-primary",
   "categories": ["productivity", "utilities"],
+  "lang": "th-TH",
 
   "icons": [
     {

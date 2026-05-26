@@ -1367,6 +1367,7 @@ async function toggleButtonsByTime() {
   try {
     const p = new URLSearchParams();
     if (ud?.aff_code) p.set('aff_code', ud.aff_code);
+    if (ud?.dep_code) p.set('def_code', ud.dep_code);
     const r = await fetch(`/api/user/staff-list?${p}`, { headers: AUTH_HEADER() });
     if (r.ok && (r.headers.get('content-type') || '').includes('application/json')) {
       const d = await r.json();
@@ -1379,7 +1380,7 @@ async function toggleButtonsByTime() {
     let html = `<option value="" data-name="">— ไม่ระบุ —</option>`;
     let hasDefault = false;
     staffList.forEach(s => {
-      const label = [s.name, s.position].filter(Boolean).join(' • ');
+      const label = `${s.name || ''}${s.position ? ' (' + s.position + ')' : ''}`;
       const sel   = s.uuid === defApproverCode ? ' selected' : '';
       if (s.uuid === defApproverCode) hasDefault = true;
       html += `<option value="${s.uuid}" data-name="${s.name || ''}"${sel}>${label}</option>`;
@@ -2240,7 +2241,7 @@ async function cancelAttendance() {
     title: 'ยกเลิกการลงเวลา?',
     html: `<div style="font-size:.9rem;line-height:1.8">
              การลงเวลา <b>เข้า-ออก</b> ของวันนี้จะถูกลบออกทั้งหมด<br>
-             <span style="color:#e53935;font-size:.82rem">ทำได้เฉพาะก่อน Supervisor รับรองเท่านั้น</span>
+             <span style="color:#e53935;font-size:.82rem">ทำได้เฉพาะก่อนหัวหน้าตรวจสอบเท่านั้น</span>
            </div>`,
     showCancelButton: true,
     confirmButtonText: '<i class="fa-solid fa-rotate-left"></i> ยืนยันยกเลิก',
@@ -2298,8 +2299,8 @@ function buildSupBadge(status, supervisorName) {
   console.log(status, supervisorName);
 
   const cfg = {
-     none:  { color:'#b45309', bg:'#fffbeb', border:'#f59e0b40', icon:'fa-hourglass-half', label:'รอการตรวจสอบ' },
-    pending:  { color:'#fb8c00', bg:'#fff8f0', border:'#fb8c0040', icon:'fa-hourglass-half', label:'รออนุมัติคำขอ' },
+     none:  { color:'#b45309', bg:'#fffbeb', border:'#f59e0b40', icon:'fa-hourglass-half', label:'ไม่มีการลงเวลา' },
+    pending:  { color:'#fb8c00', bg:'#fff8f0', border:'#fb8c0040', icon:'fa-hourglass-half', label:'รอการตรวจสอบ' },
     approved: { color:'#2e7d32', bg:'#e8f5e9', border:'#4caf5040', icon:'fa-shield-halved',  label:'ตรวจสอบแล้ว' },
     rejected: { color:'#c62828', bg:'#ffebee', border:'#ef535040', icon:'fa-circle-xmark',   label:'ไม่รับรอง'  },
   };
@@ -3419,6 +3420,7 @@ preConfirm: () => {
   try {
     const p = new URLSearchParams();
     if (ud?.aff_code) p.set('aff_code', ud.aff_code);
+    if (ud?.dep_code) p.set('def_code', ud.dep_code);
     const r = await fetch(`/api/user/staff-list?${p}`, { headers: AUTH_HEADER() });
     if (r.ok && (r.headers.get('content-type') || '').includes('application/json')) {
       const d = await r.json();
@@ -3431,7 +3433,7 @@ preConfirm: () => {
     let html = `<option value="" data-name="">— ไม่ระบุ —</option>`;
     let hasDefault = false;
     staffList.forEach(s => {
-      const label = [s.name, s.position].filter(Boolean).join(' • ');
+      const label = `${s.name || ''}${s.position ? ' (' + s.position + ')' : ''}`;
       const sel   = s.uuid === defApproverCode ? ' selected' : '';
       if (s.uuid === defApproverCode) hasDefault = true;
       html += `<option value="${s.uuid}" data-name="${s.name || ''}"${sel}>${label}</option>`;

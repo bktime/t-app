@@ -1,6 +1,6 @@
 // functions/api/attendance/cancel.js
 // DELETE /api/attendance/cancel
-// ยกเลิกการลงเวลาของวันนั้น — ทำได้เฉพาะเมื่อ supervisor_status = 'none'
+// ยกเลิกการลงเวลาของวันนั้น — ทำได้เฉพาะเมื่อ supervisor_status = 'pending'
 
 import { authUser, extractToken } from '../_auth.js';
 
@@ -50,15 +50,15 @@ export async function onRequest(context) {
   `).bind(uuid, date).first();
 
   if (!row) {
-    return json({ success: false, message: 'ไม่พบข้อมูลการลงเวลาของวันนี้' }, 404);
+    return json({ success: false, message: 'ไม่พบข้อมูลการลงเวลาของวันนี้ หรือได้ถูกยกเลิกไปแล้ว' }, 404);
   }
 
   if (!row.checkin_time) {
     return json({ success: false, message: 'ยังไม่มีการลงเวลาเข้า' }, 400);
   }
 
-  // ── ตรวจสอบสิทธิ์: ยกเลิกได้เฉพาะ supervisor_status = 'none' ──
-  if (row.supervisor_status !== 'none') {
+  // ── ตรวจสอบสิทธิ์: ยกเลิกได้เฉพาะ supervisor_status = 'pending' ──
+  if (row.supervisor_status !== 'pending') {
     const statusLabel = {
       pending:  'อยู่ระหว่างรอ Supervisor รับรอง',
       approved: 'Supervisor รับรองแล้ว',
@@ -72,7 +72,7 @@ export async function onRequest(context) {
   try {
     await env.DB.prepare(`
       DELETE FROM attendance
-      WHERE uuid = ? AND date = ? AND supervisor_status = 'none'
+      WHERE uuid = ? AND date = ? AND supervisor_status = 'pending'
     `).bind(uuid, date).run();
 
     return json({

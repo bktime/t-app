@@ -1,135 +1,175 @@
-// sw.js - Service Worker for PWA
+// sw.js - Service Worker สำหรับ PWA + Firebase + Scheduled Reminder (Fixed)
+importScripts('https://www.gstatic.com/firebasejs/12.3.0/firebase-app-compat.js');
+importScripts('https://www.gstatic.com/firebasejs/12.3.0/firebase-messaging-compat.js');
+
+// ─────────────────────────────────────
+// Firebase Configuration
+// ─────────────────────────────────────
+firebase.initializeApp({
+  apiKey: "AIzaSyASi0aclvDbgrJH89r2E2I1Jm8AqYO1wDU",
+  authDomain: "attendance-app-c1aeb.firebaseapp.com",
+  projectId: "attendance-app-c1aeb",
+  storageBucket: "attendance-app-c1aeb.firebasestorage.app",
+  messagingSenderId: "383918652730",
+  appId: "1:383918652730:web:6be2fcbd25964e21f72403"
+});
+
+const messaging = firebase.messaging();
+
+// ─────────────────────────────────────
+// Background Push Notification
+// ─────────────────────────────────────
+messaging.onBackgroundMessage((payload) => {
+  console.log('[FCM] Background Message received:', payload);
+
+  const notificationTitle = payload.notification?.title || 'เซกา | ระบบลงเวลา';
+  const notificationOptions = {
+    body: payload.notification?.body || 'คุณมีแจ้งเตือนใหม่',
+    icon: '/icons/icon-192.png',
+    badge: '/icons/icon-72.png',
+    tag: 'fcm-' + Date.now(),
+    requireInteraction: false
+  };
+
+  self.registration.showNotification(notificationTitle, notificationOptions);
+});
+
+// ─────────────────────────────────────
+// Scheduled Reminder (เช้า + บ่าย) - แก้ไขปัญหา localStorage
+// ─────────────────────────────────────
+let remindersScheduledToday = false;
+
+function scheduleDailyReminders() {
+  if (remindersScheduledToday) return;
+
+  const now = new Date();
+  const currentHour = now.getHours();
+  const currentMinute = now.getMinutes();
+
+  // เวลาเช้า 07:45
+  if (currentHour < 7 || (currentHour === 7 && currentMinute < 45)) {
+    const morningTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 7, 45);
+    const delayMorning = morningTime - now;
+    setTimeout(() => sendLocalReminder('morning'), delayMorning);
+  }
+
+  // เวลาบ่าย 16:20
+  if (currentHour < 16 || (currentHour === 16 && currentMinute < 20)) {
+    const afternoonTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 16, 20);
+    const delayAfternoon = afternoonTime - now;
+    setTimeout(() => sendLocalReminder('afternoon'), delayAfternoon);
+  }
+
+  remindersScheduledToday = true;   // ป้องกันการตั้งซ้ำ
+  console.log('✅ Scheduled daily reminders');
+}
+
+function sendLocalReminder(type) {
+  let title = '';
+  let body = '';
+
+  if (type === 'morning') {
+    title = '🕒 ถึงเวลาลงเวลาเข้างานแล้ว';
+    body = 'กรุณากดลงเวลาเข้างานวันนี้ครับ';
+  } else {
+    title = '🕒 ใกล้ถึงเวลาออกงานแล้ว';
+    body = 'อย่าลืมลงเวลาออกงานก่อนกลับบ้านนะครับ';
+  }
+
+  self.registration.showNotification(title, {
+    body: body,
+    icon: '/icons/icon-192.png',
+    badge: '/icons/icon-72.png',
+    tag: `reminder-${type}`,
+    requireInteraction: true,
+    vibrate: [200, 100, 200]
+  });
+}
+
+// ─────────────────────────────────────
+// Cache Strategy
+// ─────────────────────────────────────
 const CACHE_NAME = 'time-attendance-v2.0';
 const STATIC_CACHE_NAME = 'time-attendance-static-v2.0';
 
-// ไฟล์จากเซิร์ฟเวอร์เราเอง (Cache ตอน Install)
 const appShellFiles = [
-  '/',
-  '/index.html',
-  '/login.html',
-  '/register.html',
-  '/overtime.html',
-  '/attendance.html',
-  '/devices.html',
-  '/request.html',
-  '/profile.html',
-  '/supervisor.html',
-  '/dash.html',
-  '/manifest.json',
-  '/icons/icon-192.png',
-  '/icons/icon-512.png',
-  '/icons/maskable-192.png',
-  '/icons/maskable-512.png',
-  '/screenshots/mobile.png',
-  '/screenshots/desktop.png'
+  '/', '/index.html', '/login.html', '/register.html', '/overtime.html',
+  '/attendance.html', '/devices.html', '/request.html', '/profile.html',
+  '/supervisor.html', '/manifest.json',
+  '/icons/icon-192.png', '/icons/icon-512.png'
 ];
 
-// ทรัพยากรจาก CDN (Cache แบบ Cache-First ตอน Fetch)
 const cdnPatterns = [
-  'fonts.googleapis.com',
-  'fonts.gstatic.com',
-  'cdnjs.cloudflare.com',
-  'cdn.jsdelivr.net'
+  'fonts.googleapis.com', 'fonts.gstatic.com', 
+  'cdnjs.cloudflare.com', 'cdn.jsdelivr.net'
 ];
 
-// ═══════════════════════════════════
-//  Install: Cache App Shell
-// ═══════════════════════════════════
+// Install
 self.addEventListener('install', event => {
   event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => {
-        console.log('📦 Caching App Shell');
-        // ใช้ addAll แบบไม่ throw ถ้าไฟล์ไหนไม่มี (เผื่อบางหน้ายังไม่ได้สร้าง)
-        return Promise.allSettled(
-          appShellFiles.map(url =>
-            cache.add(url).catch(err => {
-              console.warn(`⚠️ Failed to cache: ${url}`, err.message);
-            })
-          )
-        );
-      })
+    caches.open(CACHE_NAME).then(cache => {
+      console.log('📦 Caching App Shell');
+      return Promise.allSettled(appShellFiles.map(url => 
+        cache.add(url).catch(() => {})
+      ));
+    })
   );
   self.skipWaiting();
 });
 
-// ═══════════════════════════════════
-//  Activate: Clean old caches
-// ═══════════════════════════════════
+// Activate
 self.addEventListener('activate', event => {
   event.waitUntil(
-    caches.keys().then(cacheNames => {
+    caches.keys().then(keys => {
       return Promise.all(
-        cacheNames
-          .filter(name => name.startsWith('time-attendance-') && name !== CACHE_NAME && name !== STATIC_CACHE_NAME)
-          .map(name => {
-            console.log('🗑️ Deleting old cache:', name);
-            return caches.delete(name);
-          })
+        keys.filter(k => k.startsWith('time-attendance-') && k !== CACHE_NAME && k !== STATIC_CACHE_NAME)
+            .map(k => caches.delete(k))
       );
     })
   );
   self.clients.claim();
 });
 
-// ═══════════════════════════════════
-//  Fetch: Strategy depends on request type
-// ═══════════════════════════════════
+// Fetch
 self.addEventListener('fetch', event => {
   const { request } = event;
   const url = new URL(request.url);
 
-  // Skip non-GET
   if (request.method !== 'GET') return;
-
-  // Skip API calls
   if (url.pathname.includes('/api/')) return;
-
-  // Skip chrome-extension และอื่นๆ ที่ไม่ใช่ http/https
   if (!url.protocol.startsWith('http')) return;
 
-  // ── CDN Resources: Cache First, Fallback to Network ──
-  if (cdnPatterns.some(pattern => url.hostname.includes(pattern))) {
+  if (cdnPatterns.some(p => url.hostname.includes(p))) {
     event.respondWith(
-      caches.match(request).then(cached => {
-        if (cached) return cached;
-        return fetch(request).then(response => {
-          if (response && response.status === 200) {
-            const clone = response.clone();
-            caches.open(STATIC_CACHE_NAME).then(cache => cache.put(request, clone));
-          }
-          return response;
-        });
-      })
+      caches.match(request).then(cached => cached || fetch(request))
     );
     return;
   }
 
-  // ── App Pages & Assets: Network First, Fallback to Cache ──
   event.respondWith(
     fetch(request)
-      .then(response => {
-        // สำเร็จ: เก็บเข้า Cache
-        if (response && response.status === 200) {
-          const clone = response.clone();
+      .then(res => {
+        if (res && res.status === 200) {
+          const clone = res.clone();
           caches.open(CACHE_NAME).then(cache => cache.put(request, clone));
         }
-        return response;
+        return res;
       })
-      .catch(() => {
-        // Offline: หาจาก Cache
-        return caches.match(request).then(cachedResponse => {
-          if (cachedResponse) return cachedResponse;
-
-          // ถ้าเป็น navigation request (ผู้ใช้พิมพ์ URL หรือกดลิงก์)
-          // และไม่เจอใน Cache ให้แสดง index.html
-          if (request.mode === 'navigate') {
-            return caches.match('/index.html');
-          }
-
-          // กรณีอื่นๆ (เช่นรูปภาพที่ยังไม่ได้ Cache)
-          return undefined;
-        });
-      })
+      .catch(() => caches.match(request).then(cached => {
+        if (cached) return cached;
+        if (request.mode === 'navigate') return caches.match('/index.html');
+      }))
   );
+});
+
+// รับคำสั่งจากหน้าเว็บ
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SCHEDULE_REMINDERS') {
+    scheduleDailyReminders();
+  }
+});
+
+// ตั้งเวลาเมื่อ Service Worker เริ่มทำงาน
+self.addEventListener('activate', () => {
+  scheduleDailyReminders();
 });

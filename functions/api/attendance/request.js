@@ -409,18 +409,25 @@ if (lon !== null && (isNaN(lon) || lon < -180 || lon > 180)) {
       WHERE reference = ? AND uuid = ?
     `).bind(reference, uuid).run();
 
+    // await env.DB.prepare(`
+    //   UPDATE attendance
+    //   SET request_ref       = NULL,
+    //       request_type      = NULL,
+    //       request_reason    = NULL,
+    //       request_at        = NULL,
+    //       approver_uuid     = NULL,
+    //       supervisor_name   = NULL,
+    //       supervisor_status = 'cancelled',
+    //       updated_at        = CURRENT_TIMESTAMP
+    //   WHERE uuid = ? AND date = ? AND request_ref = ?
+    // `).bind(uuid, row.req_date, reference).run();
+
     await env.DB.prepare(`
-      UPDATE attendance
-      SET request_ref       = NULL,
-          request_type      = NULL,
-          request_reason    = NULL,
-          request_at        = NULL,
-          approver_uuid     = NULL,
-          supervisor_name   = NULL,
-          supervisor_status = NULL,
-          updated_at        = CURRENT_TIMESTAMP
-      WHERE uuid = ? AND date = ? AND request_ref = ?
-    `).bind(uuid, row.req_date, reference).run();
+  DELETE FROM attendance
+  WHERE uuid = ?
+    AND date = ?
+    AND request_ref = ?
+`).bind(uuid, row.req_date, reference).run();
 
     return json({
       success: true,
