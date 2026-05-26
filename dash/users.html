@@ -881,11 +881,43 @@ function pillRole(r){
   const cls={admin:'p-admin',supervisor:'p-supervisor',user:'p-user',hr:'p-hr',executive:'p-executive'};
   return`<span class="pill ${cls[r]||'p-user'}">${lbl[r]||r||'—'}</span>`;
 }
+
 function pillSocial(u){
-  if(u.social_id_google)  return`<span class="pill p-google"><i class="fa-brands fa-google"></i> Google</span>`;
-  if(u.social_id_line)    return`<span class="pill p-line"><i class="fa-brands fa-line"></i> LINE</span>`;
-  if(u.social_id_telegram)return`<span class="pill p-telegram"><i class="fa-brands fa-telegram"></i> Telegram</span>`;
-  return`<span class="pill p-local"><i class="fa-solid fa-lock"></i> Local</span>`;
+  const pills = [];
+
+  if(u.social_id_google){
+    pills.push(`
+      <span class="pill p-google">
+        <i class="fa-brands fa-google"></i> Google
+      </span>
+    `);
+  }
+
+  if(u.social_id_line){
+    pills.push(`
+      <span class="pill p-line">
+        <i class="fa-brands fa-line"></i> LINE
+      </span>
+    `);
+  }
+
+  if(u.social_id_telegram){
+    pills.push(`
+      <span class="pill p-telegram">
+        <i class="fa-brands fa-telegram"></i> Telegram
+      </span>
+    `);
+  }
+
+  if(pills.length === 0){
+    pills.push(`
+      <span class="pill p-local">
+        <i class="fa-solid fa-lock"></i> Local
+      </span>
+    `);
+  }
+
+  return pills.join(' ');
 }
 
 function renderTable(){
