@@ -821,13 +821,19 @@ function loadUser(){
 const name = `${userData.firstName || ''} ${userData.lastName || ''}`.trim() || 'ฉันเป็นใคร';
   
 const role = userData.role || 'ไม่ทราบ';
-  const roleMap={
-    user:'<i class="fa-solid fa-user"></i> บุคลากร',
-    staff:'<i class="fa-solid fa-user"></i> เจ้าหน้าที่',
-    admin:'<i class="fa-solid fa-user-shield"></i> ผู้ดูแลระบบ',
-    hr:'<i class="fa-solid fa-user-tie"></i> ฝ่ายทรัพยากรบุคคล',
-    supervisor:'<i class="fa-solid fa-user-tie"></i> หัวหน้า',
-    executive:'<i class="fa-solid fa-user-crown"></i> ผู้บริหาร',
+  const roleMap = {
+    user:        '<i class="fa-solid fa-user"></i> บุคลากร',
+    staff:       '<i class="fa-solid fa-user"></i> เจ้าหน้าที่',
+    admin:       '<i class="fa-solid fa-user-shield"></i> ผู้ดูแลระบบ',
+    manager:     '<i class="fa-solid fa-list-check"></i> ผู้จัดการ',
+    hr:          '<i class="fa-solid fa-user-tie"></i> ฝ่ายทรัพยากรบุคคล',
+    it:          '<i class="fa-solid fa-laptop-code"></i> ฝ่ายเทคโนโลยีสารสนเทศ',
+    support:     '<i class="fa-solid fa-headset"></i> ฝ่ายสนับสนุน',
+    legal:       '<i class="fa-solid fa-gavel"></i> ฝ่ายกฎหมาย',
+    finance:     '<i class="fa-solid fa-money-bill-wave"></i> ฝ่ายการเงิน',
+    supervisor:  '<i class="fa-solid fa-user-tie"></i> หัวหน้า',
+    executive:   '<i class="fa-solid fa-user-crown"></i> ผู้บริหาร',
+    ceo:         '<i class="fa-solid fa-user-crown"></i> ผู้บริหารสูงสุด'
   };
   $('uNm').textContent=name;
   $('uRl').innerHTML=roleMap[role]||role;
