@@ -31,7 +31,7 @@ export function buildScope(me, url) {
   if (scope === 'ตนเอง') {
     return {
       scopeSQL: `
-        AND dep_code = ?
+        AND u.dep_code = ?
       `,
       scopeParams: [me.dep_code],
 
@@ -57,7 +57,7 @@ if (scope === 'หน่วยงาน') {
 
   return {
     scopeSQL: `
-      AND dep_code = ?
+      AND u.dep_code = ?
     `,
     scopeParams: [me.dep_code],
 
@@ -80,76 +80,43 @@ if (scope === 'หน่วยงาน') {
    * ───────────────────────────── */
   if (scope === 'สังกัด') {
 
-    if (aff && dep) {
-      return {
-        scopeSQL: `
-          AND aff_code = ?
-          AND dep_code = ?
-        `,
-        scopeParams: [aff, dep],
-
-        scopeMeta: {
-          scope: 'department',
-          aff_code: aff,
-          dep_code: dep,
-        },
-
-        canFilter: {
-          aff: true,
-          dep: true,
-        },
-      };
-    }
-
-    if (aff) {
-      return {
-        scopeSQL: `
-          AND aff_code = ?
-        `,
-        scopeParams: [aff],
-
-        scopeMeta: {
-          scope: 'affiliation',
-          aff_code: aff,
-        },
-
-        canFilter: {
-          aff: true,
-          dep: true,
-        },
-      };
-    }
+    // ✅ ป้องกันช่องโหว่: บังคับใช้ me.aff_code เสมอ ห้ามให้ HR เห็นทั้งหมดถ้าไม่ส่ง Parameter
+    const baseSQL = `AND u.aff_code = ?`;
+    const baseParams = [me.aff_code];
 
     if (dep) {
       return {
         scopeSQL: `
-          AND dep_code = ?
+          ${baseSQL}
+          AND u.dep_code = ?
         `,
-        scopeParams: [dep],
+        scopeParams: [...baseParams, dep],
 
         scopeMeta: {
           scope: 'department',
+          aff_code: me.aff_code,
           dep_code: dep,
         },
 
         canFilter: {
-          aff: true,
-          dep: true,
+          aff: false,
+          dep: true, // กรองหน่วยงานในสังกัดตัวเองได้
         },
       };
     }
 
     return {
-      scopeSQL: '',
-      scopeParams: [],
+      scopeSQL: baseSQL,
+      scopeParams: baseParams,
 
       scopeMeta: {
-        scope: 'organization',
+        scope: 'affiliation',
+        aff_code: me.aff_code,
       },
 
       canFilter: {
-        aff: true,
-        dep: true,
+        aff: false,
+        dep: true, // กรองหน่วยงานในสังกัดตัวเองได้
       },
     };
   }
@@ -162,8 +129,8 @@ if (scope === 'หน่วยงาน') {
   if (aff && dep) {
     return {
       scopeSQL: `
-        AND aff_code = ?
-        AND dep_code = ?
+        AND u.aff_code = ?
+        AND u.dep_code = ?
       `,
       scopeParams: [aff, dep],
 
@@ -183,7 +150,7 @@ if (scope === 'หน่วยงาน') {
   if (aff) {
     return {
       scopeSQL: `
-        AND aff_code = ?
+        AND u.aff_code = ?
       `,
       scopeParams: [aff],
 
@@ -202,7 +169,7 @@ if (scope === 'หน่วยงาน') {
   if (dep) {
     return {
       scopeSQL: `
-        AND dep_code = ?
+        AND u.dep_code = ?
       `,
       scopeParams: [dep],
 
@@ -274,8 +241,8 @@ export async function getMe(env, uuid) {
 export function scopedUUIDsSQL(scopeSQL = '') {
   return `
     SELECT uuid
-    FROM users
-    WHERE status = 'Active'
+    FROM users AS u
+    WHERE u.status = 'Active'
     ${scopeSQL}
   `;
 }
