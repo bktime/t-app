@@ -2,7 +2,7 @@
 // GET /api/dash/recent-activity?from=YYYY-MM-DD&to=YYYY-MM-DD[&aff=xxx][&dep=xxx][&limit=20]
 
 import { authUser, extractToken, unauthorized } from '../_auth.js';
-import { buildScope, getMe, scopedUUIDsSQL } from './_scope.js';
+import { buildScope, scopedUUIDsSQL } from './_scope.js';
 
 const CORS = {
   'Access-Control-Allow-Origin': '*',
@@ -25,8 +25,7 @@ export async function onRequestGet({ request, env }) {
   const session = await authUser(env, token);
   if (!session) return unauthorized(CORS);
 
-  const me = await getMe(env, session.uuid);
-  if (!me) return unauthorized(CORS);
+  const me = session;
 
   const url   = new URL(request.url);
   const today = new Date().toISOString().slice(0, 10);

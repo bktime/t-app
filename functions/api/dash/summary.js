@@ -2,7 +2,7 @@
 // GET /api/dash/summary?from=YYYY-MM-DD&to=YYYY-MM-DD[&aff=xxx][&dep=xxx]
 
 import { authUser, extractToken, unauthorized } from '../_auth.js';
-import { buildScope, getMe, scopedUUIDsSQL } from './_scope.js';
+import { buildScope, scopedUUIDsSQL } from './_scope.js';
 
 const CORS = {
   'Access-Control-Allow-Origin': '*',
@@ -25,8 +25,7 @@ export async function onRequestGet({ request, env }) {
   const session = await authUser(env, token);
   if (!session) return unauthorized(CORS);
 
-  const me = await getMe(env, session.uuid);
-  if (!me) return unauthorized(CORS);
+  const me = session;
 
   // user ธรรมดาดู dashboard ได้แค่ dep ตัวเอง
   // supervisor, admin ผ่านได้

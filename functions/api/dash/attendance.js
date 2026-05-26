@@ -46,7 +46,7 @@ export async function onRequestGet({ request, env }) {
         env.DB.prepare(`
           SELECT
             u.uuid,
-            CONCAT(u.prefix, ' ', u.firstName, ' ', u.lastName) AS name,
+            (u.prefix || ' ' || u.firstName || ' ' || u.lastName) AS name,
             u.position,
             u.personnelType,
             u.dep_code,

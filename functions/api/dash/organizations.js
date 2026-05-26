@@ -28,8 +28,7 @@ function buildOrgScope(me, url) {
     return { sql: `AND department_code = ?`, params: [me.dep_code] };
   }
   if (scope === 'หน่วยงาน') {
-    if (dep) return { sql: `AND affiliation_code = ? AND department_code = ?`, params: [me.aff_code, dep] };
-    return { sql: `AND affiliation_code = ?`, params: [me.aff_code] };
+    return { sql: `AND department_code = ?`, params: [me.dep_code] };
   }
   if (scope === 'สังกัด') {
     if (aff && dep) return { sql: `AND affiliation_code = ? AND department_code = ?`, params: [aff, dep] };

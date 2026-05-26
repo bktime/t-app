@@ -8,7 +8,6 @@
 //                 admin ส่ง ?aff=xxx มาเพื่อโหลด dep list ของ aff นั้น
 
 import { authUser, extractToken, unauthorized } from '../_auth.js';
-import { getMe } from './_scope.js';
 
 const CORS = {
   'Access-Control-Allow-Origin': '*',
@@ -31,8 +30,7 @@ export async function onRequestGet({ request, env }) {
   const session = await authUser(env, token);
   if (!session) return unauthorized(CORS);
 
-  const me = await getMe(env, session.uuid);
-  if (!me) return unauthorized(CORS);
+  const me = session;
 
   const url = new URL(request.url);
 
