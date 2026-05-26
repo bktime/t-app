@@ -807,6 +807,7 @@
       GOOGLE_CLIENT_ID: '6897615091-r2tuo13f7gnf9irjqbbtt3u1icighmsv.apps.googleusercontent.com',
       LINE_CHANNEL_ID: '2000472605',
       LINE_REDIRECT_URI: window.location.origin + '/line-callback.html',
+      GOOGLE_REDIRECT_URI:  window.location.origin + '/google-callback.html',
       TELEGRAM_BOT_USERNAME: 't_app_bk_bot',
       API_BASE_URL: '/api'
     };
@@ -1125,7 +1126,7 @@
 
       const params = new URLSearchParams({
         client_id:     CONFIG.GOOGLE_CLIENT_ID,
-        redirect_uri:  window.location.origin + '/google-callback',
+        redirect_uri:  CONFIG.GOOGLE_REDIRECT_URI,
         response_type: 'code',
         scope:         'openid profile email',
         state:         state,
