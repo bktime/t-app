@@ -1,6 +1,7 @@
-// sw.js - Service Worker สำหรับ PWA + Firebase + Scheduled Reminder (Fixed)
-importScripts('https://www.gstatic.com/firebasejs/12.3.0/firebase-app-compat.js');
-importScripts('https://www.gstatic.com/firebasejs/12.3.0/firebase-messaging-compat.js');
+// sw.js - Service Worker สำหรับ PWA + Firebase + Scheduled Reminder
+// ✅ แก้ไข: เวอร์ชัน Firebase SDK ที่มีอยู่จริง (10.14.1)
+importScripts('https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js');
+importScripts('https://www.gstatic.com/firebasejs/10.14.1/firebase-messaging-compat.js');
 
 // ─────────────────────────────────────
 // Firebase Configuration
@@ -17,12 +18,12 @@ firebase.initializeApp({
 const messaging = firebase.messaging();
 
 // ─────────────────────────────────────
-// Background Push Notification
+// Background Push Notification (FCM)
 // ─────────────────────────────────────
 messaging.onBackgroundMessage((payload) => {
   console.log('[FCM] Background Message received:', payload);
 
-  const notificationTitle = payload.notification?.title || 'เซกา | ระบบลงเวลา';
+  const notificationTitle = payload.notification?.title || 'ระบบลงเวลา';
   const notificationOptions = {
     body: payload.notification?.body || 'คุณมีแจ้งเตือนใหม่',
     icon: '/icons/icon-192.png',
@@ -35,62 +36,102 @@ messaging.onBackgroundMessage((payload) => {
 });
 
 // ─────────────────────────────────────
-// Scheduled Reminder (เช้า + บ่าย) - แก้ไขปัญหา localStorage
+// รับคำสั่งแจ้งเตือนจาก Client
 // ─────────────────────────────────────
-let remindersScheduledToday = false;
+self.addEventListener('message', (event) => {
+  if (!event.data) return;
 
-function scheduleDailyReminders() {
-  if (remindersScheduledToday) return;
+  switch (event.data.type) {
+    case 'SHOW_NOTIFICATION':
+      showLocalNotification(event.data.title, event.data.body, event.data.tag);
+      break;
 
-  const now = new Date();
-  const currentHour = now.getHours();
-  const currentMinute = now.getMinutes();
+    case 'SCHEDULE_REMINDERS':
+      // SW ถูก kill ได้ตลอดเวลา — ให้ client เป็นคนจับเวลาแทน
+      event.source.postMessage({
+        type: 'SW_READY',
+        message: 'Service Worker is ready, client should handle scheduling'
+      });
+      break;
+  }
+});
 
-  // เวลาเช้า 07:45
-  if (currentHour < 7 || (currentHour === 7 && currentMinute < 45)) {
-    const morningTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 7, 45);
-    const delayMorning = morningTime - now;
-    setTimeout(() => sendLocalReminder('morning'), delayMorning);
+// ─────────────────────────────────────
+// Notification Click
+// ─────────────────────────────────────
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+
+  const tag = event.notification.tag;
+  let targetUrl = '/';
+
+  if (tag === 'reminder-morning') {
+    targetUrl = '/attendance.html?action=checkin';
+  } else if (tag === 'reminder-afternoon') {
+    targetUrl = '/attendance.html?action=checkout';
+  } else if (tag?.startsWith('fcm-')) {
+    targetUrl = '/attendance.html';
   }
 
-  // เวลาบ่าย 16:20
-  if (currentHour < 16 || (currentHour === 16 && currentMinute < 20)) {
-    const afternoonTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 16, 20);
-    const delayAfternoon = afternoonTime - now;
-    setTimeout(() => sendLocalReminder('afternoon'), delayAfternoon);
-  }
+  event.waitUntil(
+    self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(clients => {
+      for (const client of clients) {
+        if (client.url.includes(self.location.origin) && 'focus' in client) {
+          client.navigate(targetUrl);
+          return client.focus();
+        }
+      }
+      return self.clients.openWindow(targetUrl);
+    })
+  );
+});
 
-  remindersScheduledToday = true;   // ป้องกันการตั้งซ้ำ
-  console.log('✅ Scheduled daily reminders');
-}
-
-function sendLocalReminder(type) {
-  let title = '';
-  let body = '';
-
-  if (type === 'morning') {
-    title = '🕒 ถึงเวลาลงเวลาเข้างานแล้ว';
-    body = 'กรุณากดลงเวลาเข้างานวันนี้ครับ';
-  } else {
-    title = '🕒 ใกล้ถึงเวลาออกงานแล้ว';
-    body = 'อย่าลืมลงเวลาออกงานก่อนกลับบ้านนะครับ';
-  }
-
+function showLocalNotification(title, body, tag) {
   self.registration.showNotification(title, {
     body: body,
     icon: '/icons/icon-192.png',
     badge: '/icons/icon-72.png',
-    tag: `reminder-${type}`,
+    tag: tag || 'local-' + Date.now(),
     requireInteraction: true,
     vibrate: [200, 100, 200]
   });
 }
 
 // ─────────────────────────────────────
+// Periodic Background Sync (Chrome on Android only)
+// ─────────────────────────────────────
+self.addEventListener('periodicsync', (event) => {
+  if (event.tag === 'attendance-reminder') {
+    event.waitUntil(checkAndSendReminder());
+  }
+});
+
+async function checkAndSendReminder() {
+  const now = new Date();
+  const hour = now.getHours();
+  const minute = now.getMinutes();
+  const timeStr = `${hour}:${String(minute).padStart(2, '0')}`;
+
+  if (timeStr >= '7:40' && timeStr <= '7:50') {
+    showLocalNotification(
+      '🕒 ถึงเวลาลงเวลาเข้างานแล้ว',
+      'กรุณากดลงเวลาเข้างานวันนี้ครับ',
+      'reminder-morning'
+    );
+  } else if (timeStr >= '16:15' && timeStr <= '16:25') {
+    showLocalNotification(
+      '🕒 ใกล้ถึงเวลาออกงานแล้ว',
+      'อย่าลืมลงเวลาออกงานก่อนกลับบ้านนะครับ',
+      'reminder-afternoon'
+    );
+  }
+}
+
+// ─────────────────────────────────────
 // Cache Strategy
 // ─────────────────────────────────────
-const CACHE_NAME = 'time-attendance-v2.0';
-const STATIC_CACHE_NAME = 'time-attendance-static-v2.0';
+const CACHE_NAME = 'time-attendance-v2.1';
+const STATIC_CACHE_NAME = 'time-attendance-static-v2.1';
 
 const appShellFiles = [
   '/', '/index.html', '/login.html', '/register.html', '/overtime.html',
@@ -100,7 +141,7 @@ const appShellFiles = [
 ];
 
 const cdnPatterns = [
-  'fonts.googleapis.com', 'fonts.gstatic.com', 
+  'fonts.googleapis.com', 'fonts.gstatic.com',
   'cdnjs.cloudflare.com', 'cdn.jsdelivr.net'
 ];
 
@@ -109,7 +150,7 @@ self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(cache => {
       console.log('📦 Caching App Shell');
-      return Promise.allSettled(appShellFiles.map(url => 
+      return Promise.allSettled(appShellFiles.map(url =>
         cache.add(url).catch(() => {})
       ));
     })
@@ -122,12 +163,14 @@ self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(keys => {
       return Promise.all(
-        keys.filter(k => k.startsWith('time-attendance-') && k !== CACHE_NAME && k !== STATIC_CACHE_NAME)
-            .map(k => caches.delete(k))
+        keys.filter(k =>
+          k.startsWith('time-attendance-') &&
+          k !== CACHE_NAME &&
+          k !== STATIC_CACHE_NAME
+        ).map(k => caches.delete(k))
       );
-    })
+    }).then(() => self.clients.claim())
   );
-  self.clients.claim();
 });
 
 // Fetch
@@ -139,6 +182,7 @@ self.addEventListener('fetch', event => {
   if (url.pathname.includes('/api/')) return;
   if (!url.protocol.startsWith('http')) return;
 
+  // CDN → Cache First
   if (cdnPatterns.some(p => url.hostname.includes(p))) {
     event.respondWith(
       caches.match(request).then(cached => cached || fetch(request))
@@ -146,6 +190,7 @@ self.addEventListener('fetch', event => {
     return;
   }
 
+  // App → Network First + Cache Fallback
   event.respondWith(
     fetch(request)
       .then(res => {
@@ -155,21 +200,16 @@ self.addEventListener('fetch', event => {
         }
         return res;
       })
-      .catch(() => caches.match(request).then(cached => {
-        if (cached) return cached;
-        if (request.mode === 'navigate') return caches.match('/index.html');
-      }))
+      .catch(() =>
+        caches.match(request).then(cached => {
+          if (cached) return cached;
+          if (request.mode === 'navigate') return caches.match('/index.html');
+          // ✅ แก้ไข: เพิ่ม fallback สุดท้ายแทน undefined
+          return new Response('Offline', {
+            status: 503,
+            headers: { 'Content-Type': 'text/plain; charset=utf-8' }
+          });
+        })
+      )
   );
-});
-
-// รับคำสั่งจากหน้าเว็บ
-self.addEventListener('message', (event) => {
-  if (event.data && event.data.type === 'SCHEDULE_REMINDERS') {
-    scheduleDailyReminders();
-  }
-});
-
-// ตั้งเวลาเมื่อ Service Worker เริ่มทำงาน
-self.addEventListener('activate', () => {
-  scheduleDailyReminders();
 });

@@ -1888,6 +1888,7 @@
   </div><!-- end app-shell -->
 
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="/js/reminder-scheduler.js"></script>
 
   <script>
     /* ═══════════ CONFIG ═══════════ */
@@ -2601,8 +2602,8 @@ function gotoSupervisor(ref) {
       if (tok) fetchStats(tok);
 
       loadNotifications();
+
       bindLogout();
-      initReminders();
     }
 
     function renderLoggedOut() {
@@ -2758,51 +2759,8 @@ setTimeout(() => {
     window.addEventListener('offline', updateConnectionStatus);
     window.addEventListener('online', () => showToast('เชื่อมต่ออินเทอร์เน็ตแล้ว', 'success'));
 
-        /* ═══════════ NOTIFICATION REMINDER ═══════════ */
-async function requestNotificationPermission() {
-  if (!('Notification' in window)) return;
-  
-  // ถ้าเคยขอแล้วและอนุญาตแล้ว ไม่ต้องขอซ้ำ
-  if (Notification.permission === 'granted') {
-    initReminders();
-    return;
-  }
-
-  const permission = await Notification.requestPermission();
-  if (permission === 'granted') {
-    console.log('✅ Notification permission granted');
-    initReminders();
-  } else {
-    console.log('❌ Notification permission denied');
-  }
-}
-
-async function initReminders() {
-  if (!('Notification' in window) || Notification.permission !== 'granted') return;
-
-  // ส่งคำสั่งไปยัง Service Worker
-  if (navigator.serviceWorker && navigator.serviceWorker.controller) {
-    navigator.serviceWorker.controller.postMessage({
-      type: 'SCHEDULE_REMINDERS'
-    });
-  } else {
-    // ถ้า SW ยังไม่พร้อม รอสักครู่แล้วลองใหม่
-    setTimeout(() => {
-      if (navigator.serviceWorker && navigator.serviceWorker.controller) {
-        navigator.serviceWorker.controller.postMessage({
-          type: 'SCHEDULE_REMINDERS'
-        });
-      }
-    }, 2000);
-  }
-}
-
     /* ═══════════ INIT ═══════════ */
-   document.addEventListener('DOMContentLoaded', () => {
-  checkAuth();
-  // ขอสิทธิ์แจ้งเตือนหลังจากโหลดหน้า 1.5 วินาที
-  setTimeout(requestNotificationPermission, 1500);
-});
+    document.addEventListener('DOMContentLoaded', checkAuth);
 
     /* ═══════════ ATTENDANCE ACTION ROUTING ═══════════ */
 
