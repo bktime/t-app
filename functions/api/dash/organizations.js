@@ -18,6 +18,7 @@ const CORS = {
 /**
  * buildOrgScope — เหมือน buildScope แต่ใช้ชื่อ column ของตาราง organizations
  * affiliation_code / department_code แทน aff_code / dep_code
+ * ✅ เพิ่มการล็อกสิทธิ์มั่ว/ค่าว่าง และป้องกันช่องโหว่ HR ดูข้ามสังกัด
  */
 function buildOrgScope(me, url) {
   const scope    = me.access_scope;
@@ -31,16 +32,23 @@ function buildOrgScope(me, url) {
     return { sql: `AND department_code = ?`, params: [me.dep_code] };
   }
   if (scope === 'สังกัด') {
+    // ✅ ป้องกันช่องโหว่: บังคับใช้ me.aff_code เสมอ
+    const baseSQL = `AND affiliation_code = ?`;
+    const baseParams = [me.aff_code];
+
+    if (dep) return { sql: `${baseSQL} AND department_code = ?`, params: [...baseParams, dep] };
+    return { sql: baseSQL, params: baseParams };
+  }
+  if (scope === 'ทั้งหมด') {
     if (aff && dep) return { sql: `AND affiliation_code = ? AND department_code = ?`, params: [aff, dep] };
     if (aff)        return { sql: `AND affiliation_code = ?`, params: [aff] };
     if (dep)        return { sql: `AND department_code = ?`, params: [dep] };
     return { sql: '', params: [] };
   }
-  // ทั้งหมด
-  if (aff && dep) return { sql: `AND affiliation_code = ? AND department_code = ?`, params: [aff, dep] };
-  if (aff)        return { sql: `AND affiliation_code = ?`, params: [aff] };
-  if (dep)        return { sql: `AND department_code = ?`, params: [dep] };
-  return { sql: '', params: [] };
+
+  // 🚨 FALLBACK: ป้องกันช่องโหว่สิทธิ์มั่ว
+  console.error(`[RBAC SECURITY] Unknown access_scope: "${scope}" for user ${me.uuid} in organizations`);
+  return { sql: `AND 1=0`, params: [] };
 }
 
 
@@ -64,7 +72,9 @@ export async function onRequestGet({ request, env }) {
   const me = session;
 
   const url = new URL(request.url);
-  const { scopeSQL, scopeParams, scopeMeta, canFilter } = buildScope(me, url);
+  
+  // ✅ ส่ง 'u' เข้าไปใน buildScope เพื่อให้ Fallback Query ด้านล่างใช้งานได้ (มี u. prefix)
+  const { scopeSQL, scopeParams, scopeMeta, canFilter } = buildScope(me, url, 'u');
 
   // สร้าง scope SQL สำหรับตาราง organizations (ใช้ affiliation_code / department_code)
   const orgScope = buildOrgScope(me, url);
@@ -138,7 +148,7 @@ export async function onRequestGet({ request, env }) {
             NULL AS doc_no,   NULL AS id,
             NULL AS updated_at, NULL AS created_at,
             COUNT(*) AS user_count
-          FROM users u
+          FROM users AS u
           WHERE 1=1 ${scopeSQL}
           GROUP BY u.aff_code, u.dep_code
           ORDER BY u.affiliation ASC, u.department ASC
@@ -146,15 +156,15 @@ export async function onRequestGet({ request, env }) {
 
         env.DB.prepare(`
           SELECT
-            COUNT(DISTINCT dep_code)  AS total,
-            COUNT(DISTINCT aff_code)  AS total_aff,
-            0                          AS has_location
-          FROM users WHERE 1=1 ${scopeSQL}
+            COUNT(DISTINCT u.dep_code)  AS total,
+            COUNT(DISTINCT u.aff_code)  AS total_aff,
+            0                            AS has_location
+          FROM users AS u WHERE 1=1 ${scopeSQL}
         `).bind(...scopeParams).first(),
 
         env.DB.prepare(`
-          SELECT DISTINCT aff_code, affiliation FROM users
-          WHERE aff_code IS NOT NULL ${scopeSQL} ORDER BY affiliation ASC
+          SELECT DISTINCT u.aff_code, u.affiliation FROM users AS u
+          WHERE u.aff_code IS NOT NULL ${scopeSQL} ORDER BY u.affiliation ASC
         `).bind(...scopeParams).all(),
 
         Promise.resolve({ results: [] }),
