@@ -38,7 +38,7 @@ export async function onRequestGet({ request, env }) {
   }
 
   /* ── Scope ── */
-  const { scopeSQL, scopeParams, scopeMeta, canFilter } = buildScope(me, url);
+  const { scopeSQL, scopeParams, scopeMeta, canFilter } = buildScope(me, url, 'u');
 
   try {
       const [attRes, affiliations, departments] = await Promise.all([
