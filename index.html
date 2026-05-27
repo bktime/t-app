@@ -308,23 +308,20 @@
       50% { box-shadow: 0 0 0 4px transparent; }
     }
 
-    /* ═══════════ CLOCK WIDGET ═══════════ */
+        /* ═══════════ CLOCK / BANNER WIDGET ═══════════ */
     .clock-widget {
       background: var(--bg-surface);
       border: 1px solid var(--b1);
       border-radius: var(--r-2xl);
-      padding: 1.75rem 1.5rem 1.5rem;
-      text-align: center;
       position: relative;
       overflow: hidden;
       backdrop-filter: blur(40px) saturate(160%);
       -webkit-backdrop-filter: blur(40px) saturate(160%);
       animation: cardIn 0.7s var(--ease-out) 0.08s both;
-    }
-
-    @keyframes cardIn {
-      from { opacity: 0; transform: translateY(20px) scale(0.96); }
-      to { opacity: 1; transform: translateY(0) scale(1); }
+      padding: 0;
+      height: 150px; /* ปรับความสูงเป็น 150 */
+      display: flex;
+      flex-direction: column;
     }
 
     .clock-widget::before {
@@ -337,6 +334,7 @@
       height: 1px;
       background: linear-gradient(90deg, transparent, var(--mint), transparent);
       opacity: 0.6;
+      z-index: 2;
     }
 
     .clock-arc {
@@ -348,126 +346,63 @@
       height: 300px;
       background: radial-gradient(circle, var(--mint-glow) 0%, transparent 65%);
       pointer-events: none;
+      z-index: 1;
     }
 
-    .clock-eyebrow {
-      font-family: 'DM Mono', monospace;
-      font-size: 0.58rem;
-      letter-spacing: 0.3em;
-      text-transform: uppercase;
-      color: var(--mint-text);
-      margin-bottom: 0.75rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.6rem;
-    }
-
-    .clock-eyebrow::before,
-    .clock-eyebrow::after {
-      content: '';
-      width: 28px;
-      height: 1px;
-      background: linear-gradient(90deg, transparent, var(--mint-border), transparent);
-    }
-
-    .clock-face {
+    /* ส่วนห่อหุ้ม Banner */
+    .system-clock-banner {
       position: relative;
-      display: inline-flex;
-      align-items: baseline;
-      gap: 0.1rem;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      z-index: 1;
     }
 
-    .clock-hm {
-      font-family: 'Outfit', sans-serif;
-      font-size: 4rem;
-      font-weight: 800;
-      color: var(--t1);
-      letter-spacing: -0.04em;
-      font-variant-numeric: tabular-nums;
-      line-height: 1;
-    }
-
-    .clock-sep {
-      font-family: 'Outfit', sans-serif;
-      font-size: 3rem;
-      font-weight: 300;
-      color: var(--mint-text);
-      line-height: 1;
-      animation: sepBlink 2s step-end infinite;
-      margin: 0 1px;
-    }
-
-    @keyframes sepBlink { 50% { opacity: 0.15; } }
-
-    .clock-sec {
-      font-family: 'DM Mono', monospace;
-      font-size: 1.2rem;
-      font-weight: 500;
-      color: var(--mint-text);
-      align-self: flex-end;
-      margin-bottom: 6px;
-      opacity: 0.85;
-    }
-
-    .clock-progress-ring {
+    /* รูปภาพ Banner */
+    .banner-bg {
       position: absolute;
-      bottom: 16px;
-      right: 20px;
-      width: 38px;
-      height: 38px;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      display: block;
+      z-index: 0;
     }
 
-   .progress-svg circle {
-      transform-origin: center;
-      transform: rotate(-90deg);
-      fill: none;
-      stroke-linecap: round;
-    }
-
-    .clock-date-row {
+    /* วันที่ทับรูปภาพ */
+    .system-clock-banner .clock-date-row {
+      position: relative;
+      z-index: 2;
+      padding: 0.6rem 1.25rem; /* ลด padding บน-ล่างเล็กน้อยให้พอดีกับ 150px */
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 0.75rem;
-      margin-top: 0.85rem;
+      background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.3) 60%, transparent 100%);
     }
 
-    .clock-date-text {
+    .system-clock-banner .clock-date-text {
       font-family: 'IBM Plex Sans Thai', sans-serif;
-      font-size: 0.78rem;
-      color: var(--t2);
-      font-weight: 400;
+      font-size: 0.8rem;
+      color: #ffffff;
+      font-weight: 500;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.9);
+      letter-spacing: 0.02em;
     }
 
-    .clock-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      background: var(--mint-glow);
-      border: 1px solid var(--mint-border);
-      border-radius: var(--r-full);
-      padding: 2px 10px;
-      font-family: 'DM Mono', monospace;
-      font-size: 0.6rem;
-      color: var(--mint-text);
-      letter-spacing: 0.05em;
+    /* Responsive: ปรับความสูงตามขนาดหน้าจอ */
+    @media (max-width: 360px) {
+      .clock-widget { height: 120px; }
+      .system-clock-banner .clock-date-text { font-size: 0.76rem; }
     }
 
-    .clock-pill::before {
-      content: '';
-      width: 5px;
-      height: 5px;
-      border-radius: 50%;
-      background: var(--mint-text);
-      animation: liveDot 1.5s ease-in-out infinite;
+    @media (min-width: 500px) {
+      .clock-widget { height: 170px; }
     }
-
-    @keyframes liveDot {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.3; }
-    }
-
+     
+    
     /* ═══════════ CARD BASE ═══════════ */
     .card {
       background: var(--bg-surface);
@@ -1267,7 +1202,6 @@
     /* ═══════════ RESPONSIVE ═══════════ */
     @media (min-width: 500px) {
       .app-shell { max-width: 460px; }
-      .clock-hm { font-size: 4.5rem; }
     }
 
     @media (min-width: 768px) {
@@ -1275,9 +1209,6 @@
     }
 
     @media (max-width: 360px) {
-      .clock-hm { font-size: 3.2rem; }
-      .clock-sep { font-size: 2.4rem; }
-      .clock-sec { font-size: 1rem; }
       .action-grid { gap: 0.45rem; }
       .action-btn { padding: 0.9rem 0.6rem; }
       .action-ico { width: 38px; height: 38px; font-size: 1rem; }
@@ -1670,32 +1601,20 @@
       </div>
     </header>
 
-    <!-- Clock Widget -->
-    <section class="clock-widget" aria-label="นาฬิการะบบ">
+    <!-- Clock Widget / Banner -->
+    <section class="clock-widget" aria-label="ปฏิทินวันสำคัญ">
       <div class="clock-arc" aria-hidden="true"></div>
-      <div class="clock-eyebrow">SYSTEM CLOCK</div>
-      <div class="clock-face">
-        <span class="clock-hm text-select" id="clockHM" aria-hidden="true">--:--</span>
-        <span class="clock-sep" id="clockSep" aria-hidden="true">:</span>
-        <span class="clock-sec text-select" id="clockSec" aria-hidden="true">00</span>
-        <!-- Screen Reader Only Text -->
-        <span class="sr-only" id="clockSrOnly">เวลาปัจจุบัน --:--:--</span>
-      </div>
+      
+      <div class="system-clock-banner">
+        <img id="specialBanner" src="images/banner.png" class="banner-bg" alt="ปฏิทินวันสำคัญ">
+        <div class="clock-date-row">
+          <span class="clock-date-text text-select" id="currentDate">—</span>
+        </div>
+      </div>  
 
-      <!-- Second progress ring -->
-      <div class="clock-progress-ring" id="progressRingWrap" aria-hidden="true">
-        <svg class="progress-svg" width="38" height="38" viewBox="0 0 38 38">
-          <circle cx="19" cy="19" r="15" stroke="rgba(255,255,255,0.06)" stroke-width="3"/>
-          <circle id="secRing" cx="19" cy="19" r="15" stroke="#00f5b0" stroke-width="3"
-            stroke-dasharray="94.25" stroke-dashoffset="94.25" stroke-linecap="round"
-            transform="rotate(-90 19 19)"/>
-        </svg>
-      </div>
+    </section>
+   
 
-      <div class="clock-date-row">
-        <span class="clock-pill">LIVE</span>
-        <span class="clock-date-text text-select" id="currentDate">—</span>
-      </div>
     </section>
 
     <!-- AUTH SECTION (logged out) -->
@@ -1931,26 +1850,12 @@
 
     function updateClock() {
       const now = new Date();
-      const h = String(now.getHours()).padStart(2,'0');
-      const m = String(now.getMinutes()).padStart(2,'0');
-      const s = now.getSeconds();
-      const ss = String(s).padStart(2,'0');
-      
-      document.getElementById('clockHM').textContent = `${h}:${m}`;
-      document.getElementById('clockSec').textContent = ss;
-      
-      // Accessibility: update screen reader text every minute
-      document.getElementById('clockSrOnly').textContent = `เวลาปัจจุบัน ${h} นาฬิกา ${m} นาที`;
-      
-      const offset = circumference - (s / 60) * circumference;
-      secRing.style.strokeDashoffset = offset;
       const be = now.getFullYear() + 543;
       document.getElementById('currentDate').textContent =
         `วัน${thDays[now.getDay()]}ที่ ${now.getDate()} ${thMonths[now.getMonth()]} ${be}`;
       document.getElementById('footerYear').textContent = be;
     }
     updateClock();
-    setInterval(updateClock, 1000);
 
     /* ═══════════ THEME ═══════════ */
 (function() {
