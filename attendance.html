@@ -1299,7 +1299,7 @@ async function toggleButtonsByTime() {
         let holidayShift = null;
 
         if (typea === "วันหยุด") {
-          const todayISO = new Date().toISOString().slice(0, 10);
+          const todayISO = new Date().toLocaleDateString('en-CA');
 
           const rateDay = Number(ud?.ot_rate_per_day || 0) || null;
 
@@ -2257,7 +2257,7 @@ async function cancelAttendance() {
     const res = await fetch(`${API_BASE}/cancel`, {
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json', ...AUTH_HEADER() },
-      body: JSON.stringify({ uuid, date: new Date().toISOString().slice(0, 10) }),
+      body: JSON.stringify({ uuid, date: new Date().toLocaleDateString('en-CA') }),
     });
     const result = await res.json();
     if (!result.success) throw new Error(result.message || 'ยกเลิกไม่สำเร็จ');
@@ -3081,7 +3081,7 @@ function checkNotif() { loadNotifications(); }
         const requestType = step1.value;
 
         // ── STEP 2: กรอกรายละเอียด ───────────────────────────────────────────
-        const todayISO = new Date().toISOString().slice(0, 10);
+        const todayISO = new Date().toLocaleDateString('en-CA');
 
         const needWorkType = [
           "ลืมลงเวลาเข้า",
