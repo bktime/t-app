@@ -1,4 +1,7 @@
 // functions/api/attendance/today.js
+// GET /api/attendance/today?uuid=...&date=YYYY-MM-DD
+// โครงสร้างใหม่: อ่านจาก attendance (1 แถวต่อวัน)
+
 import { authUser, extractToken } from '../_auth.js';
 
 const CORS = {
@@ -8,32 +11,18 @@ const CORS = {
 };
 const json = (d, s = 200) => Response.json(d, { status: s, headers: CORS });
 
-// ✅ Helper: แปลง UTC ISO String เป็น Asia/Bangkok (+07:00) ISO String
-const toBangkokISO = (utcIsoStr) => {
-  if (!utcIsoStr) return null;
-  try {
-    const d = new Date(utcIsoStr);
-    // 'sv-SE' locale จะจัด Format เป็น YYYY-MM-DD HH:mm:ss ตาม Timezone ที่ระบุ
-    const bangkokStr = d.toLocaleString('sv-SE', { timeZone: 'Asia/Bangkok' });
-    // เอามาต่อให้เป็น ISO Format ที่ถูกต้อง (YYYY-MM-DDTHH:mm:ss+07:00)
-    return bangkokStr.replace(' ', 'T') + '+07:00';
-  } catch (e) {
-    return utcIsoStr; // กรณี Error ก็ส่งของเดิมไปก่อน
-  }
-};
-
 export async function onRequest(context) {
   const { request, env } = context;
   if (request.method === 'OPTIONS') return new Response(null, { headers: CORS });
   if (request.method !== 'GET')     return json({ success: false, message: 'Method not allowed' }, 405);
 
   const token   = extractToken(request);
-  const userRow = await authUser(env, token);
-  if (!userRow) return json({ success: false, message: 'Token ไม่ถูกต้องหรือหมดอายุ' }, 401);
+const userRow = await authUser(env, token);
+if (!userRow) return json({ success: false, message: 'Token ไม่ถูกต้องหรือหมดอายุ' }, 401);
 
   const url  = new URL(request.url);
   const uuid = url.searchParams.get('uuid');
-  const date = url.searchParams.get('date'); // ✅ แนะนำให้ Frontend ส่ง en-CA เข้ามา
+  const date = url.searchParams.get('date');
 
   if (!uuid || !date)         return json({ success: false, message: 'ขาด uuid หรือ date' }, 400);
   if (uuid !== userRow.uuid)  return json({ success: false, message: 'UUID ไม่ตรงกัน' }, 403);
@@ -70,6 +59,7 @@ export async function onRequest(context) {
       });
     }
 
+    // จัด shape ให้เหมือนเดิม (backward compat กับ attendance.html)
     const checkin  = row.checkin_time ? {
       action:     'checkin',
       time_str:   row.checkin_time,
@@ -80,7 +70,7 @@ export async function onRequest(context) {
       distance_m: row.checkin_distance_m,
       is_in_range: row.checkin_in_range != null ? !!row.checkin_in_range : null,
       reference:  row.checkin_reference,
-      timestamp_iso: toBangkokISO(row.checkin_iso), // ✅ แปลงเป็น +07:00 ตรงนี้
+      timestamp_iso: row.checkin_iso,
     } : null;
 
     const checkout = row.checkout_time ? {
@@ -93,22 +83,24 @@ export async function onRequest(context) {
       longitude:     row.checkout_longitude,
       distance_m:    row.checkout_distance_m,
       is_in_range:   row.checkout_in_range != null ? !!row.checkout_in_range : null,
-      timestamp_iso: toBangkokISO(row.checkout_iso), // ✅ แปลงเป็น +07:00 ตรงนี้
+      timestamp_iso: row.checkout_iso,
     } : null;
 
+    // ข้อมูลคำขอของวันนั้น (ถ้ามี)
     const requestInfo = row.request_ref ? {
       reference:    row.request_ref,
       request_type: row.request_type,
       reason:       row.request_reason,
-      submitted_at: toBangkokISO(row.request_at), // ✅ แปลงเป็น +07:00
+      submitted_at: row.request_at,
     } : null;
 
+    // สถานะ supervisor
     const supervisorInfo = {
       status:          row.supervisor_status || 'pending',
       approver_uuid:   row.approver_uuid,
       supervisor_name: row.supervisor_name,
       supervisor_note: row.supervisor_note,
-      reviewed_at:     toBangkokISO(row.reviewed_at), // ✅ แปลงเป็น +07:00
+      reviewed_at:     row.reviewed_at,
     };
 
     return json({
