@@ -2318,7 +2318,7 @@ async function checktoday() {
   Swal.fire({ title: 'กำลังโหลดข้อมูล...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
   const ud   = getUserData();
   const uuid = ud?.uuid || localStorage.getItem('uuid');
-  const date = new Date().toISOString().slice(0, 10);
+  const date = new Date().toLocaleDateString('en-CA');
 
   try {
     const res  = await fetch(`${API_BASE}/today?uuid=${encodeURIComponent(uuid)}&date=${date}`, { headers: AUTH_HEADER() });
@@ -4075,7 +4075,7 @@ async function syncTodayState() {
   const uuid = ud?.uuid || localStorage.getItem('uuid');
   if (!uuid) return;
   try {
-    const date = new Date().toISOString().slice(0, 10);
+    const date = new Date().toLocaleDateString('en-CA');
     const res  = await fetch(`${API_BASE}/today?uuid=${encodeURIComponent(uuid)}&date=${date}`, { headers: AUTH_HEADER() });
     const data = await res.json();
     if (data.success) {
