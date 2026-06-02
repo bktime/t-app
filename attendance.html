@@ -3258,11 +3258,22 @@ function checkNotif() { loadNotifications(); }
         const uuid = ud?.uuid || localStorage.getItem("uuid") || "";
         const office = ud?.department || localStorage.getItem("office") || "";
         const boss = ud?.supervisor || localStorage.getItem("boss") || "";
+        const supervisor_code = ud?.supervisor_code || localStorage.getItem("supervisor_code") || "";
+        
         if (!uuid) {
           Swal.fire({
             icon: "error",
             title: "ยังไม่ได้เข้าสู่ระบบ",
             text: "กรุณา login ก่อน",
+          });
+          return;
+        }
+        if(!supervisor_code || supervisor_code === "null" || supervisor_code === "") {
+          Swal.fire({
+            icon: "error",
+            title: "ยังไม่ได้กำหนดผู้บังคับบัญชา",
+            text: "กรุณากำหนดผู้บังคับบัญชาก่อน",
+            footer: "<a href='profile#sec-related'> <i class='fas fa-user-tie'></i> กำหนดผู้บังคับบัญชา</a>"
           });
           return;
         }
