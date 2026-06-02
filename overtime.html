@@ -921,6 +921,7 @@ async function openOTForm() {
   try {
     const p = new URLSearchParams();
     if (ud?.aff_code) p.set('aff_code', ud.aff_code);
+    if (ud?.dep_code) p.set('def_code', ud.dep_code);
     const r = await fetch(`/api/user/staff-list?${p}`, { headers: AUTH_HEADER() });
     if (r.ok && (r.headers.get('content-type') || '').includes('application/json')) {
       const d = await r.json();
@@ -1003,7 +1004,25 @@ async function openOTForm() {
         <textarea id="ot-note" rows="3"
           placeholder="ระบุรายละเอียดการปฏิบัติงานนอกเวลา..."
           style="width:100%;padding:9px 12px;border:1px solid #ddd;border-radius:10px;font-size:.88rem;resize:vertical;font-family:Sarabun,sans-serif;margin-bottom:0;min-height:70px"></textarea>
-      </div>`,
+     
+          <!-- ปุ่มกำหนดผู้รับรอง -->
+      <button type="button"
+        onclick="window.location.href='profile#sec-related'"
+        style="
+          width:100%;
+          padding:10px 14px;
+          margin-bottom:12px;
+          border:none;
+          border-radius:10px;
+          background:#1976d2;
+          color:#fff;
+          font-size:0.9rem;
+          font-family:Sarabun,sans-serif;
+          cursor:pointer;
+        ">
+        <i class="fa-solid fa-user-check"></i>
+        กำหนดผู้รับรอง(เพิ่มเติม)
+      </button>          </div>`,
     showCancelButton:  true,
     confirmButtonText: '<i class="fa-solid fa-paper-plane"></i> บันทึก OT',
     cancelButtonText:  'ยกเลิก',

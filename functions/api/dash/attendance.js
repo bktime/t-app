@@ -41,6 +41,34 @@ export async function onRequestGet({ request, env }) {
   const { scopeSQL, scopeParams, scopeMeta, canFilter } = buildScope(me, url, 'u');
 
   try {
+      /* ✅ 1. ตรวจสอบวันหยุด (Holidays + เสาร์-อาทิตย์) */
+      const isHolidayRow = await env.DB.prepare(`
+        SELECT name, type FROM holidays 
+        WHERE date = ? OR (is_recurring = 1 AND substr(date, 6) = substr(?, 6))
+      `).bind(dateParam, dateParam).first();
+
+      const dayOfWeek = new Date(dateParam + 'T00:00:00').getDay();
+      const isWeekend = (dayOfWeek === 0 || dayOfWeek === 6); // 0=อาทิตย์, 6=เสาร์
+      const isDayOff = isWeekend || !!isHolidayRow;
+      const holidayName = isHolidayRow?.name || (isWeekend ? 'วันหยุดรายสัปดาห์' : null);
+
+      /* ✅ 2. ดึงข้อมูลการลาทับวันปัจจุบัน */
+      const leavesRes = await env.DB.prepare(`
+        SELECT user_uuid, leave_type, status 
+        FROM leave_records 
+        WHERE ? BETWEEN start_date AND end_date 
+          AND status IN ('approved', 'pending')
+      `).bind(dateParam).all();
+
+      const leaveMap = {};
+      (leavesRes.results || []).forEach(l => {
+        // ถ้ามีหลายใบลา ให้เอาใบที่ approved มาก่อน
+        if (!leaveMap[l.user_uuid] || l.status === 'approved') {
+          leaveMap[l.user_uuid] = l;
+        }
+      });
+
+      /* ── 3. ดึงข้อมูลหลัก ── */
       const [attRes, affiliations, departments] = await Promise.all([
 
         env.DB.prepare(`
@@ -82,7 +110,7 @@ export async function onRequestGet({ request, env }) {
             a.checkout_iso,
             a.checkout_at,
 
-            -- Request
+            -- Request (บนตาราง attendance เช่น ลืมลงเวลา/ขอแก้ไข)
             a.request_ref,
             a.request_type,
             a.request_reason,
@@ -94,7 +122,7 @@ export async function onRequestGet({ request, env }) {
             a.supervisor_note,
             a.reviewed_at,
 
-            -- ✅ ดึงเฉพาะ firstName ของผู้รับรอง (ตัดลายเซ็นออก)
+            -- ผู้รับรอง
             uApv.firstName AS approver_first_name
 
           FROM users u
@@ -111,7 +139,6 @@ export async function onRequestGet({ request, env }) {
           ORDER BY u.department ASC, u.firstName ASC, u.lastName ASC
         `).bind(dateParam, ...scopeParams).all(),
 
-        /* filter options — เพิ่ม AS u และ u. prefix */
         env.DB.prepare(`
           SELECT DISTINCT u.aff_code, u.affiliation FROM users AS u
           WHERE u.aff_code IS NOT NULL AND u.status = 'Active' ${scopeSQL}
@@ -125,26 +152,74 @@ export async function onRequestGet({ request, env }) {
         `).bind(...scopeParams).all(),
       ]);
 
-
     const rows = attRes.results ?? [];
 
     const WORK_START = '08:30:00';
-    let ok = 0, late = 0, absent = 0, request = 0, pending = 0;
+    let ok = 0, late = 0, absent = 0, request = 0, pending = 0, holiday = 0, leave = 0;
 
+    /* ✅ 4. ประมวลผล final_status และนับสถิติ */
+    /* ✅ 4. ประมวลผล final_status และนับสถิติ */
     rows.forEach(r => {
-      if (r.request_type)              { request++; }
-      else if (!r.checkin_time)        { absent++; }
-      else if (r.checkin_time > WORK_START) { late++; }
-      else                             { ok++; }
+      const supervisorResolved = ['approved', 'rejected'].includes(r.supervisor_status);
+      const userLeave = leaveMap[r.uuid];
 
-      if (r.checkin_time || r.request_type) {
-        if (!['approved', 'rejected'].includes(r.supervisor_status)) {
-          pending++;
+      // ใส่ข้อมูลการลาเข้าไปใน row
+      r.leave_type = userLeave?.leave_type || null;
+      r.leave_status = userLeave?.status || null;
+      r.holiday_name = holidayName;
+
+      // ถ้าเป็นวันหยุดราชการ / เสาร์-อาทิตย์
+      if (isDayOff) {
+        r.final_status = 'วันหยุด';
+        holiday++;
+      } 
+      else {
+        // วันทำการ
+        
+        // ✅ 1. ถ้ามีคำขอ (request_type) และหัวหน้ายังไม่ได้พิจารณา (pending) → ถือว่าเป็น "คำขอ" ลำดับแรก
+        if (r.request_type && !supervisorResolved) {
+          r.final_status = 'คำขอ';
+          request++;
+        } 
+        // ✅ 2. ถ้ามีใบลาที่อนุมัติแล้ว
+        else if (userLeave && userLeave.status === 'approved') {
+          r.final_status = 'ลา';
+          leave++;
+        } 
+        // ✅ 3. ถ้าลงเวลามาแล้ว
+        else if (r.checkin_time) {
+          if (r.request_type && supervisorResolved) {
+             r.final_status = 'ปกติ'; // คำขอแก้ไขถูกอนุมัติแล้ว ให้ถือว่ามาปกติ
+             ok++;
+          } 
+          else if (r.checkin_time > WORK_START) {
+             r.final_status = 'มาสาย';
+             late++;
+          } 
+          else {
+             r.final_status = 'ปกติ';
+             ok++;
+          }
+        } 
+        // ✅ 4. ถ้ามีใบลาที่รออนุมัติ (แต่ไม่มีเวลามา และไม่มีคำขอบนตาราง attendance)
+        else if (userLeave && userLeave.status === 'pending') {
+          r.final_status = 'ลา(รออนุมัติ)';
+          request++; 
+        } 
+        // ✅ 5. นอกจากนี้ถือว่าขาด
+        else {
+          r.final_status = 'ขาด';
+          absent++;
         }
+      }
+
+      // นับรอพิจารณา (เฉพาะวันทำการ และมีเวลามา/มีคำขอ แต่หัวหน้ายังไม่อนุมัติ)
+      if ((r.checkin_time || r.request_type) && !supervisorResolved && r.final_status !== 'วันหยุด') {
+        pending++;
       }
     });
 
-    const summary = { total: rows.length, ok, late, absent, request, pending };
+    const summary = { total: rows.length, ok, late, absent, request, pending, holiday, leave };
 
     return Response.json({
       success: true,
@@ -153,11 +228,12 @@ export async function onRequestGet({ request, env }) {
         summary,
         affiliations: affiliations.results ?? [],
         departments:  departments.results  ?? [],
+        is_day_off:   isDayOff, // ✅ ส่งบอก Frontend ว่าวันนี้เป็นวันหยุด
       },
       meta: {
         date:        dateParam,
         role:        me.role,
-        role_level:  me.role_level, // ✅ ส่งระดับไปให้ Frontend เช็คสิทธิ์พิมพ์
+        role_level:  me.role_level,
         access_scope: me.access_scope,
         can_edit:    !!me.can_edit,
         aff_code:    me.aff_code,

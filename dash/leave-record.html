@@ -1,0 +1,1379 @@
+<!DOCTYPE html>
+<html lang="th" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>บันทึกการลา · ระบบบริหารงานบุคคล</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700;800&family=Sarabun:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+:root{
+  --bg:#07090f;--bg2:#0c1018;--bg3:#111827;
+  --card:rgba(17,24,39,0.82);--card-s:#111827;
+  --sur:rgba(255,255,255,0.03);--sur2:rgba(255,255,255,0.055);
+  --bd:rgba(255,255,255,0.07);--bd2:rgba(255,255,255,0.13);--bda:rgba(16,185,129,0.28);
+  --tx:#f1f5f9;--tx2:#94a3b8;--tx3:#4b5563;
+  --em:#10b981;--em2:#34d399;--emd:#059669;--emg:rgba(16,185,129,0.18);--embg:rgba(16,185,129,0.07);
+  --bl:#60a5fa;--blbg:rgba(96,165,250,0.07);--blb:rgba(96,165,250,0.22);
+  --in:#818cf8;--inbg:rgba(129,140,248,0.07);--inb:rgba(129,140,248,0.22);
+  --am:#fbbf24;--ambg:rgba(251,191,36,0.07);--amb:rgba(251,191,36,0.22);
+  --ro:#fb7185;--robg:rgba(251,113,133,0.07);--rob:rgba(251,113,133,0.22);
+  --pu:#c084fc;--pubg:rgba(192,132,252,0.07);--pub:rgba(192,132,252,0.22);
+  --cy:#22d3ee;--cybg:rgba(34,211,238,0.07);--cyb:rgba(34,211,238,0.22);
+  --rr-xs:8px;--rr-sm:12px;--rr-md:16px;--rr-lg:22px;
+  --shad:0 20px 60px -15px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.04);
+  --ease:cubic-bezier(0.16,1,0.3,1);--T:.22s;--sw:240px;
+}
+[data-theme="light"]{
+  --bg:#f0f4fb;--bg2:#e4eaf5;--bg3:#dde5f0;
+  --card:rgba(255,255,255,.92);--card-s:#fff;
+  --sur:rgba(0,0,0,.02);--sur2:rgba(0,0,0,.045);
+  --bd:rgba(0,0,0,.07);--bd2:rgba(0,0,0,.13);--bda:rgba(5,150,105,.25);
+  --tx:#0f172a;--tx2:#475569;--tx3:#94a3b8;
+  --em:#059669;--em2:#047857;--emd:#047857;--emg:rgba(5,150,105,.14);--embg:rgba(5,150,105,.07);
+  --bl:#2563eb;--blbg:rgba(37,99,235,.06);--blb:rgba(37,99,235,.2);
+  --in:#6366f1;--inbg:rgba(99,102,241,.06);--inb:rgba(99,102,241,.2);
+  --am:#d97706;--ambg:rgba(217,119,6,.06);--amb:rgba(217,119,6,.2);
+  --ro:#e11d48;--robg:rgba(225,29,72,.06);--rob:rgba(225,29,72,.2);
+  --pu:#9333ea;--pubg:rgba(147,51,234,.06);--pub:rgba(147,51,234,.2);
+  --cy:#0891b2;--cybg:rgba(8,145,178,.06);--cyb:rgba(8,145,178,.2);
+  --shad:0 8px 30px -6px rgba(0,0,0,.1),0 0 0 1px rgba(0,0,0,.05);
+}
+[data-theme="light"] .orb{opacity:.05;}
+[data-theme="light"] .topbar{background:rgba(240,244,251,.9);}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;display:flex;-webkit-font-smoothing:antialiased;overflow-x:hidden;}
+.bg-l{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none;}
+.orb{position:absolute;border-radius:50%;filter:blur(110px);opacity:.18;animation:oF 28s infinite ease-in-out;}
+.o1{width:600px;height:600px;background:#059669;top:-20%;left:-15%;animation-duration:24s;}
+.o2{width:450px;height:450px;background:#1e40af;bottom:-15%;right:-10%;animation-duration:30s;animation-delay:-8s;}
+.o3{width:300px;height:300px;background:#7c3aed;top:40%;left:45%;opacity:.08;animation-duration:36s;animation-delay:-16s;}
+@keyframes oF{0%,100%{transform:translate(0,0)scale(1);}33%{transform:translate(40px,-30px)scale(1.06);}66%{transform:translate(-25px,35px)scale(.95);}}
+.sidebar{position:fixed;left:0;top:0;bottom:0;width:var(--sw);background:var(--card);border-right:1px solid var(--bd);backdrop-filter:blur(24px);z-index:100;display:flex;flex-direction:column;transition:transform var(--T) var(--ease);}
+.sb-logo{padding:1.4rem 1.2rem 1rem;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--bd);}
+.logo-mk{width:38px;height:38px;border-radius:var(--rr-sm);background:linear-gradient(135deg,var(--emd),var(--em));display:flex;align-items:center;justify-content:center;color:#fff;font-size:1rem;flex-shrink:0;}
+.logo-tx{font-family:'Kanit',sans-serif;font-size:.88rem;font-weight:700;line-height:1.2;}
+.logo-sub{font-size:.62rem;color:var(--tx3);}
+.nav{flex:1;padding:.9rem .7rem;overflow-y:auto;}
+.nav-sec{font-family:'Kanit',sans-serif;font-size:.57rem;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--tx3);padding:.45rem .5rem .35rem;margin-top:.4rem;}
+.ni{display:flex;align-items:center;gap:9px;padding:.55rem .7rem;border-radius:var(--rr-sm);font-size:.8rem;color:var(--tx2);cursor:pointer;transition:all var(--T);margin-bottom:2px;text-decoration:none;font-weight:500;}
+.ni i{font-size:.77rem;width:15px;text-align:center;opacity:.65;}
+.ni:hover{background:var(--sur2);color:var(--tx);}
+.ni.active{background:var(--embg);color:var(--em);border:1px solid var(--bda);}
+.ni.active i{opacity:1;}
+.sb-foot{padding:.9rem .7rem;border-top:1px solid var(--bd);}
+.user-pill{position:relative;display:flex;align-items:center;gap:9px;padding:.55rem .7rem;border-radius:var(--rr-sm);background:var(--sur);border:1px solid var(--bd);cursor:pointer;transition:all var(--T);}
+.u-av{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--emd),var(--em));display:flex;align-items:center;justify-content:center;color:#fff;font-size:.68rem;font-weight:700;flex-shrink:0;}
+.u-nm{font-size:.73rem;font-weight:600;color:var(--tx);}
+.u-rl{font-size:.6rem;color:var(--tx3);}
+.user-dropdown{position:absolute;left:0;right:0;bottom:calc(100% + 10px);padding:.35rem;border-radius:14px;background:var(--card-s);border:1px solid var(--bd);box-shadow:0 12px 30px rgba(0,0,0,.18);opacity:0;visibility:hidden;transform:translateY(8px);transition:all .2s;z-index:1000;}
+.user-dropdown.show{opacity:1;visibility:visible;transform:translateY(0);}
+.user-dropdown a{display:flex;align-items:center;gap:.65rem;padding:.75rem .8rem;border-radius:10px;text-decoration:none;color:var(--tx);font-size:.72rem;transition:background .18s;}
+.user-dropdown a:hover{background:var(--sur2);}
+.sb-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:99;backdrop-filter:blur(4px);}
+.sb-ov.show{display:block;}
+.menu-btn{display:none;position:fixed;top:1rem;left:1rem;z-index:101;background:var(--card);border:1px solid var(--bd);color:var(--tx2);cursor:pointer;border-radius:var(--rr-sm);padding:8px 10px;font-size:.9rem;backdrop-filter:blur(16px);}
+@media(max-width:900px){.sidebar{transform:translateX(-100%);}.sidebar.open{transform:translateX(0);}.menu-btn{display:flex;align-items:center;}.main{margin-left:0!important;}}
+.main{margin-left:var(--sw);flex:1;min-width:0;position:relative;z-index:10;padding-bottom:3rem;}
+.topbar{position:sticky;top:0;z-index:50;background:rgba(7,9,15,.88);border-bottom:1px solid var(--bd);backdrop-filter:blur(20px);padding:.8rem 1.6rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap;}
+.tb-left{flex:1;min-width:0;}
+.tb-title{font-family:'Kanit',sans-serif;font-size:1.1rem;font-weight:700;display:flex;align-items:center;gap:8px;}
+.tb-sub{font-size:.7rem;color:var(--tx3);margin-top:1px;}
+.tb-right{display:flex;align-items:center;gap:7px;flex-wrap:wrap;}
+.nav-back{width:36px;height:36px;border-radius:10px;border:none;background:var(--sur2);color:var(--tx);font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.icon-btn{width:33px;height:33px;border-radius:var(--rr-sm);border:1px solid var(--bd);background:var(--sur);color:var(--tx2);cursor:pointer;font-size:.78rem;display:flex;align-items:center;justify-content:center;transition:all var(--T);}
+.icon-btn:hover{color:var(--tx);border-color:var(--bd2);background:var(--sur2);}
+.icon-btn.spin i{animation:spin .7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.filter-bar{padding:.65rem 1.6rem;background:var(--sur);border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:.65rem;flex-wrap:wrap;}
+.filter-label{font-family:'Kanit',sans-serif;font-size:.65rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--tx3);display:flex;align-items:center;gap:5px;flex-shrink:0;}
+.fsel{font-family:'Kanit',sans-serif;font-size:.75rem;padding:.38rem .75rem;border-radius:var(--rr-sm);border:1px solid var(--bd);background:var(--card);color:var(--tx2);outline:none;cursor:pointer;transition:all var(--T);min-width:140px;}
+.fsel:focus,.fsel:hover{border-color:var(--bda);color:var(--tx);}
+.search-in{font-family:'Sarabun',sans-serif;font-size:.78rem;padding:.38rem .8rem .38rem 2rem;border-radius:var(--rr-sm);border:1px solid var(--bd);background:var(--card);color:var(--tx);outline:none;width:200px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%234b5563' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='M21 21l-4.35-4.35'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:.65rem center;}
+.search-in:focus{border-color:var(--bda);}
+.filter-bar-right{margin-left:auto;display:flex;align-items:center;gap:.5rem;}
+.content{padding:1.4rem 1.6rem;}
+.sh{display:flex;align-items:center;justify-content:space-between;margin-bottom:.9rem;}
+.sh-t{font-family:'Kanit',sans-serif;font-size:.6rem;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--tx3);display:flex;align-items:center;gap:7px;}
+.sh-t::after{content:'';width:24px;height:1px;background:var(--bd);}
+.sh-m{font-size:.67rem;color:var(--tx3);font-family:'JetBrains Mono',monospace;}
+.kpi-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:.7rem;margin-bottom:1.2rem;}
+.kpi-s{background:var(--card);border:1px solid var(--bd);border-radius:var(--rr-md);padding:.85rem 1rem;display:flex;align-items:center;gap:.75rem;animation:fu .4s var(--ease) both;}
+@keyframes fu{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.kpi-s-ico{width:34px;height:34px;border-radius:var(--rr-xs);display:flex;align-items:center;justify-content:center;font-size:.82rem;flex-shrink:0;}
+.kpi-s-val{font-family:'Kanit',sans-serif;font-size:1.45rem;font-weight:800;line-height:1;}
+.kpi-s-lbl{font-size:.65rem;color:var(--tx2);margin-top:2px;}
+.cg .kpi-s-ico{background:var(--embg);border:1px solid var(--bda);color:var(--em);}
+.cb .kpi-s-ico{background:var(--blbg);border:1px solid var(--blb);color:var(--bl);}
+.ca .kpi-s-ico{background:var(--ambg);border:1px solid var(--amb);color:var(--am);}
+.cr .kpi-s-ico{background:var(--robg);border:1px solid var(--rob);color:var(--ro);}
+.cp .kpi-s-ico{background:var(--pubg);border:1px solid var(--pub);color:var(--pu);}
+.cc .kpi-s-ico{background:var(--cybg);border:1px solid var(--cyb);color:var(--cy);}
+.panel{background:var(--card);border:1px solid var(--bd);border-radius:var(--rr-md);backdrop-filter:blur(20px);overflow:hidden;animation:fu .4s var(--ease) .08s both;}
+.ph{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.2rem;border-bottom:1px solid var(--bd);flex-wrap:wrap;gap:.5rem;}
+.pt{font-family:'Kanit',sans-serif;font-size:.83rem;font-weight:700;display:flex;align-items:center;gap:7px;}
+.pt i{font-size:.75rem;opacity:.55;}
+.pm{font-size:.63rem;color:var(--tx3);font-family:'JetBrains Mono',monospace;}
+.ph-acts{display:flex;align-items:center;gap:.5rem;}
+.tbl-wrap{overflow-x:auto;}
+.mt{width:100%;border-collapse:collapse;min-width:960px;}
+.mt th{font-family:'Kanit',sans-serif;font-size:.58rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--tx3);text-align:left;padding:.5rem .85rem;border-bottom:1px solid var(--bd);white-space:nowrap;cursor:pointer;user-select:none;}
+.mt th.no-sort{cursor:default;}
+.mt th .si{margin-left:4px;opacity:.4;font-size:.5rem;}
+.mt th.sorted .si{opacity:1;color:var(--em);}
+.mt td{font-size:.75rem;color:var(--tx2);padding:.52rem .85rem;border-bottom:1px solid rgba(255,255,255,.025);transition:background var(--T);white-space:nowrap;}
+[data-theme="light"] .mt td{border-bottom-color:rgba(0,0,0,.03);}
+.mt tr:last-child td{border-bottom:none;}
+.mt tr:hover td{background:var(--sur);}
+td.hl{color:var(--tx);font-weight:600;}
+td.mono{font-family:'JetBrains Mono',monospace;font-size:.68rem;}
+.pill{display:inline-flex;align-items:center;gap:3px;font-family:'Kanit',sans-serif;font-size:.6rem;font-weight:600;padding:2px 8px;border-radius:99px;white-space:nowrap;}
+.p-sick      {background:var(--robg);border:1px solid var(--rob);color:var(--ro);}
+.p-maternity,.p-paternity {background:var(--pubg);border:1px solid var(--pub);color:var(--pu);}
+.p-personal  {background:var(--ambg);border:1px solid var(--amb);color:var(--am);}
+.p-vacation  {background:var(--embg);border:1px solid var(--bda);color:var(--em);}
+.p-ordain,.p-spouse {background:var(--inbg);border:1px solid var(--inb);color:var(--in);}
+.p-military,.p-intl {background:var(--blbg);border:1px solid var(--blb);color:var(--bl);}
+.p-study     {background:var(--cybg);border:1px solid var(--cyb);color:var(--cy);}
+.p-rehab     {background:var(--ambg);border:1px solid var(--amb);color:var(--am);}
+.p-other     {background:var(--sur2);border:1px solid var(--bd2);color:var(--tx3);}
+.p-pending {background:var(--ambg);border:1px solid var(--amb);color:var(--am);}
+.p-approved{background:var(--embg);border:1px solid var(--bda);color:var(--em);}
+.p-rejected{background:var(--robg);border:1px solid var(--rob);color:var(--ro);}
+.act-btns{display:flex;align-items:center;gap:4px;}
+.act-btn{width:26px;height:26px;border-radius:var(--rr-xs);border:1px solid var(--bd);background:var(--sur);color:var(--tx3);cursor:pointer;font-size:.68rem;display:flex;align-items:center;justify-content:center;transition:all var(--T);}
+.act-btn:hover{color:var(--tx);border-color:var(--bd2);}
+.act-btn.edit:hover{color:var(--bl);border-color:var(--blb);}
+.act-btn.del:hover{color:var(--ro);border-color:var(--rob);}
+.act-btn.view-btn:hover{color:var(--em);border-color:var(--bda);}
+.pager{display:flex;align-items:center;justify-content:space-between;padding:.75rem 1.2rem;border-top:1px solid var(--bd);flex-wrap:wrap;gap:.5rem;}
+.pager-info{font-size:.68rem;color:var(--tx3);font-family:'JetBrains Mono',monospace;}
+.pager-btns{display:flex;align-items:center;gap:3px;}
+.pg-btn{min-width:28px;height:28px;border-radius:var(--rr-xs);border:1px solid var(--bd);background:var(--sur);color:var(--tx2);cursor:pointer;font-size:.7rem;font-family:'JetBrains Mono',monospace;display:flex;align-items:center;justify-content:center;padding:0 6px;transition:all var(--T);}
+.pg-btn:hover:not(:disabled){color:var(--tx);border-color:var(--bd2);}
+.pg-btn.active{background:var(--embg);border-color:var(--bda);color:var(--em);font-weight:700;}
+.pg-btn:disabled{opacity:.3;cursor:not-allowed;}
+.btn-prim{font-family:'Kanit',sans-serif;font-size:.75rem;font-weight:600;padding:.42rem .9rem;border-radius:var(--rr-sm);border:1px solid var(--bda);background:var(--embg);color:var(--em);cursor:pointer;display:flex;align-items:center;gap:6px;transition:all var(--T);}
+.btn-prim:hover{background:var(--emd);color:#fff;border-color:var(--emd);}
+.btn-prim:disabled{opacity:.4;cursor:not-allowed;}
+.btn-sec{font-family:'Kanit',sans-serif;font-size:.75rem;font-weight:500;padding:.42rem .9rem;border-radius:var(--rr-sm);border:1px solid var(--bd);background:var(--sur);color:var(--tx2);cursor:pointer;display:flex;align-items:center;gap:6px;transition:all var(--T);}
+.btn-sec:hover{background:var(--sur2);color:var(--tx);border-color:var(--bd2);}
+.btn-danger{font-family:'Kanit',sans-serif;font-size:.75rem;font-weight:600;padding:.42rem .9rem;border-radius:var(--rr-sm);border:1px solid var(--rob);background:var(--robg);color:var(--ro);cursor:pointer;display:flex;align-items:center;gap:6px;transition:all var(--T);}
+.btn-danger:hover{background:var(--ro);color:#fff;}
+.modal-ov{position:fixed;inset:0;background:rgba(0,0,0,.65);backdrop-filter:blur(6px);z-index:200;display:flex;align-items:center;justify-content:center;padding:1rem;opacity:0;pointer-events:none;transition:opacity .2s;}
+.modal-ov.show{opacity:1;pointer-events:all;}
+.modal{background:var(--bg3);border:1px solid var(--bd2);border-radius:var(--rr-lg);width:100%;max-width:620px;max-height:92vh;overflow-y:auto;box-shadow:var(--shad);transform:translateY(16px) scale(.98);transition:transform .25s var(--ease);}
+.modal-ov.show .modal{transform:translateY(0) scale(1);}
+.modal-h{display:flex;align-items:center;justify-content:space-between;padding:1.1rem 1.4rem;border-bottom:1px solid var(--bd);position:sticky;top:0;background:var(--bg3);z-index:1;}
+.modal-title{font-family:'Kanit',sans-serif;font-size:.92rem;font-weight:700;display:flex;align-items:center;gap:8px;}
+.modal-close{width:28px;height:28px;border-radius:var(--rr-xs);border:1px solid var(--bd);background:var(--sur);color:var(--tx3);cursor:pointer;font-size:.78rem;display:flex;align-items:center;justify-content:center;transition:all var(--T);}
+.modal-close:hover{color:var(--ro);border-color:var(--rob);}
+.modal-body{padding:1.2rem 1.4rem;}
+.modal-foot{display:flex;align-items:center;justify-content:flex-end;gap:.5rem;padding:1rem 1.4rem;border-top:1px solid var(--bd);position:sticky;bottom:0;background:var(--bg3);}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;}
+.form-full{grid-column:1/-1;}
+.form-grp{display:flex;flex-direction:column;gap:.3rem;}
+.form-lbl{font-family:'Kanit',sans-serif;font-size:.63rem;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--tx3);}
+.req{color:var(--ro);}
+.form-in{font-family:'Sarabun',sans-serif;font-size:.82rem;padding:.42rem .7rem;border-radius:var(--rr-sm);border:1px solid var(--bd);background:var(--bg2);color:var(--tx);outline:none;transition:all var(--T);width:100%;}
+.form-in:focus{border-color:var(--bda);}
+.form-in:disabled{opacity:.5;cursor:not-allowed;background:var(--sur);}
+select.form-in{cursor:pointer;}
+.form-hint{font-size:.63rem;color:var(--tx3);}
+.form-sec{grid-column:1/-1;display:flex;align-items:center;gap:8px;margin:.3rem 0 0;font-family:'Kanit',sans-serif;font-size:.6rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--tx3);}
+.form-sec::after{content:'';flex:1;height:1px;background:var(--bd);}
+.staff-picker{position:relative;}
+.staff-search-wrap{position:relative;}
+.staff-search-wrap .si-ic{position:absolute;left:.65rem;top:50%;transform:translateY(-50%);font-size:.7rem;color:var(--tx3);pointer-events:none;}
+.staff-search{font-family:'Sarabun',sans-serif;font-size:.8rem;padding:.4rem .7rem .4rem 2rem;border-radius:var(--rr-sm);border:1px solid var(--bd);background:var(--bg2);color:var(--tx);outline:none;width:100%;transition:all var(--T);}
+.staff-search:focus{border-color:var(--bda);}
+.staff-search:disabled{opacity:.4;cursor:not-allowed;}
+.staff-dd{position:absolute;left:0;right:0;top:calc(100% + 4px);background:var(--card-s);border:1px solid var(--bd2);border-radius:var(--rr-sm);box-shadow:var(--shad);z-index:300;max-height:220px;overflow-y:auto;display:none;}
+.staff-dd.show{display:block;}
+.staff-dd-header{display:flex;align-items:center;gap:.5rem;padding:.5rem .7rem;border-bottom:1px solid var(--bd);flex-wrap:wrap;}
+.staff-dd-header select{flex:1;font-family:'Kanit',sans-serif;font-size:.7rem;padding:.28rem .5rem;border-radius:var(--rr-xs);border:1px solid var(--bd);background:var(--bg2);color:var(--tx2);outline:none;}
+.staff-dd-header select:focus{border-color:var(--bda);}
+.staff-item{display:flex;align-items:center;gap:8px;padding:.5rem .7rem;cursor:pointer;transition:background var(--T);border-bottom:1px solid rgba(255,255,255,.03);}
+.staff-item:hover{background:var(--sur2);}
+.staff-av{width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,var(--emd),var(--em));display:flex;align-items:center;justify-content:center;color:#fff;font-size:.62rem;font-weight:700;flex-shrink:0;}
+.staff-name{font-size:.76rem;font-weight:600;color:var(--tx);}
+.staff-pos{font-size:.63rem;color:var(--tx3);}
+.staff-dep{font-size:.6rem;color:var(--tx3);margin-left:auto;text-align:right;max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.staff-selected{display:flex;align-items:center;gap:8px;padding:.35rem .6rem;border-radius:var(--rr-sm);background:var(--embg);border:1px solid var(--bda);margin-top:4px;}
+.staff-selected .s-nm{font-size:.75rem;font-weight:600;color:var(--em);flex:1;}
+.staff-selected .s-clr{width:18px;height:18px;border-radius:4px;border:none;background:transparent;color:var(--tx3);cursor:pointer;font-size:.65rem;display:flex;align-items:center;justify-content:center;transition:color var(--T);}
+.staff-selected .s-clr:hover{color:var(--ro);}
+.no-staff{padding:.8rem;text-align:center;font-size:.73rem;color:var(--tx3);}
+.confirm-modal{max-width:380px;}
+.confirm-body{padding:1.4rem;text-align:center;}
+.confirm-ico{width:52px;height:52px;border-radius:50%;background:var(--robg);border:1px solid var(--rob);display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:var(--ro);margin:0 auto 1rem;}
+.confirm-title{font-family:'Kanit',sans-serif;font-size:.92rem;font-weight:700;margin-bottom:.4rem;}
+.confirm-msg{font-size:.78rem;color:var(--tx2);line-height:1.6;}
+.confirm-foot{display:flex;gap:.5rem;justify-content:center;padding:1rem 1.4rem;border-top:1px solid var(--bd);}
+.sk{background:linear-gradient(90deg,var(--sur),var(--sur2),var(--sur));background-size:200%;border-radius:var(--rr-xs);animation:shimmer 1.4s infinite;}
+@keyframes shimmer{0%{background-position:200%}100%{background-position:-200%}}
+.empty{text-align:center;padding:3rem 1rem;color:var(--tx3);font-size:.78rem;}
+.empty i{font-size:1.8rem;margin-bottom:.6rem;display:block;opacity:.3;}
+.toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);background:var(--card-s);border:1px solid var(--bd);color:var(--tx);font-size:.78rem;padding:.65rem 1rem;border-radius:var(--rr-sm);z-index:9999;white-space:nowrap;box-shadow:var(--shad);font-family:'Kanit',sans-serif;font-weight:500;display:flex;align-items:center;gap:7px;animation:tIn .3s var(--ease) both;}
+@keyframes tIn{from{opacity:0;transform:translateX(-50%) translateY(8px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+.toast.err{border-color:var(--rob);color:var(--ro);}
+.toast.ok{border-color:var(--bda);color:var(--em);}
+.scope-badge{display:inline-flex;align-items:center;gap:5px;font-family:'Kanit',sans-serif;font-size:.62rem;font-weight:600;padding:.22rem .65rem;border-radius:99px;background:var(--inbg);border:1px solid var(--inb);color:var(--in);}
+@media(max-width:1100px){.tb-left{padding-left:2.5rem;}}
+@media(max-width:760px){.content{padding:1rem;}.topbar{padding:.7rem 1rem;}.filter-bar{padding:.6rem 1rem;}.form-grid{grid-template-columns:1fr;}.kpi-row{grid-template-columns:repeat(2,1fr);}}
+.apv-box{padding:.65rem .8rem;border-radius:var(--rr-sm);font-size:.75rem;line-height:1.55;margin-top:.4rem;}
+.apv-box.approved{background:var(--embg);border:1px solid var(--bda);color:var(--em);}
+.apv-box.rejected{background:var(--robg);border:1px solid var(--rob);color:var(--ro);}
+.apv-box .apv-who{font-size:.63rem;opacity:.8;margin-top:3px;display:flex;align-items:center;gap:4px;}
+.sup-note-box{padding:.55rem .75rem;border-radius:var(--rr-sm);font-size:.74rem;line-height:1.55;background:var(--inbg);border:1px solid var(--inb);color:var(--in);margin-top:4px;}
+.sup-note-box .sup-who{font-size:.6rem;opacity:.75;margin-top:2px;display:flex;align-items:center;gap:3px;}
+.sup-note-in{font-family:'Sarabun',sans-serif;font-size:.82rem;padding:.42rem .7rem;border-radius:var(--rr-sm);border:1px solid var(--bd);background:var(--bg2);color:var(--tx);outline:none;transition:all var(--T);width:100%;resize:vertical;min-height:65px;}
+.sup-note-in:focus{border-color:var(--inb);}
+.apv-note-in{font-family:'Sarabun',sans-serif;font-size:.82rem;padding:.45rem .7rem;border-radius:var(--rr-sm);border:1px solid var(--bd);background:var(--bg2);color:var(--tx);outline:none;transition:all var(--T);width:100%;resize:vertical;min-height:72px;}
+.apv-note-in:focus{border-color:var(--bda);}
+.apv-modal{max-width:430px;}
+.apv-header-ico{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.2rem;margin:0 auto .9rem;}
+.apv-header-ico.approved{background:var(--embg);border:1px solid var(--bda);color:var(--em);}
+.apv-header-ico.rejected{background:var(--robg);border:1px solid var(--rob);color:var(--ro);}
+.apv-header-ico.reset   {background:var(--ambg);border:1px solid var(--amb);color:var(--am);}
+.act-btn.approve:hover{color:var(--em);border-color:var(--bda);}
+.act-btn.reject:hover{color:var(--ro);border-color:var(--rob);}
+</style>
+</head>
+<body>
+
+<div class="bg-l"><div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div></div>
+<button class="menu-btn" onclick="toggleSb()"><i class="fa-solid fa-bars"></i></button>
+<div class="sb-ov" id="sbOv" onclick="toggleSb()"></div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sb-logo">
+    <div class="logo-mk"><i class="fa-solid fa-chart-line"></i></div>
+    <div><div class="logo-tx">HR System</div><div class="logo-sub">บริหารงานบุคคล</div></div>
+  </div>
+  <nav class="nav">
+    <div class="nav-sec">หลัก</div>
+    <a class="ni" href="index.html"><i class="fa-solid fa-gauge-high"></i>Dashboard</a>
+
+    <div class="nav-sec">การลงเวลา</div>
+    <a class="ni" href="attendance.html"><i class="fa-solid fa-clock"></i>การลงเวลารายวัน</a>
+    <a class="ni" href="attendance-monthly.html"><i class="fa-solid fa-clock"></i>สรุปการลงเวลารายเดือน</a>
+
+    <div class="nav-sec">ประวัติการลา</div>
+    <a class="ni active" href="leave-record.html"><i class="fa-solid fa-clock"></i>บันทึกการลา</a>
+
+    <div class="nav-sec">ระบบ</div>
+    <a class="ni" href="users.html" ><i class="fa-solid fa-users"></i>ผู้ใช้งาน</a>
+    <a class="ni" href="organizations.html" ><i class="fa-solid fa-building"></i>หน่วยงาน</a>
+    <a class="ni " href="holidays.html" ><i class="fa-solid fa-calendar-days"></i>วันหยุดนักขัตฤกษ์</a>
+  </nav>
+  <div class="sb-foot">
+    <div class="user-pill" id="userMenuBtn">
+      <div class="u-av" id="uAv">A</div>
+      <div><div class="u-nm" id="uNm">กำลังโหลด…</div><div class="u-rl" id="uRl">—</div></div>
+      <i class="fa-solid fa-chevron-right" style="margin-left:auto;font-size:.62rem;color:var(--tx3)"></i>
+      <div class="user-dropdown" id="userDropdown">
+        <a href="../index.html"><i class="fa-solid fa-house"></i>กลับหน้าหลัก</a>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+  <div class="topbar">
+    <div class="tb-left">
+      <div class="tb-title">
+        <button class="nav-back" onclick="history.length>1?history.back():location.href='index.html'"><i class="fa-solid fa-arrow-left"></i></button>
+        <i class="fa-solid fa-calendar-minus" style="font-size:.85rem;opacity:.6"></i>บันทึกการลา
+        <span class="scope-badge" id="scopeBadge" style="display:none"><i class="fa-solid fa-shield-halved"></i><span id="scopeLabel">—</span></span>
+      </div>
+      <div class="tb-sub" id="tbSub">—</div>
+    </div>
+    <div class="tb-right">
+      <button class="icon-btn" id="refBtn" onclick="loadAll()" title="รีเฟรช"><i class="fa-solid fa-rotate-right"></i></button>
+      <button class="icon-btn" onclick="toggleTheme()" title="เปลี่ยนธีม"><i class="fa-solid fa-circle-half-stroke"></i></button>
+      <button class="btn-prim" id="addBtn" onclick="openAddModal()"><i class="fa-solid fa-plus"></i>บันทึกการลา</button>
+    </div>
+  </div>
+
+  <!-- Filter Bar -->
+  <div class="filter-bar">
+    <span class="filter-label"><i class="fa-solid fa-magnifying-glass"></i>ค้นหา</span>
+    <input type="text" id="searchIn" class="search-in" placeholder="ชื่อผู้ลา…" oninput="applyFilter()">
+    <select class="fsel" id="selType" onchange="applyFilter()">
+      <option value="">— ทุกประเภท —</option>
+      <option value="sick">ลาป่วย</option>
+      <option value="maternity">ลาคลอดบุตร</option>
+      <option value="paternity">ลาช่วยเหลือภริยาที่คลอดบุตร</option>
+      <option value="personal">ลากิจส่วนตัว</option>
+      <option value="vacation">ลาพักผ่อนประจำปี</option>
+      <option value="ordain">ลาอุปสมบท/ฮัจย์</option>
+      <option value="military">ลาเข้ารับการตรวจเลือก/เตรียมพล</option>
+      <option value="study">ลาศึกษา/ฝึกอบรม/ดูงาน/วิจัย</option>
+      <option value="intl">ลาปฏิบัติงานสากล</option>
+      <option value="spouse">ลาติดตามคู่สมรส</option>
+      <option value="rehab">ลาฟื้นฟูสมรรถภาพ</option>
+    </select>
+    <select class="fsel" id="selStatus" onchange="applyFilter()">
+      <option value="">— ทุกสถานะ —</option>
+      <option value="pending">รออนุมัติ</option>
+      <option value="approved">อนุมัติแล้ว</option>
+      <option value="rejected">ไม่อนุมัติ</option>
+    </select>
+    <select class="fsel" id="selYear" onchange="applyFilter()"><option value="">— ทุกปี —</option></select>
+    <div class="filter-bar-right">
+      <span id="filterCount" style="font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--tx3)"></span>
+      <button class="btn-sec" onclick="clearFilter()" style="padding:.3rem .65rem;font-size:.68rem;"><i class="fa-solid fa-xmark"></i>ล้าง</button>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="kpi-row" id="kpiRow">
+      <div class="kpi-s cg"><div class="sk" style="height:56px;width:100%"></div></div>
+      <div class="kpi-s cb"><div class="sk" style="height:56px;width:100%"></div></div>
+      <div class="kpi-s ca"><div class="sk" style="height:56px;width:100%"></div></div>
+      <div class="kpi-s cr"><div class="sk" style="height:56px;width:100%"></div></div>
+      <div class="kpi-s cp"><div class="sk" style="height:56px;width:100%"></div></div>
+    </div>
+
+    <div class="sh">
+      <div class="sh-t"><i class="fa-solid fa-table-list" style="opacity:.4"></i>รายการบันทึกการลา</div>
+      <div class="sh-m" id="tableInfo">—</div>
+    </div>
+
+    <div class="panel">
+      <div class="ph">
+        <div class="pt"><i class="fa-solid fa-calendar-minus"></i>รายการการลาทั้งหมด</div>
+        <div class="ph-acts">
+          <div class="pm" id="lastUp">—</div>
+          <button class="btn-sec" onclick="exportExcel()" style="padding:.3rem .65rem;font-size:.68rem;" title="ส่งออกข้อมูลที่แสดงอยู่ในตาราง">
+            <i class="fa-solid fa-file-arrow-down"></i>ส่งออก Excel
+          </button>
+        </div>
+      </div>
+      <div class="tbl-wrap">
+        <table class="mt">
+          <thead>
+            <tr>
+              <th onclick="sortBy('user_name')" id="th-user_name">ผู้ลา <i class="fa-solid fa-sort si"></i></th>
+              <th onclick="sortBy('leave_type')" id="th-leave_type">ประเภท <i class="fa-solid fa-sort si"></i></th>
+              <th onclick="sortBy('start_date')" id="th-start_date" class="sorted">วันที่เริ่ม <i class="fa-solid fa-sort si"></i></th>
+              <th onclick="sortBy('end_date')" id="th-end_date">วันที่สิ้นสุด <i class="fa-solid fa-sort si"></i></th>
+              <th onclick="sortBy('days')" id="th-days">จำนวนวัน <i class="fa-solid fa-sort si"></i></th>
+              <th class="no-sort">ผู้บังคับบัญชา</th>
+              <th class="no-sort">ความเห็นหัวหน้า</th>
+              <th class="no-sort">ผู้อนุมัติ</th>
+              <th onclick="sortBy('status')" id="th-status">สถานะ <i class="fa-solid fa-sort si"></i></th>
+              <th class="no-sort">อนุมัติโดย / หมายเหตุ</th>
+              <th style="width:100px" class="no-sort">จัดการ</th>
+            </tr>
+          </thead>
+          <tbody id="lTbody">
+            <tr><td colspan="10"><div class="sk" style="height:44px;margin:.4rem"></div></td></tr>
+            <tr><td colspan="10"><div class="sk" style="height:44px;margin:.4rem"></div></td></tr>
+            <tr><td colspan="10"><div class="sk" style="height:44px;margin:.4rem"></div></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="pager" id="pager"></div>
+    </div>
+  </div>
+</main>
+
+<!-- ═══════════════════════════════════════
+  ADD / EDIT MODAL
+════════════════════════════════════════ -->
+<div class="modal-ov" id="formOv" onclick="if(event.target===this)closeForm()">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-h">
+      <div class="modal-title" id="formTitle"><i class="fa-solid fa-calendar-plus"></i>บันทึกการลา</div>
+      <button class="modal-close" onclick="closeForm()"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-sec form-full"><i class="fa-solid fa-user"></i>ข้อมูลผู้ลา</div>
+
+        <div class="form-grp form-full">
+          <label class="form-lbl">ผู้ลา <span class="req">*</span></label>
+          <div class="staff-picker" id="pickerLeaver">
+            <div class="staff-search-wrap">
+              <i class="fa-solid fa-magnifying-glass si-ic"></i>
+              <input type="text" class="staff-search" id="searchLeaver" placeholder="พิมพ์ชื่อเพื่อค้นหา…" autocomplete="off" onfocus="openPicker('leaver')" oninput="filterStaff('leaver',this.value)">
+            </div>
+            <div class="staff-dd" id="ddLeaver">
+              <div class="staff-dd-header">
+                <select id="affLeaver" onchange="onAffChange('leaver')"><option value="">— ทุกสังกัด —</option></select>
+                <select id="depLeaver" onchange="loadStaff('leaver')"><option value="">— ทุกหน่วยงาน —</option></select>
+              </div>
+              <div id="staffListLeaver"><div class="no-staff"><i class="fa-solid fa-circle-notch fa-spin"></i> กำลังโหลด…</div></div>
+            </div>
+            <div id="selectedLeaver" style="display:none"></div>
+            <input type="hidden" id="fLeaverUuid">
+          </div>
+        </div>
+
+        <div class="form-grp">
+          <label class="form-lbl">ประเภทการลา <span class="req">*</span></label>
+          <select id="fType" class="form-in">
+            <option value="">— เลือกประเภท —</option>
+            <option value="sick">ลาป่วย</option>
+            <option value="maternity">ลาคลอดบุตร</option>
+            <option value="paternity">ลาช่วยเหลือภริยาที่คลอดบุตร</option>
+            <option value="personal">ลากิจส่วนตัว</option>
+            <option value="vacation">ลาพักผ่อนประจำปี</option>
+            <option value="ordain">ลาอุปสมบท/ประกอบพิธีฮัจย์</option>
+            <option value="military">ลาเข้ารับการตรวจเลือก/เตรียมพล</option>
+            <option value="study">ลาศึกษา/ฝึกอบรม/ดูงาน/วิจัย</option>
+            <option value="intl">ลาปฏิบัติงานในองค์การระหว่างประเทศ</option>
+            <option value="spouse">ลาติดตามคู่สมรส</option>
+            <option value="rehab">ลาฟื้นฟูสมรรถภาพด้านอาชีพ</option>
+          </select>
+        </div>
+
+        <div class="form-grp">
+          <label class="form-lbl">สถานะ <span class="req">*</span></label>
+          <select id="fStatus" class="form-in">
+            <option value="pending">รออนุมัติ</option>
+            <option value="approved">อนุมัติแล้ว</option>
+            <option value="rejected">ไม่อนุมัติ</option>
+          </select>
+        </div>
+
+        <div class="form-grp">
+          <label class="form-lbl">วันที่เริ่มต้น <span class="req">*</span></label>
+          <input type="date" id="fStart" class="form-in" onchange="calcDays()">
+        </div>
+
+        <div class="form-grp">
+          <label class="form-lbl">วันที่สิ้นสุด <span class="req">*</span></label>
+          <input type="date" id="fEnd" class="form-in" onchange="calcDays()">
+          <div class="form-hint" id="daysHint"></div>
+        </div>
+
+        <div class="form-grp form-full">
+          <label class="form-lbl">เหตุผลการลา</label>
+          <input type="text" id="fReason" class="form-in" placeholder="ระบุเหตุผล (ถ้ามี)">
+        </div>
+
+        <div class="form-sec form-full"><i class="fa-solid fa-users"></i>ผู้เกี่ยวข้อง</div>
+
+        <div class="form-grp form-full">
+          <label class="form-lbl">ผู้บังคับบัญชา <span class="req">*</span></label>
+          <div class="staff-picker" id="pickerSupervisor">
+            <div class="staff-search-wrap">
+              <i class="fa-solid fa-magnifying-glass si-ic"></i>
+              <input type="text" class="staff-search" id="searchSupervisor" placeholder="พิมพ์ชื่อผู้บังคับบัญชา…" autocomplete="off" onfocus="openPicker('supervisor')" oninput="filterStaff('supervisor',this.value)">
+            </div>
+            <div class="staff-dd" id="ddSupervisor">
+              <div class="staff-dd-header">
+                <select id="affSupervisor" onchange="onAffChange('supervisor')"><option value="">— ทุกสังกัด —</option></select>
+                <select id="depSupervisor" onchange="loadStaff('supervisor')"><option value="">— ทุกหน่วยงาน —</option></select>
+              </div>
+              <div id="staffListSupervisor"><div class="no-staff"><i class="fa-solid fa-circle-notch fa-spin"></i> กำลังโหลด…</div></div>
+            </div>
+            <div id="selectedSupervisor" style="display:none"></div>
+            <input type="hidden" id="fSupervisorUuid">
+          </div>
+        </div>
+
+        <div class="form-grp form-full">
+          <label class="form-lbl"><i class="fa-solid fa-comment-dots" style="opacity:.55"></i> ความคิดเห็นหัวหน้า <span style="font-size:.58rem;color:var(--tx3)">(ไม่บังคับ)</span></label>
+          <textarea id="fSupervisorNote" class="sup-note-in" placeholder="ระบุความคิดเห็น / เงื่อนไขของหัวหน้า (ถ้ามี)…"></textarea>
+        </div>
+
+        <div class="form-grp form-full">
+          <label class="form-lbl">ผู้อนุมัติ <span class="req">*</span></label>
+          <div class="staff-picker" id="pickerApprover">
+            <div class="staff-search-wrap">
+              <i class="fa-solid fa-magnifying-glass si-ic"></i>
+              <input type="text" class="staff-search" id="searchApprover" placeholder="พิมพ์ชื่อผู้อนุมัติ…" autocomplete="off" onfocus="openPicker('approver')" oninput="filterStaff('approver',this.value)">
+            </div>
+            <div class="staff-dd" id="ddApprover">
+              <div class="staff-dd-header">
+                <select id="affApprover" onchange="onAffChange('approver')"><option value="">— ทุกสังกัด —</option></select>
+                <select id="depApprover" onchange="loadStaff('approver')"><option value="">— ทุกหน่วยงาน —</option></select>
+              </div>
+              <div id="staffListApprover"><div class="no-staff"><i class="fa-solid fa-circle-notch fa-spin"></i> กำลังโหลด…</div></div>
+            </div>
+            <div id="selectedApprover" style="display:none"></div>
+            <input type="hidden" id="fApproverUuid">
+          </div>
+        </div>
+
+        <div class="form-grp form-full">
+          <label class="form-lbl">ผู้รับมอบ <span style="font-size:.58rem;color:var(--tx3)">(ไม่บังคับ)</span></label>
+          <div class="staff-picker" id="pickerDelegate">
+            <div class="staff-search-wrap">
+              <i class="fa-solid fa-magnifying-glass si-ic"></i>
+              <input type="text" class="staff-search" id="searchDelegate" placeholder="พิมพ์ชื่อผู้รับมอบ…" autocomplete="off" onfocus="openPicker('delegate')" oninput="filterStaff('delegate',this.value)">
+            </div>
+            <div class="staff-dd" id="ddDelegate">
+              <div class="staff-dd-header">
+                <select id="affDelegate" onchange="onAffChange('delegate')"><option value="">— ทุกสังกัด —</option></select>
+                <select id="depDelegate" onchange="loadStaff('delegate')"><option value="">— ทุกหน่วยงาน —</option></select>
+              </div>
+              <div id="staffListDelegate"><div class="no-staff"><i class="fa-solid fa-circle-notch fa-spin"></i> กำลังโหลด…</div></div>
+            </div>
+            <div id="selectedDelegate" style="display:none"></div>
+            <input type="hidden" id="fDelegateUuid">
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-sec" onclick="closeForm()"><i class="fa-solid fa-xmark"></i>ยกเลิก</button>
+      <button class="btn-prim" id="saveBtn" onclick="saveLeave()"><i class="fa-solid fa-floppy-disk"></i>บันทึก</button>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIRM DELETE -->
+<div class="modal-ov" id="delOv" onclick="if(event.target===this)closeDel()">
+  <div class="modal confirm-modal" onclick="event.stopPropagation()">
+    <div class="confirm-body">
+      <div class="confirm-ico"><i class="fa-solid fa-trash-can"></i></div>
+      <div class="confirm-title">ยืนยันการลบ</div>
+      <div class="confirm-msg" id="delMsg">ต้องการลบรายการนี้ใช่หรือไม่?</div>
+    </div>
+    <div class="confirm-foot">
+      <button class="btn-sec" onclick="closeDel()"><i class="fa-solid fa-xmark"></i>ยกเลิก</button>
+      <button class="btn-danger" id="delConfirmBtn" onclick="confirmDelete()"><i class="fa-solid fa-trash-can"></i>ลบ</button>
+    </div>
+  </div>
+</div>
+
+<!-- APPROVE / REJECT MODAL -->
+<div class="modal-ov" id="apvOv" onclick="if(event.target===this)closeApprove()">
+  <div class="modal apv-modal" onclick="event.stopPropagation()">
+    <div class="modal-h">
+      <div class="modal-title" id="apvTitle"><i class="fa-solid fa-gavel"></i>อนุมัติการลา</div>
+      <button class="modal-close" onclick="closeApprove()"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body" style="text-align:center;padding-top:1.4rem">
+      <div class="apv-header-ico" id="apvIco"><i id="apvIcoI" class="fa-solid fa-circle-check"></i></div>
+      <div style="font-family:'Kanit',sans-serif;font-size:.88rem;font-weight:700;margin-bottom:.3rem" id="apvHeading">อนุมัติการลา</div>
+      <div style="font-size:.76rem;color:var(--tx2);margin-bottom:1.1rem" id="apvSubtitle">—</div>
+      <div style="text-align:left">
+        <label class="form-lbl" id="apvNoteLbl">หมายเหตุ <span id="apvNoteReq" class="req" style="display:none">*</span></label>
+        <textarea id="apvNote" class="apv-note-in" placeholder="ระบุหมายเหตุ (ถ้ามี)…"></textarea>
+        <div class="form-hint" id="apvNoteHint"></div>
+      </div>
+    </div>
+    <div class="modal-foot" style="justify-content:center;gap:.65rem">
+      <button class="btn-sec" onclick="closeApprove()"><i class="fa-solid fa-xmark"></i>ยกเลิก</button>
+      <button class="btn-prim" id="apvResetBtn" onclick="submitApprove('pending')" style="display:none;background:var(--ambg);border-color:var(--amb);color:var(--am)">
+        <i class="fa-solid fa-rotate-left"></i>คืนสถานะ
+      </button>
+      <button class="btn-prim" id="apvConfirmBtn" onclick="submitApproveConfirm()">
+        <i class="fa-solid fa-circle-check"></i><span id="apvBtnTx">อนุมัติ</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ════════════════════════════════════════
+   CONFIG & STATE
+════════════════════════════════════════ */
+const API = '/api';
+let allLeaves  = [];
+let filtered   = [];
+let sortCol    = 'start_date';
+let sortDir    = -1;
+let page       = 1;
+const PER_PAGE = 20;
+let editingId  = null;
+let deletingId = null;
+let canEdit    = false;
+
+const PICKERS = ['leaver','supervisor','approver','delegate'];
+const pickerState = {};
+PICKERS.forEach(p => {
+  pickerState[p] = { allStaff: [], filtered: [], deps: [] };
+});
+
+let orgAffList = [];
+let orgDepList = [];
+
+/* ════════════════════════════════════════
+   UTILS & MAPPINGS
+════════════════════════════════════════ */
+const $ = id => document.getElementById(id);
+function authH(){ return { Authorization:`Bearer ${localStorage.getItem('auth_token')||''}`, 'Content-Type':'application/json' }; }
+
+// ปรับปรุง safeJson ให้จับ Error และแจ้งเตือนได้ดีขึ้น
+async function safeJson(r){ 
+  try{ 
+    const t = await r.text(); 
+    if(!t) return {success: r.ok};
+    return JSON.parse(t);
+  } catch(e){ 
+    console.error('[safeJson] Response is not JSON. Status:', r.status);
+    return {success: false, message: `API Error (HTTP ${r.status}): รูปแบบข้อมูลไม่ถูกต้อง`}; 
+  } 
+}
+
+let _tT;
+function toast(msg,type='ok'){
+  document.querySelectorAll('.toast').forEach(e=>e.remove());
+  const d=document.createElement('div');
+  d.className=`toast ${type}`;
+  d.innerHTML=`<i class="fa-solid fa-${type==='ok'?'circle-check':'circle-exclamation'}"></i>${msg}`;
+  document.body.appendChild(d);
+  clearTimeout(_tT); _tT=setTimeout(()=>d.remove(),3200);
+}
+
+function toggleTheme(){
+  const t=document.documentElement.dataset.theme==='dark'?'light':'dark';
+  document.documentElement.dataset.theme=t; localStorage.setItem('theme',t);
+}
+function toggleSb(){ $('sidebar').classList.toggle('open'); $('sbOv').classList.toggle('show'); }
+
+function fmtDate(d){
+  if(!d) return '—';
+  const [y,m,day]=d.split('-');
+  const mn=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+  return `${+day} ${mn[+m-1]} ${+y+543}`;
+}
+
+// แก้ไข Syntax Error ใน fmtDatetime
+function fmtDatetime(s){
+  if(!s) return '—';
+  try{
+    const d=new Date(s);
+    const mn=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+    return `${d.getDate()} ${mn[d.getMonth()]} ${d.getFullYear()+543} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')} น.`;
+  } catch(e) { return s; }
+}
+
+const LEAVE_TYPE_MAP = {
+  sick:      { label: 'ลาป่วย',              icon: 'fa-hospital',         cls: 'p-sick' },
+  maternity: { label: 'ลาคลอดบุตร',           icon: 'fa-baby',             cls: 'p-maternity' },
+  paternity: { label: 'ลาช่วยเหลือภริยาคลอด',  icon: 'fa-baby-carriage',    cls: 'p-paternity' },
+  personal:  { label: 'ลากิจส่วนตัว',          icon: 'fa-person-walking',   cls: 'p-personal' },
+  vacation:  { label: 'ลาพักผ่อนประจำปี',     icon: 'fa-umbrella-beach',   cls: 'p-vacation' },
+  ordain:    { label: 'ลาอุปสมบท/ฮัจย์',       icon: 'fa-mosque',           cls: 'p-ordain' },
+  military:  { label: 'ลาเกณฑ์ทหาร',          icon: 'fa-shield-halved',    cls: 'p-military' },
+  study:     { label: 'ลาศึกษา/ฝึกอบรม',      icon: 'fa-graduation-cap',   cls: 'p-study' },
+  intl:      { label: 'ลาปฏิบัติงานสากล',      icon: 'fa-earth-americas',   cls: 'p-intl' },
+  spouse:    { label: 'ลาติดตามคู่สมรส',       icon: 'fa-heart',            cls: 'p-spouse' },
+  rehab:     { label: 'ลาฟื้นฟูสมรรถภาพ',      icon: 'fa-dumbbell',         cls: 'p-rehab' },
+};
+
+function leaveTypePill(t){
+  const m = LEAVE_TYPE_MAP[t];
+  if(m) return `<span class="pill ${m.cls}"><i class="fa-solid ${m.icon}"></i>${m.label}</span>`;
+  return `<span class="pill p-other"><i class="fa-solid fa-ellipsis"></i>${t||'—'}</span>`;
+}
+
+function statusPill(s){
+  const map={
+    pending:`<span class="pill p-pending"><i class="fa-solid fa-clock"></i>รออนุมัติ</span>`,
+    approved:`<span class="pill p-approved"><i class="fa-solid fa-circle-check"></i>อนุมัติแล้ว</span>`,
+    rejected:`<span class="pill p-rejected"><i class="fa-solid fa-circle-xmark"></i>ไม่อนุมัติ</span>`,
+  };
+  return map[s]||`<span class="pill">${s||'—'}</span>`;
+}
+
+function calcDays(){
+  const s=$('fStart').value, e=$('fEnd').value;
+  if(!s||!e){$('daysHint').textContent='';return;}
+  const diff=Math.round((new Date(e)-new Date(s))/(86400000))+1;
+  $('daysHint').textContent=diff>0?`รวม ${diff} วัน`:'วันที่ไม่ถูกต้อง';
+}
+
+/* ════════════════════════════════════════
+   LOAD LEAVES
+════════════════════════════════════════ */
+async function loadAll(){
+  const btn=$('refBtn'); btn.classList.add('spin');
+  try{
+    const r=await fetch(`${API}/dash/leave-records`,{headers:authH()});
+    const j=await safeJson(r);
+    if(!j.success) throw new Error(j.message||`HTTP ${r.status}`);
+
+    allLeaves = j.data.records||[];
+    canEdit   = !!j.meta?.can_edit;
+    renderKPI(j.data.summary||{});
+    populateYearFilter();
+    applyFilter();
+
+    const sm = j.meta?.scope||'';
+    const scopeMap={all:'ทั้งหมด',affiliation:'สังกัด',department:'หน่วยงาน',self:'ตนเอง'};
+    $('scopeLabel').textContent=scopeMap[sm]||sm;
+    $('scopeBadge').style.display=sm?'inline-flex':'none';
+    $('tbSub').textContent=`สิทธิ์: ${j.meta?.role||'—'} · ทั้งหมด ${j.data.summary?.total||0} รายการ`;
+    $('lastUp').textContent=`อัปเดต ${new Date().toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'})}`;
+
+  }catch(e){
+    toast(e.message,'err');
+    $('lTbody').innerHTML=`<tr><td colspan="10"><div class="empty"><i class="fa-solid fa-triangle-exclamation"></i>โหลดข้อมูลไม่สำเร็จ</div></td></tr>`;
+  }
+  btn.classList.remove('spin');
+}
+
+/* ════════════════════════════════════════
+   KPI CONFIG & RENDER
+════════════════════════════════════════ */
+const KPI_CONFIG = {
+  total:     { label: 'ทั้งหมด',           icon: 'fa-calendar-minus',  colorClass: 'cg' },
+  pending:   { label: 'รออนุมัติ',          icon: 'fa-clock',           colorClass: 'ca' },
+  approved:  { label: 'อนุมัติแล้ว',        icon: 'fa-circle-check',    colorClass: 'cg' },
+  sick:      { label: 'ลาป่วย (วัน)',       icon: 'fa-hospital',        colorClass: 'cr' },
+  maternity: { label: 'ลาคลอดบุตร (วัน)',    icon: 'fa-baby',            colorClass: 'cp' },
+  paternity: { label: 'ลาช่วยเหลือภริยา (วัน)', icon: 'fa-baby-carriage', colorClass: 'cp' },
+  personal:  { label: 'ลากิจส่วนตัว (วัน)',   icon: 'fa-person-walking',  colorClass: 'ca' },
+  vacation:  { label: 'ลาพักผ่อน (วัน)',     icon: 'fa-umbrella-beach',  colorClass: 'cb' },
+  ordain:    { label: 'ลาอุปสมบท/ฮัจย์ (วัน)', icon: 'fa-mosque',        colorClass: 'cc' },
+  military:  { label: 'ลาเกณฑ์ทหาร (วัน)',   icon: 'fa-shield-halved',   colorClass: 'cb' },
+  study:     { label: 'ลาศึกษา/ฝึกอบรม (วัน)', icon: 'fa-graduation-cap', colorClass: 'cc' },
+  intl:      { label: 'ลาปฏิบัติงานสากล (วัน)', icon: 'fa-earth-americas', colorClass: 'cb' },
+  spouse:    { label: 'ลาติดตามคู่สมรส (วัน)', icon: 'fa-heart',          colorClass: 'cc' },
+  rehab:     { label: 'ลาฟื้นฟูสมรรถภาพ (วัน)', icon: 'fa-dumbbell',       colorClass: 'ca' },
+};
+
+function renderKPI(s){
+  let html = '';
+  let delay = 0;
+  
+  // กำหนดลำดับการแสดงผล: สถานะก่อน แล้วตามด้วยประเภทการลา
+  const statusKeys = ['total', 'pending', 'approved'];
+  const typeKeys = ['sick', 'maternity', 'paternity', 'personal', 'vacation', 'ordain', 'military', 'study', 'intl', 'spouse', 'rehab'];
+  const allKeys = [...statusKeys, ...typeKeys];
+  
+  allKeys.forEach(key => {
+    const val = s[key] ?? 0;
+    
+    // เงื่อนไข: แสดง Card เสมอถ้าเป็นสถานะ (status) หรือ แสดงเฉพาะถ้าเป็นประเภทการลาที่มีค่ามากกว่า 0
+    if (statusKeys.includes(key) || val > 0) {
+      const conf = KPI_CONFIG[key] || { label: key, icon: 'fa-circle', colorClass: 'cg' };
+      html += `
+        <div class="kpi-s ${conf.colorClass}" style="animation-delay:${delay * 0.04}s">
+          <div class="kpi-s-ico"><i class="fa-solid ${conf.icon}"></i></div>
+          <div><div class="kpi-s-val">${val}</div><div class="kpi-s-lbl">${conf.label}</div></div>
+        </div>`;
+      delay++;
+    }
+  });
+  
+  $('kpiRow').innerHTML = html;
+}
+
+function populateYearFilter(){
+  const years=[...new Set(allLeaves.map(l=>l.start_date?.split('-')[0]).filter(Boolean))].sort((a,b)=>b-a);
+  const sel=$('selYear'); const cur=sel.value;
+  sel.innerHTML=`<option value="">— ทุกปี —</option>`+years.map(y=>`<option value="${y}">${+y+543}</option>`).join('');
+  if(cur) sel.value=cur;
+}
+
+/* ════════════════════════════════════════
+   FILTER / SORT / TABLE
+════════════════════════════════════════ */
+function applyFilter(){
+  const q=($('searchIn').value||'').toLowerCase();
+  const tp=$('selType').value;
+  const st=$('selStatus').value;
+  const yr=$('selYear').value;
+
+  filtered=allLeaves.filter(l=>{
+    if(q && !(l.user_name||'').toLowerCase().includes(q)) return false;
+    if(tp && l.leave_type!==tp) return false;
+    if(st && l.status!==st) return false;
+    if(yr && l.start_date?.split('-')[0]!==yr) return false;
+    return true;
+  });
+
+  filtered.sort((a,b)=>{
+    let va=a[sortCol]??'', vb=b[sortCol]??'';
+    if(typeof va==='string') va=va.toLowerCase();
+    if(typeof vb==='string') vb=vb.toLowerCase();
+    return va<vb?-sortDir:va>vb?sortDir:0;
+  });
+
+  page=1; renderTable(); renderPager();
+  $('filterCount').textContent=filtered.length!==allLeaves.length?`${filtered.length}/${allLeaves.length}`:'';
+  $('tableInfo').textContent=`${filtered.length} รายการ`;
+}
+
+function clearFilter(){
+  $('searchIn').value=''; $('selType').value=''; $('selStatus').value=''; $('selYear').value='';
+  applyFilter();
+}
+
+function sortBy(col){
+  if(sortCol===col) sortDir*=-1; else{sortCol=col;sortDir=1;}
+  document.querySelectorAll('.mt th').forEach(th=>th.classList.remove('sorted'));
+  const th=$(`th-${col}`); if(th) th.classList.add('sorted');
+  applyFilter();
+}
+
+function renderTable(){
+  const start=(page-1)*PER_PAGE, rows=filtered.slice(start,start+PER_PAGE);
+  if(!rows.length){
+    $('lTbody').innerHTML='<tr><td colspan="10"><div class="empty"><i class="fa-solid fa-calendar-xmark"></i>ไม่พบรายการการลา</div></td></tr>';
+    return;
+  }
+  $('lTbody').innerHTML=rows.map(function(l){
+    var nameEsc=(l.user_name||'').replace(/'/g,"\\'");
+
+    var supNoteCell = l.supervisor_note
+      ? '<div class="sup-note-box">'+escHtml(l.supervisor_note)+'</div>'
+      : '<span style="font-size:.65rem;color:var(--tx3)">—</span>';
+
+    var apvCell;
+    if(l.status==='pending'){
+      apvCell='<span style="font-size:.65rem;color:var(--tx3)">รอดำเนินการ</span>';
+    } else {
+      var note2 = l.approval_note ? escHtml(l.approval_note) : '<span style="opacity:.55">—</span>';
+      var who2  = l.approved_by_name || l.approver_name || '—';
+      var when2 = fmtDatetime(l.approved_at);
+      apvCell='<div class="apv-box '+l.status+'">'+note2+'<div class="apv-who"><i class="fa-solid fa-user-check"></i>'+who2+' · '+when2+'</div></div>';
+    }
+
+    var actBtns;
+    var isOwner = (l.user_uuid === window.myUuid);
+    var isPending = (l.status === 'pending');
+    var canModify = canEdit || (isOwner && isPending); // แอดมินแกะได้หมด หรือ เจ้าของที่ยัง pending
+
+    if(canModify){
+      var isApproved=(l.status==='approved'), isRejected=(l.status==='rejected');
+      
+      // ปุ่มอนุมัติ/ปฏิเสธ แสดงเฉพาะแอดมิน
+      var apvBtns = canEdit ? 
+        '<button class="act-btn approve" onclick="openApproveModal('+l.id+',\'approved\')" title="อนุมัติ"'+(isApproved?' style="color:var(--em);border-color:var(--bda)"':'')+'>'+
+          '<i class="fa-solid fa-circle-check"></i></button>'+
+        '<button class="act-btn reject" onclick="openApproveModal('+l.id+',\'rejected\')" title="ปฏิเสธ"'+(isRejected?' style="color:var(--ro);border-color:var(--rob)"':'')+'>'+
+          '<i class="fa-solid fa-circle-xmark"></i></button>' 
+        : '';
+
+      actBtns = apvBtns +
+        '<button class="act-btn edit" onclick="openEditModal('+l.id+')" title="แก้ไข"><i class="fa-solid fa-pen"></i></button>'+
+        '<button class="act-btn del" onclick="openDelModal('+l.id+',\''+nameEsc+'\')" title="ลบ"><i class="fa-solid fa-trash-can"></i></button>';
+    } else {
+      actBtns='<button class="act-btn view-btn" onclick="openEditModal('+l.id+')" title="ดูรายละเอียด"><i class="fa-solid fa-eye"></i></button>';
+    }
+
+    return '<tr>'+
+      '<td class="hl">'+(l.user_name||'—')+'<br><span style="font-size:.62rem;color:var(--tx3)">'+(l.department||'')+'</span></td>'+
+      '<td>'+leaveTypePill(l.leave_type)+'</td>'+
+      '<td class="mono">'+fmtDate(l.start_date)+'</td>'+
+      '<td class="mono">'+fmtDate(l.end_date)+'</td>'+
+      '<td style="text-align:center;font-family:\'JetBrains Mono\',monospace;font-size:.75rem">'+(l.days!=null?l.days:'—')+'</td>'+
+      '<td style="font-size:.72rem">'+(l.supervisor_name||'—')+'</td>'+
+      '<td style="min-width:140px;max-width:180px">'+supNoteCell+'</td>'+
+      '<td style="font-size:.72rem">'+(l.approver_name||'—')+'</td>'+
+      '<td>'+statusPill(l.status)+'</td>'+
+      '<td style="min-width:160px;max-width:220px">'+apvCell+'</td>'+
+      '<td><div class="act-btns">'+actBtns+'</div></td>'+
+    '</tr>';
+  }).join('');
+}
+function renderPager(){
+  const total=Math.ceil(filtered.length/PER_PAGE);
+  const el=$('pager');
+  if(total<=1){el.innerHTML='';return;}
+  const pages=[];
+  for(let i=1;i<=total;i++) if(i===1||i===total||Math.abs(i-page)<=2) pages.push(i);
+  let html=`<div class="pager-info">${(page-1)*PER_PAGE+1}–${Math.min(page*PER_PAGE,filtered.length)} จาก ${filtered.length}</div><div class="pager-btns">`;
+  html+=`<button class="pg-btn" onclick="goPage(${page-1})" ${page===1?'disabled':''}><i class="fa-solid fa-chevron-left"></i></button>`;
+  let prev=0;
+  pages.forEach(p=>{
+    if(prev&&p-prev>1) html+=`<span class="pg-btn" style="pointer-events:none">…</span>`;
+    html+=`<button class="pg-btn ${p===page?'active':''}" onclick="goPage(${p})">${p}</button>`;
+    prev=p;
+  });
+  html+=`<button class="pg-btn" onclick="goPage(${page+1})" ${page===total?'disabled':''}><i class="fa-solid fa-chevron-right"></i></button></div>`;
+  el.innerHTML=html;
+}
+function goPage(p){ const t=Math.ceil(filtered.length/PER_PAGE); if(p<1||p>t)return; page=p; renderTable(); renderPager(); window.scrollTo({top:0,behavior:'smooth'}); }
+
+/* ════════════════════════════════════════
+   STAFF PICKER
+════════════════════════════════════════ */
+async function loadPickerOrgs(){
+  try {
+    // เปลี่ยนมาเรียกจาก staff-list โหมด orgs แทนการยิง /api/organizations
+    const r = await fetch(`${API}/user/staff-list?type=orgs`, { headers: authH() });
+    const j = await safeJson(r);
+    if(!j.success) return;
+
+    const data = j.data || {};
+    
+    // แปลงข้อมูลให้ตรงกับ Format ที่ Dropdown ใช้
+    orgAffList = (data.affiliations || []).map(a => ({ aff_code: a.aff_code, affiliation: a.affiliation }));
+    orgAffList.sort((a,b) => a.affiliation.localeCompare(b.affiliation, 'th'));
+
+    orgDepList = (data.departments || []).map(d => ({ dep_code: d.dep_code, department: d.department, aff_code: d.aff_code }));
+    orgDepList.sort((a,b) => a.department.localeCompare(b.department, 'th'));
+
+    PICKERS.forEach(role => populateAffDropdown(role));
+  } catch(e) { 
+    console.warn('[loadPickerOrgs]', e); 
+  }
+}
+
+function populateAffDropdown(role){
+  const R = role.charAt(0).toUpperCase() + role.slice(1);
+  const affSel = $(`aff${R}`);
+  if(!affSel) return;
+  const cur = affSel.value;
+  affSel.innerHTML = `<option value="">— ทุกสังกัด —</option>` + orgAffList.map(a => `<option value="${a.aff_code}">${a.affiliation}</option>`).join('');
+  if(cur) affSel.value = cur;
+}
+
+function onAffChange(role){
+  const R   = role.charAt(0).toUpperCase() + role.slice(1);
+  const aff = $(`aff${R}`)?.value || '';
+  populateDepDropdown(role, aff);
+  loadStaff(role);
+}
+
+function populateDepDropdown(role, selectedAff=''){
+  const R = role.charAt(0).toUpperCase() + role.slice(1);
+  const depSel = $(`dep${R}`);
+  if(!depSel) return;
+  const cur = depSel.value;
+  const deps = selectedAff ? orgDepList.filter(d => d.aff_code === selectedAff) : orgDepList;
+  depSel.innerHTML = `<option value="">— ทุกหน่วยงาน —</option>` + deps.map(d => `<option value="${d.dep_code}">${d.department}</option>`).join('');
+  if(cur && deps.find(d => d.dep_code === cur)) depSel.value = cur;
+}
+
+// เพิ่มการส่ง type ไปที่ API เพื่อให้กรองผู้อนุมัติได้ถูกต้อง
+async function loadStaff(role){
+  const R       = role.charAt(0).toUpperCase() + role.slice(1);
+  const aff_code = $(`aff${R}`)?.value || '';
+  const dep_code = $(`dep${R}`)?.value || '';
+  const listEl   = $(`staffList${R}`);
+  
+  // ─── จัดการ UI สำหรับผู้อนุมัติ: ซ่อน Dropdown หน่วยงาน เพราะไม่จำเป็น ───
+  const depSel = $(`dep${R}`);
+  if(depSel) {
+    if(role === 'approver') {
+      depSel.style.display = 'none'; // ซ่อนช่องเลือกหน่วยงานสำหรับผู้อนุมัติ
+    } else {
+      depSel.style.display = '';     // แสดงช่องเลือกหน่วยงานสำหรับคนอื่น
+    }
+  }
+
+  listEl.innerHTML = `<div class="no-staff"><i class="fa-solid fa-circle-notch fa-spin"></i> กำลังโหลด…</div>`;
+
+  if(orgAffList.length) populateDepDropdown(role, aff_code);
+
+  try{
+    let url = `${API}/user/staff-list`;
+    const params = [];
+    
+    // ส่ง type เพื่อบอก API ว่ากำลังโหลดรายการประเภทไหน
+    params.push(`type=${role}`); 
+    
+    if(aff_code) params.push(`aff_code=${encodeURIComponent(aff_code)}`);
+    
+    // ─── ส่งค่า dep_code เฉพาะคนที่ไม่ใช่ผู้อนุมัติ ───
+    // ผู้อนุมัติไม่ต้องกรองหน่วยงาน ให้ API ดึงมาทั้งสังกัด
+    if(role !== 'approver' && dep_code) {
+      params.push(`dep_code=${encodeURIComponent(dep_code)}`); 
+    }
+    
+    if(params.length) url += '?' + params.join('&');
+
+    const r = await fetch(url, { headers: authH() });
+    const j = await safeJson(r);
+    if(!j.success) throw new Error(j.message);
+
+    const staff = j.data || [];
+    pickerState[role].allStaff  = staff;
+    pickerState[role].filtered  = staff;
+    renderStaffList(role, staff);
+
+  }catch(e){
+    listEl.innerHTML = `<div class="no-staff" style="color:var(--ro)"><i class="fa-solid fa-triangle-exclamation"></i> โหลดไม่สำเร็จ</div>`;
+  }
+}
+function filterStaff(role, q){
+  const all=pickerState[role].allStaff;
+  const f=q.trim().toLowerCase();
+  pickerState[role].filtered=f?all.filter(s=>(s.name||'').toLowerCase().includes(f)):all;
+  renderStaffList(role, pickerState[role].filtered);
+}
+
+function renderStaffList(role, staff){
+  const R=role.charAt(0).toUpperCase()+role.slice(1);
+  const el=$(`staffList${R}`);
+  if(!staff.length){
+    el.innerHTML=`<div class="no-staff">ไม่พบบุคลากร</div>`; return;
+  }
+  el.innerHTML=staff.slice(0,60).map(s=>`
+    <div class="staff-item" onclick="selectStaff('${role}','${s.uuid}','${(s.name||'').replace(/'/g,"\\'")}','${(s.position||'').replace(/'/g,"\\'")}','${(s.department||'').replace(/'/g,"\\'")}')">
+      <div class="staff-av">${(s.name||'?').charAt(0)}</div>
+      <div><div class="staff-name">${s.name||'—'}</div><div class="staff-pos">${s.position||'—'}</div></div>
+      <div class="staff-dep">${s.department||''}</div>
+    </div>`).join('');
+}
+
+function selectStaff(role, uuid, name, position, department){
+  const R=role.charAt(0).toUpperCase()+role.slice(1);
+  $(`f${R}Uuid`).value=uuid;
+  $(`search${R}`).value='';
+  $(`dd${R}`).classList.remove('show');
+
+  const sel=$(`selected${R}`);
+  sel.style.display='flex';
+  sel.innerHTML=`
+    <div class="staff-av" style="width:22px;height:22px;font-size:.58rem">${name.charAt(0)}</div>
+    <div style="flex:1;min-width:0">
+      <div class="s-nm">${name}</div>
+      <div style="font-size:.6rem;color:var(--tx3)">${position} · ${department}</div>
+    </div>
+    <button class="s-clr" onclick="clearStaff('${role}')" title="เคลียร์"><i class="fa-solid fa-xmark"></i></button>`;
+}
+
+function clearStaff(role){
+  const R=role.charAt(0).toUpperCase()+role.slice(1);
+  $(`f${R}Uuid`).value='';
+  $(`selected${R}`).style.display='none';
+  $(`selected${R}`).innerHTML='';
+}
+
+function openPicker(role){
+  PICKERS.forEach(p=>{
+    if(p!==role){
+      const R=p.charAt(0).toUpperCase()+p.slice(1);
+      $(`dd${R}`).classList.remove('show');
+    }
+  });
+  const R=role.charAt(0).toUpperCase()+role.slice(1);
+  const dd=$(`dd${R}`);
+  dd.classList.add('show');
+  if(!pickerState[role].allStaff.length) loadStaff(role);
+}
+
+document.addEventListener('click', e=>{
+  PICKERS.forEach(role=>{
+    const R=role.charAt(0).toUpperCase()+role.slice(1);
+    const dd=$(`dd${R}`);
+    const picker=$(`picker${R}`);
+    if(!picker?.contains(e.target)) dd?.classList.remove('show');
+  });
+});
+
+/* ════════════════════════════════════════
+   ADD / EDIT / DELETE
+════════════════════════════════════════ */
+function resetForm(){
+  editingId=null;
+  ['Leaver','Supervisor','Approver','Delegate'].forEach(r=>{
+    $(`f${r}Uuid`).value='';
+    $(`search${r}`).value='';
+    $(`selected${r}`).style.display='none';
+    $(`selected${r}`).innerHTML='';
+  });
+  $('fType').value=''; $('fStatus').value='pending';
+  $('fStart').value=''; $('fEnd').value=''; $('fReason').value=''; $('fSupervisorNote').value='';
+  $('daysHint').textContent='';
+}
+
+function openAddModal(){
+  resetForm();
+  $('formTitle').innerHTML='<i class="fa-solid fa-calendar-plus"></i>บันทึกการลา';
+  $('saveBtn').innerHTML='<i class="fa-solid fa-floppy-disk"></i>บันทึก';
+  $('saveBtn').style.display='';
+  $('formOv').classList.add('show');
+}
+
+function openEditModal(id){
+  const l=allLeaves.find(x=>x.id===id); if(!l) return;
+  resetForm();
+  editingId=id;
+  
+  var isOwner = (l.user_uuid === window.myUuid);
+  var isPending = (l.status === 'pending');
+  var canModify = canEdit || (isOwner && isPending); // เช็คว่ามีสิทธิ์แก้ไขรายการนี้ไหม
+
+  $('formTitle').innerHTML=`<i class="fa-solid fa-calendar-pen"></i>${canModify?'แก้ไข':'ดู'}รายการการลา`;
+  $('saveBtn').innerHTML='<i class="fa-solid fa-floppy-disk"></i>บันทึกการแก้ไข';
+  $('saveBtn').style.display=canModify?'':'none'; // ซ่อนปุ่มบันทึกถ้าแก้ไม่ได้
+
+  $('fType').value=l.leave_type||'';
+  $('fStatus').value=l.status||'pending';
+  $('fStart').value=l.start_date||'';
+  $('fEnd').value=l.end_date||'';
+  $('fReason').value=l.reason||'';
+  $('fSupervisorNote').value=l.supervisor_note||'';
+  calcDays();
+
+  // ล็อคช่องสถานะและช่องผู้ลา ถ้าเป็น User ทั่วไป
+  if(!canEdit && isOwner) {
+    $('fStatus').value = 'pending';
+    $('fStatus').disabled = true;
+    // ช่องผู้ลา ก็ให้ disabled เพื่อไม่ให้ย้ายไปลาแทนคนอื่น
+    $('searchLeaver').disabled = true; 
+  } else {
+    $('fStatus').disabled = false;
+    $('searchLeaver').disabled = false;
+  }
+
+  if(l.user_uuid&&l.user_name) selectStaff('leaver',l.user_uuid,l.user_name,l.position||'',l.department||'');
+  if(l.supervisor_uuid&&l.supervisor_name) selectStaff('supervisor',l.supervisor_uuid,l.supervisor_name,'','');
+  if(l.approver_uuid&&l.approver_name) selectStaff('approver',l.approver_uuid,l.approver_name,'','');
+  if(l.delegate_uuid&&l.delegate_name) selectStaff('delegate',l.delegate_uuid,l.delegate_name,'','');
+
+  $('formOv').classList.add('show');
+}
+
+function closeForm(){$('formOv').classList.remove('show');}
+
+async function saveLeave(){
+  $('fStatus').disabled = false;
+  $('searchLeaver').disabled = false;
+  const user_uuid=$('fLeaverUuid').value;
+  const leave_type=$('fType').value;
+  const status=$('fStatus').value;
+  const start_date=$('fStart').value;
+  const end_date=$('fEnd').value;
+  const supervisor_uuid=$('fSupervisorUuid').value;
+  const approver_uuid=$('fApproverUuid').value;
+  const delegate_uuid=$('fDelegateUuid').value||null;
+  const reason=$('fReason').value.trim()||null;
+  const supervisor_note=$('fSupervisorNote').value.trim()||null;
+
+  const errs=[];
+  if(!user_uuid) errs.push('ผู้ลา');
+  if(!leave_type) errs.push('ประเภทการลา');
+  if(!start_date) errs.push('วันที่เริ่มต้น');
+  if(!end_date) errs.push('วันที่สิ้นสุด');
+  if(!supervisor_uuid) errs.push('ผู้บังคับบัญชา');
+  if(!approver_uuid) errs.push('ผู้อนุมัติ');
+  if(errs.length){toast('กรุณาระบุ: '+errs.join(', '),'err');return;}
+  if(end_date<start_date){toast('วันที่สิ้นสุดต้องไม่ก่อนวันที่เริ่มต้น','err');return;}
+
+  const payload={user_uuid,leave_type,status,start_date,end_date,supervisor_uuid,approver_uuid,delegate_uuid,reason,supervisor_note};
+  const btn=$('saveBtn'); btn.disabled=true; btn.innerHTML='<i class="fa-solid fa-circle-notch fa-spin"></i>กำลังบันทึก…';
+
+  try{
+    const isEdit=editingId!==null;
+    const url=isEdit?`${API}/dash/leave-records/${editingId}`:`${API}/dash/leave-records`;
+    const r=await fetch(url,{method:isEdit?'PUT':'POST',headers:authH(),body:JSON.stringify(payload)});
+    const j=await safeJson(r);
+    if(!j.success) throw new Error(j.message||`HTTP ${r.status}`);
+    toast(isEdit?'แก้ไขรายการสำเร็จ':'บันทึกการลาสำเร็จ');
+
+    closeForm(); loadAll();
+  }catch(e){toast(e.message,'err');}
+
+  btn.disabled=false; btn.innerHTML='<i class="fa-solid fa-floppy-disk"></i>บันทึก';
+}
+
+function openDelModal(id,name){
+  deletingId=id;
+  $('delMsg').innerHTML=`ต้องการลบรายการการลาของ <strong>"${name}"</strong> ใช่หรือไม่?<br><span style="font-size:.7rem;color:var(--tx3)">การกระทำนี้ไม่สามารถย้อนกลับได้</span>`;
+  $('delOv').classList.add('show');
+}
+function closeDel(){$('delOv').classList.remove('show');deletingId=null;}
+
+async function confirmDelete(){
+  if(!canEdit||!deletingId)return;
+  const btn=$('delConfirmBtn'); btn.disabled=true; btn.innerHTML='<i class="fa-solid fa-circle-notch fa-spin"></i>กำลังลบ…';
+  try{
+    const r=await fetch(`${API}/dash/leave-records/${deletingId}`,{method:'DELETE',headers:authH()});
+    const j=await safeJson(r);
+    if(!j.success) throw new Error(j.message||`HTTP ${r.status}`);
+    toast('ลบรายการสำเร็จ'); closeDel(); loadAll();
+  }catch(e){toast(e.message,'err');}
+  btn.disabled=false; btn.innerHTML='<i class="fa-solid fa-trash-can"></i>ลบ';
+}
+
+/* ════════════════════════════════════════
+   USER INFO
+════════════════════════════════════════ */
+function loadUser(){
+  const u=JSON.parse(localStorage.getItem('user_data')||'{}');
+  const name=`${u.firstName||''} ${u.lastName||''}`.trim()||'ผู้ใช้งาน';
+  $('uNm').textContent=name; $('uAv').textContent=name.charAt(0).toUpperCase();
+  $('uRl').textContent=u.role||'—';
+window.myUuid = u.uuid; 
+}
+
+ $('userMenuBtn').addEventListener('click',e=>{e.stopPropagation();$('userDropdown').classList.toggle('show');});
+document.addEventListener('click',()=>$('userDropdown').classList.remove('show'));
+
+/* ════════════════════════════════════════
+   APPROVE / REJECT
+════════════════════════════════════════ */
+let approvingId   = null;
+let approvingMode = 'approved';
+
+function escHtml(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function openApproveModal(id, mode){
+  if(!canEdit){toast('ไม่มีสิทธิ์','err');return;}
+  const l=allLeaves.find(x=>x.id===id); if(!l) return;
+  approvingId=id; approvingMode=mode;
+
+  const isApprove = mode==='approved';
+  const icoEl=$('apvIco'), icoI=$('apvIcoI');
+
+  if(isApprove){
+    icoEl.className='apv-header-ico approved'; icoI.className='fa-solid fa-circle-check';
+    $('apvTitle').innerHTML='<i class="fa-solid fa-circle-check"></i>อนุมัติการลา';
+    $('apvHeading').textContent='อนุมัติการลา';
+    $('apvBtnTx').textContent='อนุมัติ';
+    $('apvConfirmBtn').style.cssText='background:var(--embg);border-color:var(--bda);color:var(--em)';
+    $('apvNoteReq').style.display='none';
+    $('apvNote').placeholder='หมายเหตุประกอบการอนุมัติ (ถ้ามี)…';
+    $('apvNoteHint').textContent='';
+  } else {
+    icoEl.className='apv-header-ico rejected'; icoI.className='fa-solid fa-circle-xmark';
+    $('apvTitle').innerHTML='<i class="fa-solid fa-circle-xmark"></i>ปฏิเสธการลา';
+    $('apvHeading').textContent='ปฏิเสธการลา';
+    $('apvBtnTx').textContent='ปฏิเสธ';
+    $('apvConfirmBtn').style.cssText='background:var(--robg);border-color:var(--rob);color:var(--ro)';
+    $('apvNoteReq').style.display='inline';
+    $('apvNote').placeholder='กรุณาระบุเหตุผลที่ไม่อนุมัติ…';
+    $('apvNoteHint').textContent='* จำเป็น — ผู้ลาจะเห็นข้อความนี้';
+  }
+
+  const tInfo = LEAVE_TYPE_MAP[l.leave_type];
+  const typeName = tInfo ? tInfo.label : l.leave_type;
+  $('apvSubtitle').textContent=`${l.user_name||'—'} · ${typeName} · ${fmtDate(l.start_date)} – ${fmtDate(l.end_date)} (${l.days} วัน)`;
+
+  $('apvResetBtn').style.display = l.status!=='pending' ? 'flex' : 'none';
+  $('apvNote').value='';
+  $('apvOv').classList.add('show');
+  setTimeout(()=>$('apvNote').focus(),120);
+}
+
+function closeApprove(){ $('apvOv').classList.remove('show'); approvingId=null; }
+
+function submitApproveConfirm(){ submitApprove(approvingMode); }
+
+async function submitApprove(status){
+  if(!canEdit||!approvingId) return;
+  const note=$('apvNote').value.trim();
+
+  if(status==='rejected'&&!note){
+    $('apvNoteHint').style.color='var(--ro)';
+    $('apvNoteHint').textContent='⚠ กรุณาระบุเหตุผลที่ไม่อนุมัติ';
+    $('apvNote').focus(); return;
+  }
+
+  const btn=status==='pending'?$('apvResetBtn'):$('apvConfirmBtn');
+  btn.disabled=true;
+  const origHTML=btn.innerHTML;
+  btn.innerHTML='<i class="fa-solid fa-circle-notch fa-spin"></i>กำลังบันทึก…';
+
+  try{
+    const r=await fetch(`${API}/dash/leave-records/${approvingId}`,{
+      method:'PATCH',
+      headers:authH(),
+      body:JSON.stringify({ status, approval_note: note||null }),
+    });
+    const j=await safeJson(r);
+    if(!j.success) throw new Error(j.message||`HTTP ${r.status}`);
+    toast(j.message||'บันทึกสถานะสำเร็จ');
+    closeApprove(); loadAll();
+  }catch(e){ toast(e.message,'err'); }
+
+  btn.disabled=false; btn.innerHTML=origHTML;
+}
+
+/* ════════════════════════════════════════
+   EXPORT EXCEL
+════════════════════════════════════════ */
+function exportExcel(){
+  if(!filtered.length){ toast('ไม่มีข้อมูลที่จะส่งออก','err'); return; }
+
+  var H_BG = 'FF1A2A3A', SUB_BG = 'FF2D4A6A', REQ_BG = 'FFFFFF99', OPT_BG = 'FFE8F4FD', RO_BG = 'FFF5F5F5', H_FG = 'FFFFFFFF', D_FG = 'FF1A2A3A';
+  function hCell(v, bg, fg, bold){ return { v:v, t:'s', s:{ font:{bold:bold!==false,color:{rgb:fg||H_FG},name:'Sarabun',sz:9}, fill:{fgColor:{rgb:bg}}, alignment:{horizontal:'center',vertical:'center',wrapText:true}, border:{bottom:{style:'thin',color:{rgb:'FFBDD7EE'}},right:{style:'thin',color:{rgb:'FFBDD7EE'}}} } }; }
+  function dCell(v, bg, fg, align){ return { v:v!=null?v:'', t:'s', s:{ font:{name:'Sarabun',sz:9,color:{rgb:fg||D_FG}}, fill:{fgColor:{rgb:bg||'FFFFFFFF'}}, alignment:{horizontal:align||'left',vertical:'center'}, border:{bottom:{style:'thin',color:{rgb:'FFBDD7EE'}},right:{style:'thin',color:{rgb:'FFBDD7EE'}}} } }; }
+
+  var COLS = [
+    ['user_uuid','uuid ผู้ลา','UUID',36,RO_BG,'ดึงจากระบบ'],
+    ['user_name','ชื่อ - สกุล','ชื่อ-สกุล',26,RO_BG,'ดึงอัตโนมัติ'],
+    ['leave_type','ประเภทการลา *','รหัสประเภท',18,REQ_BG,'จำเป็น'],
+    ['start_date','วันที่เริ่มต้น *','YYYY-MM-DD',16,REQ_BG,'จำเป็น'],
+    ['end_date','วันที่สิ้นสุด *','YYYY-MM-DD',16,REQ_BG,'จำเป็น'],
+    ['days','จำนวนวัน','คำนวณอัตโนมัติ',12,RO_BG,'ระบบคำนวณ'],
+    ['reason','เหตุผลการลา','reason',28,OPT_BG,'ไม่บังคับ'],
+    ['supervisor_uuid','uuid ผู้บังคับบัญชา *','UUID',36,REQ_BG,'จำเป็น'],
+    ['supervisor_name','ชื่อผู้บังคับบัญชา','supervisor name',24,RO_BG,'อ้างอิง'],
+    ['supervisor_note','ความเห็นหัวหน้า','supervisor note',28,OPT_BG,'ไม่บังคับ'],
+    ['approver_uuid','uuid ผู้อนุมัติ *','UUID',36,REQ_BG,'จำเป็น'],
+    ['approver_name','ชื่อผู้อนุมัติ','approver name',24,RO_BG,'อ้างอิง'],
+    ['delegate_uuid','uuid ผู้รับมอบ','UUID',36,OPT_BG,'ไม่บังคับ'],
+    ['delegate_name','ชื่อผู้รับมอบ','delegate name',24,RO_BG,'อ้างอิง'],
+    ['status','สถานะ','pending/approved/rejected',18,OPT_BG,'ค่าเริ่ม=pending'],
+    ['approval_note','หมายเหตุอนุมัติ','approval note',28,RO_BG,'กรอกโดยผู้อนุมัติ'],
+    ['approved_by_name','อนุมัติโดย','approved by',24,RO_BG,'กรอกโดยระบบ'],
+    ['approved_at','วันเวลาอนุมัติ','approved at',22,RO_BG,'กรอกโดยระบบ'],
+  ];
+
+  var wb = XLSX.utils.book_new();
+  var ws = {};
+  var range = {s:{r:0,c:0}, e:{r:0,c:COLS.length-1}};
+
+  ws['A1'] = hCell('ข้อมูลการลา — ส่งออก '+new Date().toLocaleDateString('th-TH')+' ('+filtered.length+' รายการ)', H_BG, H_FG);
+  ws['!merges'] = [{s:{r:0,c:0}, e:{r:0,c:COLS.length-1}}];
+
+  ws['A2'] = { v: 'คอลัมน์สีเหลือง = จำเป็น  |  คอลัมน์สีฟ้า = ไม่บังคับ  |  สีเทา = อ่านอย่างเดียว', t:'s', s:{font:{sz:8,italic:true,color:{rgb:'FF334155'}}, fill:{fgColor:{rgb:'FFEBF5FB'}}, alignment:{horizontal:'left',vertical:'center'}} };
+  ws['!merges'].push({s:{r:1,c:0}, e:{r:1,c:COLS.length-1}});
+
+  COLS.forEach(function(col, ci){ ws[XLSX.utils.encode_cell({r:2, c:ci})] = hCell(col[1]+'\n('+col[2]+')', SUB_BG, H_FG); });
+  COLS.forEach(function(col, ci){ ws[XLSX.utils.encode_cell({r:3, c:ci})] = { v:col[5], t:'s', s:{font:{sz:7,italic:true,color:{rgb:'FF64748B'}}, fill:{fgColor:{rgb:'FFF8FAFC'}}, alignment:{horizontal:'center',vertical:'center'}, border:{bottom:{style:'thin',color:{rgb:'FFBDD7EE'}},right:{style:'thin',color:{rgb:'FFBDD7EE'}}}} }; });
+
+  var statusMap={pending:'รออนุมัติ',approved:'อนุมัติแล้ว',rejected:'ไม่อนุมัติ'};
+  filtered.forEach(function(l, ri){
+    var r = ri + 4;
+    COLS.forEach(function(col, ci){
+      var key = col[0], bg = col[4], addr = XLSX.utils.encode_cell({r:r, c:ci});
+      var val = l[key] != null ? l[key] : '';
+      if(key==='leave_type') { var tInfo = LEAVE_TYPE_MAP[val]; val = tInfo ? val + ' (' + tInfo.label + ')' : val; }
+      if(key==='status' && statusMap[val]) val = val + ' (' + statusMap[val] + ')';
+      if(key==='days') val = val || '';
+      ws[addr] = dCell(String(val), bg, bg === RO_BG ? 'FF94A3B8' : D_FG, 'left');
+    });
+    if(r > range.e.r) range.e.r = r;
+  });
+
+  if(range.e.r < 4) range.e.r = 4;
+  ws['!ref'] = XLSX.utils.encode_range(range);
+  ws['!cols'] = COLS.map(function(col){ return {wch: col[3]}; });
+  ws['!rows'] = [{hpt:26},{hpt:22},{hpt:40},{hpt:18}];
+
+  XLSX.utils.book_append_sheet(wb, ws, 'บันทึกการลา');
+
+  var ws2 = XLSX.utils.aoa_to_sheet([
+    ['รหัส (ใส่ในคอลัมน์ leave_type)', 'ชื่อภาษาไทย', 'คำอธิบาย'],
+    ['sick','ลาป่วย','ลาป่วยตามสิทธิ์ราชการ'],
+    ['maternity','ลาคลอดบุตร','ลาคลอดบุตรตามสิทธิ์'],
+    ['paternity','ลาช่วยเหลือภริยาที่คลอดบุตร','ลาช่วยเหลือภริยาที่คลอดบุตรตามสิทธิ์'],
+    ['personal','ลากิจส่วนตัว','ลากิจส่วนตัวตามสิทธิ์'],
+    ['vacation','ลาพักผ่อนประจำปี','ลาพักผ่อนประจำปีตามสิทธิ์'],
+    ['ordain','ลาอุปสมบท/ประกอบพิธีฮัจย์','ลาอุปสมบทหรือลาไปประกอบพิธีฮัจย์'],
+    ['military','ลาเข้ารับการตรวจเลือก/เตรียมพล','ลาเข้ารับการตรวจเลือกหรือเข้ารับการเตรียมพล'],
+    ['study','ลาศึกษา/ฝึกอบรม/ดูงาน/วิจัย','ลาไปศึกษา ฝึกอบรม ดูงาน หรือปฏิบัติการวิจัย'],
+    ['intl','ลาปฏิบัติงานในองค์การระหว่างประเทศ','ลาไปปฏิบัติงานในองค์การระหว่างประเทศ'],
+    ['spouse','ลาติดตามคู่สมรส','ลาติดตามคู่สมรส'],
+    ['rehab','ลาฟื้นฟูสมรรถภาพด้านอาชีพ','ลาไปฟื้นฟูสมรรถภาพด้านอาชีพ'],
+  ]);
+  ws2['!cols']=[{wch:40},{wch:35},{wch:50}];
+  XLSX.utils.book_append_sheet(wb, ws2, 'ประเภทการลา');
+
+  XLSX.writeFile(wb, 'leave_export_'+new Date().toISOString().slice(0,10)+'.xlsx');
+  toast('ส่งออก '+filtered.length+' รายการ สำเร็จ');
+}
+
+/* ════════════════════════════════════════
+   INIT
+════════════════════════════════════════ */
+(()=>{ const t=localStorage.getItem('theme'); if(t) document.documentElement.dataset.theme=t; })();
+document.addEventListener('DOMContentLoaded',()=>{ loadUser(); loadAll(); loadPickerOrgs(); });
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ closeForm(); closeDel(); closeApprove(); } });
+</script>
+
+</body>
+</html>

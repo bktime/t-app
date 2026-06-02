@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="th" data-theme="dark">
+<html lang="th" data-theme="light">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>เซกา | ระบบลงเวลาปฏิบัติงาน</title>
+  <title>ระบบลงเวลาปฏิบัติงาน</title>
   <meta name="theme-color" content="#0b1220" id="themeColorMeta">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -11,2744 +11,307 @@
   <meta name="format-detection" content="telephone=no">
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="/icons/icon-192.png">
-
+  <link rel="icon" type="image/x-icon" href="/icons/icon-192.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&family=Outfit:wght@500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
-  <style>
-    :root {
-      /* Core Palette */
-      --bg-void: #0b1220;
-      --bg-deep: #111827;
-      --bg-surface: rgba(15, 23, 42, 0.82);
-      --bg-glass: rgba(255, 255, 255, 0.045);
-      --bg-glass-hover: rgba(255, 255, 255, 0.07);
-      --bg-glass-active: rgba(255, 255, 255, 0.1);
-
-      /* Accent System */
-      --mint: #00f5b0;
-      --mint-dim: #00c98a;
-      --mint-glow: rgba(0, 245, 176, 0.18);
-      --mint-border: rgba(0, 245, 176, 0.22);
-      --mint-text: #00f5b0;
-
-      --cyan: #22d3f0;
-      --cyan-glow: rgba(34, 211, 240, 0.15);
-
-      --violet: #8b7cf8;
-      --violet-glow: rgba(139, 124, 248, 0.18);
-
-      --rose: #f87171;
-      --rose-glow: rgba(248, 113, 113, 0.15);
-      --rose-border: rgba(248, 113, 113, 0.25);
-
-      --amber: #fbbf24;
-      --amber-glow: rgba(251, 191, 36, 0.15);
-      --amber-border: rgba(251, 191, 36, 0.22);
-
-      --sapphire: #60a5fa;
-      --sapphire-glow: rgba(96, 165, 250, 0.15);
-      --sapphire-border: rgba(96, 165, 250, 0.22);
-
-      --teal: #2dd4bf;
-      --teal-glow: rgba(45, 212, 191, 0.15);
-      --teal-border: rgba(45, 212, 191, 0.22);
-
-  /* Text */
-  --t1: rgba(248, 250, 252, 0.96);
-  --t2: rgba(180, 190, 210, 0.82);
-  --t3: rgba(120, 135, 160, 0.7);
-      --t4: rgba(110, 128, 158, 0.7);
-
-      /* Borders */
-  --b1: rgba(255,255,255,0.12);
-  --b2: rgba(255,255,255,0.07);
-      --b3: rgba(255, 255, 255, 0.03);
-
-      /* Layout */
-      --r-sm: 10px;
-      --r-md: 16px;
-      --r-lg: 22px;
-      --r-xl: 28px;
-      --r-2xl: 36px;
-      --r-full: 9999px;
-
-      /* Motion */
-      --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
-      --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
-
-      /* Safe areas */
-      --sat: env(safe-area-inset-top, 0px);
-      --sar: env(safe-area-inset-right, 0px);
-      --sab: env(safe-area-inset-bottom, 0px);
-      --sal: env(safe-area-inset-left, 0px);
-    }
-
-    [data-theme="light"] {
-      --bg-void: #f0f4f8;
-      --bg-deep: #e4eaf4;
-      --bg-surface: rgba(255, 255, 255, 0.88);
-      --bg-glass: rgba(0, 0, 0, 0.028);
-      --bg-glass-hover: rgba(0, 0, 0, 0.05);
-      --bg-glass-active: rgba(0, 0, 0, 0.08);
-      --mint: #007a58;
-      --mint-dim: #005e44;
-      --mint-glow: rgba(0, 122, 88, 0.12);
-      --mint-border: rgba(0, 122, 88, 0.2);
-      --mint-text: #006048;
-      --cyan: #0891b2;
-      --violet: #6d52e8;
-      --rose: #dc2626;
-      --rose-border: rgba(220, 38, 38, 0.2);
-      --amber: #d97706;
-      --amber-border: rgba(217, 119, 6, 0.2);
-      --sapphire: #2563eb;
-      --sapphire-border: rgba(37, 99, 235, 0.2);
-      --teal: #0d9488;
-      --teal-border: rgba(13, 148, 136, 0.2);
-      --t1: #0f1d30;
-      --t2: #3a5070;
-      --t3: #7090b0;
-      --t4: #a0b8cc;
-      --b1: rgba(0, 0, 0, 0.1);
-      --b2: rgba(0, 0, 0, 0.06);
-      --b3: rgba(0, 0, 0, 0.03);
-    }
-
-    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-
-    html {
-      height: 100%;
-      scroll-behavior: smooth;
-      -webkit-tap-highlight-color: transparent;
-      text-rendering: optimizeLegibility;
-      -webkit-font-smoothing: antialiased;
-    }
-
-    body {
-      font-family: 'IBM Plex Sans Thai', 'Sarabun', sans-serif;
-      /* background: var(--bg-void); */
-      background:   radial-gradient(circle at top,var(--bg-void) 0%, var(--bg-void) 45%, var(--bg-void) 100%);
-      min-height: 100dvh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      overflow-x: hidden;
-      overscroll-behavior: contain;
-      -webkit-user-select: none;
-      user-select: none;
-      position: relative;
-    }
-
-    .text-select { -webkit-user-select: text; user-select: text; }
-    .sr-only {
-      position: absolute; width: 1px; height: 1px;
-      padding: 0; margin: -1px; overflow: hidden;
-      clip: rect(0,0,0,0); border: 0;
-    }
-
-    /* ═══════════ BACKGROUND SYSTEM ═══════════ */
-    .bg-scene {
-      position: fixed;
-      inset: 0;
-      z-index: 0;
-      overflow: hidden;
-      pointer-events: none;
-    }
-
-    .bg-gradient-base {
-      position: absolute;
-      inset: 0;
-      background:
-        radial-gradient(ellipse 120% 80% at 15% -5%, rgba(0, 245, 176, 0.07) 0%, transparent 60%),
-        radial-gradient(ellipse 100% 60% at 85% 100%, rgba(34, 211, 240, 0.06) 0%, transparent 55%),
-        radial-gradient(ellipse 80% 50% at 50% 50%, rgba(139, 124, 248, 0.04) 0%, transparent 65%);
-    }
-
-    [data-theme="light"] .bg-gradient-base {
-      background:
-        radial-gradient(ellipse 120% 80% at 15% -5%, rgba(0, 122, 88, 0.05) 0%, transparent 60%),
-        radial-gradient(ellipse 100% 60% at 85% 100%, rgba(8, 145, 178, 0.04) 0%, transparent 55%),
-        radial-gradient(ellipse 80% 50% at 50% 50%, rgba(109, 82, 232, 0.03) 0%, transparent 65%);
-    }
-
-    .bg-noise {
-      position: absolute;
-      inset: 0;
-      opacity: 0.018;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-      background-repeat: repeat;
-      background-size: 256px 256px;
-    }
-
-    .bg-grid {
-      position: absolute;
-      inset: 0;
-      background-image:
-        linear-gradient(var(--b3) 1px, transparent 1px),
-        linear-gradient(90deg, var(--b3) 1px, transparent 1px);
-      background-size: 40px 40px;
-      mask-image: radial-gradient(ellipse 70% 70% at 50% 50%, black, transparent);
-    }
-
-    .particle {
-      position: absolute;
-      border-radius: 50%;
-      animation: particleDrift linear infinite;
-    }
-
-    @keyframes particleDrift {
-      0% { transform: translate(0, 0) scale(1); opacity: 0; }
-      15% { opacity: 1; }
-      85% { opacity: 0.6; }
-      100% { transform: translate(var(--dx, 30px), var(--dy, -100px)) scale(0.5); opacity: 0; }
-    }
-
-    /* ═══════════ LAYOUT ═══════════ */
-    .app-shell {
-      width: 100%;
-      max-width: 430px;
-      min-height: 100dvh;
-      position: relative;
-      z-index: 10;
-      display: flex;
-      flex-direction: column;
-      padding:
-        max(1rem, calc(var(--sat) + 0.5rem))
-        max(1rem, var(--sar))
-        max(1.5rem, calc(var(--sab) + 1rem))
-        max(1rem, var(--sal));
-      gap: 0.75rem;
-    }
-
-    /* ═══════════ TOP BAR ═══════════ */
-    .top-bar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 0.25rem;
-      animation: slideDown 0.6s var(--ease-out) both;
-    }
-
-    @keyframes slideDown {
-      from { opacity: 0; transform: translateY(-12px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .org-badge {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-    }
-
-    .org-badge .org-name {
-      font-family: 'Outfit', sans-serif;
-      font-size: 0.7rem;
-      font-weight: 600;
-      color: var(--t2);
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-    }
-
-    .org-badge .org-sub {
-      font-size: 0.62rem;
-      color: var(--t3);
-      letter-spacing: 0.02em;
-    }
-
-    .top-controls {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .icon-btn {
-      width: 36px;
-      height: 36px;
-      border-radius: var(--r-md);
-      background: var(--bg-glass);
-      border: 1px solid var(--b1);
-      color: var(--t2);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.9rem;
-      transition: all 0.2s var(--ease-out);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .icon-btn:hover {
-      background: var(--bg-glass-hover);
-      color: var(--t1);
-      border-color: var(--mint-border);
-      box-shadow: 0 0 16px var(--mint-glow);
-    }
-
-    .icon-btn:active { transform: scale(0.93); }
-
-    .notif-dot {
-      position: absolute;
-      top: 7px;
-      right: 7px;
-      width: 7px;
-      height: 7px;
-      background: var(--mint);
-      border-radius: 50%;
-      border: 1.5px solid var(--bg-void);
-      animation: dotPulse 2.5s ease-in-out infinite;
-    }
-
-    @keyframes dotPulse {
-      0%, 100% { box-shadow: 0 0 0 0 var(--mint-glow); }
-      50% { box-shadow: 0 0 0 4px transparent; }
-    }
-
-        /* ═══════════ CLOCK / BANNER WIDGET ═══════════ */
-    .clock-widget {
-      background: var(--bg-surface);
-      border: 1px solid var(--b1);
-      border-radius: var(--r-2xl);
-      position: relative;
-      overflow: hidden;
-      backdrop-filter: blur(40px) saturate(160%);
-      -webkit-backdrop-filter: blur(40px) saturate(160%);
-      animation: cardIn 0.7s var(--ease-out) 0.08s both;
-      padding: 0;
-      height: 150px; /* ปรับความสูงเป็น 150 */
-      display: flex;
-      flex-direction: column;
-    }
-
-    .clock-widget::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 60%;
-      height: 1px;
-      background: linear-gradient(90deg, transparent, var(--mint), transparent);
-      opacity: 0.6;
-      z-index: 2;
-    }
-
-    .clock-arc {
-      position: absolute;
-      top: -60px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 300px;
-      height: 300px;
-      background: radial-gradient(circle, var(--mint-glow) 0%, transparent 65%);
-      pointer-events: none;
-      z-index: 1;
-    }
-
-    /* ส่วนห่อหุ้ม Banner */
-    .system-clock-banner {
-      position: relative;
-      width: 100%;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-end;
-      z-index: 1;
-    }
-
-    /* รูปภาพ Banner */
-    .banner-bg {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      object-position: center;
-      display: block;
-      z-index: 0;
-    }
-
-    /* วันที่ทับรูปภาพ */
-    .system-clock-banner .clock-date-row {
-      position: relative;
-      z-index: 2;
-      padding: 0.6rem 1.25rem; /* ลด padding บน-ล่างเล็กน้อยให้พอดีกับ 150px */
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.3) 60%, transparent 100%);
-    }
-
-    .system-clock-banner .clock-date-text {
-      font-family: 'IBM Plex Sans Thai', sans-serif;
-      font-size: 0.8rem;
-      color: #ffffff;
-      font-weight: 500;
-      text-shadow: 0 2px 8px rgba(0,0,0,0.9);
-      letter-spacing: 0.02em;
-    }
-
-    /* Responsive: ปรับความสูงตามขนาดหน้าจอ */
-    @media (max-width: 360px) {
-      .clock-widget { height: 120px; }
-      .system-clock-banner .clock-date-text { font-size: 0.76rem; }
-    }
-
-    @media (min-width: 500px) {
-      .clock-widget { height: 170px; }
-    }
-     
-    
-    /* ═══════════ CARD BASE ═══════════ */
-    .card {
-      background: var(--bg-surface);
-      border: 1px solid var(--b1);
-      border-radius: var(--r-xl);
-      padding: 1.25rem;
-      backdrop-filter: blur(30px) saturate(150%);
-      -webkit-backdrop-filter: blur(30px) saturate(150%);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .card-anim-1 { animation: cardIn 0.7s var(--ease-out) 0.14s both; }
-    .card-anim-2 { animation: cardIn 0.7s var(--ease-out) 0.20s both; }
-    .card-anim-3 { animation: cardIn 0.7s var(--ease-out) 0.26s both; }
-    .card-anim-4 { animation: cardIn 0.7s var(--ease-out) 0.32s both; }
-
-    /* ═══════════ AUTH SECTION ═══════════ */
-    .auth-hero {
-      text-align: center;
-      padding: 0.5rem 0 1.25rem;
-    }
-
-    .auth-icon-wrap {
-      width: 64px;
-      height: 64px;
-      margin: 0 auto 1rem;
-      border-radius: var(--r-xl);
-      background: linear-gradient(135deg, rgba(0, 245, 176, 0.12), rgba(34, 211, 240, 0.08));
-      border: 1px solid var(--mint-border);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.75rem;
-      color: var(--mint-text);
-      box-shadow: 0 0 30px var(--mint-glow), inset 0 1px 0 rgba(255,255,255,0.1);
-      animation: iconFloat 4s ease-in-out infinite;
-    }
-
-    @keyframes iconFloat {
-      0%, 100% { transform: translateY(0) rotate(0deg); }
-      33% { transform: translateY(-4px) rotate(-2deg); }
-      66% { transform: translateY(-2px) rotate(1deg); }
-    }
-
-    .auth-title {
-      font-family: 'Outfit', sans-serif;
-      font-size: 1.15rem;
-      font-weight: 700;
-      color: var(--t1);
-      margin-bottom: 0.4rem;
-    }
-
-    .auth-subtitle {
-      font-size: 0.8rem;
-      color: var(--t3);
-      line-height: 1.6;
-    }
-
-    .auth-divider {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      margin: 1rem 0;
-    }
-
-    .auth-divider::before,
-    .auth-divider::after {
-      content: '';
-      flex: 1;
-      height: 1px;
-      background: var(--b2);
-    }
-
-    .auth-divider span {
-      font-size: 0.65rem;
-      color: var(--t4);
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      font-family: 'DM Mono', monospace;
-    }
-
-    /* ═══════════ BUTTONS ═══════════ */
-    .btn {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.65rem;
-      padding: 0.85rem 1.25rem;
-      border-radius: var(--r-lg);
-      font-family: 'IBM Plex Sans Thai', sans-serif;
-      font-weight: 600;
-      font-size: 0.9rem;
-      cursor: pointer;
-      border: 1px solid transparent;
-      text-decoration: none;
-      transition: all 0.22s var(--ease-out);
-      position: relative;
-      overflow: hidden;
-      -webkit-tap-highlight-color: transparent;
-      letter-spacing: 0.01em;
-    }
-
-    .btn::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 60%);
-      opacity: 0;
-      transition: opacity 0.2s;
-    }
-
-    .btn:hover::after { opacity: 1; }
-    .btn:active { transform: scale(0.96); }
-
-    .btn-ico {
-      width: 32px;
-      height: 32px;
-      border-radius: var(--r-sm);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.9rem;
-      flex-shrink: 0;
-      transition: transform 0.2s var(--ease-spring);
-    }
-
-    .btn:hover .btn-ico { transform: scale(1.1) rotate(-4deg); }
-
-    .btn-primary {
-      background: linear-gradient(135deg, var(--mint-dim) 0%, var(--mint) 100%);
-      color: #020c18;
-      box-shadow: 0 6px 24px var(--mint-glow), 0 2px 8px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.25);
-    }
-
-    .btn-primary:hover {
-      box-shadow: 0 10px 36px var(--mint-glow), 0 4px 12px rgba(0,0,0,0.3);
-      transform: translateY(-1px);
-    }
-
-    .btn-primary .btn-ico { background: rgba(0,0,0,0.15); }
-
-    .btn-glass {
-      background: var(--bg-glass);
-      color: var(--mint-text);
-      border-color: var(--mint-border);
-    }
-
-    .btn-glass:hover {
-      background: var(--bg-glass-hover);
-      border-color: var(--mint-text);
-      box-shadow: 0 0 20px var(--mint-glow);
-      transform: translateY(-1px);
-    }
-
-    .btn-glass .btn-ico { background: var(--mint-glow); }
-    .btn-w { width: 100%; margin-bottom: 0.5rem; }
-
-    /* ═══════════ USER IDENTITY CARD ═══════════ */
-    .identity-card {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      padding: 1rem 1.1rem;
-      background: linear-gradient(135deg, rgba(0,245,176,0.05) 0%, rgba(34,211,240,0.03) 100%);
-      border: 1px solid var(--mint-border);
-      border-radius: var(--r-lg);
-      transition: all 0.2s var(--ease-out);
-      cursor: default;
-    }
-
-    .identity-card:hover {
-      background: linear-gradient(135deg, rgba(0,245,176,0.09) 0%, rgba(34,211,240,0.05) 100%);
-      border-color: var(--mint-text);
-      box-shadow: 0 0 24px var(--mint-glow);
-    }
-
-    .avatar-ring {
-      position: relative;
-      flex-shrink: 0;
-    }
-
-    .avatar-ring::before {
-      content: '';
-      position: absolute;
-      inset: -3px;
-      border-radius: 50%;
-      background: conic-gradient(var(--mint), var(--cyan), var(--mint));
-      animation: spinRing 4s linear infinite;
-    }
-
-    @keyframes spinRing {
-      to { transform: rotate(360deg); }
-    }
-
-    .avatar-ring::after {
-      content: '';
-      position: absolute;
-      inset: -2px;
-      border-radius: 50%;
-      background: var(--bg-void);
-    }
-
-    .user-avatar {
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      object-fit: cover;
-      position: relative;
-      z-index: 1;
-      display: block;
-    }
-
-    .online-dot {
-      position: absolute;
-      bottom: 1px;
-      right: 1px;
-      width: 13px;
-      height: 13px;
-      border-radius: 50%;
-      background: var(--mint);
-      border: 2px solid var(--bg-void);
-      z-index: 2;
-      box-shadow: 0 0 8px var(--mint-glow);
-    }
-
-    .user-info { flex: 1; min-width: 0; }
-
-    .user-greeting {
-      font-size: 0.64rem;
-      color: var(--mint-text);
-      font-weight: 500;
-      margin-bottom: 2px;
-      letter-spacing: 0.02em;
-    }
-
-    .user-name {
-      font-family: 'Outfit', sans-serif;
-      font-size: 0.96rem;
-      font-weight: 700;
-      color: var(--t1);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .user-tags {
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-      margin-top: 5px;
-      flex-wrap: wrap;
-    }
-
-    .tag {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      padding: 2px 8px;
-      border-radius: var(--r-full);
-      font-size: 0.6rem;
-      font-weight: 600;
-      letter-spacing: 0.03em;
-    }
-
-    .tag-mint {
-      background: var(--mint-glow);
-      border: 1px solid var(--mint-border);
-      color: var(--mint-text);
-    }
-
-    .tag-text { font-size: 0.62rem; color: var(--t3); }
-
-    /* ═══════════ SECTION LABEL ═══════════ */
-    .section-label {
-      font-family: 'DM Mono', monospace;
-      font-size: 0.58rem;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      color: var(--t4);
-      margin-bottom: 0.65rem;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .section-label::after {
-      content: '';
-      flex: 1;
-      height: 1px;
-      background: linear-gradient(90deg, var(--b2), transparent);
-    }
-
-    /* ═══════════ HERO CTA ═══════════ */
-    .hero-cta {
-      width: 100%;
-      background: linear-gradient(135deg, #004d35 0%, #007a58 40%, #00c98a 100%);
-      color: #e8fff8;
-      padding: 1.15rem 1.25rem;
-      border-radius: var(--r-xl);
-      font-size: 1rem;
-      font-weight: 700;
-      border: none;
-      box-shadow:
-        0 12px 40px rgba(0, 245, 176, 0.22),
-        0 4px 16px rgba(0,0,0,0.4),
-        inset 0 1px 0 rgba(255,255,255,0.2),
-        inset 0 -1px 0 rgba(0,0,0,0.15);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      text-decoration: none;
-      transition: all 0.25s var(--ease-out);
-      position: relative;
-      overflow: hidden;
-      animation: heroPulse 3.5s ease-in-out infinite;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    @keyframes heroPulse {
-      0%, 100% { box-shadow: 0 12px 40px rgba(0, 245, 176, 0.18), 0 4px 16px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.2); }
-      50% { box-shadow: 0 16px 56px rgba(0, 245, 176, 0.38), 0 6px 20px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.2); }
-    }
-
-    .hero-cta::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent);
-      transition: left 0.7s ease;
-    }
-
-    .hero-cta:hover::before { left: 100%; }
-    .hero-cta:hover { transform: translateY(-2px); animation-play-state: paused; }
-    .hero-cta:active { transform: scale(0.97); }
-
-    .hero-icon {
-      width: 44px;
-      height: 44px;
-      border-radius: var(--r-md);
-      background: rgba(0,0,0,0.2);
-      border: 1px solid rgba(255,255,255,0.12);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.25rem;
-      flex-shrink: 0;
-    }
-
-    .hero-text { display: flex; flex-direction: column; align-items: flex-start; }
-    .hero-label { font-family: 'Outfit', sans-serif; font-size: 1rem; font-weight: 800; line-height: 1.2; }
-    .hero-sub { font-size: 0.68rem; opacity: 0.75; margin-top: 2px; font-weight: 400; }
-
-    .hero-arrow {
-      margin-left: auto;
-      font-size: 1rem;
-      opacity: 0.7;
-      transition: transform 0.2s var(--ease-spring);
-    }
-
-    .hero-cta:hover .hero-arrow { transform: translateX(4px); opacity: 1; }
-
-    /* ═══════════ ACTION GRID ═══════════ */
-    .action-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0.6rem;
-    }
-
-    .action-btn {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 0.6rem;
-      padding: 1.1rem 0.75rem;
-      border-radius: var(--r-lg);
-      cursor: pointer;
-      border: 1px solid transparent;
-      text-decoration: none;
-      transition: all 0.22s var(--ease-out);
-      position: relative;
-      overflow: hidden;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    .action-btn:active { transform: scale(0.95); }
-
-    .action-ico {
-      width: 44px;
-      height: 44px;
-      border-radius: var(--r-md);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.15rem;
-      transition: transform 0.25s var(--ease-spring);
-    }
-
-    .action-btn:hover .action-ico { transform: scale(1.1) rotate(-5deg); }
-
-    .action-label {
-      font-size: 0.82rem;
-      font-weight: 600;
-      text-align: center;
-      line-height: 1.3;
-    }
-
-    /* Action Variants */
-    .ab-rose { background: rgba(248,113,113,0.07); border-color: var(--rose-border); color: var(--rose); }
-    .ab-rose:hover { background: rgba(248,113,113,0.14); border-color: var(--rose); box-shadow: 0 4px 20px var(--rose-glow); transform: translateY(-2px); }
-    .ab-rose .action-ico { background: rgba(248,113,113,0.12); }
-
-    .ab-violet { background: rgba(139,124,248,0.07); border-color: rgba(139,124,248,0.22); color: var(--violet); }
-    .ab-violet:hover { background: rgba(139,124,248,0.14); border-color: var(--violet); box-shadow: 0 4px 20px var(--violet-glow); transform: translateY(-2px); }
-    .ab-violet .action-ico { background: rgba(139,124,248,0.12); }
-
-    .ab-amber { background: rgba(251,191,36,0.07); border-color: var(--amber-border); color: var(--amber); }
-    .ab-amber:hover { background: rgba(251,191,36,0.14); border-color: var(--amber); box-shadow: 0 4px 20px var(--amber-glow); transform: translateY(-2px); }
-    .ab-amber .action-ico { background: rgba(251,191,36,0.12); }
-
-    .ab-teal { background: rgba(45,212,191,0.07); border-color: var(--teal-border); color: var(--teal); }
-    .ab-teal:hover { background: rgba(45,212,191,0.14); border-color: var(--teal); box-shadow: 0 4px 20px var(--teal-glow); transform: translateY(-2px); }
-    .ab-teal .action-ico { background: rgba(45,212,191,0.12); }
-
-    .ab-cyan { background: rgba(34,211,240,0.07); border-color: rgba(34,211,240,0.22); color: var(--cyan); }
-    .ab-cyan:hover { background: rgba(34,211,240,0.14); border-color: var(--cyan); box-shadow: 0 4px 20px var(--cyan-glow); transform: translateY(-2px); }
-    .ab-cyan .action-ico { background: rgba(34,211,240,0.12); }
-
-    /* ═══════════ STATS STRIP ═══════════ */
-    .stats-strip {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 0.5rem;
-    }
-
-    .stat-cell {
-      background: var(--bg-glass);
-      border: 1px solid var(--b2);
-      border-radius: var(--r-md);
-      padding: 0.85rem 0.75rem;
-      text-align: center;
-      transition: all 0.2s;
-    }
-
-    .stat-cell:hover {
-      background: var(--bg-glass-hover);
-      border-color: var(--b1);
-    }
-
-    .stat-num {
-      font-family: 'Outfit', sans-serif;
-      font-size: 1.4rem;
-      font-weight: 800;
-      color: var(--t1);
-      line-height: 1;
-      margin-bottom: 4px;
-    }
-
-    .stat-label {
-      font-size: 0.6rem;
-      color: var(--t3);
-      letter-spacing: 0.05em;
-    }
-
-    .stat-change {
-      font-size: 0.6rem;
-      margin-top: 3px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 2px;
-    }
-
-    .stat-up { color: var(--mint-text); }
-    .stat-warn { color: var(--amber); }
-
-    /* ═══════════ PROFILE ROW ═══════════ */
-    .profile-row {
-      width: 100%;
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      padding: 0.85rem 1rem;
-      background: var(--bg-glass);
-      border: 1px solid var(--sapphire-border);
-      border-radius: var(--r-lg);
-      color: var(--sapphire);
-      text-decoration: none;
-      cursor: pointer;
-      transition: all 0.2s var(--ease-out);
-      font-size: 0.875rem;
-      font-weight: 600;
-    }
-
-    .profile-row:hover {
-      background: rgba(96,165,250,0.1);
-      border-color: var(--sapphire);
-      box-shadow: 0 0 16px var(--sapphire-glow);
-      transform: translateY(-1px);
-    }
-
-    .profile-row-ico {
-      width: 32px;
-      height: 32px;
-      border-radius: var(--r-sm);
-      background: rgba(96,165,250,0.12);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.88rem;
-      flex-shrink: 0;
-    }
-
-    .profile-row-arrow {
-      margin-left: auto;
-      opacity: 0.5;
-      transition: transform 0.2s var(--ease-spring);
-    }
-
-    .profile-row:hover .profile-row-arrow { transform: translateX(3px); opacity: 1; }
-
-    /* ═══════════ DIVIDER ═══════════ */
-    .sep {
-      height: 1px;
-      background: linear-gradient(90deg, transparent, var(--b2), transparent);
-      margin: 0.25rem 0;
-    }
-
-    /* ═══════════ LOGOUT BUTTONS ═══════════ */
-    .btn-logout {
-      width: 100%;
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      padding: 0.8rem 1rem;
-      border-radius: var(--r-lg);
-      cursor: pointer;
-      border: 1px solid transparent;
-      font-size: 0.875rem;
-      font-weight: 600;
-      transition: all 0.2s var(--ease-out);
-      font-family: 'IBM Plex Sans Thai', sans-serif;
-      text-decoration: none;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    .btn-logout:active { transform: scale(0.97); }
-
-    .btn-logout-ico {
-      width: 30px;
-      height: 30px;
-      border-radius: var(--r-sm);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.82rem;
-      flex-shrink: 0;
-    }
-
-    .btn-logout-main {
-      background: rgba(248,113,113,0.07);
-      border-color: rgba(248,113,113,0.2);
-      color: var(--rose);
-      margin-bottom: 0.45rem;
-    }
-
-    .btn-logout-main:hover {
-      background: rgba(248,113,113,0.14);
-      border-color: var(--rose);
-      box-shadow: 0 0 16px var(--rose-glow);
-    }
-
-    .btn-logout-main .btn-logout-ico { background: rgba(248,113,113,0.1); }
-
-    .btn-logout-all {
-      background: transparent;
-      border-color: var(--b1);
-      color: var(--t3);
-    }
-
-    .btn-logout-all:hover {
-      color: var(--t2);
-      background: var(--bg-glass);
-      border-color: var(--b1);
-    }
-
-    .btn-logout-all .btn-logout-ico { background: var(--bg-glass); }
-
-    /* ═══════════ FOOTER ═══════════ */
-    .app-footer {
-      padding: 0.6rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
-      border-top: 1px solid var(--b3);
-    }
-
-    .footer-chip {
-      font-family: 'DM Mono', monospace;
-      font-size: 0.58rem;
-      color: var(--t4);
-      letter-spacing: 0.1em;
-    }
-
-    .footer-sep {
-      width: 3px;
-      height: 3px;
-      border-radius: 50%;
-      background: var(--b2);
-    }
-
-    /* ═══════════ TOAST ═══════════ */
-    .toast-container {
-      position: fixed;
-      top: max(1.25rem, calc(var(--sat) + 0.5rem));
-      right: 1rem;
-      z-index: 9999;
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-      pointer-events: none;
-    }
-
-    .toast {
-      background: var(--bg-surface);
-      border: 1px solid var(--b1);
-      color: var(--t1);
-      padding: 0.75rem 1rem;
-      border-radius: var(--r-lg);
-      font-size: 0.82rem;
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-      box-shadow: 0 20px 50px rgba(0,0,0,0.4);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      max-width: 320px;
-      pointer-events: auto;
-      animation: toastIn 0.4s var(--ease-out) both;
-      font-family: 'IBM Plex Sans Thai', sans-serif;
-    }
-
-    .toast.exit { animation: toastOut 0.3s ease forwards; }
-
-    @keyframes toastIn { from { transform: translateX(110%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-    @keyframes toastOut { to { transform: translateX(110%); opacity: 0; } }
-
-    .toast.success { border-color: var(--mint-border); box-shadow: 0 20px 50px rgba(0,0,0,0.4), 0 0 20px var(--mint-glow); }
-    .toast.success i { color: var(--mint-text); }
-    .toast.error { border-color: var(--rose-border); }
-    .toast.error i { color: var(--rose); }
-
-    /* ═══════════ LOADING ═══════════ */
-    .loading-overlay {
-      position: fixed;
-      inset: 0;
-      z-index: 9998;
-      background: rgba(2, 8, 24, 0.7);
-      backdrop-filter: blur(8px);
-      display: none;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .loading-overlay.show { display: flex; }
-
-    .loading-spinner {
-      width: 48px;
-      height: 48px;
-      border-radius: 50%;
-      border: 3px solid var(--b1);
-      border-top-color: var(--mint);
-      animation: spin 0.8s linear infinite;
-    }
-
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    /* ═══════════ PULSE RING (for fingerprint btn) ═══════════ */
-    .pulse-rings {
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-    }
-
-    .pulse-ring {
-      position: absolute;
-      inset: -4px;
-      border-radius: var(--r-xl);
-      border: 2px solid var(--mint);
-      opacity: 0;
-      animation: pulseRing 2.5s ease-out infinite;
-    }
-
-    .pulse-ring:nth-child(2) { animation-delay: 0.8s; }
-    .pulse-ring:nth-child(3) { animation-delay: 1.6s; }
-
-    @keyframes pulseRing {
-      0% { transform: scale(1); opacity: 0.4; }
-      100% { transform: scale(1.08); opacity: 0; }
-    }
-
-    /* ═══════════ PWA INSTALL ═══════════ */
-    .pwa-banner {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      padding: 1rem max(1rem, var(--sar)) max(1rem, calc(var(--sab) + 0.5rem)) max(1rem, var(--sal));
-      background: var(--bg-surface);
-      border-top: 1px solid var(--b1);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      z-index: 990;
-      animation: slideUpIn 0.4s var(--ease-out);
-    }
-
-    @keyframes slideUpIn { from { transform: translateY(100%); } to { transform: translateY(0); } }
-
-    /* profile dropdown */
-.profile-menu{
-  display:flex;
-  flex-direction:column;
-  gap:.55rem;
-}
-
-.profile-submenu{
-  display:none;
-  flex-direction:column;
-  gap:.45rem;
-
-  padding:.7rem;
-  border-radius:var(--r-lg);
-
-  background:rgba(255,255,255,.025);
-  border:1px solid var(--b1);
-
-  animation:submenuIn .18s ease;
-}
-
-.profile-submenu.show{
-  display:flex;
-}
-
-@keyframes submenuIn{
-  from{
-    opacity:0;
-    transform:translateY(-6px);
-  }
-  to{
-    opacity:1;
-    transform:translateY(0);
-  }
-}
-
-.profile-subitem{
-  display:flex;
-  align-items:center;
-  gap:.75rem;
-
-  padding:.78rem .85rem;
-  border-radius:var(--r-md);
-
-  text-decoration:none;
-  color:var(--t2);
-
-  font-size:.78rem;
-  font-weight:500;
-
-  transition:all .18s ease;
-}
-
-.profile-subitem i{
-  width:18px;
-  text-align:center;
-  color:var(--sapphire);
-}
-
-.profile-subitem:hover{
-  background:rgba(96,165,250,.08);
-  color:var(--t1);
-  transform:translateX(2px);
-}
-
-.profile-row.active .profile-row-arrow{
-  transform:rotate(90deg);
-}
-
-    /* ═══════════ RESPONSIVE ═══════════ */
-    @media (min-width: 500px) {
-      .app-shell { max-width: 460px; }
-    }
-
-    @media (min-width: 768px) {
-      .app-shell { max-width: 480px; }
-    }
-
-    @media (max-width: 360px) {
-      .action-grid { gap: 0.45rem; }
-      .action-btn { padding: 0.9rem 0.6rem; }
-      .action-ico { width: 38px; height: 38px; font-size: 1rem; }
-      .action-label { font-size: 0.8rem; }
-    }
-
-    /* ═══════════ NOTIFICATION PANEL ═══════════ */
-    .notif-overlay {
-      position: fixed;
-      inset: 0;
-      z-index: 1090;
-      display: none;
-    }
-    .notif-overlay.open { display: block; }
-
-    .notif-panel {
-      position: fixed;
-      top: max(52px, calc(var(--sat) + 52px));
-      right: max(0.75rem, var(--sar));
-      z-index: 1100;
-      width: min(380px, calc(100vw - 1.5rem));
-      background: var(--bg-surface);
-      border: 1px solid var(--b1);
-      border-radius: var(--r-xl);
-      backdrop-filter: blur(40px) saturate(160%);
-      -webkit-backdrop-filter: blur(40px) saturate(160%);
-      box-shadow: 0 24px 60px rgba(0,0,0,0.45), 0 0 0 1px var(--b1);
-      display: none;
-      flex-direction: column;
-      max-height: min(520px, calc(100dvh - 80px));
-      overflow: hidden;
-      animation: notifSlideIn 0.25s var(--ease-out);
-    }
-    .notif-panel.open { display: flex; }
-    @keyframes notifSlideIn {
-      from { opacity: 0; transform: translateY(-10px) scale(0.97); }
-      to   { opacity: 1; transform: translateY(0) scale(1); }
-    }
-
-    .notif-panel-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0.9rem 1rem;
-      border-bottom: 1px solid var(--b2);
-    }
-    .notif-panel-header h4 {
-      font-family: 'Outfit', sans-serif;
-      font-size: 0.88rem;
-      font-weight: 700;
-      color: var(--t1);
-      display: flex;
-      align-items: center;
-      gap: 7px;
-      margin: 0;
-    }
-
-    .notif-tabs {
-      display: flex;
-      gap: 5px;
-      padding: 0.55rem 0.85rem;
-      border-bottom: 1px solid var(--b2);
-    }
-    .ntab {
-      flex: 1;
-      padding: 0.38rem 0.4rem;
-      border-radius: var(--r-sm);
-      font-size: 0.7rem;
-      font-weight: 600;
-      cursor: pointer;
-      border: 1px solid var(--b1);
-      background: transparent;
-      color: var(--t3);
-      font-family: 'IBM Plex Sans Thai', sans-serif;
-      transition: all 0.15s;
-      text-align: center;
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 3px;
-    }
-    .ntab.active {
-      background: var(--mint-glow);
-      color: var(--mint-text);
-      border-color: var(--mint-border);
-    }
-    .ntab-count {
-      display: none;
-      background: var(--rose);
-      color: #fff;
-      border-radius: var(--r-full);
-      padding: 0 5px;
-      font-size: 0.6rem;
-      font-weight: 800;
-      line-height: 1.6;
-    }
-    .ntab-count.show { display: inline-flex; }
-
-    .notif-body {
-      flex: 1;
-      overflow-y: auto;
-      padding: 0.5rem 0.75rem;
-      scrollbar-width: thin;
-      scrollbar-color: var(--b1) transparent;
-    }
-    .notif-body::-webkit-scrollbar { width: 4px; }
-    .notif-body::-webkit-scrollbar-thumb { background: var(--b1); border-radius: 2px; }
-
-    .notif-empty {
-      text-align: center;
-      padding: 2rem 1rem;
-      color: var(--t3);
-      font-size: 0.82rem;
-    }
-    .notif-empty i {
-      font-size: 2rem;
-      display: block;
-      margin-bottom: 0.5rem;
-      opacity: 0.35;
-    }
-
-    .nitem {
-      display: flex;
-      gap: 10px;
-      align-items: flex-start;
-      padding: 0.65rem 0.5rem;
-      border-bottom: 1px solid var(--b3);
-      cursor: pointer;
-      border-radius: var(--r-md);
-      transition: background 0.12s;
-    }
-    .nitem:last-child { border-bottom: none; }
-    .nitem:hover { background: var(--bg-glass); }
-    .nitem.unread { background: var(--mint-glow); }
-    .nitem.unread:hover { background: rgba(0,245,176,0.1); }
-
-    .ni-icon {
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.85rem;
-      flex-shrink: 0;
-      margin-top: 1px;
-    }
-    .ni-pending   { background: rgba(251,191,36,0.12);  color: var(--amber); }
-    .ni-approved  { background: rgba(0,245,176,0.1);    color: var(--mint-text); }
-    .ni-rejected  { background: rgba(248,113,113,0.1);  color: var(--rose); }
-    .ni-info      { background: rgba(96,165,250,0.1);   color: var(--sapphire); }
-    .ni-cancelled { background: var(--bg-glass);        color: var(--t3); }
-
-    .ni-body { flex: 1; min-width: 0; }
-    .ni-title { font-size: 0.82rem; font-weight: 600; color: var(--t1); line-height: 1.3; }
-    .ni-sub   { font-size: 0.72rem; color: var(--t2); margin-top: 2px; }
-    .ni-time  { font-size: 0.67rem; color: var(--t3); margin-top: 3px; }
-
-    .ni-status {
-      display: inline-flex;
-      align-items: center;
-      gap: 3px;
-      font-size: 0.65rem;
-      padding: 2px 7px;
-      border-radius: var(--r-full);
-      font-weight: 600;
-    }
-    .nis-pending   { background: rgba(251,191,36,0.12);  color: var(--amber);    border: 1px solid var(--amber-border); }
-    .nis-approved  { background: var(--mint-glow);       color: var(--mint-text); border: 1px solid var(--mint-border); }
-    .nis-rejected  { background: rgba(248,113,113,0.1);  color: var(--rose);     border: 1px solid var(--rose-border); }
-    .nis-cancelled { background: var(--bg-glass);        color: var(--t3);       border: 1px solid var(--b1); }
-
-    .notif-footer {
-      padding: 0.65rem 1rem;
-      border-top: 1px solid var(--b2);
-      display: flex;
-      gap: 1rem;
-      justify-content: center;
-    }
-    .notif-footer a {
-      font-size: 0.75rem;
-      color: var(--mint-text);
-      text-decoration: none;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      opacity: 0.8;
-      transition: opacity 0.15s;
-    }
-    .notif-footer a:hover { opacity: 1; }
-
-    .notif-dot-count {
-      position: absolute;
-      top: 2px;
-      right: 1px;
-      min-width: 16px;
-      height: 16px;
-      padding: 0 4px;
-      background: var(--rose);
-      border-radius: var(--r-full);
-      border: 2px solid var(--bg-void);
-      font-size: 0.58rem;
-      font-weight: 800;
-      color: #fff;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      line-height: 1;
-      font-family: 'DM Mono', monospace;
-    }
-    .notif-dot-count.show { display: flex; }
-
-    /* ═══════════════════════════════════
-   SweetAlert & Select Theme (เซกา)
-═══════════════════════════════════ */
-
-/* ── SweetAlert ── */
-.swal2-container { z-index: 999999 !important; }
-
-.swal2-popup {
-  background: var(--bg-surface) !important;
-  backdrop-filter: blur(40px) saturate(160%) !important;
-  -webkit-backdrop-filter: blur(40px) saturate(160%) !important;
-  color: var(--t1) !important;
-  border: 1px solid var(--b1) !important;
-  border-radius: var(--r-xl) !important;
-  box-shadow: 0 24px 60px rgba(0,0,0,0.45) !important;
-  font-family: 'IBM Plex Sans Thai', 'Sarabun', sans-serif !important;
-}
-
-.swal2-title {
-  font-family: 'Outfit', sans-serif !important;
-  color: var(--t1) !important;
-}
-
-.swal2-html-container { 
-  color: var(--t2) !important; 
-}
-
-.swal2-confirm {
-  background: linear-gradient(135deg, var(--mint-dim), var(--mint)) !important;
-  color: #020c18 !important;
-  border: none !important;
-  border-radius: var(--r-lg) !important;
-  font-family: 'IBM Plex Sans Thai', sans-serif !important;
-  font-weight: 600 !important;
-  box-shadow: 0 6px 24px var(--mint-glow) !important;
-}
-
-.swal2-cancel {
-  background: var(--bg-glass) !important;
-  color: var(--t2) !important;
-  border: 1px solid var(--b1) !important;
-  border-radius: var(--r-lg) !important;
-  font-family: 'IBM Plex Sans Thai', sans-serif !important;
-  font-weight: 600 !important;
-}
-
-.swal2-icon { border-color: var(--b1) !important; }
-.swal2-success { border-color: var(--mint-border) !important; color: var(--mint) !important; }
-.swal2-error { border-color: var(--rose-border) !important; color: var(--rose) !important; }
-.swal2-warning { border-color: var(--amber-border) !important; color: var(--amber) !important; }
-
-
-/* ── Select Dropdown ── */
-#typea {
-  width: 100%;
-  padding: 0.85rem 2.5rem 0.85rem 1.25rem; /* เว้นที่ขวาให้ลูกศร */
-  background: var(--bg-glass);
-  color: var(--t1);
-  border: 1px solid var(--b1);
-  border-radius: var(--r-lg);
-  font-family: 'IBM Plex Sans Thai', sans-serif;
-  font-size: 0.9rem;
-  font-weight: 500;
-  cursor: pointer;
-  appearance: none; /* ซ่อนลูกศรเริ่มต้น */
-  -webkit-appearance: none;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  transition: all 0.2s var(--ease-out);
-  /* ใส่ลูกศรสี Mint แบบ Custom */
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2300f5b0' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 1rem center;
-}
-
-#typea:hover {
-  background-color: var(--bg-glass-hover);
-  border-color: var(--mint-border);
-}
-
-#typea:focus {
-  outline: none;
-  border-color: var(--mint-text);
-  box-shadow: 0 0 0 3px var(--mint-glow);
-}
-
-/* สีพื้นหลังตอนเปิดเมนู dropdown */
-#typea option {
-  background: var(--bg-deep);
-  color: var(--t1);
-  padding: 8px;
-}
-
-
-
-    @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-      }
-    }
-  </style>
+  <link rel="stylesheet" href="/css/index-home.css">
 </head>
 <body>
 
-  <!-- Background Scene -->
-  <div class="bg-scene" aria-hidden="true">
-    <div class="bg-gradient-base"></div>
-    <div class="bg-noise"></div>
-    <div class="bg-grid"></div>
-    <div id="particleContainer"></div>
-  </div>
+  <div class="page-bg" aria-hidden="true"></div>
 
-  <!-- Notification Overlay + Panel -->
+  <h1 class="sr-only">ระบบลงเวลาปฏิบัติงาน — หน้าหลัก</h1>
+
   <div class="notif-overlay" id="notifOverlay" onclick="closeNotifPanel()"></div>
 
   <div class="notif-panel" id="notifPanel">
     <div class="notif-panel-header">
-      <h4><i class="fas fa-bell" style="color:var(--mint-text)" aria-hidden="true"></i> การแจ้งเตือน</h4>
-      <button class="icon-btn" onclick="closeNotifPanel()" aria-label="ปิด" style="width:30px;height:30px;">
+      <h4><i class="fas fa-bell" aria-hidden="true"></i> การแจ้งเตือน</h4>
+      <button class="icon-btn" type="button" onclick="closeNotifPanel()" aria-label="ปิด">
         <i class="fas fa-xmark" aria-hidden="true"></i>
       </button>
     </div>
     <div class="notif-tabs">
-      <button class="ntab active" id="ntab-mine" onclick="switchNotifTab('mine')">
-        <i class="fas fa-paper-plane" aria-hidden="true"></i> คำขอของฉัน
+      <button class="ntab active" type="button" id="ntab-mine" onclick="switchNotifTab('mine')">คำขอของฉัน</button>
+      <button class="ntab" type="button" id="ntab-pending" onclick="switchNotifTab('pending')">
+        รออนุมัติ <span class="ntab-count" id="ntabPendingCount"></span>
       </button>
-      <button class="ntab" id="ntab-pending" onclick="switchNotifTab('pending')">
-        <i class="fas fa-inbox" aria-hidden="true"></i> รออนุมัติ
-        <span class="ntab-count" id="ntabPendingCount"></span>
-      </button>
-      <button class="ntab" id="ntab-supervisor" onclick="switchNotifTab('supervisor')">
-        <i class="fas fa-shield-halved" aria-hidden="true"></i> รับรองเวลา
-        <span class="ntab-count" id="ntabSupervisorCount"></span>
+      <button class="ntab" type="button" id="ntab-supervisor" onclick="switchNotifTab('supervisor')">
+        รับรอง <span class="ntab-count" id="ntabSupervisorCount"></span>
       </button>
     </div>
     <div class="notif-body" id="notifBody">
-      <div class="notif-empty">
-        <i class="fas fa-bell-slash" aria-hidden="true"></i>
-        กำลังโหลด...
-      </div>
+      <div class="notif-empty"><i class="fas fa-bell-slash" aria-hidden="true"></i> กำลังโหลด...</div>
     </div>
     <div class="notif-footer">
-      <a href="requests.html"><i class="fas fa-list-check" aria-hidden="true"></i> จัดการคำขอ</a>
-      <a href="supervisor.html"><i class="fas fa-shield-halved" aria-hidden="true"></i> รับรองเวลา</a>
+      <a href="requests.html">จัดการคำขอ</a>
+      <a href="supervisor.html">รับรองเวลา</a>
     </div>
   </div>
 
-  <!-- Loading Overlay -->
-  <div class="loading-overlay" id="loadingOverlay">
-    <div class="loading-spinner"></div>
-  </div>
-
-  <!-- Toast Container -->
+  <div class="loading-overlay" id="loadingOverlay"><div class="loading-spinner"></div></div>
   <div class="toast-container" id="toastContainer" aria-live="polite"></div>
 
-  <!-- App Shell -->
-  <div class="app-shell">
+  <div class="wrap">
 
-    <!-- Top Bar -->
-    <header class="top-bar">
-      <div class="org-badge">
-        <div class="org-name text-select" id="wordmarkOrg">รพ.สต.หนองทุ่ม</div>
-        <div class="org-sub text-select" id="wordmarkDept">อำเภอเซกา · จังหวัดบึงกาฬ</div>
+    <header class="topbar">
+      <div class="logo-block">
+        <span class="logo-mark" aria-hidden="true"></span>
+        <div class="logo text-select">
+          <strong> <span id="wordmarkOrg">ลงเวลาปฏิบัติงาน</span></strong>
+        
+        </div>
       </div>
-      <div class="top-controls">
-        <button class="icon-btn" id="notifBtn" title="การแจ้งเตือน" aria-label="การแจ้งเตือน">
+      <div class="topbar-end">
+        <div class="user" id="topbarUser" hidden>
+          <img class="avatar-img user-avatar" id="userAvatar" src="" alt="">
+          <span class="username text-select" id="userNameTop">—</span>
+        </div>
+        <button class="icon-btn" type="button" id="notifBtn" title="การแจ้งเตือน" aria-label="การแจ้งเตือน">
           <i class="fas fa-bell" aria-hidden="true"></i>
           <span class="notif-dot" id="notifDot"></span>
           <span class="notif-dot-count" id="notifDotCount"></span>
         </button>
-        <button class="icon-btn" id="themeBtn" title="เปลี่ยนธีม" aria-label="เปลี่ยนธีม">
+        <button class="icon-btn" type="button" id="themeBtn" title="เปลี่ยนธีม" aria-label="เปลี่ยนธีม">
           <i class="fas fa-moon" id="themeIcon" aria-hidden="true"></i>
         </button>
       </div>
     </header>
+    <p class="org-line text-select" id="wordmarkDept">อำเภอเซกา · จังหวัดบึงกาฬ</p>
 
-    <!-- Clock Widget / Banner -->
-    <section class="clock-widget" aria-label="ปฏิทินวันสำคัญ">
-      <div class="clock-arc" aria-hidden="true"></div>
-      
-      <div class="system-clock-banner">
-        <img id="specialBanner" src="images/banner.png" class="banner-bg" alt="ปฏิทินวันสำคัญ">
-        <div class="clock-date-row">
-          <span class="clock-date-text text-select" id="currentDate">—</span>
-        </div>
-      </div>  
-
-    </section>
-   
-
-    </section>
-
-    <!-- AUTH SECTION (logged out) -->
-    <div id="authSection">
-      <div class="card card-anim-1">
-        <div class="auth-hero">
-          <div class="auth-icon-wrap" aria-hidden="true">
-            <i class="fas fa-fingerprint"></i>
-          </div>
-          <div class="auth-title">เข้าสู่ระบบบันทึกเวลา</div>
-          <div class="auth-subtitle text-select">
-            ลงชื่อเข้าใช้เพื่อบันทึกเวลาปฏิบัติงาน<br>และจัดการข้อมูลการลงเวลาของคุณ
-          </div>
-        </div>
-
-        <a href="login.html" class="btn btn-primary btn-w">
-          <span class="btn-ico"><i class="fas fa-arrow-right-to-bracket" aria-hidden="true"></i></span>
-          <span>เข้าสู่ระบบ</span>
-        </a>
-
-        <div class="auth-divider"><span>หรือ</span></div>
-
-        <a href="register.html" class="btn btn-glass btn-w">
-          <span class="btn-ico"><i class="fas fa-user-plus" aria-hidden="true"></i></span>
-          <span>ลงทะเบียนสำหรับบุคลากรใหม่</span>
-        </a>
+    <section id="authSection" class="auth-block">
+      <div class="greeting">
+        <h1>ยินดีต้อนรับ</h1>
+        <p>เข้าสู่ระบบเพื่อบันทึกเวลาปฏิบัติงานของคุณ</p>
       </div>
-    </div>
+      <div class="auth-actions">
+        <a href="login.html" class="btn btn-primary btn-w">เข้าสู่ระบบ</a>
+        <a href="register.html" class="btn btn-secondary btn-w">ลงทะเบียนบุคลากรใหม่</a>
+      </div>
+    </section>
 
-    <!-- APP SECTION (logged in) -->
-    <!-- FIX: Removed conflicting display:none and display:flex -->
-    <div id="appSection" style="flex-direction:column; gap:0.75rem;">
+    <div id="appSection" hidden>
+      <div class="app-layout">
 
-      <!-- Identity -->
-      <div class="card card-anim-1">
-        <div class="section-label">User Identity</div>
-        <div class="identity-card">
-          <div class="avatar-ring">
-            <img id="userAvatar" class="user-avatar" src="" alt="รูปโปรไฟล์">
-            <div class="online-dot" title="ออนไลน์"></div>
+        <div class="app-aside">
+<div class="greeting">
+  <!-- Row 1: Greeting + Date -->
+  <div class="greeting-row-sub">
+    <p class="greeting-meta" id="userGreeting"></p>
+    <span class="greeting-sep" aria-hidden="true">·</span>
+    <p class="greeting-date text-select" id="currentDate">—</p>
+  </div>
+  <!-- Row 2: Headline + Role -->
+  <div class="greeting-row-main">
+    <h3 id="greetingHeadline">สวัสดี</h3>
+    <p class="greeting-role text-select" id="userRole">
+      <span class="role-dot" aria-hidden="true"></span>บุคลากร
+    </p>
+  </div>
+  <!-- Hidden a11y -->
+  <span class="sr-only" id="userName">—</span>
+  <span class="sr-only" id="userEmail">—</span>
+  <span class="sr-only" id="liveTime" aria-hidden="true"></span>
+</div>
+
+
+
+          <div class="section-label">สรุปเดือนนี้</div>
+          <div class="summary-box" aria-label="สรุปการปฏิบัติงาน">
+            <div class="wf-slider-wrapper">
+              <div id="wfSlider" class="wf-slider"></div>
+              <div id="wfDots" class="wf-dots"></div>
+            </div>
           </div>
-          <div class="user-info">
-            <div class="user-greeting" id="userGreeting">กำลังโหลด...</div>
-            <div class="user-name text-select" id="userName">—</div>
-            <div class="user-tags">
-              <span class="tag tag-mint" id="userRole"><i class="fa-solid fa-user" aria-hidden="true"></i> บุคลากร</span>
-              <span class="tag-text text-select" id="userEmail">—</span>
+          <div class="grid grid-stats">
+            <div class="card card-stat">
+              <div class="stat-num" id="statWorkDays">—</div>
+              <div class="card-label">ปกติ</div>
+              <div class="card-sub">เดือนนี้</div>
+            </div>
+            <div class="card card-stat">
+              <div class="stat-num" id="statOutOffice">—</div>
+              <div class="card-label">ไปราชการ</div>
+              <div class="card-sub">เดือนนี้</div>
+            </div>
+            <div class="card card-stat">
+              <div class="stat-num" id="statWfh">—</div>
+              <div class="card-label">WFH</div>
+              <div class="card-sub">เดือนนี้</div>
             </div>
           </div>
         </div>
 
-        <!-- Stats Strip -->
-        <div class="stats-strip" style="margin-top:0.85rem;">
-          <div class="stat-cell">
-            <div class="stat-num" id="statWorkDays">—</div>
-            <div class="stat-label">เดือนนี้</div>
-            <div class="stat-change stat-up"><i class="fas fa-clock" aria-hidden="true"></i> ปกติ</div>
+        <div class="app-main">
+          
+          <!-- 1. เมนูหลัก (Action Menu) -->
+          <div class="section-label">เมนูหลัก</div>
+          <div class="grid grid-menu">
+            <a href="attendance.html" class="card card-link card-featured" id="attendanceBtn"
+               aria-label="ลงเวลาเข้า-ออกงาน" onclick="handleAttendanceClick(event)">
+              <div class="card-icon ic-mint"><i class="fas fa-fingerprint" aria-hidden="true"></i></div>
+              <div class="card-body">
+                <div class="card-label">บันทึกเวลา</div>
+                <div class="card-sub" id="attendanceSubLabel">เข้า-ออกงาน</div>
+              </div>
+            </a>
+            <a href="overtime.html" class="card card-link">
+              <div class="card-icon ic-amber"><i class="fas fa-clock-rotate-left" aria-hidden="true"></i></div>
+              <div class="card-body">
+                <div class="card-label">บันทึก/รับรอง OT</div>
+                <div class="card-sub">ลงเวลาปฏิบัติงานนอกเวลา</div>
+              </div>
+            </a>
+            <a href="requests.html" class="card card-link">
+              <div class="card-icon ic-cyan"><i class="fas fa-clipboard-list" aria-hidden="true"></i></div>
+              <div class="card-body">
+                <div class="card-label">อนุมัติคำขอ</div>
+                <div class="card-sub">คำขอลงเวลารอการอนุมัติ</div>
+              </div>
+            </a>
+            <a href="supervisor.html" class="card card-link">
+              <div class="card-icon ic-rose"><i class="fas fa-user-check" aria-hidden="true"></i></div>
+              <div class="card-body">
+                <div class="card-label">หัวหน้า</div>
+                <div class="card-sub">รับรองการลงเวลา</div>
+              </div>
+            </a>
+            <a href="devices.html" class="card card-link">
+              <div class="card-icon ic-muted"><i class="fas fa-mobile-screen-button" aria-hidden="true"></i></div>
+              <div class="card-body">
+                <div class="card-label">อุปกรณ์</div>
+                <div class="card-sub">จัดการอุปกรณ์</div>
+              </div>
+            </a>
           </div>
-          <div class="stat-cell">
-            <div class="stat-num" id="statOutOffice">—</div>
-            <div class="stat-label">เดือนนี้</div>
-            <div class="stat-change stat-up"><i class="fas fa-plane" aria-hidden="true"></i> ไปราชการ</div>
+
+          <div class="divider"></div>
+
+          <!-- 2. รายงานและข้อมูล (Quick Menu) -->
+          <div class="section-label">รายงานและข้อมูล</div>
+          
+          <!-- เปลี่ยนคลาสตรงนี้เป็น grid-menu-sm -->
+          <div class="grid grid-menu grid-menu-sm">
+
+           <a href="dash/index.html" class="card card-link">
+              <div class="card-icon ic-cyan"><i class="fas fa-chart-pie" aria-hidden="true"></i></div>
+              <div class="card-body">
+                <div class="card-label">แดชบอร์ด</div>
+                <div class="card-sub">ข้อมูลสรุป</div>
+              </div>
+            </a>
+            
+            <a href="dash/leave-record.html" class="card card-link">
+              <div class="card-icon ic-rose"><i class="fas fa-calendar-xmark" aria-hidden="true"></i></div>
+              <div class="card-body">
+                <div class="card-label">บันทึกการลา</div>
+                <div class="card-sub">ลากิจ / ลาป่วย</div>
+              </div>
+            </a>
+            
+            <a href="dash/attendance.html" class="card card-link">
+              <div class="card-icon ic-mint"><i class="fas fa-calendar-day" aria-hidden="true"></i></div>
+              <div class="card-body">
+                <div class="card-label">การลงเวลารายวัน</div>
+                <div class="card-sub">รายงานประจำวัน</div>
+              </div>
+            </a>
+            
+            <!-- <a href="dash/attendance-me.html" class="card card-link">
+              <div class="card-icon ic-violet"><i class="fas fa-user-clock" aria-hidden="true"></i></div>
+              <div class="card-body">
+                <div class="card-label">การลงเวลารายเดือน (บุคคล)</div>
+                <div class="card-sub">รายงานรายบุคคล</div>
+              </div>
+            </a> -->
+            
+            <a href="dash/attendance-monthly.html" class="card card-link">
+              <div class="card-icon ic-cyan"><i class="fas fa-calendar-check" aria-hidden="true"></i></div>
+              <div class="card-body">
+                <div class="card-label">สรุปการลงเวลารายเดือน</div>
+                <div class="card-sub">ภาพรวมรายเดือน</div>
+              </div>
+            </a>
+            
+            <!-- <a href="dash/ot-data.html" class="card card-link">
+              <div class="card-icon ic-amber"><i class="fas fa-database" aria-hidden="true"></i></div>
+              <div class="card-body">
+                <div class="card-label">ข้อมูลโอที</div>
+                <div class="card-sub">รายการบันทึก OT</div>
+              </div>
+            </a> -->
+            
+            <!-- <a href="dash/ot-monthly.html" class="card card-link">
+              <div class="card-icon ic-amber"><i class="fas fa-file-lines" aria-hidden="true"></i></div>
+              <div class="card-body">
+                <div class="card-label">รายงานโอทีเดือน</div>
+                <div class="card-sub">รายงาน OT รายเดือน</div>
+              </div>
+            </a> -->
+            
+            <!-- <a href="dash/ot-sumary.html" class="card card-link">
+              <div class="card-icon ic-amber"><i class="fas fa-chart-simple" aria-hidden="true"></i></div>
+              <div class="card-body">
+                <div class="card-label">สรุปโอทีเดือน</div>
+                <div class="card-sub">ภาพรวม OT รายเดือน</div>
+              </div>
+            </a> -->
+            
+            <a href="dash/users.html" class="card card-link">
+              <div class="card-icon ic-muted"><i class="fas fa-users-gear" aria-hidden="true"></i></div>
+              <div class="card-body">
+                <div class="card-label">ผู้ใช้งาน</div>
+                <div class="card-sub">จัดการบุคลากร</div>
+              </div>
+            </a>
+            
           </div>
-          <div class="stat-cell">
-            <div class="stat-num" id="statWfh">—</div>
-            <div class="stat-label">เดือนนี้</div>
-            <div class="stat-change stat-up"><i class="fas fa-house" aria-hidden="true"></i> Work From Home</div>
+
+          <div class="divider"></div>
+
+          <!-- 3. บัญชีผู้ใช้ -->
+          <div class="section-label">บัญชีผู้ใช้</div>
+          <button type="button" class="card card-link card-btn" id="profileMenuBtn">
+            <div class="card-icon ic-cyan"><i class="fas fa-gear" aria-hidden="true"></i></div>
+            <div class="card-body">
+              <div class="card-label">ตั้งค่าโปรไฟล์</div>
+              <div class="card-sub">ข้อมูลส่วนตัวและบัญชี</div>
+            </div>
+            <i class="fas fa-chevron-right card-chevron" id="profileMenuArrow" aria-hidden="true"></i>
+          </button>
+
+          <div class="profile-submenu" id="profileSubmenu">
+            <a href="/profile.html#sec-personal" class="profile-subitem"><i class="fas fa-user-pen"></i> ข้อมูลส่วนตัว</a>
+            <a href="/profile.html#sec-signature" class="profile-subitem"><i class="fas fa-signature"></i> ลายเซ็น</a>
+            <a href="/profile.html#sec-photo" class="profile-subitem"><i class="fas fa-image"></i> รูปโปรไฟล์</a>
+            <a href="/profile.html#sec-related" class="profile-subitem"><i class="fas fa-user-check"></i> ผู้เกี่ยวข้อง</a>
+            <a href="/profile.html#sec-related" class="profile-subitem"><i class="fas fa-business-time"></i> ข้อมูล OT</a>
+            <a href="/profile.html#sec-social" class="profile-subitem"><i class="fas fa-share-nodes"></i> เชื่อมโซเชียล</a>
+          </div>
+
+          <div class="account-actions">
+            <button type="button" class="btn btn-danger btn-w" id="logoutBtn">
+              <span id="logoutBtnText">ออกจากระบบ</span>
+            </button>
+            <button type="button" class="btn btn-ghost btn-w" id="logoutAllBtn">
+              <span id="logoutAllBtnText">ลงชื่อออกทุกอุปกรณ์</span>
+            </button>
           </div>
         </div>
-      </div>
 
-<!-- Hero CTA -->
-<div class="card-anim-2" style="position:relative;">
-  <div class="pulse-rings" aria-hidden="true">
-    <div class="pulse-ring"></div>
-    <div class="pulse-ring"></div>
-    <div class="pulse-ring"></div>
-  </div>
-  <a href="attendance.html" class="hero-cta" aria-label="ลงเวลาเข้า-ออกงาน"
-     id="attendanceBtn" onclick="handleAttendanceClick(event)">
-    <span class="hero-icon" aria-hidden="true"><i class="fas fa-fingerprint"></i></span>
-    <div class="hero-text">
-      <span class="hero-label">ลงเวลาเข้า-ออกงาน</span>
-      <span class="hero-sub" id="attendanceSubLabel">บันทึกเวลาปฏิบัติงานรายวัน</span>
+      </div>
     </div>
-    <i class="fas fa-chevron-right hero-arrow" aria-hidden="true"></i>
-  </a>
-</div>
 
-      <!-- Quick Actions -->
-      <div class="card card-anim-3">
-        <div class="section-label">Quick Actions</div>
-        <div class="action-grid">
-          <a href="overtime.html" class="action-btn ab-rose">
-            <span class="action-ico"><i class="fas fa-clock-rotate-left" aria-hidden="true"></i></span>
-            <span class="action-label">ทำงาน<br>ล่วงเวลา</span>
-          </a>
-          <a href="requests.html" class="action-btn ab-violet">
-            <span class="action-ico"><i class="fas fa-clipboard-list" aria-hidden="true"></i></span>
-            <span class="action-label">อนุมัติ<br>คำขอ</span>
-          </a>
-          <a href="supervisor.html" class="action-btn ab-amber">
-            <span class="action-ico"><i class="fas fa-user-tie" aria-hidden="true"></i></span>
-            <span class="action-label">อนุมัติ<br>การลงเวลา</span>
-          </a>
-          <a href="dash/dash.html" class="action-btn ab-teal">
-            <span class="action-ico"><i class="fas fa-chart-pie" aria-hidden="true"></i></span>
-            <span class="action-label">รายงาน<br>สรุป</span>
-          </a>
-          <a href="devices.html" class="action-btn ab-cyan" style="grid-column: span 2; flex-direction: row; padding: 0.85rem 1.25rem; justify-content: flex-start; gap:0.85rem;">
-            <span class="action-ico"><i class="fas fa-mobile-screen-button" aria-hidden="true"></i></span>
-            <span class="action-label" style="text-align:left;">จัดการอุปกรณ์ของฉัน</span>
-            <i class="fas fa-chevron-right" style="margin-left:auto; opacity:0.4; font-size:0.75rem;" aria-hidden="true"></i>
-          </a>
-        </div>
-      </div>
-
-      <!-- Profile + Logout -->
-      <div class="card card-anim-4">
-        <div class="section-label">Account</div>
-    <div class="profile-menu">
-  <button class="profile-row" id="profileMenuBtn" type="button">
-    <span class="profile-row-ico" aria-hidden="true">
-      <i class="fas fa-id-badge"></i>
-    </span>
-
-    <span>โปรไฟล์และการตั้งค่า</span>
-
-    <i class="fas fa-chevron-right profile-row-arrow" id="profileMenuArrow" aria-hidden="true"></i>
-  </button>
-
-  <!-- Sub Menu -->
-  <div class="profile-submenu" id="profileSubmenu">
-
-    <a href="/profile.html#sec-personal" class="profile-subitem">
-      <i class="fas fa-user-pen"></i>
-      <span>แก้ไขข้อมูลส่วนตัว</span>
-    </a>
-
-    <a href="/profile.html#sec-signature" class="profile-subitem">
-      <i class="fas fa-signature"></i>
-      <span>แก้ไขลายเซ็น</span>
-    </a>
-
-    <a href="/profile.html#sec-photo" class="profile-subitem">
-      <i class="fas fa-image"></i>
-      <span>แก้ไขรูปโปรไฟล์</span>
-    </a>
-
-    <a href="/profile.html#sec-personal" class="profile-subitem">
-      <i class="fas fa-user-check"></i>
-      <span>แก้ไขผู้ตรวจสอบ</span>
-    </a>
-
-    <a href="/profile.html#sec-related" class="profile-subitem">
-      <i class="fas fa-business-time"></i>
-      <span>แก้ไขข้อมูลโอที</span>
-    </a>
-
-    <a href="/profile.html#sec-social" class="profile-subitem">
-      <i class="fas fa-share-nodes"></i>
-      <span>เชื่อมต่อบัญชีโซเซียล</span>
-    </a>
-
-  </div>
-
-        <div class="sep" style="margin: 0.85rem 0;"></div>
-
-        <button id="logoutBtn" class="btn-logout btn-logout-main" aria-label="ออกจากระบบ">
-          <span class="btn-logout-ico" aria-hidden="true"><i class="fas fa-power-off"></i></span>
-          <span id="logoutBtnText">ออกจากระบบ</span>
-        </button>
-        <button id="logoutAllBtn" class="btn-logout btn-logout-all" aria-label="ลงชื่อออกทุกอุปกรณ์">
-          <span class="btn-logout-ico" aria-hidden="true"><i class="fas fa-shield-halved"></i></span>
-          <span id="logoutAllBtnText">ลงชื่อออกทุกอุปกรณ์</span>
-        </button>
-      </div>
-
-    </div><!-- end appSection -->
-
-    <!-- Footer -->
     <footer class="app-footer">
-      <span class="footer-chip">v2.0</span>
-      <span class="footer-sep"></span>
-      <span class="footer-chip">ATTENDANCE SYSTEM</span>
-      <span class="footer-sep"></span>
-      <span class="footer-chip" id="footerYear">2569</span>
+      <span id="footerYear">2569</span> · ระบบลงเวลาปฏิบัติงาน เวอร์ชัน 2.0
     </footer>
 
-  </div><!-- end app-shell -->
+  </div>
 
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script src="/js/reminder-scheduler.js"></script>
-
-  <script>
-    /* ═══════════ CONFIG ═══════════ */
-    const API_BASE = '/api';
-
-    /* ═══════════ PARTICLES ═══════════ */
-    function spawnParticles() {
-      const c = document.getElementById('particleContainer');
-      const colors = ['rgba(0,245,176,', 'rgba(34,211,240,', 'rgba(139,124,248,'];
-      for (let i = 0; i < 18; i++) {
-        const p = document.createElement('div');
-        const size = Math.random() * 3 + 1;
-        const color = colors[Math.floor(Math.random() * colors.length)];
-        const dur = Math.random() * 20 + 12;
-        const delay = Math.random() * dur;
-        const dx = (Math.random() - 0.5) * 80;
-        const dy = -(Math.random() * 200 + 80);
-        p.className = 'particle';
-        p.style.cssText = `
-          width:${size}px;height:${size}px;
-          background:${color}${Math.random() * 0.5 + 0.3});
-          left:${Math.random() * 100}%;
-          top:${Math.random() * 100}%;
-          --dx:${dx}px;--dy:${dy}px;
-          animation-duration:${dur}s;
-          animation-delay:-${delay}s;
-        `;
-        c.appendChild(p);
-      }
-    }
-    spawnParticles();
-
-    /* ═══════════ CLOCK ═══════════ */
-    const thDays = ['อาทิตย์','จันทร์','อังคาร','พุธ','พฤหัสบดี','ศุกร์','เสาร์'];
-    const thMonths = ['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน',
-                      'กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
-
-    const secRing = document.getElementById('secRing');
-    const circumference = 2 * Math.PI * 15;
-
-    function updateClock() {
-      const now = new Date();
-      const be = now.getFullYear() + 543;
-      document.getElementById('currentDate').textContent =
-        `วัน${thDays[now.getDay()]}ที่ ${now.getDate()} ${thMonths[now.getMonth()]} ${be}`;
-      document.getElementById('footerYear').textContent = be;
-    }
-    updateClock();
-
-    /* ═══════════ THEME ═══════════ */
-(function() {
-  const btn = document.getElementById('themeBtn');
-  const icon = document.getElementById('themeIcon');
-  const meta = document.getElementById('themeColorMeta');
-
-  // ค่าเริ่มต้นเป็น light
-  let isLight = localStorage.getItem('theme')
-    ? localStorage.getItem('theme') === 'light'
-    : true;
-
-  function apply(light) {
-    isLight = light;
-
-    document.documentElement.setAttribute(
-      'data-theme',
-      light ? 'light' : 'dark'
-    );
-
-    icon.className = light
-      ? 'fas fa-sun'
-      : 'fas fa-moon';
-
-    meta.content = light
-      ? '#f0f4f8'
-      : '#020818';
-
-    localStorage.setItem(
-      'theme',
-      light ? 'light' : 'dark'
-    );
-  }
-
-  apply(isLight);
-
-  btn.addEventListener('click', () => apply(!isLight));
-})();
-
-    /* ═══════════ TOAST ═══════════ */
-    function showToast(msg, type = 'default') {
-      const icons = { success: 'fa-circle-check', error: 'fa-circle-xmark', default: 'fa-circle-info' };
-      const tc = document.getElementById('toastContainer');
-      const t = document.createElement('div');
-      t.className = `toast${type !== 'default' ? ' ' + type : ''}`;
-      t.innerHTML = `<i class="fas ${icons[type] || icons.default}" aria-hidden="true"></i><span>${msg}</span>`;
-      tc.appendChild(t);
-      setTimeout(() => {
-        t.classList.add('exit');
-        setTimeout(() => t.remove(), 300);
-      }, 3500);
-    }
-
-    /* ═══════════ GREETING ═══════════ */
-function getGreeting() {
-  const h = new Date().getHours();
-
-  if (h >= 4 && h < 6) {
-    return '<i class="fa-solid fa-mug-hot" style="color:#f59e0b"></i> เช้าตรู่ พร้อมเริ่มวันใหม่';
-  }
-
-  if (h >= 6 && h < 9) {
-    return '<i class="fa-solid fa-sun" style="color:#facc15"></i> สวัสดีตอนเช้า';
-  }
-
-  if (h >= 9 && h < 12) {
-    return '<i class="fa-solid fa-cloud-sun" style="color:#fb923c"></i> ช่วงสาย ทำงานอย่างมีพลัง';
-  }
-
-  if (h >= 12 && h < 14) {
-    return '<i class="fa-solid fa-sun-plant-wilt" style="color:#f97316"></i> สวัสดีตอนเที่ยง';
-  }
-
-  if (h >= 14 && h < 17) {
-    return '<i class="fa-solid fa-cloud-sun" style="color:#38bdf8"></i> สวัสดีตอนบ่าย';
-  }
-
-  if (h >= 17 && h < 19) {
-    return '<i class="fa-solid fa-sunset" style="color:#fb7185"></i> สวัสดีตอนเย็น';
-  }
-
-  if (h >= 19 && h < 22) {
-    return '<i class="fa-solid fa-moon" style="color:#a78bfa"></i> ค่ำแล้ว พักผ่อนบ้างนะ';
-  }
-
-  return '<i class="fa-solid fa-stars" style="color:#818cf8"></i> ดึกแล้ว อย่าลืมพักผ่อน';
-}
-
-    /* ═══════════ WORDMARK ═══════════ */
-    const prefixMap = [
-      { a: 'สสจ.', f: 'สำนักงานสาธารณสุขจังหวัด' },
-      { a: 'สสอ.', f: 'สำนักงานสาธารณสุขอำเภอ' },
-      { a: 'รพ.สต.', f: 'โรงพยาบาลส่งเสริมสุขภาพตำบล' },
-      { a: 'รพช.', f: 'โรงพยาบาลชุมชน' },
-      { a: 'รพ.', f: 'โรงพยาบาล' },
-    ];
-
-    function expand(name) {
-      if (!name) return name;
-      for (const { a, f } of prefixMap) {
-        if (name.startsWith(a)) return f + name.slice(a.length);
-      }
-      return name;
-    }
-
-    function setWordmark(u) {
-      const orgEl = document.getElementById('wordmarkOrg');
-      const deptEl = document.getElementById('wordmarkDept');
-      if (u && u.affiliation) {
-        orgEl.textContent = expand(u.affiliation) + (u.aff_code ? ' · ' + u.aff_code : '');
-        deptEl.textContent = expand(u.department) || 'TIME & ATTENDANCE SYSTEM';
-      } else {
-        orgEl.textContent = 'รพ.สต.หนองทุ่ม';
-        deptEl.textContent = 'อำเภอเซกา · จังหวัดบึงกาฬ';
-      }
-    }
-
-    /* ═══════════ STATS ═══════════ */
-    function setStats(s) {
-      document.getElementById('statWorkDays').textContent  = s?.workDays  ?? '—';
-      document.getElementById('statOutOffice').textContent = s?.outOffice ?? '—';
-      document.getElementById('statWfh').textContent      = s?.wfh       ?? '—';
-    }
-
-    async function fetchStats(token) {
-      const cached = (() => { try { return JSON.parse(localStorage.getItem('user_stats') || 'null'); } catch { return null; } })();
-      if (cached) setStats(cached);
-      try {
-        const res  = await fetch(`${API_BASE}/user/stats`, {
-          headers: { 'Authorization': `Bearer ${token}` },
-          cache: 'no-store',
-        });
-        const data = await res.json();
-        if (data.success && data.stats) {
-          setStats(data.stats);
-          localStorage.setItem('user_stats', JSON.stringify(data.stats));
-        }
-      } catch (e) { console.warn('[fetchStats]', e); }
-    }
-
-    /* ═══════════ NOTIFICATION SYSTEM ═══════════ */
-    let _notifTab    = 'mine';
-    let _notifLoaded = false;
-    let _mineItems   = [];   
-    let _pendItems   = [];   
-    let _supItems    = [];   
-
-    function AUTH_HEADER() {
-      const t = localStorage.getItem('auth_token');
-      return t ? { 'Authorization': `Bearer ${t}` } : {};
-    }
-
-    async function loadNotifications() {
-      const raw = localStorage.getItem('user_data');
-      const ud  = raw ? JSON.parse(raw) : null;
-      const uuid = ud?.uuid || '';
-      if (!uuid) return;
-
-      try {
-        const res = await fetch(`${API_BASE}/attendance/request?uuid=${encodeURIComponent(uuid)}&limit=20`, { headers: AUTH_HEADER() });
-        const d   = await res.json();
-        if (d.success) _mineItems = d.data || [];
-      } catch (_) {}
-
-      _pendItems = [];
-      try {
-        const res = await fetch(`${API_BASE}/attendance/request-manage?status=pending&limit=50`, { headers: AUTH_HEADER() });
-        const d   = await res.json();
-        if (d.success) _pendItems = d.data || [];
-      } catch (_) {}
-
-_supItems = [];
-
-try {
-  const res = await fetch(
-    `${API_BASE}/attendance/supervisor-pending?status=pending&limit=50`,
-    {
-      headers: AUTH_HEADER()
-    }
-  );
-
-  if (res.status === 401) {
-    console.warn('Unauthorized');
-    return;
-  }
-
-  if (!res.ok) {
-    throw new Error(`HTTP ${res.status}`);
-  }
-
-  const text = await res.text();
-
-  let d;
-  try {
-    d = JSON.parse(text);
-  } catch {
-    console.error('Response is not JSON:', text);
-    return;
-  }
-
-  if (!d.success) {
-    throw new Error(d.message || 'โหลดข้อมูลไม่สำเร็จ');
-  }
-
-  _supItems = d.data || [];
-
-} catch (err) {
-  console.error('load supervisor pending error:', err);
-}
-
-      const prevRead   = new Set(JSON.parse(localStorage.getItem('notifRead') || '[]'));
-      const unreadMine = _mineItems.filter(i => ['approved','rejected'].includes(i.status) && !prevRead.has(i.reference)).length;
-      const unreadPend = _pendItems.filter(i => !prevRead.has(i.reference)).length;
-      const unreadSup  = _supItems.filter(i => !prevRead.has('sup-' + i.id)).length;
-      const total      = unreadMine + unreadPend + unreadSup;
-
-      updateNotifBadge(total, unreadPend, unreadSup);
-
-      _notifLoaded = true;
-      if (document.getElementById('notifPanel').classList.contains('open')) renderNotifBody();
-    }
-
-    function updateNotifBadge(total, unreadPend, unreadSup) {
-      const badge = document.getElementById('notifDotCount');
-      const dot   = document.getElementById('notifDot');
-      if (total > 0) {
-        badge.textContent   = total > 99 ? '99+' : total;
-        badge.classList.add('show');
-        dot.style.display   = 'none';
-      } else {
-        badge.classList.remove('show');
-        dot.style.display   = 'none';
-      }
-      const pc = document.getElementById('ntabPendingCount');
-      if (pc) { pc.textContent = unreadPend || ''; pc.classList.toggle('show', unreadPend > 0); }
-      const sc = document.getElementById('ntabSupervisorCount');
-      if (sc) { sc.textContent = unreadSup || ''; sc.classList.toggle('show', unreadSup > 0); }
-    }
-
-    function openNotifPanel() {
-      document.getElementById('notifPanel').classList.add('open');
-      document.getElementById('notifOverlay').classList.add('open');
-      renderNotifBody();
-      setTimeout(markCurrentTabRead, 800);
-    }
-
-    function closeNotifPanel() {
-      document.getElementById('notifPanel').classList.remove('open');
-      document.getElementById('notifOverlay').classList.remove('open');
-    }
-
-    function switchNotifTab(tab) {
-      _notifTab = tab;
-      document.querySelectorAll('.ntab').forEach(t => t.classList.remove('active'));
-      document.getElementById('ntab-' + tab)?.classList.add('active');
-      renderNotifBody();
-      setTimeout(markCurrentTabRead, 600);
-    }
-
-    function markCurrentTabRead() {
-      const read = new Set(JSON.parse(localStorage.getItem('notifRead') || '[]'));
-      if (_notifTab === 'mine')       _mineItems.forEach(i => read.add(i.reference));
-      else if (_notifTab === 'pending')    _pendItems.forEach(i => read.add(i.reference));
-      else if (_notifTab === 'supervisor') _supItems.forEach(i => read.add('sup-' + i.id));
-      localStorage.setItem('notifRead', JSON.stringify([...read].slice(-300)));
-      loadNotifications();
-    }
-
-    function renderNotifBody() {
-      const body = document.getElementById('notifBody');
-      if (!_notifLoaded) {
-        body.innerHTML = '<div class="notif-empty"><i class="fas fa-spinner fa-spin" aria-hidden="true"></i> กำลังโหลด...</div>';
-        return;
-      }
-      const emptyMap = {
-        mine:       '<i class="fas fa-paper-plane" aria-hidden="true"></i>ยังไม่มีคำขอที่ส่ง',
-        pending:    '<i class="fas fa-inbox" aria-hidden="true"></i>ไม่มีคำขอรออนุมัติ',
-        supervisor: '<i class="fas fa-shield-halved" aria-hidden="true"></i>ไม่มีรายการรอรับรอง',
-      };
-      const items = _notifTab === 'mine' ? _mineItems
-                  : _notifTab === 'pending' ? _pendItems : _supItems;
-                  
-      if (!items.length) {
-        body.innerHTML = `<div class="notif-empty">${emptyMap[_notifTab] || ''}</div>`;
-        return;
-      }
-      
-      const read = new Set(JSON.parse(localStorage.getItem('notifRead') || '[]'));
-      body.innerHTML = items.map(item => renderNotifItem(item, read)).join('');
-
-      // FIX: Attach click handlers for "mine" tab items
-      if (_notifTab === 'mine') {
-        body.querySelectorAll('.nitem[data-ref]').forEach(el => {
-          el.addEventListener('click', () => {
-            showMineDetail(el.dataset.ref);
-          });
-        });
-      }
-    }
-
-    // FIX: Escape single quotes for inline handlers to prevent XSS
-    function _esc(s) { 
-      return String(s||'')
-        .replace(/&/g,'&amp;')
-        .replace(/</g,'&lt;')
-        .replace(/>/g,'&gt;')
-        .replace(/"/g,'&quot;')
-        .replace(/'/g, '&#39;'); 
-    }
-
-    function _fmtDate(s) {
-      try { return new Date(s+'T00:00:00').toLocaleDateString('th-TH',{day:'numeric',month:'short',year:'numeric'}); }
-      catch { return s; }
-    }
-
-    function _ago(iso) {
-      if (!iso) return '';
-      const diff = Date.now() - new Date(iso).getTime();
-      const m = Math.floor(diff / 60000);
-      if (m < 1)   return 'เมื่อสักครู่';
-      if (m < 60)  return `${m} นาทีที่แล้ว`;
-      const h = Math.floor(m / 60);
-      if (h < 24)  return `${h} ชั่วโมงที่แล้ว`;
-      return `${Math.floor(h/24)} วันที่แล้ว`;
-    }
-
-    function renderNotifItem(item, read) {
-      const stColor = { pending:'ni-pending', approved:'ni-approved', rejected:'ni-rejected', cancelled:'ni-cancelled' };
-      const stIcon  = { pending:'fa-hourglass-half', approved:'fa-circle-check', rejected:'fa-circle-xmark', cancelled:'fa-ban' };
-      const stLabel = { pending:'รอดำเนินการ', approved:'อนุมัติแล้ว', rejected:'ปฏิเสธ', cancelled:'ยกเลิกแล้ว' };
-      const stPill  = { pending:'nis-pending', approved:'nis-approved', rejected:'nis-rejected', cancelled:'nis-cancelled' };
-
-      if (_notifTab === 'mine') {
-        const typ   = item.status || 'pending';
-        const isNew = !read.has(item.reference) && ['approved','rejected'].includes(typ);
-        const ago   = _ago(item.submitted_at);
-
-        const supSt = item.status === 'cancelled' ? 'cancelled' : (item.supervisor_status || 'none');
-        const supCfg = {
-          pending:   { c:'var(--amber)',    i:'fa-hourglass-half', l:'รอรับรอง' },
-          approved:  { c:'var(--mint-text)',i:'fa-shield-halved',  l:'รับรองแล้ว' },
-          rejected:  { c:'var(--rose)',     i:'fa-shield-xmark',   l:'ไม่รับรอง' },
-          cancelled: { c:'var(--t3)',       i:'fa-ban',            l:'ยกเลิก' },
-        };
-        const sb = supSt !== 'none' && supCfg[supSt]
-          ? `<span style="display:inline-flex;align-items:center;gap:3px;font-size:.63rem;padding:1px 7px;border-radius:20px;background:${supCfg[supSt].c}20;color:${supCfg[supSt].c};border:1px solid ${supCfg[supSt].c}50;margin-left:4px;font-weight:600"><i class="fas ${supCfg[supSt].i}" style="font-size:.5rem" aria-hidden="true"></i>${supCfg[supSt].l}</span>` : '';
-
-        const cancelBtn = typ === 'pending'
-          ? `<button onclick="event.stopPropagation();cancelRequest('${_esc(item.reference||'')}','${_esc(item.request_type||'')}','${_esc(item.req_date||'')}')"
-               style="margin-top:6px;display:inline-flex;align-items:center;gap:4px;font-size:.7rem;padding:3px 10px;border-radius:20px;background:rgba(248,113,113,0.1);color:var(--rose);border:1px solid var(--rose-border);font-weight:700;cursor:pointer;line-height:1.4">
-               <i class="fas fa-xmark" style="font-size:.65rem" aria-hidden="true"></i> ยกเลิกคำขอ</button>` : '';
-
-        return `<div class="nitem${isNew?' unread':''}" data-ref="${_esc(item.reference||'')}">
-          <div class="ni-icon ${stColor[typ]||'ni-info'}" aria-hidden="true"><i class="fas ${stIcon[typ]||'fa-file'}"></i></div>
-          <div class="ni-body">
-            <div class="ni-title">${_esc(item.request_type||'—')} ${sb}</div>
-            <div class="ni-sub">${item.req_date ? _fmtDate(item.req_date) : ''} ${item.req_time ? ' เวลา '+_esc(item.req_time) : ''}</div>
-            <div class="ni-sub">${_esc(item.reason||'')}</div>
-            ${item.reviewer_note ? `<div class="ni-sub" style="color:var(--t3);font-style:italic"><i class="fas fa-quote-left" style="font-size:.6rem" aria-hidden="true"></i> ${_esc(item.reviewer_note)}</div>` : ''}
-            <div class="ni-time">${ago} &nbsp;<span class="ni-status ${stPill[typ]||'nis-pending'}"><i class="fas ${stIcon[typ]}" style="font-size:.55rem" aria-hidden="true"></i> ${stLabel[typ]||typ}</span></div>
-            <div style="font-size:.63rem;color:var(--t4);margin-top:2px;font-family:'DM Mono',monospace">${_esc(item.reference||'')}</div>
-            ${cancelBtn}
-          </div></div>`;
-      }
-
-      if (_notifTab === 'pending') {
-        const isNew = !read.has(item.reference);
-        const avSrc = item.profileImage || item.picture ||
-          `https://ui-avatars.com/api/?background=8b7cf8&color=fff&size=64&bold=true&name=${encodeURIComponent((item.name||'U').charAt(0))}`;
-        const ago = _ago(item.submitted_at);
-        return `<div class="nitem${isNew?' unread':''}" onclick="gotoRequests('${_esc(item.reference||'')}')">
-          <img src="${_esc(avSrc)}" style="width:36px;height:36px;border-radius:50%;object-fit:cover;border:2px solid var(--b1);flex-shrink:0;margin-top:1px"
-            onerror="this.src='https://ui-avatars.com/api/?background=8b7cf8&color=fff&size=64&bold=true&name=U'" alt="">
-          <div class="ni-body">
-            <div class="ni-title">${_esc(((item.firstName||'') + ' ' + (item.lastName||'')).trim() || item.name||'—')}</div>
-            <div class="ni-sub">${_esc(item.request_type||'')} · ${item.req_date ? _fmtDate(item.req_date) : ''}</div>
-            <div class="ni-sub" style="color:var(--t3)">${_esc(item.reason||'')}</div>
-            <div class="ni-time">${ago} &nbsp;<span class="ni-status nis-pending"><i class="fas fa-hourglass-half" style="font-size:.55rem" aria-hidden="true"></i> รอดำเนินการ</span></div>
-          </div>
-          <i class="fas fa-chevron-right" style="color:var(--t4);font-size:.7rem;margin-top:8px;flex-shrink:0" aria-hidden="true"></i>
-          </div>`;
-      }
-
-      if (_notifTab === 'supervisor') {
-        const key    = 'sup-' + item.id;
-        const isNew  = !read.has(key);
-        const fname  = ((item.firstName||'') + ' ' + (item.lastName||'')).trim()  || item.name || '—';
-        const avSrc  = item.picture ||
-          `https://ui-avatars.com/api/?background=60a5fa&color=fff&size=64&bold=true&name=${encodeURIComponent((fname||'U').charAt(0))}`;
-        const ciTime = item.checkin_time  || '—';
-        const coTime = item.checkout_time || '—';
-        const coType = item.checkout_type === 'auto' ? ' ⚙️' : item.checkout_type === 'manual' ? ' ✋' : '';
-        const dist   = item.checkin_distance_m != null
-          ? (item.checkin_distance_m >= 1000
-              ? (item.checkin_distance_m/1000).toFixed(1)+' กม.'
-              : item.checkin_distance_m+' ม.') + (item.checkin_in_range ? ' ✅' : ' ⚠️')
-          : '';
-        const ago = _ago(item.checkin_at || item.submitted_at);
-        return `
-<div class="nitem${isNew ? ' unread' : ''}"
-     onclick='gotoSupervisor(${JSON.stringify(item.checkin_reference)})'>
-          <img src="${_esc(avSrc)}" style="width:36px;height:36px;border-radius:50%;object-fit:cover;border:2px solid var(--b1);flex-shrink:0;margin-top:1px"
-            onerror="this.src='https://ui-avatars.com/api/?background=60a5fa&color=fff&size=64&bold=true&name=U'" alt="">
-          <div class="ni-body">
-            <div class="ni-title">${_esc(fname)}</div>
-            <div class="ni-sub">${item.date ? _fmtDate(item.date) : ''} · เข้า <b>${_esc(ciTime)}</b> ออก ${_esc(coTime)}${coType}</div>
-            ${dist ? `<div class="ni-sub">📍 ${_esc(dist)}</div>` : ''}
-            ${item.request_type ? `<div class="ni-sub" style="color:var(--amber)"><i class="fas fa-file-pen" style="font-size:.6rem" aria-hidden="true"></i> ${_esc(item.request_type)}</div>` : ''}
-            <div class="ni-time">${ago} &nbsp;<span class="ni-status nis-pending"><i class="fas fa-hourglass-half" style="font-size:.55rem" aria-hidden="true"></i> รอรับรอง</span></div>
-          </div>
-          <i class="fas fa-chevron-right" style="color:var(--t4);font-size:.7rem;margin-top:8px;flex-shrink:0" aria-hidden="true"></i>
-          </div>`;
-      }
-      return '';
-    }
-
-    function showMineDetail(reference) {
-      const item = _mineItems.find(i => i.reference === reference);
-      if (!item) return;
-      const stColor = { pending:'#fb8c00', approved:'#00c98a', rejected:'#f87171', cancelled:'#94a3b8' };
-      const stLabel = { pending:'รอดำเนินการ', approved:'อนุมัติแล้ว', rejected:'ปฏิเสธ', cancelled:'ยกเลิกแล้ว' };
-      const isDark  = document.documentElement.getAttribute('data-theme') !== 'light';
-      const color   = stColor[item.status] || '#94a3b8';
-      const ciTime  = item.checkin_time  ? `<b>${_esc(item.checkin_time.slice(0,5))}</b>` : '<span style="color:#94a3b8">—</span>';
-      const coTime  = item.checkout_time ? `<b>${_esc(item.checkout_time.slice(0,5))}</b> <span style="font-size:.75rem;color:#94a3b8">${item.checkout_type==='auto'?'⚙️ Auto':'✋ Manual'}</span>` : '<span style="color:#94a3b8">—</span>';
-      const supSt   = item.supervisor_status;
-      const supLine = supSt ? `<tr><td style="color:#94a3b8;padding:4px 10px 4px 0;white-space:nowrap;font-size:.82rem">รับรองโดย</td><td style="font-size:.82rem;font-weight:600">${_esc(item.supervisor_name||'—')}</td></tr>
-        <tr><td style="color:#94a3b8;padding:4px 10px 4px 0;white-space:nowrap;font-size:.82rem">สถานะรับรอง</td><td><span style="font-size:.72rem;font-weight:700;padding:2px 9px;border-radius:20px;background:${supSt==='approved'?'rgba(0,245,176,.12)':supSt==='rejected'?'rgba(248,113,133,.12)':'rgba(251,191,36,.12)'};color:${supSt==='approved'?'#00c98a':supSt==='rejected'?'#f87171':'#fbbf24'}">${supSt==='approved'?'รับรองแล้ว':supSt==='rejected'?'ไม่รับรอง':'รอรับรอง'}</span></td></tr>` : '';
-      const noteRow = item.reviewer_note ? `<tr><td colspan="2" style="padding-top:8px;font-size:.8rem;color:#94a3b8;font-style:italic"><i class="fas fa-quote-left" style="font-size:.6rem" aria-hidden="true"></i> ${_esc(item.reviewer_note)}</td></tr>` : '';
-
-      Swal.fire({
-        html: `
-          <div style="text-align:left;font-family:'IBM Plex Sans Thai','Sarabun',sans-serif">
-            <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
-              <div style="width:42px;height:42px;border-radius:12px;background:${color}20;display:flex;align-items:center;justify-content:center;font-size:1.2rem;color:${color};flex-shrink:0">
-                <i class="fas ${item.status==='approved'?'fa-circle-check':item.status==='rejected'?'fa-circle-xmark':item.status==='cancelled'?'fa-ban':'fa-hourglass-half'}" aria-hidden="true"></i>
-              </div>
-              <div>
-                <div style="font-size:.92rem;font-weight:700;color:${isDark?'#f0f8ff':'#0f1d30'}">${_esc(item.request_type||'—')}</div>
-                <span style="font-size:.72rem;font-weight:700;padding:2px 10px;border-radius:20px;background:${color}20;color:${color}">${stLabel[item.status]||item.status}</span>
-              </div>
-            </div>
-            <table style="width:100%;border-collapse:collapse">
-              <tr><td style="color:#94a3b8;padding:4px 10px 4px 0;white-space:nowrap;font-size:.82rem">วันที่</td><td style="font-size:.85rem;font-weight:600;color:${isDark?'#f0f8ff':'#0f1d30'}">${_fmtDate(item.req_date)}</td></tr>
-              <tr><td style="color:#94a3b8;padding:4px 10px 4px 0;white-space:nowrap;font-size:.82rem">เวลาที่ขอ</td><td style="font-size:.85rem">${_esc(item.req_time||'—')}</td></tr>
-              <tr><td style="color:#94a3b8;padding:4px 10px 4px 0;white-space:nowrap;font-size:.82rem">เวลาเข้า</td><td style="font-size:.85rem">${ciTime}</td></tr>
-              <tr><td style="color:#94a3b8;padding:4px 10px 4px 0;white-space:nowrap;font-size:.82rem">เวลาออก</td><td style="font-size:.85rem">${coTime}</td></tr>
-              <tr><td style="color:#94a3b8;padding:4px 10px 4px 0;white-space:nowrap;font-size:.82rem">เหตุผล</td><td style="font-size:.82rem">${_esc(item.reason||'—')}</td></tr>
-              ${supLine}
-              ${noteRow}
-            </table>
-            <div style="margin-top:12px;font-size:.65rem;color:#94a3b8;font-family:'DM Mono',monospace;word-break:break-all">${_esc(item.reference||'')}</div>
-          </div>`,
-        showConfirmButton: item.status === 'pending',
-        confirmButtonText: '<i class="fas fa-xmark"></i> ยกเลิกคำขอ',
-        confirmButtonColor: '#ef4444',
-        showCancelButton: true,
-        cancelButtonText: 'ปิด',
-        cancelButtonColor: '#6c757d',
-        background: isDark ? '#050e22' : '#fff',
-        color:      isDark ? '#f0f8ff' : '#0f1d30',
-        width: 'min(92vw, 420px)',
-        customClass: { popup: 'swal-notif-detail' },
-      }).then(r => {
-        if (r.isConfirmed && item.status === 'pending') {
-          cancelRequest(item.reference, item.request_type, item.req_date);
-        }
-      });
-    }
-
-    async function cancelRequest(reference, reqType, reqDate) {
-      const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
-      const cf = await Swal.fire({
-        icon: 'warning',
-        title: 'ยืนยันการยกเลิก?',
-        html: `<div style="font-size:.88rem;color:#94a3b8">คำขอ: <b>${_esc(reqType)}</b><br>วันที่: ${_fmtDate(reqDate)}</div>`,
-        showCancelButton: true,
-        confirmButtonText: 'ยืนยันยกเลิก',
-        cancelButtonText:  'ไม่ยกเลิก',
-        confirmButtonColor: '#ef4444',
-        cancelButtonColor:  '#6c757d',
-        background: isDark ? '#050e22' : '#fff',
-        color:      isDark ? '#f0f8ff' : '#0f1d30',
-      });
-      if (!cf.isConfirmed) return;
-      Swal.fire({ title: 'กำลังยกเลิก...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
-      try {
-        const r = await fetch(`${API_BASE}/request/cancel`, {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json', ...AUTH_HEADER() },
-          body: JSON.stringify({ reference }),
-        });
-        const d = await r.json();
-        if (!d.success) throw new Error(d.message);
-        Swal.fire({ icon: 'success', title: 'ยกเลิกสำเร็จ', timer: 1500, showConfirmButton: false })
-          .then(() => loadNotifications());
-      } catch (err) {
-        Swal.fire({ icon: 'error', title: 'เกิดข้อผิดพลาด', text: err.message });
-      }
-    }
-
-    function gotoRequests(reference) {
-      closeNotifPanel();
-      markCurrentTabRead();
-      window.location.href = `requests.html?ref=${encodeURIComponent(reference)}`;
-    }
-
-function gotoSupervisor(ref) {
-  closeNotifPanel();
-  markCurrentTabRead();
-  window.location.href = `supervisor.html?ref=${ref}`;
-}
-
-    document.getElementById('notifBtn').addEventListener('click', (e) => {
-      e.stopPropagation();
-      const panel = document.getElementById('notifPanel');
-      if (panel.classList.contains('open')) {
-        closeNotifPanel();
-      } else {
-        if (!_notifLoaded) loadNotifications();
-        openNotifPanel();
-      }
-    });
-
-    /* ═══════════ PWA ═══════════ */
-    let deferredPrompt;
-    window.addEventListener('beforeinstallprompt', (e) => {
-      e.preventDefault();
-      deferredPrompt = e;
-      if (window.matchMedia('(display-mode: standalone)').matches) return;
-      const banner = document.createElement('div');
-      banner.className = 'pwa-banner';
-      banner.innerHTML = `
-        <div style="flex:1;min-width:0">
-          <div style="font-family:'Outfit',sans-serif;font-size:0.88rem;font-weight:700;color:var(--t1)">ติดตั้งแอปพลิเคชัน</div>
-          <div style="font-size:0.72rem;color:var(--t3);margin-top:2px">เพิ่มเข้าหน้าจอหลักเพื่อประสบการณ์ที่ดีกว่า</div>
-        </div>
-        <button id="installBtn" class="btn btn-primary" style="padding:0.65rem 1.1rem;font-size:0.8rem;flex-shrink:0">ติดตั้ง</button>
-        <button id="dismissBanner" style="background:none;border:none;color:var(--t3);cursor:pointer;padding:4px 8px;font-size:1rem" aria-label="ปิด">✕</button>
-      `;
-      document.body.appendChild(banner);
-      document.getElementById('installBtn').onclick = async () => {
-        if (!deferredPrompt) return;
-        deferredPrompt.prompt();
-        await deferredPrompt.userChoice;
-        deferredPrompt = null;
-        banner.remove();
-      };
-      document.getElementById('dismissBanner').onclick = () => banner.remove();
-    });
-
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js')
-          .then(r => console.log('✅ SW:', r.scope))
-          .catch(e => console.warn('⚠️ SW:', e));
-      });
-    }
-
-    /* ═══════════ AUTH STATE ═══════════ */
-    async function checkAuth() {
-      const token = localStorage.getItem('auth_token');
-      if (!token) { renderLoggedOut(); return; }
-
-      const cached = (() => { try { return JSON.parse(localStorage.getItem('user_data') || 'null'); } catch { return null; } })();
-      if (cached) { setWordmark(cached); renderLoggedIn(cached); }
-
-         if (!navigator.onLine) {
-          return;
-        }
-      try {
-        const res = await fetch(`${API_BASE}/user/me`, {
-          headers: { 'Authorization': `Bearer ${token}` },
-          cache: 'no-store',
-        });
-        if (navigator.onLine && (res.status === 401 || res.status === 403)) {
-          localStorage.removeItem('auth_token'); localStorage.removeItem('user_data');
-          renderLoggedOut();
-          if (cached) showToast('Session หมดอายุ กรุณาเข้าสู่ระบบใหม่', 'error');
-          return;
-        }
-        const data = await res.json();
-        if (!data.success || !data.user) {
-
-  // มี cache → ใช้ cache ต่อ
-  if (cached) {
-
-    showToast?.(
-      'ไม่สามารถตรวจสอบข้อมูลล่าสุดได้',
-      'error'
-    );
-
-    return;
-  }
-
-  // ไม่มี cache จริงๆ ค่อย logout
-  localStorage.removeItem('auth_token');
-  localStorage.removeItem('user_data');
-
-  renderLoggedOut();
-
-  return;
-}
-
-        localStorage.setItem('user_data', JSON.stringify(data.user));
-        setWordmark(data.user);
-        renderLoggedIn(data.user);
-      } catch (e) {
-        console.warn('[checkAuth] network error:', e);
-        if (!cached) renderLoggedOut();
-      }
-    }
-
-    function renderLoggedIn(u) {
-      document.getElementById('authSection').style.display = 'none';
-      const app = document.getElementById('appSection');
-      app.style.display = 'flex'; // FIX: Ensure it shows up properly
-
-      const fullName =  `${u.firstName||''} ${u.lastName||''}`.trim() || u.email || u.name || '—';
-      document.getElementById('userName').textContent     = fullName;
-      document.getElementById('userGreeting').innerHTML   = getGreeting();
-      document.getElementById('userEmail').textContent    = u.position || u.email || '—';
-
-      const roleMap = {
-        user:       '<i class="fa-solid fa-user" aria-hidden="true"></i> บุคลากร',
-        staff:     '<i class="fa-solid fa-user" aria-hidden="true"></i> เจ้าหน้าที่',
-        admin:      '<i class="fa-solid fa-user-shield" aria-hidden="true"></i> ผู้ดูแลระบบ',
-        manager:    '<i class="fa-solid fa-list-check" aria-hidden="true"></i> ผู้จัดการ',
-        hr:        '<i class="fa-solid fa-user-tie" aria-hidden="true"></i> ฝ่ายทรัพยากรบุคคล',
-        it:        '<i class="fa-solid fa-laptop-code" aria-hidden="true"></i> ฝ่ายเทคโนโลยีสารสนเทศ',
-        support:   '<i class="fa-solid fa-headset" aria-hidden="true"></i> ฝ่ายสนับสนุน',
-        legal:     '<i class="fa-solid fa-gavel" aria-hidden="true"></i> ฝ่ายกฎหมาย',
-        finance:   '<i class="fa-solid fa-money-bill-wave" aria-hidden="true"></i> ฝ่ายการเงิน',
-        supervisor: '<i class="fa-solid fa-user-tie" aria-hidden="true"></i> หัวหน้า',
-        executive:  '<i class="fa-solid fa-user-crown" aria-hidden="true"></i> ผู้บริหาร',
-        ceo:       '<i class="fa-solid fa-user-crown" aria-hidden="true"></i> ผู้บริหารสูงสุด'
-      };
-      document.getElementById('userRole').innerHTML = roleMap[u.role] || roleMap.user;
-
-      const av = document.getElementById('userAvatar');
-      // FIX: Add onerror fallback for avatar
-      av.onerror = function() {
-        this.src = `https://ui-avatars.com/api/?background=00f5b0&color=020c18&bold=true&size=128&name=${encodeURIComponent(fullName)}`;
-        this.onerror = null;
-      };
-      av.src = u.profileImage || u.picture || `https://ui-avatars.com/api/?background=00f5b0&color=020c18&bold=true&size=128&name=${encodeURIComponent(fullName)}`;
-
-      const tok = localStorage.getItem('auth_token');
-      if (tok) fetchStats(tok);
-
-      loadNotifications();
-
-      bindLogout();
-    }
-
-    function renderLoggedOut() {
-      setWordmark(null);
-      document.getElementById('authSection').style.display = 'block';
-      document.getElementById('appSection').style.display  = 'none'; // FIX: Correctly hides app section
-    }
-
-    function bindLogout() {
-      const btn    = document.getElementById('logoutBtn');
-      const btnAll = document.getElementById('logoutAllBtn');
-      // FIX: Use onclick to prevent handler stacking
-      if (btn)    btn.onclick    = () => logout(false);
-      if (btnAll) btnAll.onclick = () => logout(true);
-    }
-
-    /* ═══════════ LOGOUT IMPLEMENTATION ═══════════ */
-async function logout(logoutAll = false) {
-
-  const result = await Swal.fire({
-    icon: 'warning',
-    title: logoutAll
-      ? 'ออกจากระบบทุกอุปกรณ์?'
-      : 'ออกจากระบบ?',
-
-    text: logoutAll
-      ? 'คุณต้องเข้าสู่ระบบใหม่ทุกอุปกรณ์'
-      : 'คุณต้องเข้าสู่ระบบใหม่อีกครั้ง',
-
-    showCancelButton: true,
-    confirmButtonText: 'ยืนยัน',
-    cancelButtonText: 'ยกเลิก',
-
-    confirmButtonColor: '#e53935',
-    cancelButtonColor: '#6c757d',
-    reverseButtons: true
-  });
-
-  if (!result.isConfirmed) return;
-
-  const token = localStorage.getItem('auth_token');
-
-  // ไม่มี token → logout local ทันที
-  if (!token) {
-    renderLoggedOut();
-    window.location.replace('/');
-    return;
-  }
-
-  const btnId = logoutAll
-    ? 'logoutAllBtn'
-    : 'logoutBtn';
-
-  const btn = document.getElementById(btnId);
-
-  const originalText = logoutAll
-    ? 'ลงชื่อออกทุกอุปกรณ์'
-    : 'ออกจากระบบ';
-
-  try {
-
-    // loading state
-    if (btn) {
-      btn.disabled = true;
-      btn.classList.add('loading');
-
-      const text = btn.querySelector('span:last-child');
-      if (text) {
-        text.textContent = 'กำลังออกจากระบบ...';
-      }
-    }
-
-    const res = await fetch(`${API_BASE}/user/logout`, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        all: logoutAll
-      })
-    });
-
-    // กัน API ส่ง html/error page กลับมา
-    let data = {};
-
-    try {
-      data = await res.json();
-    } catch (_) {}
-
-    // ถึง API fail ก็ล้าง local ออก
-    // เพื่อไม่ให้ user ค้างหน้า login
-    localStorage.removeItem('auth_token');
-    localStorage.removeItem('user_data');
-
-showToast(
-  logoutAll
-    ? 'ออกจากระบบทุกอุปกรณ์แล้ว'
-    : 'ออกจากระบบสำเร็จ',
-  'success'
-);
-
-setTimeout(() => {
-  window.location.reload();
-}, 500);
-
-    renderLoggedOut();
-
-    // sync ทุก tab
-    localStorage.setItem('logout_event', Date.now());
-
-    setTimeout(() => {
-      window.location.replace('/');
-    }, 700);
-
-  } catch (err) {
-
-    console.error('[logout]', err);
-
-    // offline ก็ logout local ได้
-    localStorage.removeItem('auth_token');
-    localStorage.removeItem('user_data');
-
-    renderLoggedOut();
-
-    showToast('ออกจากระบบสำเร็จ', 'success');
-
-    setTimeout(() => {
-      window.location.replace('/');
-    }, 700);
-
-  } finally {
-
-    if (btn) {
-      btn.disabled = false;
-      btn.classList.remove('loading');
-
-      const text = btn.querySelector('span:last-child');
-
-      if (text) {
-        text.textContent = originalText;
-      }
-    }
-  }
-}
-    
-    /* ═══════════ NETWORK STATUS ═══════════ */
-    function updateConnectionStatus() {
-      if (!navigator.onLine) {
-        showToast('ไม่มีการเชื่อมต่ออินเทอร์เน็ต — ข้อมูลอาจไม่อัปเดต', 'error');
-      }
-    }
-    window.addEventListener('offline', updateConnectionStatus);
-    window.addEventListener('online', () => showToast('เชื่อมต่ออินเทอร์เน็ตแล้ว', 'success'));
-
-    /* ═══════════ INIT ═══════════ */
-    document.addEventListener('DOMContentLoaded', checkAuth);
-
-    /* ═══════════ ATTENDANCE ACTION ROUTING ═══════════ */
-
-    function formatThaiDate(date = new Date()) {
-  return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear() + 543}`;
-}
-
-function getAttendanceAction() {
-  const now = new Date(),
-        total = now.getHours() * 60 + now.getMinutes(),
-        today = formatThaiDate(now),
-        dateCheckIn = localStorage.getItem('datecheck'),
-        dateCheckOut = localStorage.getItem('datecheckout');
-
-  if (dateCheckOut === today) return 'checktoday';
-
-  if (dateCheckIn === today) {
-    if (total <= 16 * 60 + 30) return 'checktoday';
-    return 'checkOut';
-  }
-
-  if (total < 8 * 60 + 31) return 'checkIn';
-
-  if (total <= 16 * 60 + 30) return 'sendRequest';
-
-  return 'checkOut';
-}
-
-const profileMenuBtn = document.getElementById('profileMenuBtn');
-const profileSubmenu = document.getElementById('profileSubmenu');
-
-profileMenuBtn.addEventListener('click', () => {
-  profileSubmenu.classList.toggle('show');
-  profileMenuBtn.classList.toggle('active');
-});
-
-
-function updateAttendanceBtnLabel() {
-  const action = getAttendanceAction(),
-        subEl  = document.getElementById('attendanceSubLabel'),
-        btnEl  = document.getElementById('attendanceBtn');
-
-  if (!subEl || !btnEl) return;
-
-  const labels = {
-    checkIn:
-      '<i class="fa-solid fa-circle-check" style="color:#22c55e"></i> แตะเพื่อลงเวลาเข้างาน',
-
-    sendRequest:
-      '<i class="fa-solid fa-file-pen" style="color:#eab308"></i> แตะเพื่อส่งคำขอ / แก้ไขเวลา',
-
-    checkOut:
-      '<i class="fa-solid fa-circle-xmark" style="color:#ef4444"></i> แตะเพื่อลงเวลาออกงาน',
-
-    checktoday:
-      '<i class="fa-solid fa-calendar-check" style="color:#3b82f6"></i> วันนี้บันทึกเวลาแล้ว'
-  };
-
-  const colors = {
-    checkIn:     'linear-gradient(135deg,#16a34a,#22c55e)',
-    sendRequest: 'linear-gradient(135deg,#ca8a04,#eab308)',
-    checkOut:    'linear-gradient(135deg,#dc2626,#ef4444)',
-    checktoday:  'linear-gradient(135deg,#2563eb,#3b82f6)'
-  };
-
-  subEl.innerHTML = labels[action] || 'บันทึกเวลาปฏิบัติงานรายวัน';
-
-  btnEl.style.background = colors[action] ||
-    'linear-gradient(135deg,#1e293b,#334155)';
-}
-
-
-function handleAttendanceClick(event) {
-  event.preventDefault();
-
-  const action = getAttendanceAction();
-  window.location.href = `attendance.html?action=${action}`;
-}
-
-updateAttendanceBtnLabel();
-setInterval(updateAttendanceBtnLabel, 60000);
-
-  </script>
-
+  <script src="/js/workforce.js"></script>
+  <script src="/js/index-home.js"></script>
 </body>
 </html>

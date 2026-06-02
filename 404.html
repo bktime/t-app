@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="th" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>404 — ไม่พบหน้าเว็บ</title>
+  <meta name="theme-color" content="#0b1220" id="themeColorMeta">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="/css/index-home.css">
+  
+  <style>
+    /* CSS เฉพาะสำหรับหน้า 404 */
+    .error-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 2rem 1rem;
+      min-height: 70dvh;
+    }
+
+    .error-visual {
+      position: relative;
+      margin-bottom: 2rem;
+    }
+
+    .error-code {
+      font-family: 'Outfit', sans-serif;
+      font-size: 8rem;
+      font-weight: 800;
+      line-height: 1;
+      color: transparent;
+      -webkit-text-stroke: 2px var(--mint-border);
+      opacity: 0.6;
+      user-select: none;
+    }
+
+    .error-icon-float {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 64px;
+      height: 64px;
+      background: var(--mint-glow);
+      border: 1.5px solid var(--mint-border);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      color: var(--mint-text);
+      box-shadow: 0 0 24px var(--mint-glow);
+      animation: iconFloat 3s ease-in-out infinite;
+    }
+
+    @keyframes iconFloat {
+      0%, 100% { transform: translate(-50%, -50%) translateY(0); }
+      50% { transform: translate(-50%, -50%) translateY(-8px); }
+    }
+
+    .error-title {
+      font-family: 'IBM Plex Sans Thai', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--t1);
+      margin-bottom: 0.5rem;
+    }
+
+    .error-desc {
+      font-size: 14px;
+      color: var(--t3);
+      max-width: 320px;
+      margin-bottom: 2rem;
+      line-height: 1.6;
+    }
+
+    .error-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      width: 100%;
+      max-width: 280px;
+    }
+
+    .btn-home {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 0.85rem 1.5rem;
+      border-radius: var(--r-lg);
+      font-family: inherit;
+      font-size: 15px;
+      font-weight: 600;
+      text-decoration: none;
+      background: linear-gradient(135deg, var(--mint-dim), var(--mint));
+      color: #041018;
+      border: none;
+      cursor: pointer;
+      transition: filter 0.18s var(--ease), transform 0.18s var(--ease);
+      box-shadow: 0 4px 14px rgba(0, 245, 176, 0.25);
+    }
+
+    .btn-home:hover {
+      filter: brightness(1.08);
+      transform: translateY(-1px);
+    }
+
+    .btn-home:active {
+      transform: translateY(0) scale(0.98);
+    }
+
+    .btn-back {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 0.75rem 1rem;
+      border-radius: var(--r-lg);
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 500;
+      text-decoration: none;
+      background: var(--bg-glass);
+      color: var(--t2);
+      border: 1px solid var(--b1);
+      cursor: pointer;
+      transition: border-color 0.18s var(--ease), color 0.18s var(--ease);
+    }
+
+    .btn-back:hover {
+      border-color: var(--mint-border);
+      color: var(--mint-text);
+    }
+
+    /* Light theme adjustment */
+    [data-theme="light"] .error-code {
+      -webkit-text-stroke: 2px rgba(0, 122, 88, 0.25);
+      color: transparent;
+    }
+    
+    [data-theme="light"] .btn-home {
+      box-shadow: 0 4px 14px rgba(0, 122, 88, 0.2);
+    }
+
+    @media (min-width: 768px) {
+      .error-code { font-size: 10rem; }
+      .error-icon-float { width: 80px; height: 80px; font-size: 30px; }
+      .error-title { font-size: 1.75rem; }
+      .error-desc { font-size: 15px; max-width: 400px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="page-bg" aria-hidden="true"></div>
+
+  <div class="wrap">
+    
+    <header class="topbar">
+      <div class="logo-block">
+        <span class="logo-mark" aria-hidden="true"></span>
+        <div class="logo">
+          <strong> <span id="wordmarkOrg">ลงเวลาปฏิบัติงาน</span></strong>
+        </div>
+      </div>
+      <div class="topbar-end">
+        <button class="icon-btn" type="button" id="themeBtn" title="เปลี่ยนธีม" aria-label="เปลี่ยนธีม">
+          <i class="fas fa-moon" id="themeIcon" aria-hidden="true"></i>
+        </button>
+      </div>
+    </header>
+    <p class="org-line text-select">อำเภอเซกา · จังหวัดบึงกาฬ</p>
+
+    <div class="error-container">
+      <div class="error-visual">
+        <div class="error-code">404</div>
+        <div class="error-icon-float">
+          <i class="fas fa-link-slash" aria-hidden="true"></i>
+        </div>
+      </div>
+      
+      <h1 class="error-title">ไม่พบหน้าเว็บ</h1>
+      <p class="error-desc">ขออภัย หน้าที่คุณกำลังมองหาอาจถูกย้าย ลบ หรือไม่มีอยู่ในระบบ</p>
+      
+      <div class="error-actions">
+        <a href="https://t-app-5x4.pages.dev/" class="btn-home">
+          <i class="fas fa-house" aria-hidden="true"></i> กลับหน้าหลัก
+        </a>
+        <button type="button" class="btn-back" onclick="history.back()">
+          <i class="fas fa-arrow-left" aria-hidden="true"></i> ย้อนกลับหน้าเดิม
+        </button>
+      </div>
+    </div>
+
+    <footer class="app-footer">
+      <span id="footerYear"></span> · ระบบลงเวลาปฏิบัติงาน เวอร์ชัน 2.0
+    </footer>
+
+  </div>
+
+  <script>
+    // Script สำหรับสลับธีมและปีค.ศ. -> พ.ศ. (เหมือนหน้าอื่นๆ)
+    const html = document.documentElement;
+    const themeBtn = document.getElementById('themeBtn');
+    const themeIcon = document.getElementById('themeIcon');
+    const footerYear = document.getElementById('footerYear');
+
+    function applyTheme(theme) {
+      html.setAttribute('data-theme', theme);
+      if (theme === 'light') {
+        themeIcon.className = 'fas fa-moon';
+        document.getElementById('themeColorMeta').content = '#e8edf4';
+      } else {
+        themeIcon.className = 'fas fa-sun';
+        document.getElementById('themeColorMeta').content = '#0b1220';
+      }
+    }
+
+    themeBtn.addEventListener('click', () => {
+      const current = html.getAttribute('data-theme');
+      const next = current === 'light' ? 'dark' : 'light';
+      localStorage.setItem('theme', next);
+      applyTheme(next);
+    });
+
+    const savedTheme = localStorage.getItem('theme') || 
+      (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    applyTheme(savedTheme);
+
+    // แปลงปีเป็น พ.ศ.
+    const currentYear = new Date().getFullYear();
+    footerYear.textContent = currentYear + 543;
+  </script>
+</body>
+</html>

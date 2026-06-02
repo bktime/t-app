@@ -136,7 +136,7 @@ const STATIC_CACHE_NAME = 'time-attendance-static-v2.1';
 const appShellFiles = [
   '/', '/index.html', '/login.html', '/register.html', '/overtime.html',
   '/attendance.html', '/devices.html', '/request.html', '/profile.html',
-  '/supervisor.html', '/manifest.json',
+  '/supervisor.html', '/404.html', '/manifest.json',
   '/icons/icon-192.png', '/icons/icon-512.png'
 ];
 
@@ -203,7 +203,7 @@ self.addEventListener('fetch', event => {
       .catch(() =>
         caches.match(request).then(cached => {
           if (cached) return cached;
-          if (request.mode === 'navigate') return caches.match('/index.html');
+          if (request.mode === 'navigate') return caches.match('/404.html');
           // ✅ แก้ไข: เพิ่ม fallback สุดท้ายแทน undefined
           return new Response('Offline', {
             status: 503,

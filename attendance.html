@@ -655,6 +655,27 @@
   100% { transform: scale(1.55); opacity: 0;   }
 }
 
+/* SweetAlert2 Dark Theme */
+[data-theme="dark"] .swal2-popup {
+  background: #2a2a3e !important;
+  color: #f9f9f9 !important;
+  border: 1px solid #444 !important;
+}
+
+[data-theme="dark"] .swal2-title,
+[data-theme="dark"] .swal2-html-container {
+  color: #f9f9f9 !important;
+}
+
+[data-theme="dark"] .swal2-input,
+[data-theme="dark"] .swal2-textarea,
+[data-theme="dark"] .swal2-select {
+  background: #1e1e2e !important;
+  color: #f9f9f9 !important;
+  border: 1px solid #444 !important;
+}
+
+
   </style>
 
 </head>
@@ -1657,7 +1678,7 @@ async function toggleButtonsByTime() {
           cursor:pointer;
         ">
         <i class="fa-solid fa-user-check"></i>
-        กำหนดผู้รับรอง
+        กำหนดผู้รับรอง(เพิ่มเติม)
       </button>
 
         </div>
@@ -1817,7 +1838,18 @@ async function toggleButtonsByTime() {
         }
         const confirm = await Swal.fire({
           title: "ยืนยันลงเวลาเข้างาน?",
-          html: `<div style="text-align:left;font-size:0.9rem;line-height:2"><b>ชื่อ:</b> ${name}<br><b>ประเภท:</b> ${typea}
+          html: `<div style="text-align:left;font-size:0.9rem;line-height:2"><b>ชื่อ:</b> ${name}<br>
+            
+          
+      <b>ประเภท:</b>
+      <select id="swalTypea" class="swal2-select" style="width:60%;margin-top:4px">
+        <option value="ปกติ" ${typea === "ปกติ" ? "selected" : ""}>ทำงานตามปกติ</option>
+        <option value="นอกสถานที่" ${typea === "นอกสถานที่" ? "selected" : ""}>ออกปฏิบัติงานนอกสถานที่</option>
+        <option value="วันหยุด" ${typea === "วันหยุด" ? "selected" : ""}>ปฏิบัติงานในวันหยุด</option>
+        <option value="ไปราชการ" ${typea === "ไปราชการ" ? "selected" : ""}>ไปราชการ (ประชุม / อบรม)</option>
+        <option value="ทำงานที่บ้าน" ${typea === "ทำงานที่บ้าน" ? "selected" : ""}>Work From Home</option>
+      </select>
+
           ${
   typea === "วันหยุด" && holidayShift
     ? `
@@ -1837,8 +1869,14 @@ async function toggleButtonsByTime() {
           cancelButtonText: "ยกเลิก",
           confirmButtonColor: "#2e7d32",
           cancelButtonColor: "#6c757d",
+            preConfirm: () => {
+              return {
+                typea: document.getElementById("swalTypea").value
+              };
+            }
         });
         if (!confirm.isConfirmed) return;
+        const selectedType = confirm.value.typea;
         Swal.fire({
           title: "กำลังบันทึก...",
           allowOutsideClick: false,
@@ -1865,7 +1903,7 @@ async function toggleButtonsByTime() {
         const payload = {
           uuid,
           action: "checkin",
-          work_type: typea,
+          work_type: selectedType || typea,
           note: nte || null,
           latitude: lat,
           longitude: lon,
@@ -2005,6 +2043,15 @@ async function checkOut() {
     title:'ยืนยันลงเวลาออกงาน?',
     html:`<div style="text-align:left;font-size:0.9rem;line-height:2">
       <b>ชื่อ:</b> ${name}<br>
+            <b>ประเภท:</b>
+      <select id="swalTypea" class="swal2-select" style="width:60%;margin-top:4px">
+        <option value="ปกติ" ${typea === "ปกติ" ? "selected" : ""}>ทำงานตามปกติ</option>
+        <option value="นอกสถานที่" ${typea === "นอกสถานที่" ? "selected" : ""}>ออกปฏิบัติงานนอกสถานที่</option>
+        <option value="วันหยุด" ${typea === "วันหยุด" ? "selected" : ""}>ปฏิบัติงานในวันหยุด</option>
+        <option value="ไปราชการ" ${typea === "ไปราชการ" ? "selected" : ""}>ไปราชการ (ประชุม / อบรม)</option>
+        <option value="ทำงานที่บ้าน" ${typea === "ทำงานที่บ้าน" ? "selected" : ""}>Work From Home</option>
+      </select>
+      <br>
       <b>เวลา:</b> ${new Date().toLocaleTimeString('th-TH')}
     </div>`,
     icon:'question',
@@ -2013,10 +2060,16 @@ async function checkOut() {
     confirmButtonText:'<i class="fa-solid fa-stop"></i> ลงเวลาออก',
     cancelButtonText:'ยกเลิก',
     confirmButtonColor:'#b71c1c',
-    cancelButtonColor:'#6c757d'
+    cancelButtonColor:'#6c757d',
+    preConfirm: () => {
+      const sel = document.getElementById("swalTypea");
+      return {
+        typea: sel ? sel.value : typea
+      };
+    }
   });
   if (!confirm.isConfirmed) return;
-
+  const selectedType = confirm.value.typea;
   Swal.fire({ title:'กำลังบันทึก...', allowOutsideClick:false, didOpen:()=>Swal.showLoading() });
 
   const now      = new Date();
@@ -2041,7 +2094,7 @@ async function checkOut() {
 
   const payload = {
     uuid, action: 'checkout',
-    work_type: typea,
+    work_type: selectedType || typea,
     note: note || null,
     latitude: lat, longitude: lon,
     distance_m: dist_m,
@@ -2394,14 +2447,23 @@ async function checktoday() {
         </div>` : '';
 
       // --- reference row ---
-      const refRow = ci?.reference ? `
-        <div class="att-row" style="background:var(--swal2-background, #f8fafc)">
-          <div class="att-icon icon-ref"><i class="fa-solid fa-fingerprint"></i></div>
-          <div style="flex:1">
-            <p class="att-label">อ้างอิง</p>
-            <span class="ref-code">${ci.reference}</span>
-          </div>
-        </div>` : '';
+const refRow = ci?.reference ? `
+  <div class="att-row"
+       style="
+         background:var(--background-color);
+         border-radius:10px;
+         margin:8px 12px;
+         border:1px solid var(--border-color);
+       ">
+    <div class="att-icon icon-ref">
+      <i class="fa-solid fa-fingerprint"></i>
+    </div>
+    <div style="flex:1">
+      <p class="att-label">อ้างอิง</p>
+      <span class="ref-code">${ci.reference}</span>
+    </div>
+  </div>
+` : '';
 
       // --- date display ---
       const dateDisplay = new Date(date).toLocaleDateString('th-TH', {
@@ -2417,32 +2479,111 @@ async function checktoday() {
         padding: 0,
         html: `
           <style>
-            .att-card { text-align: left; font-family: inherit; }
-            .att-header { padding: 1.25rem 1.5rem 1rem; border-bottom: 1px solid #f1f5f9; }
-            .att-title { font-size: 11px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: #94a3b8; margin: 0 0 4px; }
-            .att-date-text { font-size: 17px; font-weight: 600; color: #1e293b; margin: 0; }
-            .att-body { padding: 0; }
-            .att-row { display: flex; align-items: flex-start; gap: 12px; padding: 13px 1.5rem; border-bottom: 1px solid #f1f5f9; }
-            .att-row:last-child { border-bottom: none; }
-            .att-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; font-size: 14px; }
-            .att-label { font-size: 10px; color: #94a3b8; margin: 0 0 3px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; }
-            .att-value { font-size: 15px; font-weight: 600; color: #1e293b; margin: 0; }
-            .att-sub { font-size: 12px; color: #64748b; margin: 2px 0 0; }
-            .badge { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 99px; }
-            .badge-pending  { background: #fef3c7; color: #92400e; }
-            .badge-approved { background: #d1fae5; color: #065f46; }
-            .badge-rejected { background: #fee2e2; color: #7f1d1d; }
-            .badge-none     { background: #f1f5f9; color: #64748b; }
-            .co-type-tag { font-size: 12px; font-weight: 400; color: #64748b; margin-left: 4px; }
-            .fa-tag-inline { font-size: 10px; }
-            .ref-code { font-size: 11px; font-family: monospace; color: #94a3b8; background: #f8fafc; padding: 2px 8px; border-radius: 4px; letter-spacing: 0.04em; border: 1px solid #e2e8f0; }
-            .icon-in  { background: #eff6ff; color: #3b82f6; }
-            .icon-out { background: #f0fdf4; color: #22c55e; }
-            .icon-type{ background: #faf5ff; color: #8b5cf6; }
-            .icon-dist{ background: #fff7ed; color: #f97316; }
-            .icon-req { background: #fdf4ff; color: #a855f7; }
-            .icon-sup { background: #f8fafc; color: #64748b; }
-            .icon-ref { background: #f8fafc; color: #94a3b8; }
+          .att-card {
+  text-align: left;
+  font-family: inherit;
+}
+
+.att-header {
+  padding: 1.25rem 1.5rem 1rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.att-title {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--secondary-text-color);
+  margin: 0 0 4px;
+}
+
+.att-date-text {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--text-color);
+  margin: 0;
+}
+
+.att-body { padding: 0; }
+
+.att-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 13px 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.att-row:last-child {
+  border-bottom: none;
+}
+
+.att-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 1px;
+  font-size: 14px;
+}
+
+.att-label {
+  font-size: 10px;
+  color: var(--secondary-text-color);
+  margin: 0 0 3px;
+  font-weight: 600;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.att-value {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-color);
+  margin: 0;
+}
+
+.att-sub {
+  font-size: 12px;
+  color: var(--secondary-text-color);
+  margin: 2px 0 0;
+}
+
+.co-type-tag {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--secondary-text-color);
+  margin-left: 4px;
+}
+
+.ref-code {
+  font-size: 11px;
+  font-family: monospace;
+  color: var(--secondary-text-color);
+  background: var(--background-color);
+  padding: 2px 8px;
+  border-radius: 4px;
+  letter-spacing: .04em;
+  border: 1px solid var(--border-color);
+}
+  .badge-pending  { background:#fef3c7; color:#92400e; }
+.badge-approved { background:#d1fae5; color:#065f46; }
+.badge-rejected { background:#fee2e2; color:#7f1d1d; }
+.badge-none     { background:#f1f5f9; color:#64748b; }
+
+.icon-in   { background:#eff6ff; color:#3b82f6; }
+.icon-out  { background:#f0fdf4; color:#22c55e; }
+.icon-type { background:#faf5ff; color:#8b5cf6; }
+.icon-dist { background:#fff7ed; color:#f97316; }
+.icon-req  { background:#fdf4ff; color:#a855f7; }
+.icon-sup  { background:#f8fafc; color:#64748b; }
+.icon-ref  { background:#f8fafc; color:#94a3b8; }
+
+          
           </style>
           <div class="att-card">
             <div class="att-header">
@@ -2891,10 +3032,43 @@ async function openReviewDialog(reference, name, reqType) {
   closeNotifPanel();
   const res2 = await Swal.fire({
     title: `<span style="font-size:.95rem">📋 ${esc(reqType)}</span>`,
-    html: `<p style="font-size:.88rem;color:#666;margin-bottom:10px">ผู้ส่ง: <b>${esc(name)}</b></p>
-      <label style="display:block;text-align:left;font-size:.82rem;color:#666;margin-bottom:4px">หมายเหตุ (ไม่บังคับ)</label>
-      <textarea id="revNote" rows="2" placeholder="ระบุหมายเหตุ..."
-        style="width:100%;padding:8px 10px;border:1px solid #ddd;border-radius:8px;font-size:.88rem;font-family:var(--font-primary);resize:vertical;outline:none"></textarea>`,
+    html: `
+<p style="
+  font-size:.88rem;
+  color:var(--secondary-text-color);
+  margin-bottom:10px
+">
+  ผู้ส่ง: <b style="color:var(--text-color)">${esc(name)}</b>
+</p>
+
+<label style="
+  display:block;
+  text-align:left;
+  font-size:.82rem;
+  color:var(--secondary-text-color);
+  margin-bottom:4px
+">
+  หมายเหตุ (ไม่บังคับ)
+</label>
+
+<textarea
+  id="revNote"
+  rows="2"
+  placeholder="ระบุหมายเหตุ..."
+  style="
+    width:100%;
+    padding:8px 10px;
+    border:1px solid var(--border-color);
+    background:var(--background-color);
+    color:var(--text-color);
+    border-radius:8px;
+    font-size:.88rem;
+    font-family:var(--font-primary);
+    resize:vertical;
+    outline:none;
+    box-sizing:border-box
+"></textarea>
+`,
     showDenyButton: true, showCancelButton: true,
     confirmButtonText: '<i class="fa-solid fa-check"></i> อนุมัติ',
     denyButtonText:    '<i class="fa-solid fa-xmark"></i> ปฏิเสธ',
@@ -2943,29 +3117,79 @@ async function openSupervisorDialog(attId, empUuid, date, name) {
 
   const res2 = await Swal.fire({
     title: `<span style="font-size:.92rem"><i class="fa-solid fa-shield-halved" style="color:#1565c0"></i> รับรองการลงเวลา</span>`,
-    html: `
-      <div style="text-align:left;font-size:.85rem;color:#444">
-        <div style="font-weight:600;color:#1a1a2e;margin-bottom:6px">${esc(name)}</div>
-        <table style="width:100%;border-collapse:collapse;font-size:.82rem">
-          <tr><td style="color:#666;padding:3px 8px 3px 0;white-space:nowrap">วันที่</td>
-              <td style="font-weight:600">${fmtShortDate(date)}</td></tr>
-          <tr><td style="color:#666;padding:3px 8px 3px 0">เวลาเข้า</td>
-              <td style="color:#2e7d32;font-weight:600">${esc(ciTime)}</td></tr>
-          <tr><td style="color:#666;padding:3px 8px 3px 0">เวลาออก</td>
-              <td>${esc(coTime)} <span style="font-size:.72rem;color:#888">${coType}</span></td></tr>
-          <tr><td style="color:#666;padding:3px 8px 3px 0">ประเภทงาน</td>
-              <td>${esc(wt)}</td></tr>
-          <tr><td style="color:#666;padding:3px 8px 3px 0">ระยะห่าง</td>
-              <td>${esc(dist)}</td></tr>
-          <tr><td style="color:#666;padding:3px 8px 3px 0">อ้างอิง</td>
-              <td>${ref}</td></tr>
+   html: `
+<div style="text-align:left;font-size:.85rem;color:var(--text-color)">
+  <div style="font-weight:600;color:var(--text-color);margin-bottom:6px">
+    ${esc(name)}
+  </div>
 
-        </table>
-        ${reqInfo}
-        <label style="display:block;margin-top:10px;font-size:.8rem;color:#666;margin-bottom:4px">หมายเหตุ (ไม่บังคับ)</label>
-        <textarea id="supNote" rows="2" placeholder="ระบุหมายเหตุ..."
-          style="width:100%;padding:8px 10px;border:1px solid #ddd;border-radius:8px;font-size:.85rem;font-family:var(--font-primary);resize:vertical;outline:none;box-sizing:border-box"></textarea>
-      </div>`,
+  <table style="width:100%;border-collapse:collapse;font-size:.82rem">
+    <tr>
+      <td style="color:var(--secondary-text-color);padding:3px 8px 3px 0;white-space:nowrap">วันที่</td>
+      <td style="font-weight:600">${fmtShortDate(date)}</td>
+    </tr>
+
+    <tr>
+      <td style="color:var(--secondary-text-color);padding:3px 8px 3px 0">เวลาเข้า</td>
+      <td style="color:#2e7d32;font-weight:600">${esc(ciTime)}</td>
+    </tr>
+
+    <tr>
+      <td style="color:var(--secondary-text-color);padding:3px 8px 3px 0">เวลาออก</td>
+      <td>
+        ${esc(coTime)}
+        <span style="font-size:.72rem;color:var(--secondary-text-color)">
+          ${coType}
+        </span>
+      </td>
+    </tr>
+
+    <tr>
+      <td style="color:var(--secondary-text-color);padding:3px 8px 3px 0">ประเภทงาน</td>
+      <td>${esc(wt)}</td>
+    </tr>
+
+    <tr>
+      <td style="color:var(--secondary-text-color);padding:3px 8px 3px 0">ระยะห่าง</td>
+      <td>${esc(dist)}</td>
+    </tr>
+
+    <tr>
+      <td style="color:var(--secondary-text-color);padding:3px 8px 3px 0">อ้างอิง</td>
+      <td>${ref}</td>
+    </tr>
+  </table>
+
+  ${reqInfo}
+
+  <label style="
+    display:block;
+    margin-top:10px;
+    font-size:.8rem;
+    color:var(--secondary-text-color);
+    margin-bottom:4px">
+    หมายเหตุ (ไม่บังคับ)
+  </label>
+
+  <textarea
+    id="supNote"
+    rows="2"
+    placeholder="ระบุหมายเหตุ..."
+    style="
+      width:100%;
+      padding:8px 10px;
+      border:1px solid var(--border-color);
+      background:var(--background-color);
+      color:var(--text-color);
+      border-radius:8px;
+      font-size:.85rem;
+      font-family:var(--font-primary);
+      resize:vertical;
+      outline:none;
+      box-sizing:border-box">
+  </textarea>
+</div>
+`,
     showDenyButton: true, showCancelButton: true,
     confirmButtonText: '<i class="fa-solid fa-shield-check"></i> รับรอง',
     denyButtonText:    '<i class="fa-solid fa-shield-xmark"></i> ไม่รับรอง',
@@ -3597,7 +3821,7 @@ preConfirm: () => {
           cursor:pointer;
         ">
         <i class="fa-solid fa-user-check"></i>
-        กำหนดผู้รับรอง
+        กำหนดผู้รับรอง(เพิ่มเติม)
       </button>
 
         </div>

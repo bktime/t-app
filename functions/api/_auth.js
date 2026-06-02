@@ -17,7 +17,7 @@ export async function authUser(env, token) {
 
       u.status,
       u.role,
-      u.name,
+      concat(u.firstName, ' ', u.lastName) as name,
       u.dep_code,
       u.aff_code,
       u.department,

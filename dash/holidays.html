@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="th" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>วันหยุดนักขัตฤกษ์ · ระบบบริหารงานบุคคล</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700;800&family=Sarabun:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+:root{
+  --bg:#07090f;--bg2:#0c1018;--bg3:#111827;
+  --card:rgba(17,24,39,0.82);--card-s:#111827;
+  --sur:rgba(255,255,255,0.03);--sur2:rgba(255,255,255,0.055);
+  --bd:rgba(255,255,255,0.07);--bd2:rgba(255,255,255,0.13);--bda:rgba(16,185,129,0.28);
+  --tx:#f1f5f9;--tx2:#94a3b8;--tx3:#4b5563;
+  --em:#10b981;--em2:#34d399;--emd:#059669;--emg:rgba(16,185,129,0.18);--embg:rgba(16,185,129,0.07);
+  --bl:#60a5fa;--blbg:rgba(96,165,250,0.07);--blb:rgba(96,165,250,0.22);
+  --in:#818cf8;--inbg:rgba(129,140,248,0.07);--inb:rgba(129,140,248,0.22);
+  --am:#fbbf24;--ambg:rgba(251,191,36,0.07);--amb:rgba(251,191,36,0.22);
+  --ro:#fb7185;--robg:rgba(251,113,133,0.07);--rob:rgba(251,113,133,0.22);
+  --pu:#c084fc;--pubg:rgba(192,132,252,0.07);--pub:rgba(192,132,252,0.22);
+  --cy:#22d3ee;--cybg:rgba(34,211,238,0.07);--cyb:rgba(34,211,238,0.22);
+  --rr-xs:8px;--rr-sm:12px;--rr-md:16px;--rr-lg:22px;
+  --shad:0 20px 60px -15px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.04);
+  --ease:cubic-bezier(0.16,1,0.3,1);--T:.22s;--sw:240px;
+}
+[data-theme="light"]{
+  --bg:#f0f4fb;--bg2:#e4eaf5;--bg3:#dde5f0;
+  --card:rgba(255,255,255,.92);--card-s:#fff;
+  --sur:rgba(0,0,0,.02);--sur2:rgba(0,0,0,.045);
+  --bd:rgba(0,0,0,.07);--bd2:rgba(0,0,0,.13);--bda:rgba(5,150,105,.25);
+  --tx:#0f172a;--tx2:#475569;--tx3:#94a3b8;
+  --em:#059669;--em2:#047857;--emd:#047857;--emg:rgba(5,150,105,.14);--embg:rgba(5,150,105,.07);
+  --bl:#2563eb;--blbg:rgba(37,99,235,.06);--blb:rgba(37,99,235,.2);
+  --in:#6366f1;--inbg:rgba(99,102,241,.06);--inb:rgba(99,102,241,.2);
+  --am:#d97706;--ambg:rgba(217,119,6,.06);--amb:rgba(217,119,6,.2);
+  --ro:#e11d48;--robg:rgba(225,29,72,.06);--rob:rgba(225,29,72,.2);
+  --pu:#9333ea;--pubg:rgba(147,51,234,.06);--pub:rgba(147,51,234,.2);
+  --cy:#0891b2;--cybg:rgba(8,145,178,.06);--cyb:rgba(8,145,178,.2);
+  --shad:0 8px 30px -6px rgba(0,0,0,.1),0 0 0 1px rgba(0,0,0,.05);
+}
+[data-theme="light"] .orb{opacity:.05;}
+[data-theme="light"] .topbar{background:rgba(240,244,251,.9);}
+
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;display:flex;-webkit-font-smoothing:antialiased;overflow-x:hidden;}
+
+.bg-l{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none;}
+.orb{position:absolute;border-radius:50%;filter:blur(110px);opacity:.18;animation:oF 28s infinite ease-in-out;}
+.o1{width:600px;height:600px;background:#059669;top:-20%;left:-15%;animation-duration:24s;}
+.o2{width:450px;height:450px;background:#1e40af;bottom:-15%;right:-10%;animation-duration:30s;animation-delay:-8s;}
+.o3{width:300px;height:300px;background:#7c3aed;top:40%;left:45%;opacity:.08;animation-duration:36s;animation-delay:-16s;}
+@keyframes oF{0%,100%{transform:translate(0,0)scale(1);}33%{transform:translate(40px,-30px)scale(1.06);}66%{transform:translate(-25px,35px)scale(.95);}}
+
+/* sidebar */
+.sidebar{position:fixed;left:0;top:0;bottom:0;width:var(--sw);background:var(--card);border-right:1px solid var(--bd);backdrop-filter:blur(24px);z-index:100;display:flex;flex-direction:column;transition:transform var(--T) var(--ease);}
+.sb-logo{padding:1.4rem 1.2rem 1rem;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--bd);}
+.logo-mk{width:38px;height:38px;border-radius:var(--rr-sm);background:linear-gradient(135deg,var(--emd),var(--em));display:flex;align-items:center;justify-content:center;color:#fff;font-size:1rem;flex-shrink:0;box-shadow:0 6px 20px var(--emg);}
+.logo-tx{font-family:'Kanit',sans-serif;font-size:.88rem;font-weight:700;line-height:1.2;}
+.logo-sub{font-size:.62rem;color:var(--tx3);}
+.nav{flex:1;padding:.9rem .7rem;overflow-y:auto;}
+.nav-sec{font-family:'Kanit',sans-serif;font-size:.57rem;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--tx3);padding:.45rem .5rem .35rem;margin-top:.4rem;}
+.ni{display:flex;align-items:center;gap:9px;padding:.55rem .7rem;border-radius:var(--rr-sm);font-size:.8rem;color:var(--tx2);cursor:pointer;transition:all var(--T);margin-bottom:2px;text-decoration:none;font-family:'Sarabun',sans-serif;font-weight:500;}
+.ni i{font-size:.77rem;width:15px;text-align:center;opacity:.65;}
+.ni:hover{background:var(--sur2);color:var(--tx);}
+.ni:hover i{opacity:1;}
+.ni.active{background:var(--embg);color:var(--em);border:1px solid var(--bda);}
+.ni.active i{opacity:1;}
+.sb-foot{padding:.9rem .7rem;border-top:1px solid var(--bd);}
+.user-pill{position:relative;display:flex;align-items:center;gap:9px;padding:.55rem .7rem;border-radius:var(--rr-sm);background:var(--sur);border:1px solid var(--bd);cursor:pointer;transition:all var(--T);}
+.user-pill:hover{border-color:var(--bd2);}
+.u-av{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--emd),var(--em));display:flex;align-items:center;justify-content:center;color:#fff;font-size:.68rem;font-weight:700;flex-shrink:0;}
+.u-nm{font-size:.73rem;font-weight:600;color:var(--tx);line-height:1.2;}
+.u-rl{font-size:.6rem;color:var(--tx3);}
+.u-arr{margin-left:auto;font-size:.62rem;color:var(--tx3);transition:transform .2s ease;}
+.user-dropdown{position:absolute;left:0;right:0;bottom:calc(100% + 10px);padding:.35rem;border-radius:14px;background:var(--sur);border:1px solid var(--bd);box-shadow:0 12px 30px rgba(0,0,0,.18);opacity:0;visibility:hidden;transform:translateY(8px);transition:all .2s ease;z-index:1000;}
+.user-dropdown.show{opacity:1;visibility:visible;transform:translateY(0);}
+.user-dropdown a{display:flex;align-items:center;gap:.65rem;padding:.75rem .8rem;border-radius:10px;text-decoration:none;color:var(--tx);font-size:.72rem;font-weight:500;transition:background .18s ease;}
+.user-dropdown a:hover{background:var(--sur2);}
+.nav-back{width:36px;height:36px;border-radius:10px;border:none;background:var(--sur2);color:var(--tx);font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .15s;}
+.nav-back:hover{background:var(--bd);}
+.sb-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:99;backdrop-filter:blur(4px);}
+.sb-ov.show{display:block;}
+.menu-btn{display:none;position:fixed;top:1rem;left:1rem;z-index:101;background:var(--card);border:1px solid var(--bd);color:var(--tx2);cursor:pointer;border-radius:var(--rr-sm);padding:8px 10px;font-size:.9rem;backdrop-filter:blur(16px);transition:all var(--T);}
+.menu-btn:hover{color:var(--tx);border-color:var(--bd2);}
+@media(max-width:900px){.sidebar{transform:translateX(-100%);}.sidebar.open{transform:translateX(0);}.menu-btn{display:flex;align-items:center;}.main{margin-left:0!important;}}
+
+/* main */
+.main{margin-left:var(--sw);flex:1;min-width:0;position:relative;z-index:10;padding-bottom:3rem;}
+
+/* topbar */
+.topbar{position:sticky;top:0;z-index:50;background:rgba(7,9,15,.88);border-bottom:1px solid var(--bd);backdrop-filter:blur(20px);padding:.8rem 1.6rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap;}
+.tb-left{flex:1;min-width:0;}
+.tb-title{font-family:'Kanit',sans-serif;font-size:1.1rem;font-weight:700;display:flex;align-items:center;gap:8px;letter-spacing:-.01em;}
+.tb-sub{font-size:.7rem;color:var(--tx3);margin-top:1px;}
+.tb-right{display:flex;align-items:center;gap:7px;flex-wrap:wrap;}
+.icon-btn{width:33px;height:33px;border-radius:var(--rr-sm);border:1px solid var(--bd);background:var(--sur);color:var(--tx2);cursor:pointer;font-size:.78rem;display:flex;align-items:center;justify-content:center;transition:all var(--T);flex-shrink:0;}
+.icon-btn:hover{color:var(--tx);border-color:var(--bd2);background:var(--sur2);}
+.icon-btn.spin i{animation:spin .7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* filter bar */
+.filter-bar{padding:.65rem 1.6rem;background:var(--sur);border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:.65rem;flex-wrap:wrap;min-height:52px;}
+.filter-label{font-family:'Kanit',sans-serif;font-size:.65rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--tx3);display:flex;align-items:center;gap:5px;flex-shrink:0;}
+.fsel{font-family:'Kanit',sans-serif;font-size:.75rem;padding:.38rem .75rem;border-radius:var(--rr-sm);border:1px solid var(--bd);background:var(--card);color:var(--tx2);outline:none;cursor:pointer;transition:all var(--T);min-width:120px;}
+.fsel:focus,.fsel:hover{border-color:var(--bda);color:var(--tx);}
+.search-in{font-family:'Sarabun',sans-serif;font-size:.78rem;padding:.38rem .8rem .38rem 2rem;border-radius:var(--rr-sm);border:1px solid var(--bd);background:var(--card);color:var(--tx);outline:none;transition:all var(--T);width:220px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%234b5563' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='M21 21l-4.35-4.35'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:.65rem center;}
+.search-in:focus{border-color:var(--bda);}
+.filter-bar-right{margin-left:auto;display:flex;align-items:center;gap:.5rem;}
+
+/* content */
+.content{padding:1.4rem 1.6rem;}
+.sh{display:flex;align-items:center;justify-content:space-between;margin-bottom:.9rem;}
+.sh-t{font-family:'Kanit',sans-serif;font-size:.6rem;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--tx3);display:flex;align-items:center;gap:7px;}
+.sh-t::after{content:'';width:24px;height:1px;background:var(--bd);}
+.sh-m{font-size:.67rem;color:var(--tx3);font-family:'JetBrains Mono',monospace;}
+
+/* kpi */
+.kpi-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:.7rem;margin-bottom:1.2rem;}
+.kpi-s{background:var(--card);border:1px solid var(--bd);border-radius:var(--rr-md);padding:.85rem 1rem;backdrop-filter:blur(20px);display:flex;align-items:center;gap:.75rem;animation:fu .4s var(--ease) both;}
+@keyframes fu{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.kpi-s-ico{width:34px;height:34px;border-radius:var(--rr-xs);display:flex;align-items:center;justify-content:center;font-size:.82rem;flex-shrink:0;}
+.kpi-s-val{font-family:'Kanit',sans-serif;font-size:1.45rem;font-weight:800;line-height:1;}
+.kpi-s-lbl{font-size:.65rem;color:var(--tx2);margin-top:2px;}
+.cg .kpi-s-ico{background:var(--embg);border:1px solid var(--bda);color:var(--em);}
+.cb .kpi-s-ico{background:var(--blbg);border:1px solid var(--blb);color:var(--bl);}
+.ca .kpi-s-ico{background:var(--ambg);border:1px solid var(--amb);color:var(--am);}
+.cr .kpi-s-ico{background:var(--robg);border:1px solid var(--rob);color:var(--ro);}
+.cp .kpi-s-ico{background:var(--pubg);border:1px solid var(--pub);color:var(--pu);}
+
+/* panel / table */
+.panel{background:var(--card);border:1px solid var(--bd);border-radius:var(--rr-md);backdrop-filter:blur(20px);overflow:hidden;animation:fu .4s var(--ease) .08s both;}
+.ph{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.2rem;border-bottom:1px solid var(--bd);}
+.pt{font-family:'Kanit',sans-serif;font-size:.83rem;font-weight:700;display:flex;align-items:center;gap:7px;}
+.pt i{font-size:.75rem;opacity:.55;}
+.pm{font-size:.63rem;color:var(--tx3);font-family:'JetBrains Mono',monospace;}
+.tbl-wrap{overflow-x:auto;}
+.mt{width:100%;border-collapse:collapse;}
+.mt th{font-family:'Kanit',sans-serif;font-size:.58rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--tx3);text-align:left;padding:.5rem .85rem;border-bottom:1px solid var(--bd);white-space:nowrap;cursor:pointer;user-select:none;}
+.mt th:hover{color:var(--tx2);}
+.mt th.no-sort{cursor:default;}
+.mt th .si{margin-left:4px;opacity:.4;font-size:.5rem;}
+.mt th.sorted .si{opacity:1;color:var(--em);}
+.mt td{font-size:.75rem;color:var(--tx2);padding:.55rem .85rem;border-bottom:1px solid rgba(255,255,255,.025);transition:background var(--T);}
+[data-theme="light"] .mt td{border-bottom-color:rgba(0,0,0,.03);}
+.mt tr:last-child td{border-bottom:none;}
+.mt tr:hover td{background:var(--sur);}
+td.hl{color:var(--tx);font-weight:600;}
+td.mono{font-family:'JetBrains Mono',monospace;font-size:.7rem;}
+
+/* pills */
+.pill{display:inline-flex;align-items:center;gap:3px;font-family:'Kanit',sans-serif;font-size:.6rem;font-weight:600;padding:2px 8px;border-radius:99px;white-space:nowrap;}
+.p-active{background:var(--embg);border:1px solid var(--bda);color:var(--em);}
+.p-weekend{background:var(--ambg);border:1px solid var(--amb);color:var(--am);}
+.p-special{background:var(--pubg);border:1px solid var(--pub);color:var(--pu);}
+.p-national{background:var(--blbg);border:1px solid var(--blb);color:var(--bl);}
+.p-royal{background:var(--cybg);border:1px solid var(--cyb);color:var(--cy);}
+
+/* action */
+.act-btns{display:flex;align-items:center;gap:4px;}
+.act-btn{width:26px;height:26px;border-radius:var(--rr-xs);border:1px solid var(--bd);background:var(--sur);color:var(--tx3);cursor:pointer;font-size:.68rem;display:flex;align-items:center;justify-content:center;transition:all var(--T);}
+.act-btn:hover{color:var(--tx);border-color:var(--bd2);background:var(--sur2);}
+.act-btn.edit:hover{color:var(--bl);border-color:var(--blb);}
+.act-btn.del:hover{color:var(--ro);border-color:var(--rob);}
+
+/* pager */
+.pager{display:flex;align-items:center;justify-content:space-between;padding:.75rem 1.2rem;border-top:1px solid var(--bd);flex-wrap:wrap;gap:.5rem;}
+.pager-info{font-size:.68rem;color:var(--tx3);font-family:'JetBrains Mono',monospace;}
+.pager-btns{display:flex;align-items:center;gap:3px;}
+.pg-btn{min-width:28px;height:28px;border-radius:var(--rr-xs);border:1px solid var(--bd);background:var(--sur);color:var(--tx2);cursor:pointer;font-size:.7rem;font-family:'JetBrains Mono',monospace;display:flex;align-items:center;justify-content:center;padding:0 6px;transition:all var(--T);}
+.pg-btn:hover:not(:disabled){color:var(--tx);border-color:var(--bd2);}
+.pg-btn.active{background:var(--embg);border-color:var(--bda);color:var(--em);font-weight:700;}
+.pg-btn:disabled{opacity:.3;cursor:not-allowed;}
+
+/* buttons */
+.btn-prim{font-family:'Kanit',sans-serif;font-size:.75rem;font-weight:600;padding:.42rem .9rem;border-radius:var(--rr-sm);border:1px solid var(--bda);background:var(--embg);color:var(--em);cursor:pointer;display:flex;align-items:center;gap:6px;transition:all var(--T);}
+.btn-prim:hover{background:var(--emd);color:#fff;border-color:var(--emd);}
+.btn-prim:disabled{opacity:.4;cursor:not-allowed;}
+.btn-sec{font-family:'Kanit',sans-serif;font-size:.75rem;font-weight:500;padding:.42rem .9rem;border-radius:var(--rr-sm);border:1px solid var(--bd);background:var(--sur);color:var(--tx2);cursor:pointer;display:flex;align-items:center;gap:6px;transition:all var(--T);}
+.btn-sec:hover{background:var(--sur2);color:var(--tx);border-color:var(--bd2);}
+.btn-danger{font-family:'Kanit',sans-serif;font-size:.75rem;font-weight:600;padding:.42rem .9rem;border-radius:var(--rr-sm);border:1px solid var(--rob);background:var(--robg);color:var(--ro);cursor:pointer;display:flex;align-items:center;gap:6px;transition:all var(--T);}
+.btn-danger:hover{background:var(--ro);color:#fff;border-color:var(--ro);}
+
+/* modal */
+.modal-ov{position:fixed;inset:0;background:rgba(0,0,0,.65);backdrop-filter:blur(6px);z-index:200;display:flex;align-items:center;justify-content:center;padding:1rem;opacity:0;pointer-events:none;transition:opacity .2s;}
+.modal-ov.show{opacity:1;pointer-events:all;}
+.modal{background:var(--bg3);border:1px solid var(--bd2);border-radius:var(--rr-lg);width:100%;max-width:500px;max-height:92vh;overflow-y:auto;box-shadow:var(--shad);transform:translateY(16px) scale(.98);transition:transform .25s var(--ease);}
+.modal-ov.show .modal{transform:translateY(0) scale(1);}
+.modal-h{display:flex;align-items:center;justify-content:space-between;padding:1.1rem 1.4rem;border-bottom:1px solid var(--bd);position:sticky;top:0;background:var(--bg3);z-index:1;}
+.modal-title{font-family:'Kanit',sans-serif;font-size:.92rem;font-weight:700;display:flex;align-items:center;gap:8px;}
+.modal-close{width:28px;height:28px;border-radius:var(--rr-xs);border:1px solid var(--bd);background:var(--sur);color:var(--tx3);cursor:pointer;font-size:.78rem;display:flex;align-items:center;justify-content:center;transition:all var(--T);}
+.modal-close:hover{color:var(--ro);border-color:var(--rob);}
+.modal-body{padding:1.2rem 1.4rem;}
+.modal-foot{display:flex;align-items:center;justify-content:flex-end;gap:.5rem;padding:1rem 1.4rem;border-top:1px solid var(--bd);position:sticky;bottom:0;background:var(--bg3);}
+
+/* form */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;}
+.form-full{grid-column:1/-1;}
+.form-grp{display:flex;flex-direction:column;gap:.3rem;}
+.form-lbl{font-family:'Kanit',sans-serif;font-size:.63rem;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--tx3);display:flex;align-items:center;gap:4px;}
+.req{color:var(--ro);font-size:.55rem;}
+.form-in{font-family:'Sarabun',sans-serif;font-size:.82rem;padding:.42rem .7rem;border-radius:var(--rr-sm);border:1px solid var(--bd);background:var(--bg2);color:var(--tx);outline:none;transition:all var(--T);width:100%;}
+.form-in:focus{border-color:var(--bda);background:var(--bg3);}
+.form-in:disabled{opacity:.4;cursor:not-allowed;}
+select.form-in{cursor:pointer;}
+.form-hint{font-size:.63rem;color:var(--tx3);min-height:14px;}
+.form-sec{grid-column:1/-1;display:flex;align-items:center;gap:8px;margin:.3rem 0 0;font-family:'Kanit',sans-serif;font-size:.6rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--tx3);}
+.form-sec::after{content:'';flex:1;height:1px;background:var(--bd);}
+.form-sec i{opacity:.5;}
+
+/* confirm modal */
+.confirm-modal{max-width:380px;}
+.confirm-body{padding:1.4rem;text-align:center;}
+.confirm-ico{width:52px;height:52px;border-radius:50%;background:var(--robg);border:1px solid var(--rob);display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:var(--ro);margin:0 auto 1rem;}
+.confirm-title{font-family:'Kanit',sans-serif;font-size:.92rem;font-weight:700;margin-bottom:.4rem;}
+.confirm-msg{font-size:.78rem;color:var(--tx2);line-height:1.6;}
+.confirm-foot{display:flex;align-items:center;justify-content:center;gap:.5rem;padding:1rem 1.4rem;border-top:1px solid var(--bd);}
+
+/* skeleton / empty / toast */
+.sk{background:linear-gradient(90deg,var(--sur),var(--sur2),var(--sur));background-size:200%;border-radius:var(--rr-xs);animation:shimmer 1.4s infinite;}
+@keyframes shimmer{0%{background-position:200%}100%{background-position:-200%}}
+.empty{text-align:center;padding:3rem 1rem;color:var(--tx3);font-size:.78rem;}
+.empty i{font-size:1.8rem;margin-bottom:.6rem;display:block;opacity:.3;}
+.toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);background:var(--card-s);border:1px solid var(--bd);color:var(--tx);font-size:.78rem;padding:.65rem 1rem;border-radius:var(--rr-sm);z-index:9999;white-space:nowrap;box-shadow:var(--shad);font-family:'Kanit',sans-serif;font-weight:500;display:flex;align-items:center;gap:7px;animation:tIn .3s var(--ease) both;}
+@keyframes tIn{from{opacity:0;transform:translateX(-50%) translateY(8px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+.toast.err{border-color:var(--rob);color:var(--ro);}
+.toast.ok{border-color:var(--bda);color:var(--em);}
+
+/* read-only notice */
+.readonly-notice{display:flex;align-items:center;gap:8px;padding:.6rem 1rem;background:var(--ambg);border:1px solid var(--amb);border-radius:var(--rr-sm);font-size:.72rem;color:var(--am);font-family:'Kanit',sans-serif;font-weight:500;}
+.readonly-notice i{font-size:.8rem;}
+
+/* calendar strip (mini) */
+.month-badge{display:inline-flex;align-items:center;gap:4px;font-family:'JetBrains Mono',monospace;font-size:.65rem;background:var(--sur2);border:1px solid var(--bd);border-radius:var(--rr-xs);padding:2px 7px;color:var(--tx3);}
+
+/* import section */
+.import-box{border:2px dashed var(--bd2);border-radius:var(--rr-md);padding:1.5rem;text-align:center;transition:all var(--T);cursor:pointer;}
+.import-box:hover{border-color:var(--bda);background:var(--embg);}
+.import-box i{font-size:1.6rem;color:var(--tx3);display:block;margin-bottom:.5rem;}
+.import-box p{font-size:.75rem;color:var(--tx3);}
+
+@media(max-width:1100px){.tb-left{padding-left:2.5rem;}}
+@media(max-width:760px){.content{padding:1rem;}.topbar{padding:.7rem 1rem;}.filter-bar{padding:.6rem 1rem;}.form-grid{grid-template-columns:1fr;}.kpi-row{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:420px){.kpi-row{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<div class="bg-l"><div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div></div>
+<button class="menu-btn" onclick="toggleSb()"><i class="fa-solid fa-bars"></i></button>
+<div class="sb-ov" id="sbOv" onclick="toggleSb()"></div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sb-logo">
+    <div class="logo-mk"><i class="fa-solid fa-chart-line"></i></div>
+    <div><div class="logo-tx">HR System</div><div class="logo-sub">บริหารงานบุคคล</div></div>
+  </div>
+  <nav class="nav">
+    <div class="nav-sec">หลัก</div>
+    <a class="ni" href="index.html"><i class="fa-solid fa-gauge-high"></i>Dashboard</a>
+
+    <div class="nav-sec">การลงเวลา</div>
+    <a class="ni" href="attendance.html"><i class="fa-solid fa-clock"></i>การลงเวลารายวัน</a>
+    <a class="ni" href="attendance-monthly.html"><i class="fa-solid fa-clock"></i>สรุปการลงเวลารายเดือน</a>
+
+    <div class="nav-sec">ประวัติการลา</div>
+    <a class="ni" href="leave-record.html"><i class="fa-solid fa-clock"></i>บันทึกการลา</a>
+
+    <div class="nav-sec">ระบบ</div>
+    <a class="ni" href="users.html" ><i class="fa-solid fa-users"></i>ผู้ใช้งาน</a>
+    <a class="ni" href="organizations.html" ><i class="fa-solid fa-building"></i>หน่วยงาน</a>
+    <a class="ni active" href="holidays.html" ><i class="fa-solid fa-calendar-days"></i>วันหยุดนักขัตฤกษ์</a>
+  </nav>
+  <div class="sb-foot">
+    <div class="user-pill" id="userMenuBtn">
+      <div class="u-av" id="uAv">A</div>
+      <div>
+        <div class="u-nm" id="uNm">กำลังโหลด…</div>
+        <div class="u-rl" id="uRl">—</div>
+      </div>
+      <i class="fa-solid fa-chevron-right u-arr"></i>
+      <div class="user-dropdown" id="userDropdown">
+        <a href="../index.html"><i class="fa-solid fa-house"></i>กลับหน้าหลัก</a>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+  <div class="topbar">
+    <div class="tb-left">
+      <div class="tb-title">
+        <button class="nav-back" onclick="history.length>1?history.back():location.href='index.html'" title="ย้อนกลับ">
+          <i class="fa-solid fa-arrow-left"></i>
+        </button>
+        <i class="fa-solid fa-calendar-days" style="font-size:.85rem;opacity:.6"></i>วันหยุดนักขัตฤกษ์
+      </div>
+      <div class="tb-sub" id="tbSub">—</div>
+    </div>
+    <div class="tb-right">
+      <button class="icon-btn" id="refBtn" onclick="loadAll()" title="รีเฟรช"><i class="fa-solid fa-rotate-right"></i></button>
+      <button class="icon-btn" onclick="toggleTheme()" title="เปลี่ยนธีม"><i class="fa-solid fa-circle-half-stroke"></i></button>
+      <!-- ปุ่มเพิ่ม — แสดงเฉพาะ admin -->
+      <button class="btn-prim" id="addBtn" onclick="openAddModal()" style="display:none">
+        <i class="fa-solid fa-plus"></i>เพิ่มวันหยุด
+      </button>
+    </div>
+  </div>
+
+  <!-- Filter Bar -->
+  <div class="filter-bar">
+    <span class="filter-label"><i class="fa-solid fa-magnifying-glass"></i>ค้นหา</span>
+    <input type="text" id="searchIn" class="search-in" placeholder="ชื่อวันหยุด…" oninput="applyFilter()">
+    <select class="fsel" id="selYear" onchange="applyFilter()">
+      <option value="">— ทุกปี —</option>
+    </select>
+    <select class="fsel" id="selType" onchange="applyFilter()">
+      <option value="">— ทุกประเภท —</option>
+      <option value="national">วันหยุดราชการ</option>
+      <option value="royal">วันสำคัญราชวงศ์</option>
+      <option value="special">วันหยุดพิเศษ</option>
+    </select>
+    <div class="filter-bar-right">
+      <span id="filterCount" style="font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--tx3)"></span>
+      <button class="btn-sec" onclick="clearFilter()" style="padding:.3rem .65rem;font-size:.68rem;"><i class="fa-solid fa-xmark"></i>ล้าง</button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- KPI -->
+    <div class="kpi-row" id="kpiRow">
+      <div class="kpi-s cg"><div class="sk" style="height:56px"></div></div>
+      <div class="kpi-s cb"><div class="sk" style="height:56px"></div></div>
+      <div class="kpi-s ca"><div class="sk" style="height:56px"></div></div>
+      <div class="kpi-s cp"><div class="sk" style="height:56px"></div></div>
+    </div>
+
+    <!-- Table -->
+    <div class="sh">
+      <div class="sh-t"><i class="fa-solid fa-table-list" style="opacity:.4"></i>รายการวันหยุด</div>
+      <div class="sh-m" id="tableInfo">—</div>
+    </div>
+    <div class="panel">
+      <div class="ph">
+        <div class="pt"><i class="fa-solid fa-calendar-xmark"></i>วันหยุดนักขัตฤกษ์ทั้งหมด</div>
+        <div class="pm" id="lastUp">—</div>
+      </div>
+      <div class="tbl-wrap">
+        <table class="mt">
+          <thead>
+            <tr>
+              <th onclick="sortBy('date')" id="th-date">วันที่ <i class="fa-solid fa-sort si"></i></th>
+              <th onclick="sortBy('name')" id="th-name">ชื่อวันหยุด <i class="fa-solid fa-sort si"></i></th>
+              <th onclick="sortBy('type')" id="th-type">ประเภท <i class="fa-solid fa-sort si"></i></th>
+              <th onclick="sortBy('year')" id="th-year">ปี (พ.ศ.) <i class="fa-solid fa-sort si"></i></th>
+              <th style="cursor:default" class="no-sort">หมายเหตุ</th>
+              <th style="width:72px;cursor:default" class="no-sort">จัดการ</th>
+            </tr>
+          </thead>
+          <tbody id="hTbody">
+            <tr><td colspan="6"><div class="sk" style="height:44px;margin:.4rem"></div></td></tr>
+            <tr><td colspan="6"><div class="sk" style="height:44px;margin:.4rem"></div></td></tr>
+            <tr><td colspan="6"><div class="sk" style="height:44px;margin:.4rem"></div></td></tr>
+            <tr><td colspan="6"><div class="sk" style="height:44px;margin:.4rem"></div></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="pager" id="pager"></div>
+    </div>
+
+  </div>
+</main>
+
+<!-- ADD / EDIT MODAL -->
+<div class="modal-ov" id="formOv" onclick="if(event.target===this)closeForm()">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-h">
+      <div class="modal-title" id="formTitle"><i class="fa-solid fa-calendar-plus"></i>เพิ่มวันหยุด</div>
+      <button class="modal-close" onclick="closeForm()"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-grp form-full">
+          <label class="form-lbl">ชื่อวันหยุด <span class="req">*</span></label>
+          <input type="text" id="fName" class="form-in" placeholder="เช่น วันสงกรานต์">
+        </div>
+        <div class="form-grp">
+          <label class="form-lbl">วันที่ <span class="req">*</span></label>
+          <input type="date" id="fDate" class="form-in">
+        </div>
+        <div class="form-grp">
+          <label class="form-lbl">ประเภท <span class="req">*</span></label>
+          <select id="fType" class="form-in">
+            <option value="">— เลือกประเภท —</option>
+            <option value="national">วันหยุดราชการ</option>
+            <option value="royal">วันสำคัญราชวงศ์</option>
+            <option value="special">วันหยุดพิเศษ</option>
+          </select>
+        </div>
+        <div class="form-grp form-full">
+          <label class="form-lbl">หมายเหตุ</label>
+          <input type="text" id="fNote" class="form-in" placeholder="รายละเอียดเพิ่มเติม (ถ้ามี)">
+        </div>
+        <div class="form-grp form-full">
+          <label class="form-lbl" style="display:flex;align-items:center;gap:8px;cursor:pointer">
+            <input type="checkbox" id="fIsRecurring" style="width:14px;height:14px;accent-color:var(--em)">
+            วันหยุดประจำปี (เพิ่มซ้ำทุกปีในวันเดิม)
+          </label>
+          <div class="form-hint">เปิดใช้สำหรับวันหยุดที่ตรงกันทุกปี เช่น วันแรงงาน, วันสงกรานต์</div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-sec" onclick="closeForm()"><i class="fa-solid fa-xmark"></i>ยกเลิก</button>
+      <button class="btn-prim" id="saveBtn" onclick="saveHoliday()"><i class="fa-solid fa-floppy-disk"></i>บันทึก</button>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIRM DELETE MODAL -->
+<div class="modal-ov" id="delOv" onclick="if(event.target===this)closeDel()">
+  <div class="modal confirm-modal" onclick="event.stopPropagation()">
+    <div class="confirm-body">
+      <div class="confirm-ico"><i class="fa-solid fa-trash-can"></i></div>
+      <div class="confirm-title">ยืนยันการลบ</div>
+      <div class="confirm-msg" id="delMsg">คุณต้องการลบวันหยุดนี้ใช่หรือไม่?<br>การกระทำนี้ไม่สามารถย้อนกลับได้</div>
+    </div>
+    <div class="confirm-foot">
+      <button class="btn-sec" onclick="closeDel()"><i class="fa-solid fa-xmark"></i>ยกเลิก</button>
+      <button class="btn-danger" id="delConfirmBtn" onclick="confirmDelete()"><i class="fa-solid fa-trash-can"></i>ลบ</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ════════════ CONFIG ════════════ */
+const API = '/api';
+let allHolidays = [];
+let filtered    = [];
+let sortCol     = 'date';
+let sortDir     = 1;
+let page        = 1;
+const PER_PAGE  = 20;
+let editingId   = null;
+let deletingId  = null;
+let isAdmin     = false;
+
+/* ════════════ UTILS ════════════ */
+const $ = id => document.getElementById(id);
+function authH(){ return { Authorization:`Bearer ${getToken()}`, 'Content-Type':'application/json' }; }
+function getToken(){ return localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token') || ''; }
+
+async function safeJson(r){
+  try{
+    const t=await r.text();
+    if(!t||!t.trim()) return{success:r.ok,message:`HTTP ${r.status}`};
+    return JSON.parse(t);
+  }catch(e){ return{success:false,message:`Parse error: ${e.message}`}; }
+}
+
+let _toastT;
+function toast(msg,type='ok'){
+  document.querySelectorAll('.toast').forEach(e=>e.remove());
+  const d=document.createElement('div');
+  d.className=`toast ${type}`;
+  d.innerHTML=`<i class="fa-solid fa-${type==='ok'?'circle-check':'circle-exclamation'}"></i>${msg}`;
+  document.body.appendChild(d);
+  clearTimeout(_toastT);
+  _toastT=setTimeout(()=>d.remove(),3200);
+}
+
+function toggleTheme(){
+  const t=document.documentElement.dataset.theme==='dark'?'light':'dark';
+  document.documentElement.dataset.theme=t;
+  localStorage.setItem('theme',t);
+}
+function toggleSb(){
+  $('sidebar').classList.toggle('open');
+  $('sbOv').classList.toggle('show');
+}
+
+function typePill(type){
+  const map={
+    national:`<span class="pill p-national"><i class="fa-solid fa-flag"></i>วันหยุดราชการ</span>`,
+    royal:`<span class="pill p-royal"><i class="fa-solid fa-crown"></i>วันสำคัญราชวงศ์</span>`,
+    special:`<span class="pill p-special"><i class="fa-solid fa-star"></i>วันหยุดพิเศษ</span>`,
+  };
+  return map[type]||`<span class="pill p-active">${type||'—'}</span>`;
+}
+
+function fmtDate(d){
+  if(!d) return '—';
+  // d = 'YYYY-MM-DD'
+  const [y,m,day] = d.split('-');
+  const months=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+  const thY = Number(y)+543;
+  return `${Number(day)} ${months[Number(m)-1]} ${thY}`;
+}
+
+function fmtYear(d){
+  if(!d) return '—';
+  return String(Number(d.split('-')[0])+543);
+}
+
+function dayOfWeek(d){
+  if(!d) return '';
+  const days=['อา.','จ.','อ.','พ.','พฤ.','ศ.','ส.'];
+  return days[new Date(d).getDay()];
+}
+
+/* ════════════ LOAD ════════════ */
+async function loadAll(){
+  const btn=$('refBtn'); btn.classList.add('spin');
+  try{
+    const r=await fetch(`${API}/dash/holidays`,{headers:authH()});
+    const j=await safeJson(r);
+    if(!j.success) throw new Error(j.message||`HTTP ${r.status}`);
+
+    allHolidays = j.data.holidays||[];
+    renderKPI(j.data.summary||{});
+    populateYearFilter();
+    applyFilter();
+
+    $('lastUp').textContent=`อัปเดต ${new Date().toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'})}`;
+    $('tbSub').textContent=`สิทธิ์: ${j.meta?.role||'—'} · ทั้งหมด ${j.data.summary?.total||0} รายการ`;
+  }catch(e){
+    toast(e.message,'err');
+    $('hTbody').innerHTML=`<tr><td colspan="6"><div class="empty"><i class="fa-solid fa-triangle-exclamation"></i>โหลดข้อมูลไม่สำเร็จ</div></td></tr>`;
+  }
+  btn.classList.remove('spin');
+}
+
+function renderKPI(s){
+  $('kpiRow').innerHTML=`
+    <div class="kpi-s cg" style="animation-delay:0s">
+      <div class="kpi-s-ico"><i class="fa-solid fa-calendar-days"></i></div>
+      <div><div class="kpi-s-val">${s.total??0}</div><div class="kpi-s-lbl">ทั้งหมด</div></div>
+    </div>
+    <div class="kpi-s cb" style="animation-delay:.05s">
+      <div class="kpi-s-ico"><i class="fa-solid fa-flag"></i></div>
+      <div><div class="kpi-s-val">${s.national??0}</div><div class="kpi-s-lbl">วันหยุดราชการ</div></div>
+    </div>
+    <div class="kpi-s cp" style="animation-delay:.1s">
+      <div class="kpi-s-ico"><i class="fa-solid fa-crown"></i></div>
+      <div><div class="kpi-s-val">${s.royal??0}</div><div class="kpi-s-lbl">วันสำคัญราชวงศ์</div></div>
+    </div>
+    <div class="kpi-s ca" style="animation-delay:.15s">
+      <div class="kpi-s-ico"><i class="fa-solid fa-star"></i></div>
+      <div><div class="kpi-s-val">${s.special??0}</div><div class="kpi-s-lbl">วันหยุดพิเศษ</div></div>
+    </div>`;
+}
+
+function populateYearFilter(){
+  const years=[...new Set(allHolidays.map(h=>h.date?.split('-')[0]).filter(Boolean))].sort((a,b)=>b-a);
+  const sel=$('selYear');
+  const cur=sel.value;
+  sel.innerHTML=`<option value="">— ทุกปี —</option>`+years.map(y=>`<option value="${y}">${Number(y)+543}</option>`).join('');
+  if(cur) sel.value=cur;
+}
+
+/* ════════════ FILTER / SORT / PAGER ════════════ */
+function applyFilter(){
+  const q=($('searchIn').value||'').toLowerCase();
+  const yr=$('selYear').value;
+  const tp=$('selType').value;
+
+  filtered=allHolidays.filter(h=>{
+    if(q && !h.name?.toLowerCase().includes(q)) return false;
+    if(yr && h.date?.split('-')[0]!==yr) return false;
+    if(tp && h.type!==tp) return false;
+    return true;
+  });
+
+  filtered.sort((a,b)=>{
+    let va=a[sortCol]??'', vb=b[sortCol]??'';
+    if(typeof va==='string') va=va.toLowerCase();
+    if(typeof vb==='string') vb=vb.toLowerCase();
+    return va<vb?-sortDir:va>vb?sortDir:0;
+  });
+
+  page=1;
+  renderTable();
+  renderPager();
+  $('filterCount').textContent=filtered.length!==allHolidays.length?`${filtered.length}/${allHolidays.length}`:'';
+  $('tableInfo').textContent=`${filtered.length} รายการ`;
+}
+
+function clearFilter(){
+  $('searchIn').value='';
+  $('selYear').value='';
+  $('selType').value='';
+  applyFilter();
+}
+
+let _lastSortCol='';
+function sortBy(col){
+  if(sortCol===col) sortDir*=-1; else{sortCol=col;sortDir=1;}
+  document.querySelectorAll('.mt th').forEach(th=>th.classList.remove('sorted'));
+  const th=$(`th-${col}`); if(th) th.classList.add('sorted');
+  applyFilter();
+}
+
+function renderTable(){
+  const start=(page-1)*PER_PAGE, rows=filtered.slice(start,start+PER_PAGE);
+  if(!rows.length){
+    $('hTbody').innerHTML=`<tr><td colspan="6"><div class="empty"><i class="fa-solid fa-calendar-xmark"></i>ไม่พบข้อมูลวันหยุด</div></td></tr>`;
+    return;
+  }
+  $('hTbody').innerHTML=rows.map(h=>`
+    <tr>
+      <td class="hl mono">${fmtDate(h.date)} <span style="font-size:.6rem;color:var(--tx3)">${dayOfWeek(h.date)}</span></td>
+      <td class="hl">${h.name||'—'}${h.is_recurring?` <span class="pill" style="background:var(--embg);border:1px solid var(--bda);color:var(--em);font-size:.55rem;padding:1px 5px"><i class="fa-solid fa-rotate"></i>ทุกปี</span>`:''}</td>
+      <td>${typePill(h.type)}</td>
+      <td class="mono">${fmtYear(h.date)}</td>
+      <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${h.note||'—'}</td>
+      <td>
+        <div class="act-btns">
+          ${isAdmin?`
+          <button class="act-btn edit" onclick="openEditModal(${h.id})" title="แก้ไข"><i class="fa-solid fa-pen"></i></button>
+          <button class="act-btn del" onclick="openDelModal(${h.id},'${(h.name||'').replace(/'/g,"\\'")}',${!!h.is_recurring})" title="ลบ"><i class="fa-solid fa-trash-can"></i></button>
+          `:`<span style="font-size:.65rem;color:var(--tx3)">ดูอย่างเดียว</span>`}
+        </div>
+      </td>
+    </tr>`).join('');
+}
+
+function renderPager(){
+  const total=Math.ceil(filtered.length/PER_PAGE);
+  const el=$('pager');
+  if(total<=1){el.innerHTML='';return;}
+  const pages=[];
+  for(let i=1;i<=total;i++) if(i===1||i===total||Math.abs(i-page)<=2) pages.push(i);
+  let html=`<div class="pager-info">${(page-1)*PER_PAGE+1}–${Math.min(page*PER_PAGE,filtered.length)} จาก ${filtered.length}</div><div class="pager-btns">`;
+  html+=`<button class="pg-btn" onclick="goPage(${page-1})" ${page===1?'disabled':''}><i class="fa-solid fa-chevron-left"></i></button>`;
+  let prev=0;
+  pages.forEach(p=>{
+    if(prev&&p-prev>1) html+=`<span class="pg-btn" style="pointer-events:none">…</span>`;
+    html+=`<button class="pg-btn ${p===page?'active':''}" onclick="goPage(${p})">${p}</button>`;
+    prev=p;
+  });
+  html+=`<button class="pg-btn" onclick="goPage(${page+1})" ${page===total?'disabled':''}><i class="fa-solid fa-chevron-right"></i></button></div>`;
+  el.innerHTML=html;
+}
+
+function goPage(p){
+  const total=Math.ceil(filtered.length/PER_PAGE);
+  if(p<1||p>total)return;
+  page=p; renderTable(); renderPager();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* ════════════ ADD / EDIT MODAL ════════════ */
+function openAddModal(){
+  if(!isAdmin){toast('เฉพาะ Admin เท่านั้น','err');return;}
+  editingId=null;
+  $('formTitle').innerHTML='<i class="fa-solid fa-calendar-plus"></i>เพิ่มวันหยุด';
+  $('fName').value='';
+  $('fDate').value='';
+  $('fType').value='';
+  $('fNote').value='';
+  $('fIsRecurring').checked=false;
+  $('formOv').classList.add('show');
+  setTimeout(()=>$('fName').focus(),100);
+}
+
+function openEditModal(id){
+  if(!isAdmin){toast('เฉพาะ Admin เท่านั้น','err');return;}
+  const h=allHolidays.find(x=>x.id===id); if(!h) return;
+  editingId=id;
+  $('formTitle').innerHTML='<i class="fa-solid fa-calendar-pen"></i>แก้ไขวันหยุด';
+  $('fName').value=h.name||'';
+  $('fDate').value=h.date||'';
+  $('fType').value=h.type||'';
+  $('fNote').value=h.note||'';
+  $('fIsRecurring').checked=!!h.is_recurring;
+  $('formOv').classList.add('show');
+  setTimeout(()=>$('fName').focus(),100);
+}
+
+function closeForm(){$('formOv').classList.remove('show');}
+
+async function saveHoliday(){
+  if(!isAdmin){toast('เฉพาะ Admin เท่านั้น','err');return;}
+
+  const name=$('fName').value.trim();
+  const date=$('fDate').value;
+  const type=$('fType').value;
+  const note=$('fNote').value.trim();
+  const is_recurring=$('fIsRecurring').checked?1:0;
+
+  const errs=[];
+  if(!name)  errs.push('ชื่อวันหยุด');
+  if(!date)  errs.push('วันที่');
+  if(!type)  errs.push('ประเภท');
+  if(errs.length){toast('กรุณากรอก: '+errs.join(', '),'err');return;}
+
+  const payload={name,date,type,note:note||null,is_recurring};
+  const btn=$('saveBtn');
+  btn.disabled=true; btn.innerHTML='<i class="fa-solid fa-circle-notch fa-spin"></i>กำลังบันทึก…';
+
+  try{
+    const isEdit=editingId!==null;
+    const url=isEdit?`${API}/dash/holidays/${editingId}`:`${API}/dash/holidays`;
+    const r=await fetch(url,{method:isEdit?'PUT':'POST',headers:authH(),body:JSON.stringify(payload)});
+    const j=await safeJson(r);
+    if(!j.success) throw new Error(j.message||`HTTP ${r.status}`);
+    toast(isEdit?'แก้ไขวันหยุดสำเร็จ':'เพิ่มวันหยุดสำเร็จ');
+    closeForm(); loadAll();
+  }catch(e){toast(e.message,'err');}
+
+  btn.disabled=false; btn.innerHTML='<i class="fa-solid fa-floppy-disk"></i>บันทึก';
+}
+
+/* ════════════ DELETE ════════════ */
+let _deletingRecurring=false;
+function openDelModal(id,name,isRecurring){
+  if(!isAdmin){toast('เฉพาะ Admin เท่านั้น','err');return;}
+  deletingId=id;
+  _deletingRecurring=isRecurring;
+  $('delMsg').innerHTML=`คุณต้องการลบ <strong>"${name}"</strong> ใช่หรือไม่?${isRecurring?'<br><span style="color:var(--am);font-size:.72rem"><i class="fa-solid fa-triangle-exclamation"></i> วันหยุดนี้ถูกตั้งเป็น "ทุกปี" ลบแล้วจะหายทั้งหมด</span>':''}<br><span style="font-size:.7rem;color:var(--tx3)">การกระทำนี้ไม่สามารถย้อนกลับได้</span>`;
+  $('delOv').classList.add('show');
+}
+function closeDel(){$('delOv').classList.remove('show');deletingId=null;}
+
+async function confirmDelete(){
+  if(!isAdmin||!deletingId){toast('เฉพาะ Admin เท่านั้น','err');return;}
+  const btn=$('delConfirmBtn');
+  btn.disabled=true; btn.innerHTML='<i class="fa-solid fa-circle-notch fa-spin"></i>กำลังลบ…';
+  try{
+    const r=await fetch(`${API}/dash/holidays/${deletingId}`,{method:'DELETE',headers:authH()});
+    const j=await safeJson(r);
+    if(!j.success) throw new Error(j.message||`HTTP ${r.status}`);
+    toast('ลบวันหยุดสำเร็จ');
+    closeDel(); loadAll();
+  }catch(e){toast(e.message,'err');}
+  btn.disabled=false; btn.innerHTML='<i class="fa-solid fa-trash-can"></i>ลบ';
+}
+
+/* ════════════ USER INFO ════════════ */
+function loadUser(){
+  const userData=
+    JSON.parse(localStorage.getItem('user_data'))||
+    JSON.parse(sessionStorage.getItem('user_data'))||{};
+
+  const name=`${userData.firstName||''} ${userData.lastName||''}`.trim()||'ฉันเป็นใคร';
+  const role=userData.role||'';
+
+  const roleMap={
+    user:'<i class="fa-solid fa-user"></i> บุคลากร',
+    staff:'<i class="fa-solid fa-user"></i> เจ้าหน้าที่',
+    admin:'<i class="fa-solid fa-user-shield"></i> ผู้ดูแลระบบ',
+    manager:'<i class="fa-solid fa-list-check"></i> ผู้จัดการ',
+    hr:'<i class="fa-solid fa-user-tie"></i> ฝ่ายทรัพยากรบุคคล',
+    it:'<i class="fa-solid fa-laptop-code"></i> ฝ่ายเทคโนโลยีสารสนเทศ',
+    support:'<i class="fa-solid fa-headset"></i> ฝ่ายสนับสนุน',
+    finance:'<i class="fa-solid fa-money-bill-wave"></i> ฝ่ายการเงิน',
+    supervisor:'<i class="fa-solid fa-user-tie"></i> หัวหน้า',
+    executive:'<i class="fa-solid fa-user-crown"></i> ผู้บริหาร',
+    ceo:'<i class="fa-solid fa-user-crown"></i> ผู้บริหารสูงสุด',
+  };
+
+  $('uNm').textContent=name;
+  $('uRl').innerHTML=roleMap[role]||role;
+  $('uAv').textContent=name.charAt(0).toUpperCase();
+
+  // ตรวจสิทธิ์ admin
+  isAdmin=(role==='admin');
+  if(isAdmin){
+    $('addBtn').style.display='flex';
+  }
+}
+
+/* dropdown */
+const userMenuBtn=document.getElementById('userMenuBtn');
+const userDropdown=document.getElementById('userDropdown');
+userMenuBtn.addEventListener('click',(e)=>{e.stopPropagation();userDropdown.classList.toggle('show');});
+document.addEventListener('click',()=>{userDropdown.classList.remove('show');});
+
+/* ════════════ INIT ════════════ */
+(()=>{
+  const t=localStorage.getItem('theme');
+  if(t) document.documentElement.dataset.theme=t;
+})();
+document.addEventListener('DOMContentLoaded',()=>{ loadUser(); loadAll(); });
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeForm();closeDel();}});
+</script>
+</body>
+</html>
