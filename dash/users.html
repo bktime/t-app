@@ -621,7 +621,7 @@ select.form-in{cursor:pointer;}
 
         <!-- Supervisor -->
         <div class="form-grp form-full">
-          <label class="form-lbl">หัวหน้างาน</label>
+          <label class="form-lbl">หัวหน้า / ผอ. / ผู้บริหาร</label>
           <div class="picker-wrap">
             <input type="text" id="fSupervisorSearch" class="form-in" placeholder="พิมพ์ชื่อเพื่อค้นหา…" autocomplete="off"
               oninput="pickerSearch('Supervisor')" onfocus="pickerSearch('Supervisor')" onblur="pickerBlur('Supervisor')">
@@ -633,7 +633,7 @@ select.form-in{cursor:pointer;}
 
         <!-- Approver -->
         <div class="form-grp form-full">
-          <label class="form-lbl">ผู้อนุมัติ</label>
+          <label class="form-lbl">ผู้รับรอง OT</label>
           <div class="picker-wrap">
             <input type="text" id="fApproverSearch" class="form-in" placeholder="พิมพ์ชื่อเพื่อค้นหา…" autocomplete="off"
               oninput="pickerSearch('Approver')" onfocus="pickerSearch('Approver')" onblur="pickerBlur('Approver')">
@@ -644,7 +644,7 @@ select.form-in{cursor:pointer;}
         </div>
 
         <!-- Payer -->
-        <div class="form-grp form-full">
+        <div class="form-grp form-full" style="display:none;">
           <label class="form-lbl">ผู้จ่ายเงิน</label>
           <div class="picker-wrap">
             <input type="text" id="fPayerSearch" class="form-in" placeholder="พิมพ์ชื่อเพื่อค้นหา…" autocomplete="off"
@@ -668,7 +668,7 @@ select.form-in{cursor:pointer;}
         </div>
         <div class="form-grp">
           <label class="form-lbl">OT สูงสุด/วัน (ชม.)</label>
-          <input type="number" id="fOtMax" class="form-in" placeholder="8" min="0" max="24" step="1">
+          <input type="number" id="fOtMax" class="form-in" placeholder="4" min="0" max="24" step="1">
         </div>
 
       </div>
