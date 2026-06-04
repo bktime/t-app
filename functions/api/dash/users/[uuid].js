@@ -266,7 +266,7 @@ export async function onRequestPut({ request, env, params }) {
     const targetName = `${before.firstName || ''} ${before.lastName || ''}`.trim();
 
     // fire-and-forget — ไม่บล็อก response
-    writeAuditLog(
+   await writeAuditLog(
       env, request,
       { uuid: me.uuid, name: actorName, role: me.role },
       action,
