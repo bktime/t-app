@@ -82,6 +82,7 @@ export async function onRequestPut({ request, env, params }) {
       { status: 400, headers: CORS }
     );
   }
+
   try {
     /* ── โหลด role level ของ actor (me) และ target ── */
     const [myRoleRow, targetRoleRow, newRoleRow] = await Promise.all([
@@ -145,6 +146,23 @@ export async function onRequestPut({ request, env, params }) {
       }
     }
 
+    /* ── idCard: ถ้าเป็น masked (มี X) หรือว่างเปล่า ให้ใช้ค่าเดิมจาก DB ── */
+    const isIdCardMasked = !idCard?.trim() || idCard.includes('X');
+    const finalIdCard = isIdCardMasked ? (before.idCard ?? null) : idCard.trim();
+
+    /* ── ตรวจซ้ำ idCard เฉพาะเมื่อมีการเปลี่ยนแปลงจริง ── */
+    if (finalIdCard && finalIdCard !== before.idCard) {
+      const dupId = await env.DB.prepare(
+        'SELECT uuid FROM users WHERE idCard=? AND uuid<>? LIMIT 1'
+      ).bind(finalIdCard, targetUUID).first();
+      if (dupId) {
+        return Response.json(
+          { success: false, message: 'เลขบัตรประชาชนนี้มีในระบบแล้ว' },
+          { status: 409, headers: CORS }
+        );
+      }
+    }
+
     /* ── resolve affiliation / department name ── */
     const affRow = await env.DB.prepare(
       'SELECT affiliation FROM users WHERE aff_code=? AND affiliation IS NOT NULL LIMIT 1'
@@ -169,8 +187,7 @@ export async function onRequestPut({ request, env, params }) {
       resolveName(payer_code      || null),
     ]);
 
-    const now         = new Date().toISOString();
-    const finalIdCard = idCard?.trim() || before.idCard || '';
+    const now = new Date().toISOString();
 
     /* ── UPDATE ── */
     await env.DB.prepare(`
