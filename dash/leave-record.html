@@ -52,6 +52,23 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--tx);min-h
 .o3{width:300px;height:300px;background:#7c3aed;top:40%;left:45%;opacity:.08;animation-duration:36s;animation-delay:-16s;}
 @keyframes oF{0%,100%{transform:translate(0,0)scale(1);}33%{transform:translate(40px,-30px)scale(1.06);}66%{transform:translate(-25px,35px)scale(.95);}}
 .sidebar{position:fixed;left:0;top:0;bottom:0;width:var(--sw);background:var(--card);border-right:1px solid var(--bd);backdrop-filter:blur(24px);z-index:100;display:flex;flex-direction:column;transition:transform var(--T) var(--ease);}
+/* Sidebar Collapse */
+:root{  --sw-mini:72px;}
+.sidebar,.main{  transition:all .25s ease;}
+.sidebar.collapsed{  width:var(--sw-mini);}
+.main.collapsed{  margin-left:var(--sw-mini);}
+/* ซ่อนข้อความ */
+.sidebar.collapsed .logo-tx, .sidebar.collapsed .logo-sub, .sidebar.collapsed .nav-sec, .sidebar.collapsed .u-nm,
+.sidebar.collapsed .u-rl, .sidebar.collapsed .u-arr{  display:none;}
+/* จัดกึ่งกลางเมนู */
+.sidebar.collapsed .ni{  justify-content:center;  padding:.7rem;}
+.sidebar.collapsed .ni i{  width:auto;  font-size:1rem;}
+.sidebar.collapsed .sb-logo{  justify-content:center;}
+.sidebar.collapsed .user-pill{  justify-content:center;}
+/* ซ่อนข้อความเมนู */
+.sidebar.collapsed .ni{  font-size:0;}
+.sidebar.collapsed .ni i{  font-size:1rem;}
+
 .sb-logo{padding:1.4rem 1.2rem 1rem;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--bd);}
 .logo-mk{width:38px;height:38px;border-radius:var(--rr-sm);background:linear-gradient(135deg,var(--emd),var(--em));display:flex;align-items:center;justify-content:center;color:#fff;font-size:1rem;flex-shrink:0;}
 .logo-tx{font-family:'Kanit',sans-serif;font-size:.88rem;font-weight:700;line-height:1.2;}
@@ -255,20 +272,20 @@ select.form-in{cursor:pointer;}
     <div><div class="logo-tx">HR System</div><div class="logo-sub">บริหารงานบุคคล</div></div>
   </div>
   <nav class="nav">
-    <div class="nav-sec">หลัก</div>
-    <a class="ni" href="index.html"><i class="fa-solid fa-gauge-high"></i>Dashboard</a>
+  <div class="nav-sec">หลัก</div> 
+  <a class="ni" href="index.html" title="Dashboard">    <i class="fa-solid fa-gauge-high"></i>    Dashboard  </a>
 
-    <div class="nav-sec">การลงเวลา</div>
-    <a class="ni" href="attendance.html"><i class="fa-solid fa-clock"></i>การลงเวลารายวัน</a>
-    <a class="ni" href="attendance-monthly.html"><i class="fa-solid fa-clock"></i>สรุปการลงเวลารายเดือน</a>
+  <div class="nav-sec">การลงเวลา</div>
+  <a class="ni" href="attendance.html" title="การลงเวลารายวัน">    <i class="fa-solid fa-user-check"></i>    การลงเวลารายวัน  </a>
+  <a class="ni" href="attendance-monthly.html" title="สรุปการลงเวลารายเดือน">    <i class="fa-solid fa-chart-column"></i>    สรุปการลงเวลารายเดือน  </a>
 
-    <div class="nav-sec">ประวัติการลา</div>
-    <a class="ni active" href="leave-record.html"><i class="fa-solid fa-clock"></i>บันทึกการลา</a>
+  <div class="nav-sec">ประวัติการลา</div>
+  <a class="ni active" href="leave-record.html" title="บันทึกการลา">    <i class="fa-solid fa-plane-departure"></i>    บันทึกการลา  </a>
 
-    <div class="nav-sec">ระบบ</div>
-    <a class="ni" href="users.html" ><i class="fa-solid fa-users"></i>ผู้ใช้งาน</a>
-    <a class="ni" href="organizations.html" ><i class="fa-solid fa-building"></i>หน่วยงาน</a>
-    <a class="ni " href="holidays.html" ><i class="fa-solid fa-calendar-days"></i>วันหยุดนักขัตฤกษ์</a>
+  <div class="nav-sec">ระบบ</div>
+  <a class="ni" href="users.html" title="ผู้ใช้งาน">    <i class="fa-solid fa-id-card"></i>    ผู้ใช้งาน  </a>
+  <a class="ni" href="organizations.html" title="หน่วยงาน">   <i class="fa-solid fa-building-user"></i>    หน่วยงาน  </a>
+  <a class="ni" href="holidays.html" title="วันหยุดนักขัตฤกษ์">    <i class="fa-solid fa-umbrella-beach"></i>    วันหยุดนักขัตฤกษ์  </a>
   </nav>
   <div class="sb-foot">
     <div class="user-pill" id="userMenuBtn">
@@ -294,9 +311,10 @@ select.form-in{cursor:pointer;}
       <div class="tb-sub" id="tbSub">—</div>
     </div>
     <div class="tb-right">
+        <button class="icon-btn" onclick="toggleSidebar()" title="แสดง/ซ่อนแถบเมนู"><i class="fa-solid fa-bars"></i></button>
       <button class="icon-btn" id="refBtn" onclick="loadAll()" title="รีเฟรช"><i class="fa-solid fa-rotate-right"></i></button>
       <button class="icon-btn" onclick="toggleTheme()" title="เปลี่ยนธีม"><i class="fa-solid fa-circle-half-stroke"></i></button>
-      <button class="btn-prim" id="addBtn" onclick="openAddModal()"><i class="fa-solid fa-plus"></i>บันทึกการลา</button>
+      <button class="btn-prim" id="addBtn" onclick="openAddModal()" title="บันทึกประวัติการลา"><i class="fa-solid fa-plus"></i>บันทึกการลา</button>
     </div>
   </div>
 
@@ -633,6 +651,18 @@ function toggleTheme(){
   document.documentElement.dataset.theme=t; localStorage.setItem('theme',t);
 }
 function toggleSb(){ $('sidebar').classList.toggle('open'); $('sbOv').classList.toggle('show'); }
+
+function toggleSidebar(){
+  const sidebar = document.getElementById('sidebar');
+  const main = document.querySelector('.main');
+  sidebar.classList.toggle('collapsed');
+  main.classList.toggle('collapsed');
+  localStorage.setItem(
+    'sidebarCollapsed',
+    sidebar.classList.contains('collapsed')
+  );
+}
+
 
 function fmtDate(d){
   if(!d) return '—';
@@ -1371,7 +1401,12 @@ function exportExcel(){
    INIT
 ════════════════════════════════════════ */
 (()=>{ const t=localStorage.getItem('theme'); if(t) document.documentElement.dataset.theme=t; })();
-document.addEventListener('DOMContentLoaded',()=>{ loadUser(); loadAll(); loadPickerOrgs(); });
+document.addEventListener('DOMContentLoaded',()=>{ 
+    if(localStorage.getItem('sidebarCollapsed') === 'true'){
+    document.getElementById('sidebar').classList.add('collapsed');
+    document.querySelector('.main').classList.add('collapsed');
+  }
+  loadUser(); loadAll(); loadPickerOrgs(); });
 document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ closeForm(); closeDel(); closeApprove(); } });
 </script>
 
