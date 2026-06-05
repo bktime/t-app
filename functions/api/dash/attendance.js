@@ -154,7 +154,7 @@ export async function onRequestGet({ request, env }) {
 
     const rows = attRes.results ?? [];
 
-    const WORK_START = '08:30:00';
+    const WORK_START = '08:31:00';
     let ok = 0, late = 0, absent = 0, request = 0, pending = 0, holiday = 0, leave = 0;
 
     /* ✅ 4. ประมวลผล final_status และนับสถิติ */
