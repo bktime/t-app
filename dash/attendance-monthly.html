@@ -115,7 +115,6 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--tx);min-h
 .sh-t::after{content:'';width:24px;height:1px;background:var(--bd);}
 .sh-m{font-size:.67rem;color:var(--tx3);font-family:'JetBrains Mono',monospace;}
 
-/* ✅ KPI Styles */
 .kpi-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:.7rem;margin-bottom:1.2rem;}
 .kpi-s{background:var(--card);border:1px solid var(--bd);border-radius:var(--rr-md);padding:.85rem 1rem;backdrop-filter:blur(20px);display:flex;align-items:center;gap:.75rem;animation:fu .4s var(--ease) both;}
 @keyframes fu{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
@@ -142,9 +141,9 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--tx);min-h
 .mt th.col-dept  { width:110px; }
 .mt th.col-name  { width:160px; }
 .mt th.col-type  { width:80px; }
-.mt th.col-day   { width:34px; min-width:34px; }
-.mt th.col-note  { width:90px; }
-.mt th.col-sum   { width:44px; min-width:44px; }
+.mt th.col-day   { width:24px; min-width:24px; }
+.mt th.col-note  { width:45px; }
+.mt th.col-sum   { width:35px; min-width:35px; }
 
 .mt th{
   font-family:'Kanit',sans-serif;font-size:.58rem;font-weight:600;
@@ -154,14 +153,25 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--tx);min-h
 }
 .mt th.sticky-left{position:sticky;left:0;z-index:8;background:var(--card-s);}
 .mt th.sticky-left-2{position:sticky;z-index:8;background:var(--card-s);}
+
 .mt td{
   font-size:.72rem;color:var(--tx2);
   padding:.35rem .3rem;
   border-bottom:1px solid rgba(255,255,255,.025);
   border-right:1px solid rgba(255,255,255,.04);
-  text-align:center;white-space:nowrap;
+  text-align:center;
+  white-space:normal;
+  word-break:break-word;
   transition:background var(--T);
 }
+
+.mt td.day-cell,
+.mt td.sum-cell,
+.mt td.mono {
+  white-space:nowrap;
+  word-break:normal;
+}
+
 [data-theme="light"] .mt td{border-bottom-color:rgba(0,0,0,.03);border-right-color:rgba(0,0,0,.04);}
 .mt tr:last-child td{border-bottom:none;}
 .mt tr:hover td{background:var(--sur);}
@@ -217,30 +227,46 @@ td.mono{font-family:'JetBrains Mono',monospace;font-size:.65rem;}
   padding:.4rem .6rem!important;
   text-align:left!important;
   border-bottom:1px solid var(--bd2)!important;
+  white-space:normal!important;
 }
 [data-theme="light"] .group-hdr td{background:rgba(0,0,0,.035)!important;}
 
 .print-header{display:none;}
+
 @media print {
   @page{size:landscape;margin:5mm 6mm;}
   *{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
   html,body{background:#fff!important;color:#000!important;}
   .bg-l,.sidebar,.topbar,.filter-bar,.menu-btn,.sb-ov,
   .sh,.ph .pm,.ph .export-wrap,.ph .btn-prim,.icon-btn,
-  .kpi-row,.legend{display:none!important;} /* ✅ ซ่อน KPI ตอนพิมพ์ */
+  .kpi-row,.legend{display:none!important;}
   .main{margin-left:0!important;padding:0!important;}
   .content{padding:0!important;}
   .panel{border:none!important;background:transparent!important;box-shadow:none!important;}
   .print-header{display:block!important;font-family:'Sarabun',sans-serif;text-align:center;padding:4px 0 6px;}
+   #phKpi b { margin-right: 3px; }
   .tbl-wrap{overflow:visible!important;}
+  .mt{
+    width:100%!important;
+    table-layout:auto!important;
+    font-size:7pt!important;
+  }
+  .mt th.col-no, .mt th.col-dept, .mt th.col-name, .mt th.col-type, .mt th.col-note {
+    width:auto!important; min-width:0!important;
+  }
+  .mt th.col-day, .mt td.day-cell,
+  .mt th.col-sum, .mt td.sum-cell {
+    width:1%!important; 
+    white-space:nowrap!important;
+    word-break:normal!important;
+  }
   .mt th,.mt td{position:static!important;}
   .mt th.sticky-left,.mt td.sticky-left{position:static!important;}
-  .mt{font-size:7.5pt!important;table-layout:auto;}
-  .mt th{font-size:7pt!important;background:#f5f5f5!important;color:#000!important;border:1px solid #999!important;padding:3px 3px!important;}
-  .mt td{color:#000!important;border:1px solid #ccc!important;padding:3px 3px!important;}
+  .mt th{font-size:6.5pt!important;background:#f5f5f5!important;color:#000!important;border:1px solid #999!important;padding:2px 3px!important;}
+  .mt td{color:#000!important;border:1px solid #ccc!important;padding:2px 3px!important;white-space:normal!important;word-break:break-word!important;}
   .mt tr:hover td{background:transparent!important;}
   .mt td.wkend{background:#fdf2f2!important;}
-  .group-hdr td{background:#e8f5e9!important;color:#1b5e20!important;border:1px solid #aaa!important;font-size:7.5pt!important;}
+  .group-hdr td{background:#e8f5e9!important;color:#1b5e20!important;border:1px solid #aaa!important;font-size:7pt!important;}
   .dc-ok     {background:#c8f7d7!important;}
   .dc-late   {background:#fff3cd!important;}
   .dc-absent {background:#ffd7dc!important;}
@@ -262,14 +288,11 @@ td.mono{font-family:'JetBrains Mono',monospace;font-size:.65rem;}
   <nav class="nav">
     <div class="nav-sec">หลัก</div>
     <a class="ni" href="index.html"><i class="fa-solid fa-gauge-high"></i>Dashboard</a>
-
     <div class="nav-sec">การลงเวลา</div>
     <a class="ni" href="attendance.html"><i class="fa-solid fa-clock"></i>การลงเวลารายวัน</a>
     <a class="ni active" href="attendance-monthly.html"><i class="fa-solid fa-clock"></i>สรุปการลงเวลารายเดือน</a>
-
     <div class="nav-sec">ประวัติการลา</div>
     <a class="ni" href="leave-record.html"><i class="fa-solid fa-clock"></i>บันทึกการลา</a>
-
     <div class="nav-sec">ระบบ</div>
     <a class="ni" href="users.html" ><i class="fa-solid fa-users"></i>ผู้ใช้งาน</a>
     <a class="ni" href="organizations.html" ><i class="fa-solid fa-building"></i>หน่วยงาน</a>
@@ -290,6 +313,13 @@ td.mono{font-family:'JetBrains Mono',monospace;font-size:.65rem;}
     <input type="month" id="monthIn" class="month-in" onchange="loadAll()">
     <button class="date-nav-btn" onclick="shiftMonth(1)"><i class="fa-solid fa-chevron-right"></i></button>
     <button class="date-nav-btn" onclick="goThisMonth()" style="width:auto;padding:0 8px;font-size:.65rem;font-family:'Kanit',sans-serif;">เดือนนี้</button>
+    
+    <span class="filter-label" style="margin-left:.5rem"><i class="fa-solid fa-eye"></i>มุมมองตาราง</span>
+    <select class="fsel" id="selViewMode" onchange="applyFilter()">
+      <option value="status">สถานะ (✓, ส, ล, ขาด)</option>
+      <option value="work_type">ประเภทงาน (ป, นอก, WFH...)</option>
+    </select>
+
     <span class="filter-label" style="margin-left:.5rem"><i class="fa-solid fa-magnifying-glass"></i>ค้นหา</span>
     <input type="text" id="searchIn" class="search-in" placeholder="ชื่อ, กอง/แผนก…" oninput="applyFilter()">
     <select class="fsel" id="selAff" onchange="filterByAff()"><option value="">— ทุกหน่วยงาน —</option></select>
@@ -298,30 +328,17 @@ td.mono{font-family:'JetBrains Mono',monospace;font-size:.65rem;}
   </div>
 
   <div class="content">
-    
-    <!-- ✅ KPI ROW -->
     <div class="kpi-row" id="kpiRow"></div>
-
     <div class="sh"><div class="sh-t"><i class="fa-solid fa-table-cells" style="opacity:.4"></i>ตารางสรุปการลงเวลาประจำเดือน</div><div class="sh-m" id="tableInfo">—</div></div>
     <div class="panel">
       <div class="ph">
         <div class="pt"><i class="fa-solid fa-calendar-days"></i><span id="panelTitle">—</span></div>
         <div style="display:flex;align-items:center;gap:.5rem;"><div class="pm" id="lastUp">—</div><div class="export-wrap" id="exportWrap"><button class="btn-prim" onclick="toggleExport()" style="gap:5px;"><i class="fa-solid fa-download"></i>ส่งออก<i class="fa-solid fa-chevron-down" style="font-size:.55rem;margin-left:1px"></i></button><div class="export-dd" id="exportDd"><div class="export-item" onclick="exportExcel()"><i class="fa-solid fa-file-excel" style="color:#22c55e"></i>ส่งออก Excel (.xlsx)</div><div class="export-item" onclick="printPage()"><i class="fa-solid fa-print"></i>พิมพ์</div></div></div></div>
       </div>
-      <div class="print-header" id="printHeader"><div style="font-size:14pt;font-weight:bold;margin-bottom:3px">ตารางสรุปการลงเวลาปฏิบัติราชการประจำเดือน</div><div style="font-size:12pt;margin-bottom:2px" id="phAff">—</div><div style="font-size:11pt" id="phMonth">—</div></div>
+      <div class="print-header" id="printHeader"><div style="font-size:14pt;font-weight:bold;margin-bottom:3px">ตารางสรุปการลงเวลาปฏิบัติราชการประจำเดือน</div><div style="font-size:12pt;margin-bottom:2px" id="phAff">—</div><div style="font-size:11pt" id="phMonth">—</div><div id="phKpi" style="font-size:10pt; display:flex; flex-wrap:wrap; gap:5px 18px; margin-bottom:8px; border-bottom:1px solid #999; padding-bottom:8px;"></div></div>
       <div class="tbl-wrap"><table class="mt" id="mainTable"><thead id="tableHead"></thead><tbody id="attTbody"><tr><td colspan="10"><div class="sk" style="height:44px;margin:.4rem"></div></td></tr></tbody></table></div>
-      <div class="legend">
-        <span class="leg-item"><span class="leg-dot" style="background:var(--em)"></span>ปกติ</span>
-        <span class="leg-item"><span class="leg-dot" style="background:var(--am)"></span>มาสาย</span>
-        <span class="leg-item"><span class="leg-dot" style="background:var(--ro)"></span>ขาด</span>
-        <span class="leg-item"><span class="leg-dot" style="background:var(--bl)"></span>ลา</span>
-        <span class="leg-item"><span class="leg-dot" style="background:var(--in)"></span>รอลา</span>
-        <span class="leg-item"><span class="leg-dot" style="background:var(--pu)"></span>คำขอ</span>
-        <span class="leg-item"><span class="leg-dot" style="background:var(--tx3)"></span>วันหยุด</span>
-        <span style="margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--tx3)" id="legendSummary"></span>
-      </div>
+      <div class="legend" id="legendBar"></div>
     </div>
-
   </div>
 </main>
 
@@ -342,7 +359,7 @@ function openSb(){$('sidebar').classList.add('open');$('sbOv').classList.add('sh
 function closeSb(){$('sidebar').classList.remove('open');$('sbOv').classList.remove('show');}
 
 const THAI_MON=['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
-const THAI_DAY_FULL=['อาทิตย์','จันทร์','อังคาร','พุธ','พฤหัส','ศุกร์','เสาร์'];
+const THAI_DAY_FULL=['อา','จ','อ','พ','พฤ','ศ','ส'];
 
 function thisMonthISO(){ const d=new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`; }
 function shiftMonth(n){ const [y,m]=($('monthIn').value||thisMonthISO()).split('-').map(Number); const d=new Date(y, m-1+n, 1); $('monthIn').value=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`; loadAll(); }
@@ -350,6 +367,16 @@ function goThisMonth(){ $('monthIn').value=thisMonthISO(); loadAll(); }
 function thaiMonthLabel(y,m){ return `${THAI_MON[m-1]} พ.ศ. ${y+543}`; }
 
 let allUsers=[], filteredUsers=[], dayInfo=[], metaInfo={}, allDepartments=[];
+
+/* ✅ Mapping สีและตัวย่อสำหรับ Work Type */
+const WORK_TYPE_MAP = {
+  "ปกติ": { label: "ป", color: "var(--em)", bg: "rgba(16,185,129,.15)", printClass: "dc-ok", kpiClass: "cg", icon: "fa-building" },
+  "นอกสถานที่": { label: "นอก", color: "var(--cy)", bg: "rgba(34,211,238,.12)", printClass: "dc-req", kpiClass: "ccy", icon: "fa-map-location-dot" },
+  "วันหยุด": { label: "หยุด", color: "var(--pu)", bg: "rgba(192,132,252,.12)", printClass: "dc-leave-p", kpiClass: "cp", icon: "fa-calendar-check" },
+  "ไปราชการ": { label: "ราช", color: "var(--bl)", bg: "rgba(96,165,250,.12)", printClass: "dc-leave", kpiClass: "cb", icon: "fa-car-side" },
+  "ทำงานที่บ้าน": { label: "WFH", color: "var(--am)", bg: "rgba(251,191,36,.12)", printClass: "dc-late", kpiClass: "ca", icon: "fa-house-laptop" },
+  "อื่นๆ": { label: "อื่น", color: "var(--tx2)", bg: "rgba(255,255,255,.05)", printClass: "", kpiClass: "ci", icon: "fa-ellipsis" }
+};
 
 async function loadAll(){
   const val=$('monthIn').value||thisMonthISO(); $('monthIn').value=val;
@@ -382,23 +409,44 @@ function renderDepOptions(keepVal=''){ const af=$('selAff').value,depSel=$('selD
 function filterByAff(){ $('selDep').value=''; renderDepOptions(); applyFilter(); }
 function clearFilter(){ $('searchIn').value=''; $('selAff').value=''; $('selDep').value=''; renderDepOptions(); applyFilter(); }
 
-/* ✅ Render KPI */
 function renderKPI(){
   const totalUsers = filteredUsers.length;
   const workingDays = dayInfo.filter(d => !d.isDayOff).length;
+  const [year, month] = ($('monthIn').value || thisMonthISO()).split('-').map(Number);
   
   let sOk=0, sLate=0, sAbsent=0, sLeave=0, sReq=0;
+  let wtCounts = { "ปกติ": 0, "นอกสถานที่": 0, "วันหยุด": 0, "ไปราชการ": 0, "ทำงานที่บ้าน": 0, "อื่นๆ": 0 };
+  
   filteredUsers.forEach(u => {
     sOk     += u.summary.ok     || 0;
     sLate   += u.summary.late   || 0;
     sAbsent += u.summary.absent || 0;
     sLeave  += u.summary.leave  || 0;
     sReq    += u.summary.request|| 0;
+    
+    for (let d = 1; d <= dayInfo.length; d++) {
+      const dateKey = `${year}-${String(month).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+      const rec = u.days[dateKey];
+      if (rec && rec.work_type && wtCounts.hasOwnProperty(rec.work_type)) {
+        wtCounts[rec.work_type]++;
+      }
+    }
   });
 
-  // คำนวณอัตรามาปกติ (%)
   const totalExpected = totalUsers * workingDays;
   const okPct = totalExpected > 0 ? ((sOk / totalExpected) * 100).toFixed(1) : '0.0';
+
+  let wtKpiHtml = '';
+  Object.entries(wtCounts).forEach(([key, val]) => {
+    const wt = WORK_TYPE_MAP[key];
+    if(wt) {
+      wtKpiHtml += `
+        <div class="kpi-s ${wt.kpiClass}">
+          <div class="kpi-s-ico"><i class="fa-solid ${wt.icon}"></i></div>
+          <div><div class="kpi-s-val">${val}</div><div class="kpi-s-lbl">${key}</div></div>
+        </div>`;
+    }
+  });
 
   $('kpiRow').innerHTML=`
     <div class="kpi-s cg" style="animation-delay:.0s">
@@ -428,18 +476,43 @@ function renderKPI(){
     <div class="kpi-s ci" style="animation-delay:.3s">
       <div class="kpi-s-ico"><i class="fa-solid fa-file-signature"></i></div>
       <div><div class="kpi-s-val">${sReq}</div><div class="kpi-s-lbl">คำขอ/รออนุมัติ</div></div>
-    </div>`;
+    </div>
+    ${wtKpiHtml}`;
 
-  // อัปเดต Legend ด้วย
-  $('legendSummary').textContent=`ปกติ ${sOk}  สาย ${sLate}  ลา ${sLeave}  ขาด ${sAbsent}  คำขอ/รอลา ${sReq}`;
+  const summaryText = `ปกติ ${sOk}  สาย ${sLate}  ลา ${sLeave}  ขาด ${sAbsent}  คำขอ/รอลา ${sReq}`;
+  updateLegend(summaryText);
+}
+
+/* ✅ แยก Function สำหรับอัปเดต Legend เพื่อป้องกัน Element null */
+function updateLegend(summaryText = '') {
+  const viewMode = $('selViewMode').value;
+  let html = '';
+  
+  if(viewMode === 'status') {
+    html = `
+      <span class="leg-item"><span class="leg-dot" style="background:var(--em)"></span>ปกติ</span>
+      <span class="leg-item"><span class="leg-dot" style="background:var(--am)"></span>มาสาย</span>
+      <span class="leg-item"><span class="leg-dot" style="background:var(--ro)"></span>ขาด</span>
+      <span class="leg-item"><span class="leg-dot" style="background:var(--bl)"></span>ลา</span>
+      <span class="leg-item"><span class="leg-dot" style="background:var(--in)"></span>รอลา</span>
+      <span class="leg-item"><span class="leg-dot" style="background:var(--pu)"></span>คำขอ</span>
+      <span class="leg-item"><span class="leg-dot" style="background:var(--tx3)"></span>วันหยุด</span>
+    `;
+  } else {
+    Object.entries(WORK_TYPE_MAP).forEach(([key, val]) => {
+      html += `<span class="leg-item"><span class="leg-dot" style="background:${val.color}"></span>${key} (${val.label})</span>`;
+    });
+  }
+  
+  html += `<span style="margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--tx3)">${summaryText}</span>`;
+  $('legendBar').innerHTML = html;
 }
 
 function applyFilter(){
   const q=($('searchIn').value||'').toLowerCase(), af=$('selAff').value, dp=$('selDep').value;
   filteredUsers=allUsers.filter(u=>{ if(af&&u.aff_code!==af) return false; if(dp&&u.dep_code!==dp) return false; if(q){ const hay=(u.name+' '+(u.department||'')+' '+(u.affiliation||'')).toLowerCase(); if(!hay.includes(q)) return false; } return true; });
   $('filterCount').textContent=`${filteredUsers.length} / ${allUsers.length} คน`; $('tableInfo').textContent=`${filteredUsers.length} รายการ`;
-  
-  renderKPI(); // ✅ เรียก renderKPI ทุกครั้งที่กรองข้อมูล
+  renderKPI(); 
   renderBody();
 }
 
@@ -459,18 +532,33 @@ function renderHeader(){
   $('tableHead').innerHTML=`<tr>${r1}</tr><tr>${r2}</tr>`;
 }
 
-const STATUS_BG={ ok:'rgba(16,185,129,.15)', late:'rgba(251,191,36,.15)', absent:'rgba(251,113,133,.15)', leave:'rgba(96,165,250,.12)', 'ลา(รออนุมัติ)':'rgba(129,140,248,.12)', request:'rgba(192,132,252,.12)' };
-const STATUS_PRINT_CLASS={ ok:'dc-ok', late:'dc-late', absent:'dc-absent', request:'dc-req', leave:'dc-leave', 'ลา(รออนุมัติ)':'dc-leave-p' };
-const STATUS_DOT={ ok:'var(--em)', late:'var(--am)', absent:'var(--ro)', leave:'var(--bl)', 'ลา(รออนุมัติ)':'var(--in)', request:'var(--pu)' };
-const STATUS_LABEL={ ok:'✓', late:'ส', absent:'—', leave:'ล', 'ลา(รออนุมัติ)':'รล', request:'ค' };
+const STATUS_BG={ ok:'rgba(16,185,129,.15)', late:'rgba(251,191,36,.15)', absent:'rgba(251,113,133,.15)', leave:'rgba(96,165,250,.12)','ลา':'rgba(96,165,250,.12)', 'ลา(รออนุมัติ)':'rgba(129,140,248,.12)', request:'rgba(192,132,252,.12)' };
+const STATUS_PRINT_CLASS={ ok:'dc-ok', late:'dc-late', absent:'dc-absent', request:'dc-req', leave:'dc-leave','ลา':'dc-leave', 'ลา(รออนุมัติ)':'dc-leave-p' };
+const STATUS_DOT={ ok:'var(--em)', late:'var(--am)', absent:'var(--ro)', leave:'var(--bl)','ลา':'var(--bl)', 'ลา(รออนุมัติ)':'var(--in)', request:'var(--pu)' };
+const STATUS_LABEL={ ok:'✓', late:'ส', absent:'—', leave:'ล', 'ลา':'ล', 'ลา(รออนุมัติ)':'รล', request:'ค' };
 
 function dayCell(rec, isDayOff, dateKey){
-  if(isDayOff){ return `<td class="wkend dc-wkend" title="${rec?.holidayName||dateKey}"><span style="color:var(--tx3);font-size:.6rem">—</span></td>`; }
-  if(!rec){ return `<td style="background:${STATUS_BG.absent}" class="${STATUS_PRINT_CLASS.absent}" title="${dateKey}: ขาด"><span style="font-size:.68rem;font-weight:700;color:var(--ro)">${STATUS_LABEL.absent}</span></td>`; }
+  const viewMode = $('selViewMode').value;
+
+  if(isDayOff){ return `<td class="wkend dc-wkend day-cell" title="${rec?.holidayName||dateKey}"><span style="color:var(--tx3);font-size:.6rem">—</span></td>`; }
+  if(!rec){ return `<td class="day-cell ${STATUS_PRINT_CLASS.absent}" style="background:${STATUS_BG.absent}" title="${dateKey}: ขาด"><span style="font-size:.68rem;font-weight:700;color:var(--ro)">${STATUS_LABEL.absent}</span></td>`; }
+  
+  let tip=dateKey; 
+  if(rec.checkin) tip+=` เข้า ${rec.checkin}`; 
+  if(rec.checkout) tip+=` ออก ${rec.checkout}`; 
+  if(rec.request) tip+=` (${rec.request})`; 
+  if(rec.work_type) tip+=` [${rec.work_type}]`;
+
+  if(viewMode === 'work_type' && rec.work_type) {
+    const wt = WORK_TYPE_MAP[rec.work_type] || WORK_TYPE_MAP["อื่นๆ"];
+    return `<td class="day-cell ${wt.printClass}" style="background:${wt.bg}" title="${tip}">
+      <span style="font-size:.68rem;font-weight:700;color:${wt.color}">${wt.label}</span>
+    </td>`;
+  }
+
   const st=rec.status;
   const bg=STATUS_BG[st]||''; const dot=STATUS_DOT[st]||'var(--tx3)'; const lbl=STATUS_LABEL[st]||'?'; const pc=STATUS_PRINT_CLASS[st]||'';
-  let tip=dateKey; if(rec.checkin) tip+=` เข้า ${rec.checkin}`; if(rec.checkout) tip+=` ออก ${rec.checkout}`; if(rec.request) tip+=` (${rec.request})`; if(rec.leave_type) tip+=` [${rec.leave_type}]`;
-  return `<td style="background:${bg}" class="${pc}" title="${tip}"><span style="font-size:.68rem;font-weight:700;color:${dot}">${lbl}</span></td>`;
+  return `<td class="day-cell ${pc}" style="background:${bg}" title="${tip}"><span style="font-size:.68rem;font-weight:700;color:${dot}">${lbl}</span></td>`;
 }
 
 function renderBody(){
@@ -482,17 +570,18 @@ function renderBody(){
     rowNo++; let cells='';
     dayInfo.forEach(({day,isDayOff})=>{ const dateKey=`${year}-${String(month).padStart(2,'0')}-${String(day).padStart(2,'0')}`; cells+=dayCell(u.days[dateKey],isDayOff,dateKey); });
     const sum=u.summary;
+    
     rows.push(`<tr>
       <td class="mono sticky-left" style="left:0;text-align:center">${rowNo}</td>
       <td class="dept-cell sticky-left-2" style="left:42px">${u.department||u.dep_code||'—'}</td>
       <td class="hl sticky-left-2" style="left:152px">${u.name||'—'}</td>
       <td style="font-size:.62rem;color:var(--tx3)">${u.personnelType||'—'}</td>
       ${cells}
-      <td class="sum-sep mono" style="font-weight:700;color:var(--em)">${sum.ok||0}</td>
-      <td class="mono" style="font-weight:700;color:var(--am)">${sum.late||0}</td>
-      <td class="mono" style="font-weight:700;color:var(--bl)">${sum.leave||0}</td>
-      <td class="mono" style="font-weight:700;color:var(--ro)">${sum.absent||0}</td>
-      <td class="mono" style="font-weight:700;color:var(--in)">${sum.request||0}</td>
+      <td class="sum-sep mono sum-cell" style="font-weight:700;color:var(--em)">${sum.ok||0}</td>
+      <td class="mono sum-cell" style="font-weight:700;color:var(--am)">${sum.late||0}</td>
+      <td class="mono sum-cell" style="font-weight:700;color:var(--bl)">${sum.leave||0}</td>
+      <td class="mono sum-cell" style="font-weight:700;color:var(--ro)">${sum.absent||0}</td>
+      <td class="mono sum-cell" style="font-weight:700;color:var(--in)">${sum.request||0}</td>
       <td style="font-size:.65rem;color:var(--tx3)"></td>
     </tr>`);
   });
@@ -504,22 +593,100 @@ document.addEventListener('click',e=>{ if(!$('exportWrap').contains(e.target)) $
 
 function exportExcel(){
   if(!filteredUsers.length){ toast('ไม่มีข้อมูลสำหรับส่งออก','err'); return; }
-  const [year,month]=($('monthIn').value||thisMonthISO()).split('-').map(Number); const label=thaiMonthLabel(year,month);
+  const [year,month]=($('monthIn').value||thisMonthISO()).split('-').map(Number); 
+  const label=thaiMonthLabel(year,month);
+  const viewMode = $('selViewMode').value;
+  
+  let totalUsers = filteredUsers.length;
+  let workingDays = dayInfo.filter(d => !d.isDayOff).length;
+  let sOk=0, sLate=0, sAbsent=0, sLeave=0, sReq=0;
+  filteredUsers.forEach(u => {
+    sOk     += u.summary.ok     || 0;
+    sLate   += u.summary.late   || 0;
+    sAbsent += u.summary.absent || 0;
+    sLeave  += u.summary.leave  || 0;
+    sReq    += u.summary.request|| 0;
+  });
+  const totalExpected = totalUsers * workingDays;
+  const okPct = totalExpected > 0 ? ((sOk / totalExpected) * 100).toFixed(1) : '0.0';
+
   const hdr1=['ลำดับ','กลุ่มงาน','ชื่อ - สกุล','ประเภท',...dayInfo.map(d=>d.day),'ปกติ','สาย','ลา','ขาด','คำขอ','หมายเหตุ'];
+  const colsCount = hdr1.length;
+  
   const STATUS_TH={ ok:'✓', late:'ส', absent:'—', leave:'ล', 'ลา(รออนุมัติ)':'รล', request:'ค' };
   const dataRows=[]; let rowNo=0;
+  
   filteredUsers.forEach(u=>{
     rowNo++;
-    const cells=dayInfo.map(({day,isDayOff})=>{ if(isDayOff) return 'X'; const dateKey=`${year}-${String(month).padStart(2,'0')}-${String(day).padStart(2,'0')}`; const rec=u.days[dateKey]; if(!rec) return STATUS_TH.absent; return STATUS_TH[rec.status]||'?'; });
+    const cells=dayInfo.map(({day,isDayOff})=>{ 
+      if(isDayOff) return 'X'; 
+      const dateKey=`${year}-${String(month).padStart(2,'0')}-${String(day).padStart(2,'0')}`; 
+      const rec=u.days[dateKey]; 
+      if(!rec) return STATUS_TH.absent; 
+      
+      if(viewMode === 'work_type' && rec.work_type) {
+        const wt = WORK_TYPE_MAP[rec.work_type] || WORK_TYPE_MAP["อื่นๆ"];
+        return wt.label;
+      }
+      
+      return STATUS_TH[rec.status]||'?'; 
+    });
     const sum=u.summary;
     dataRows.push([rowNo, u.department||u.dep_code||'', u.name||'', u.personnelType||'', ...cells, sum.ok||0, sum.late||0, sum.leave||0, sum.absent||0, sum.request||0, '']);
   });
-  const ws=XLSX.utils.aoa_to_sheet([[`ตารางสรุปการลงเวลาประจำเดือน${label}`],[], hdr1, ...dataRows]);
-  const wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,ws,'สรุปรายเดือน'); XLSX.writeFile(wb,`attendance-monthly-${year}-${String(month).padStart(2,'0')}.xlsx`);
-  $('exportDd').classList.remove('show'); toast('ส่งออก Excel สำเร็จ','ok');
+
+  const aoaData = [
+    [`ตารางสรุปการลงเวลาประจำเดือน${label}`],
+    [`บุคลากรทั้งหมด: ${totalUsers}`, ``, `วันทำการ: ${workingDays}`, ``, `มาปกติ: ${sOk} (${okPct}%)`],
+    [`มาสาย: ${sLate}`, ``, `ขาด: ${sAbsent}`, ``, `ลา: ${sLeave}`, ``, `คำขอ/รออนุมัติ: ${sReq}`],
+    [],
+    hdr1,
+    ...dataRows
+  ];
+
+  const ws = XLSX.utils.aoa_to_sheet(aoaData);
+  ws['!merges'] = [
+    { s: { r: 0, c: 0 }, e: { r: 0, c: colsCount - 1 } }
+  ];
+
+  const wb = XLSX.utils.book_new(); 
+  XLSX.utils.book_append_sheet(wb, ws, 'สรุปรายเดือน'); 
+  XLSX.writeFile(wb, `attendance-monthly-${year}-${String(month).padStart(2,'0')}.xlsx`);
+  
+  $('exportDd').classList.remove('show'); 
+  toast('ส่งออก Excel สำเร็จ','ok');
 }
 
-function printPage(){ $('printHeader').style.display='block'; const onAfter=()=>{ window.removeEventListener('afterprint',onAfter); $('printHeader').style.display='none'; }; window.addEventListener('afterprint',onAfter); setTimeout(()=>window.print(),80); $('exportDd').classList.remove('show'); }
+function printPage(){ 
+  let totalUsers = filteredUsers.length;
+  let workingDays = dayInfo.filter(d => !d.isDayOff).length;
+  let sOk=0, sLate=0, sAbsent=0, sLeave=0, sReq=0;
+  filteredUsers.forEach(u => {
+    sOk     += u.summary.ok     || 0;
+    sLate   += u.summary.late   || 0;
+    sAbsent += u.summary.absent || 0;
+    sLeave  += u.summary.leave  || 0;
+    sReq    += u.summary.request|| 0;
+  });
+  const totalExpected = totalUsers * workingDays;
+  const okPct = totalExpected > 0 ? ((sOk / totalExpected) * 100).toFixed(1) : '0.0';
+
+  $('phKpi').innerHTML = `
+    <span><b>บุคลากร:</b> ${totalUsers} คน</span>
+    <span><b>วันทำการ:</b> ${workingDays} วัน</span>
+    <span><b>ปกติ:</b> ${sOk} (${okPct}%)</span>
+    <span><b>สาย:</b> ${sLate}</span>
+    <span><b>ลา:</b> ${sLeave}</span>
+    <span><b>ขาด:</b> ${sAbsent}</span>
+    <span><b>คำขอ/รอลา:</b> ${sReq}</span>
+  `;
+
+  $('printHeader').style.display='block'; 
+  const onAfter=()=>{ window.removeEventListener('afterprint',onAfter); $('printHeader').style.display='none'; }; 
+  window.addEventListener('afterprint',onAfter); 
+  setTimeout(()=>window.print(),80); 
+  $('exportDd').classList.remove('show'); 
+}
 
 function loadUser(){
   const userData=JSON.parse(localStorage.getItem('user_data'))||JSON.parse(sessionStorage.getItem('user_data'))||{};
