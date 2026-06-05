@@ -138,7 +138,7 @@ export async function onRequestGet({ request, env }) {
     }
 
     /* ── รวม rows เป็น Map ── */
-    const WORK_START = '08:30:00';
+    const WORK_START = '08:31:00';
     const userMap = new Map();
     const rows = attRes.results ?? [];
 
@@ -173,61 +173,105 @@ export async function onRequestGet({ request, env }) {
       };
     });
 
-    /* ── คำนวณสถานะสุดท้ายและสรุปยอดต่อคน ── */
-    userMap.forEach(u => {
-      const userLeaves = userLeavesMap[u.uuid] || [];
+    /* ── วันปัจจุบัน (ใช้ตัดวันอนาคต) ── */
+    const today = new Date();
+    const todayStr =  `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
 
-      dayInfo.forEach(({ day, isDayOff, holidayName }) => {
-        const dateKey = `${year}-${String(month).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
-        
-        // ถ้าเป็นวันหยุดราชการ/เสาร์-อาทิตย์
-        if (isDayOff) {
-          u.days[dateKey] = { status: 'วันหยุด', holidayName };
-          u.summary.weekend++;
-          return; 
-        }
+/* ── คำนวณสถานะสุดท้ายและสรุปยอดต่อคน ── */
+userMap.forEach(u => {
+  const userLeaves = userLeavesMap[u.uuid] || [];
 
-        // ตรวจสอบว่ามีใบลาไหม (เช็คว่า dateKey อยู่ระหว่าง start_date และ end_date)
-        let approvedLeave = null;
-        let pendingLeave = null;
-        for (const l of userLeaves) {
-          if (dateKey >= l.start_date && dateKey <= l.end_date) {
-            if (l.status === 'approved') approvedLeave = l;
-            if (l.status === 'pending') pendingLeave = l;
-          }
-        }
+  dayInfo.forEach(({ day, isDayOff, holidayName }) => {
+    const dateKey =
+      `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
 
-        const rec = u.days[dateKey];
+    /* ===== ไม่ประมวลผลวันในอนาคต ===== */
+    const isCurrentMonth =
+      year === today.getFullYear() &&
+      month === (today.getMonth() + 1);
 
-        // ลำดับความสำคัญของสถานะ (เหมือนหน้ารายวัน)
-        if (approvedLeave) {
-          u.days[dateKey] = { ...(rec || {}), status: 'ลา', leave_type: approvedLeave.leave_type };
-          u.summary.leave++;
-        } 
-        else if (pendingLeave) {
-          u.days[dateKey] = { ...(rec || {}), status: 'ลา(รออนุมัติ)', leave_type: pendingLeave.leave_type };
-          u.summary.request++; // นับรวมคำขอ
-        }
-        else if (rec) {
-          // มีข้อมูลลงเวลา/คำขอลงเวลาจากตาราง attendance
-          if (rec.status === 'absent') {
-            rec.status = 'ขาด';
-            u.summary.absent++;
-          } else if (rec.status === 'late') {
-            u.summary.late++;
-          } else if (rec.status === 'ok') {
-            u.summary.ok++;
-          } else if (rec.status === 'request') {
-            u.summary.request++;
-          }
-        } 
-        else {
-          // วันทำการแต่ไม่มีข้อมูลอะไรเลย = ขาด
-          u.days[dateKey] = { status: 'ขาด' };
-          u.summary.absent++;
-        }
-      });
-    });
+    if (isCurrentMonth && dateKey > todayStr) {
+      u.days[dateKey] = {
+        status: ''
+      };
+      return;
+    }
+
+    /* ===== วันหยุด ===== */
+    if (isDayOff) {
+      u.days[dateKey] = {
+        status: 'วันหยุด',
+        holidayName
+      };
+
+      u.summary.weekend++;
+      return;
+    }
+
+    /* ===== ตรวจสอบใบลา ===== */
+    let approvedLeave = null;
+    let pendingLeave = null;
+
+    for (const l of userLeaves) {
+      if (dateKey >= l.start_date && dateKey <= l.end_date) {
+        if (l.status === 'approved') approvedLeave = l;
+        if (l.status === 'pending') pendingLeave = l;
+      }
+    }
+
+    const rec = u.days[dateKey];
+
+    /* ===== ลาอนุมัติแล้ว ===== */
+    if (approvedLeave) {
+      u.days[dateKey] = {
+        ...(rec || {}),
+        status: 'ลา',
+        leave_type: approvedLeave.leave_type
+      };
+
+      u.summary.leave++;
+      return;
+    }
+
+    /* ===== ลารออนุมัติ ===== */
+    if (pendingLeave) {
+      u.days[dateKey] = {
+        ...(rec || {}),
+        status: 'ลา(รออนุมัติ)',
+        leave_type: pendingLeave.leave_type
+      };
+
+      u.summary.request++;
+      return;
+    }
+
+    /* ===== มีข้อมูลลงเวลา ===== */
+    if (rec) {
+      if (rec.status === 'absent') {
+        rec.status = 'ขาด';
+        u.summary.absent++;
+      }
+      else if (rec.status === 'late') {
+        u.summary.late++;
+      }
+      else if (rec.status === 'ok') {
+        u.summary.ok++;
+      }
+      else if (rec.status === 'request') {
+        u.summary.request++;
+      }
+
+      return;
+    }
+
+    /* ===== ไม่มีข้อมูลและเป็นวันในอดีต ===== */
+    u.days[dateKey] = {
+      status: 'ขาด'
+    };
+
+    u.summary.absent++;
+  });
+});
 
     const users = Array.from(userMap.values());
 
