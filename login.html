@@ -1247,7 +1247,11 @@
     let telegramPopup = null;
     let telegramPollTimer = null;
 
-  function loginWithTelegram() {
+// ==================== Telegram Login ====================
+let telegramPopup = null;
+let telegramPollTimer = null;
+
+function loginWithTelegram() {
   if (isProcessing) return;
 
   const btn = document.getElementById('telegramLoginBtn');
@@ -1272,14 +1276,22 @@
   }, 500);
 }
 
-  telegramPopup = popup;
-  telegramPollTimer = setInterval(() => {
-    if (telegramPopup && telegramPopup.closed) {
-      clearInterval(telegramPollTimer);
-      telegramPollTimer = null;
-      resetTelegramBtn();
-    }
-  }, 500);
+function detectTelegramCallback() {
+  const p = new URLSearchParams(window.location.search);
+  if (p.get('tg') !== 'callback') return;
+
+  const user = {
+    id:         p.get('id'),
+    first_name: p.get('first_name'),
+    last_name:  p.get('last_name'),
+    username:   p.get('username'),
+    photo_url:  p.get('photo_url'),
+  };
+
+  if (user.id) {
+    history.replaceState({}, '', window.location.pathname);
+    window.handleTelegramCallback(user);
+  }
 }
 
     window.handleTelegramCallback = async function(tgUser) {
@@ -1317,29 +1329,6 @@
       if (btn) btn.classList.remove('disabled');
     }
 
-function detectTelegramCallback() {
-  const p = new URLSearchParams(window.location.search);
-  if (p.get('tg') !== 'callback') return;
-
-  const user = {
-    id:         p.get('id'),
-    first_name: p.get('first_name'),
-    last_name:  p.get('last_name'),
-    username:   p.get('username'),
-    photo_url:  p.get('photo_url'),
-  };
-
-  if (user.id) {
-    history.replaceState({}, '', window.location.pathname);
-    window.handleTelegramCallback(user);
-  }
-}
-
-  if (user.id) {
-    history.replaceState({}, '', window.location.pathname);
-    window.handleTelegramCallback(user);
-  }
-}
     // ==================== Check Existing Session ====================
     async function checkExistingSession() {
       const token = localStorage.getItem('auth_token');
