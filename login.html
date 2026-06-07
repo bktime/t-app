@@ -1247,36 +1247,33 @@
     let telegramPopup = null;
     let telegramPollTimer = null;
 
-    function loginWithTelegram() {
-      if (isProcessing) return;
+   function loginWithTelegram() {
+  if (isProcessing) return;
 
-      const btn = document.getElementById('telegramLoginBtn');
-      btn.classList.add('disabled');
+  const btn = document.getElementById('telegramLoginBtn');
+  btn.classList.add('disabled');
 
-      const popupUrl = `/telegram-callback.html?bot=${encodeURIComponent(CONFIG.TELEGRAM_BOT_USERNAME)}&origin=${encodeURIComponent(window.location.origin)}&page=login`;
-      const popupOpts = 'width=480,height=600,scrollbars=yes,resizable=yes,status=no,location=no,toolbar=no,menubar=no';
-      telegramPopup = window.open(popupUrl, 'TelegramLogin', popupOpts);
+  const callbackUrl = `/telegram-callback.html?bot=${encodeURIComponent(CONFIG.TELEGRAM_BOT_USERNAME)}&origin=${encodeURIComponent(window.location.origin)}&page=login`;
 
-      if (!telegramPopup || telegramPopup.closed) {
-        resetTelegramBtn();
-        Swal.fire({
-          icon: 'warning',
-          title: 'Popup ถูกบล็อก',
-          text: 'กรุณาอนุญาต popup สำหรับเว็บไซต์นี้แล้วลองใหม่',
-          confirmButtonText: 'ตกลง',
-          confirmButtonColor: '#059669'
-        });
-        return;
-      }
+  // ถ้ามี opener ได้ (desktop) → popup เดิม
+  // ถ้าไม่ได้ → redirect
+  const popup = window.open(callbackUrl, 'TelegramLogin', 'width=480,height=600');
 
-      telegramPollTimer = setInterval(() => {
-        if (telegramPopup && telegramPopup.closed) {
-          clearInterval(telegramPollTimer);
-          telegramPollTimer = null;
-          resetTelegramBtn();
-        }
-      }, 500);
+  if (!popup || popup.closed) {
+    // popup ถูกบล็อก → redirect แทน
+    window.location.href = callbackUrl;
+    return;
+  }
+
+  telegramPopup = popup;
+  telegramPollTimer = setInterval(() => {
+    if (telegramPopup && telegramPopup.closed) {
+      clearInterval(telegramPollTimer);
+      telegramPollTimer = null;
+      resetTelegramBtn();
     }
+  }, 500);
+}
 
     window.handleTelegramCallback = async function(tgUser) {
       if (telegramPopup && !telegramPopup.closed) telegramPopup.close();
@@ -1313,6 +1310,23 @@
       if (btn) btn.classList.remove('disabled');
     }
 
+    function detectTelegramCallback() {
+  const p = new URLSearchParams(window.location.search);
+  if (p.get('tg') !== 'callback') return;
+
+  const user = {
+    id:         p.get('id'),
+    first_name: p.get('first_name'),
+    last_name:  p.get('last_name'),
+    username:   p.get('username'),
+    photo_url:  p.get('photo_url'),
+  };
+
+  if (user.id) {
+    history.replaceState({}, '', window.location.pathname);
+    window.handleTelegramCallback(user);
+  }
+}
     // ==================== Check Existing Session ====================
     async function checkExistingSession() {
       const token = localStorage.getItem('auth_token');
@@ -1390,6 +1404,7 @@
 
       detectGoogleCallback();
       detectLineCallback();
+      detectTelegramCallback();
 
       const tempData = sessionStorage.getItem('temp_social_data');
       if (tempData) {
