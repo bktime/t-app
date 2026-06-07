@@ -1253,7 +1253,7 @@
       const btn = document.getElementById('telegramLoginBtn');
       btn.classList.add('disabled');
 
-      const popupUrl = `/telegram-callback.html?bot=${encodeURIComponent(CONFIG.TELEGRAM_BOT_USERNAME)}&origin=${encodeURIComponent(window.location.origin)}`;
+      const popupUrl = `/telegram-callback.html?bot=${encodeURIComponent(CONFIG.TELEGRAM_BOT_USERNAME)}&origin=${encodeURIComponent(window.location.origin)}&page=login`;
       const popupOpts = 'width=480,height=600,scrollbars=yes,resizable=yes,status=no,location=no,toolbar=no,menubar=no';
       telegramPopup = window.open(popupUrl, 'TelegramLogin', popupOpts);
 
