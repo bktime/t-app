@@ -1247,7 +1247,7 @@
     let telegramPopup = null;
     let telegramPollTimer = null;
 
-   function loginWithTelegram() {
+  function loginWithTelegram() {
   if (isProcessing) return;
 
   const btn = document.getElementById('telegramLoginBtn');
@@ -1255,15 +1255,22 @@
 
   const callbackUrl = `/telegram-callback.html?bot=${encodeURIComponent(CONFIG.TELEGRAM_BOT_USERNAME)}&origin=${encodeURIComponent(window.location.origin)}&page=login`;
 
-  // ถ้ามี opener ได้ (desktop) → popup เดิม
-  // ถ้าไม่ได้ → redirect
-  const popup = window.open(callbackUrl, 'TelegramLogin', 'width=480,height=600');
+  telegramPopup = window.open(callbackUrl, 'TelegramLogin', 'width=480,height=600,scrollbars=yes,resizable=yes');
 
-  if (!popup || popup.closed) {
+  if (!telegramPopup || telegramPopup.closed) {
     // popup ถูกบล็อก → redirect แทน
     window.location.href = callbackUrl;
     return;
   }
+
+  telegramPollTimer = setInterval(() => {
+    if (telegramPopup && telegramPopup.closed) {
+      clearInterval(telegramPollTimer);
+      telegramPollTimer = null;
+      resetTelegramBtn();
+    }
+  }, 500);
+}
 
   telegramPopup = popup;
   telegramPollTimer = setInterval(() => {
@@ -1310,7 +1317,7 @@
       if (btn) btn.classList.remove('disabled');
     }
 
-    function detectTelegramCallback() {
+function detectTelegramCallback() {
   const p = new URLSearchParams(window.location.search);
   if (p.get('tg') !== 'callback') return;
 
@@ -1321,6 +1328,12 @@
     username:   p.get('username'),
     photo_url:  p.get('photo_url'),
   };
+
+  if (user.id) {
+    history.replaceState({}, '', window.location.pathname);
+    window.handleTelegramCallback(user);
+  }
+}
 
   if (user.id) {
     history.replaceState({}, '', window.location.pathname);
