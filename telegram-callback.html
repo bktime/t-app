@@ -170,28 +170,50 @@
     area.appendChild(script);
   }
 
-  function sendToOpener(user) {
-    showSuccess(user);
-    const openerWin = window.opener;
-    try {
-      if (openerWin && !openerWin.closed && typeof openerWin.handleTelegramCallback === 'function') {
-        openerWin.handleTelegramCallback(user, page);
-        setTimeout(() => window.close(), 1200);
-        return;
-      }
-    } catch (_) {}
-    try {
-      if (openerWin && !openerWin.closed) {
-        openerWin.postMessage({ type: 'TELEGRAM_LOGIN_SUCCESS', user, page }, origin);
-        setTimeout(() => window.close(), 1200);
-        return;
-      }
-    } catch (e) {
-      console.error('[TG Popup] postMessage failed:', e);
+function sendToOpener(user) {
+  showSuccess(user);
+
+  // 1. popup mode — opener มีอยู่ (desktop browser)
+  const openerWin = window.opener;
+  try {
+    if (openerWin && !openerWin.closed && typeof openerWin.handleTelegramCallback === 'function') {
+      openerWin.handleTelegramCallback(user, page);
+      setTimeout(() => window.close(), 1200);
+      return;
     }
-    sessionStorage.setItem('tg_auth_result', JSON.stringify({ user, page }));
-    window.location.href = fallbackPath;
+  } catch (_) {}
+
+  try {
+    if (openerWin && !openerWin.closed) {
+      openerWin.postMessage({ type: 'TELEGRAM_LOGIN_SUCCESS', user, page }, origin);
+      setTimeout(() => window.close(), 1200);
+      return;
+    }
+  } catch (e) {
+    console.error('[TG Popup] postMessage failed:', e);
   }
+
+  // 2. redirect mode — ไม่มี opener (Telegram WebView, mobile)
+  const pageMap = {
+    login    : '/login.html',
+    register : '/register.html',
+    profile  : '/profile.html',
+  };
+  const target = pageMap[page] || '/login.html';
+
+  const qs = new URLSearchParams({
+    tg:         'callback',
+    id:         user.id,
+    first_name: user.first_name || '',
+    last_name:  user.last_name  || '',
+    username:   user.username   || '',
+    photo_url:  user.photo_url  || '',
+  });
+
+  setTimeout(() => {
+    window.location.href = `${target}?${qs}`;
+  }, 1200);
+}
 
   function showSuccess(user) {
     const name = [user.first_name, user.last_name].filter(Boolean).join(' ') || user.username || 'ผู้ใช้';
