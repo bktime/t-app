@@ -1190,7 +1190,8 @@
         `&client_id=${CONFIG.LINE_CHANNEL_ID}` +
         `&redirect_uri=${encodeURIComponent(CONFIG.LINE_REDIRECT_URI)}` +
         `&state=${encodeURIComponent(state)}` +
-        '&scope=profile%20openid%20email';
+        '&scope=profile%20openid%20email'+
+        '&openExternalBrowser=1';
 
       window.location.href = lineUrl;
     }
