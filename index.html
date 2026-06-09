@@ -286,7 +286,7 @@
             <a href="/profile.html#sec-signature" class="profile-subitem"><i class="fas fa-signature"></i> ลายเซ็น</a>
             <a href="/profile.html#sec-photo" class="profile-subitem"><i class="fas fa-image"></i> รูปโปรไฟล์</a>
             <a href="/profile.html#sec-related" class="profile-subitem"><i class="fas fa-user-check"></i> ผู้เกี่ยวข้อง</a>
-            <a href="/profile.html#sec-related" class="profile-subitem"><i class="fas fa-business-time"></i> ข้อมูล OT</a>
+            <a href="/profile.html#sec-ot" class="profile-subitem"><i class="fas fa-business-time"></i> ข้อมูล OT</a>
             <a href="/profile.html#sec-social" class="profile-subitem"><i class="fas fa-share-nodes"></i> เชื่อมโซเชียล</a>
           </div>
 
@@ -310,8 +310,19 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <script src="/js/reminder-scheduler.js"></script>
   <script src="/js/workforce.js"></script>
   <script src="/js/index-home.js"></script>
+
+  <!-- โหลด Firebase ก่อน (มีอยู่แล้ว) -->
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-messaging-compat.js"></script>
+
+<!-- Firebase init (มีอยู่แล้ว) -->
+<script src="/js/firebase-init.js"></script>
+
+<!-- เพิ่มใหม่ — ต้องโหลดหลัง Firebase init -->
+<script src="/js/fcm-register.js"></script>
+<script src="/js/reminder-scheduler.js"></script>
+
 </body>
 </html>
