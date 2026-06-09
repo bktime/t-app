@@ -4,9 +4,9 @@
 class ReminderScheduler {
   constructor() {
     this.morningHour = 7;
-    this.morningMinute = 45;
+    this.morningMinute = 10;
     this.afternoonHour = 16;
-    this.afternoonMinute = 20;
+    this.afternoonMinute = 32;
     this.checkInterval = null;
   }
 
@@ -88,7 +88,7 @@ class ReminderScheduler {
 
     // เวลาเช้า: 7:40 - 7:50 (±5 นาที จาก 7:45)
     const morningStart = this.morningHour * 60 + (this.morningMinute - 5);
-    const morningEnd   = this.morningHour * 60 + (this.morningMinute + 5);
+    const morningEnd   = this.morningHour * 60 + (this.morningMinute + 30);
 
     if (currentMinutes >= morningStart && currentMinutes <= morningEnd) {
       // ✅ แก้ไข: เช็คจาก localStorage แทน instance variable
@@ -104,8 +104,8 @@ class ReminderScheduler {
     }
 
     // เวลาบ่าย: 16:15 - 16:25 (±5 นาที จาก 16:20)
-    const afternoonStart = this.afternoonHour * 60 + (this.afternoonMinute - 5);
-    const afternoonEnd   = this.afternoonHour * 60 + (this.afternoonMinute + 5);
+    const afternoonStart = this.afternoonHour * 60 + (this.afternoonMinute - 1);
+    const afternoonEnd   = this.afternoonHour * 60 + (this.afternoonMinute + 30);
 
     if (currentMinutes >= afternoonStart && currentMinutes <= afternoonEnd) {
       // ✅ แก้ไข: เช็คจาก localStorage แทน instance variable
