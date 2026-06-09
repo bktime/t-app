@@ -1,0 +1,1546 @@
+<!DOCTYPE html>
+<html lang="th" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>บันทึกการปฏิบัติงานล่วงเวลา · ระบบบริหารงานบุคคล</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700;800&family=Sarabun:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+:root{
+  --bg:#07090f;--bg2:#0c1018;--bg3:#111827;
+  --card:rgba(17,24,39,0.82);--card-s:#111827;
+  --sur:rgba(255,255,255,0.03);--sur2:rgba(255,255,255,0.055);
+  --bd:rgba(255,255,255,0.07);--bd2:rgba(255,255,255,0.13);--bda:rgba(16,185,129,0.28);
+  --tx:#f1f5f9;--tx2:#94a3b8;--tx3:#4b5563;
+  --em:#10b981;--em2:#34d399;--emd:#059669;--emg:rgba(16,185,129,0.18);--embg:rgba(16,185,129,0.07);
+  --bl:#60a5fa;--blbg:rgba(96,165,250,0.07);--blb:rgba(96,165,250,0.22);
+  --in:#818cf8;--inbg:rgba(129,140,248,0.07);--inb:rgba(129,140,248,0.22);
+  --am:#fbbf24;--ambg:rgba(251,191,36,0.07);--amb:rgba(251,191,36,0.22);
+  --ro:#fb7185;--robg:rgba(251,113,133,0.07);--rob:rgba(251,113,133,0.22);
+  --pu:#c084fc;--pubg:rgba(192,132,252,0.07);--pub:rgba(192,132,252,0.22);
+  --cy:#22d3ee;--cybg:rgba(34,211,238,0.07);--cyb:rgba(34,211,238,0.22);
+  --rr-xs:8px;--rr-sm:12px;--rr-md:16px;--rr-lg:22px;
+  --shad:0 20px 60px -15px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.04);
+  --ease:cubic-bezier(0.16,1,0.3,1);--T:.22s;--sw:240px;
+}
+[data-theme="light"]{
+  --bg:#f0f4fb;--bg2:#e4eaf5;--bg3:#dde5f0;
+  --card:rgba(255,255,255,.92);--card-s:#fff;
+  --sur:rgba(0,0,0,.02);--sur2:rgba(0,0,0,.045);
+  --bd:rgba(0,0,0,.07);--bd2:rgba(0,0,0,.13);--bda:rgba(5,150,105,.25);
+  --tx:#0f172a;--tx2:#475569;--tx3:#94a3b8;
+  --em:#059669;--em2:#047857;--emd:#047857;--emg:rgba(5,150,105,.14);--embg:rgba(5,150,105,.07);
+  --bl:#2563eb;--blbg:rgba(37,99,235,.06);--blb:rgba(37,99,235,.2);
+  --in:#6366f1;--inbg:rgba(99,102,241,.06);--inb:rgba(99,102,241,.2);
+  --am:#d97706;--ambg:rgba(217,119,6,.06);--amb:rgba(217,119,6,.2);
+  --ro:#e11d48;--robg:rgba(225,29,72,.06);--rob:rgba(225,29,72,.2);
+  --pu:#9333ea;--pubg:rgba(147,51,234,.06);--pub:rgba(147,51,234,.2);
+  --cy:#0891b2;--cybg:rgba(8,145,178,.06);--cyb:rgba(8,145,178,.2);
+  --shad:0 8px 30px -6px rgba(0,0,0,.1),0 0 0 1px rgba(0,0,0,.05);
+}
+[data-theme="light"] .orb{opacity:.05;}
+[data-theme="light"] .topbar{background:rgba(240,244,251,.9);}
+
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;display:flex;-webkit-font-smoothing:antialiased;overflow-x:hidden;}
+
+.bg-l{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none;}
+.orb{position:absolute;border-radius:50%;filter:blur(110px);opacity:.18;animation:oF 28s infinite ease-in-out;}
+.o1{width:600px;height:600px;background:#059669;top:-20%;left:-15%;animation-duration:24s;}
+.o2{width:450px;height:450px;background:#1e40af;bottom:-15%;right:-10%;animation-duration:30s;animation-delay:-8s;}
+.o3{width:300px;height:300px;background:#7c3aed;top:40%;left:45%;opacity:.08;animation-duration:36s;animation-delay:-16s;}
+@keyframes oF{0%,100%{transform:translate(0,0)scale(1);}33%{transform:translate(40px,-30px)scale(1.06);}66%{transform:translate(-25px,35px)scale(.95);}}
+
+/* sidebar */
+.sidebar{position:fixed;left:0;top:0;bottom:0;width:var(--sw);background:var(--card);border-right:1px solid var(--bd);backdrop-filter:blur(24px);z-index:100;display:flex;flex-direction:column;transition:transform var(--T) var(--ease);}
+/* Sidebar Collapse */
+:root{  --sw-mini:72px;}
+.sidebar,.main{  transition:all .25s ease;}
+.sidebar.collapsed{  width:var(--sw-mini);}
+.main.collapsed{  margin-left:var(--sw-mini);}
+/* ซ่อนข้อความ */
+.sidebar.collapsed .logo-tx, .sidebar.collapsed .logo-sub, .sidebar.collapsed .nav-sec, .sidebar.collapsed .u-nm,
+.sidebar.collapsed .u-rl, .sidebar.collapsed .u-arr{  display:none;}
+/* จัดกึ่งกลางเมนู */
+.sidebar.collapsed .ni{  justify-content:center;  padding:.7rem;}
+.sidebar.collapsed .ni i{  width:auto;  font-size:1rem;}
+.sidebar.collapsed .sb-logo{  justify-content:center;}
+.sidebar.collapsed .user-pill{  justify-content:center;}
+/* ซ่อนข้อความเมนู */
+.sidebar.collapsed .ni{  font-size:0;}
+.sidebar.collapsed .ni i{  font-size:1rem;}
+
+.sb-logo{padding:1.4rem 1.2rem 1rem;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--bd);}
+.logo-mk{width:38px;height:38px;border-radius:var(--rr-sm);background:linear-gradient(135deg,var(--emd),var(--em));display:flex;align-items:center;justify-content:center;color:#fff;font-size:1rem;flex-shrink:0;box-shadow:0 6px 20px var(--emg);}
+.logo-tx{font-family:'Kanit',sans-serif;font-size:.88rem;font-weight:700;line-height:1.2;}
+.logo-sub{font-size:.62rem;color:var(--tx3);}
+.nav{flex:1;padding:.9rem .7rem;overflow-y:auto;}
+.nav-sec{font-family:'Kanit',sans-serif;font-size:.57rem;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--tx3);padding:.45rem .5rem .35rem;margin-top:.4rem;}
+.ni{display:flex;align-items:center;gap:9px;padding:.55rem .7rem;border-radius:var(--rr-sm);font-size:.8rem;color:var(--tx2);cursor:pointer;transition:all var(--T);margin-bottom:2px;text-decoration:none;font-family:'Sarabun',sans-serif;font-weight:500;}
+.ni i{font-size:.77rem;width:15px;text-align:center;opacity:.65;}
+.ni:hover{background:var(--sur2);color:var(--tx);}
+.ni:hover i{opacity:1;}
+.ni.active{background:var(--embg);color:var(--em);border:1px solid var(--bda);}
+.ni.active i{opacity:1;}
+.sb-foot{padding:.9rem .7rem;border-top:1px solid var(--bd);}
+.user-pill{position:relative;display:flex;align-items:center;gap:9px;padding:.55rem .7rem;border-radius:var(--rr-sm);background:var(--sur);border:1px solid var(--bd);cursor:pointer;transition:all var(--T);}
+.user-pill:hover{border-color:var(--bd2);}
+.u-av{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--emd),var(--em));display:flex;align-items:center;justify-content:center;color:#fff;font-size:.68rem;font-weight:700;flex-shrink:0;}
+.u-nm{font-size:.73rem;font-weight:600;color:var(--tx);line-height:1.2;}
+.u-rl{font-size:.6rem;color:var(--tx3);}
+.u-arr{margin-left:auto;font-size:.62rem;color:var(--tx3);}
+.user-dropdown{position:absolute;left:0;right:0;bottom:calc(100% + 10px);padding:.35rem;border-radius:14px;background:var(--sur);border:1px solid var(--bd);box-shadow:0 12px 30px rgba(0,0,0,.18);opacity:0;visibility:hidden;transform:translateY(8px);transition:all .2s ease;z-index:1000;}
+.user-dropdown.show{opacity:1;visibility:visible;transform:translateY(0);}
+.user-dropdown a{display:flex;align-items:center;gap:.65rem;padding:.75rem .8rem;border-radius:10px;text-decoration:none;color:var(--tx);font-size:.72rem;font-weight:500;transition:background .18s ease;}
+.user-dropdown a:hover{background:var(--sur2);}
+.nav-back{width:36px;height:36px;border-radius:10px;border:none;background:var(--sur2);color:var(--tx);font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .15s;}
+.nav-back:hover{background:var(--bd);}
+.sb-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:99;backdrop-filter:blur(4px);}
+.sb-ov.show{display:block;}
+.menu-btn{display:none;position:fixed;top:1rem;left:1rem;z-index:101;background:var(--card);border:1px solid var(--bd);color:var(--tx2);cursor:pointer;border-radius:var(--rr-sm);padding:8px 10px;font-size:.9rem;backdrop-filter:blur(16px);transition:all var(--T);}
+.menu-btn:hover{color:var(--tx);border-color:var(--bd2);}
+@media(max-width:900px){.sidebar{transform:translateX(-100%);}.sidebar.open{transform:translateX(0);}.menu-btn{display:flex;align-items:center;}.main{margin-left:0!important;}}
+
+/* main */
+.main{margin-left:var(--sw);flex:1;min-width:0;position:relative;z-index:10;padding-bottom:3rem;}
+
+/* topbar */
+.topbar{position:sticky;top:0;z-index:50;background:rgba(7,9,15,.88);border-bottom:1px solid var(--bd);backdrop-filter:blur(20px);padding:.8rem 1.6rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap;}
+[data-theme="light"] .topbar{background:rgba(240,244,251,.9);}
+.tb-left{flex:1;min-width:0;}
+.tb-title{font-family:'Kanit',sans-serif;font-size:1.1rem;font-weight:700;display:flex;align-items:center;gap:8px;letter-spacing:-.01em;}
+.tb-sub{font-size:.7rem;color:var(--tx3);margin-top:1px;}
+.tb-right{display:flex;align-items:center;gap:7px;flex-wrap:wrap;}
+.icon-btn{width:33px;height:33px;border-radius:var(--rr-sm);border:1px solid var(--bd);background:var(--sur);color:var(--tx2);cursor:pointer;font-size:.78rem;display:flex;align-items:center;justify-content:center;transition:all var(--T);flex-shrink:0;}
+.icon-btn:hover{color:var(--tx);border-color:var(--bd2);background:var(--sur2);}
+.icon-btn.spin i{animation:spin .7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* filter bar */
+.filter-bar{padding:.65rem 1.6rem;background:var(--sur);border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:.65rem;flex-wrap:wrap;min-height:52px;}
+.filter-label{font-family:'Kanit',sans-serif;font-size:.65rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--tx3);display:flex;align-items:center;gap:5px;flex-shrink:0;}
+.fsel{font-family:'Kanit',sans-serif;font-size:.75rem;padding:.38rem .75rem;border-radius:var(--rr-sm);border:1px solid var(--bd);background:var(--card);color:var(--tx2);outline:none;cursor:pointer;transition:all var(--T);min-width:140px;}
+.fsel:focus,.fsel:hover{border-color:var(--bda);color:var(--tx);}
+.month-in{font-family:'Kanit',sans-serif;font-size:.75rem;padding:.38rem .75rem;border-radius:var(--rr-sm);border:1px solid var(--bd);background:var(--card);color:var(--tx2);outline:none;transition:all var(--T);cursor:pointer;}
+.month-in:focus,.month-in:hover{border-color:var(--bda);color:var(--tx);}
+.date-nav-btn{width:30px;height:30px;border-radius:var(--rr-xs);border:1px solid var(--bd);background:var(--sur);color:var(--tx2);cursor:pointer;font-size:.72rem;display:flex;align-items:center;justify-content:center;transition:all var(--T);flex-shrink:0;}
+.date-nav-btn:hover{color:var(--tx);border-color:var(--bd2);background:var(--sur2);}
+.filter-bar-right{margin-left:auto;display:flex;align-items:center;gap:.5rem;}
+.search-in{font-family:'Sarabun',sans-serif;font-size:.78rem;padding:.38rem .8rem .38rem 2rem;border-radius:var(--rr-sm);border:1px solid var(--bd);background:var(--card);color:var(--tx);outline:none;transition:all var(--T);width:200px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%234b5563' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='M21 21l-4.35-4.35'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:.65rem center;}
+.search-in:focus{border-color:var(--bda);}
+
+/* content */
+.content{padding:1.4rem 1.6rem;}
+.sh{display:flex;align-items:center;justify-content:space-between;margin-bottom:.9rem;}
+.sh-t{font-family:'Kanit',sans-serif;font-size:.6rem;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--tx3);display:flex;align-items:center;gap:7px;}
+.sh-t::after{content:'';width:24px;height:1px;background:var(--bd);}
+.sh-m{font-size:.67rem;color:var(--tx3);font-family:'JetBrains Mono',monospace;}
+
+/* kpi */
+.kpi-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:.7rem;margin-bottom:1.2rem;}
+.kpi-s{background:var(--card);border:1px solid var(--bd);border-radius:var(--rr-md);padding:.85rem 1rem;backdrop-filter:blur(20px);display:flex;align-items:center;gap:.75rem;animation:fu .4s var(--ease) both;}
+@keyframes fu{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.kpi-s-ico{width:34px;height:34px;border-radius:var(--rr-xs);display:flex;align-items:center;justify-content:center;font-size:.82rem;flex-shrink:0;}
+.kpi-s-val{font-family:'Kanit',sans-serif;font-size:1.45rem;font-weight:800;line-height:1;}
+.kpi-s-lbl{font-size:.65rem;color:var(--tx2);margin-top:2px;}
+.cg .kpi-s-ico{background:var(--embg);border:1px solid var(--bda);color:var(--em);}
+.cb .kpi-s-ico{background:var(--blbg);border:1px solid var(--blb);color:var(--bl);}
+.ca .kpi-s-ico{background:var(--ambg);border:1px solid var(--amb);color:var(--am);}
+.cr .kpi-s-ico{background:var(--robg);border:1px solid var(--rob);color:var(--ro);}
+.cp .kpi-s-ico{background:var(--pubg);border:1px solid var(--pub);color:var(--pu);}
+.ci .kpi-s-ico{background:var(--inbg);border:1px solid var(--inb);color:var(--in);}
+.ccy .kpi-s-ico{background:var(--cybg);border:1px solid var(--cyb);color:var(--cy);}
+
+/* panel / table */
+.panel{background:var(--card);border:1px solid var(--bd);border-radius:var(--rr-md);backdrop-filter:blur(20px);overflow:hidden;animation:fu .4s var(--ease) .08s both;}
+.ph{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.2rem;border-bottom:1px solid var(--bd);}
+.pt{font-family:'Kanit',sans-serif;font-size:.83rem;font-weight:700;display:flex;align-items:center;gap:7px;}
+.pt i{font-size:.75rem;opacity:.55;}
+.pm{font-size:.63rem;color:var(--tx3);font-family:'JetBrains Mono',monospace;}
+.tbl-wrap{overflow-x:auto;}
+.mt{width:100%;border-collapse:collapse;}
+.mt th{font-family:'Kanit',sans-serif;font-size:.58rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--tx3);text-align:left;padding:.5rem .75rem;border-bottom:1px solid var(--bd);white-space:nowrap;}
+.mt td{font-size:.75rem;color:var(--tx2);padding:.55rem .75rem;border-bottom:1px solid rgba(255,255,255,.025);transition:background var(--T);}
+[data-theme="light"] .mt td{border-bottom-color:rgba(0,0,0,.03);}
+.mt tr:last-child td{border-bottom:none;}
+.mt tr:hover td{background:var(--sur);}
+td.hl{color:var(--tx);font-weight:600;}
+td.mono{font-family:'JetBrains Mono',monospace;font-size:.7rem;}
+.mt td.center,.mt th.center{text-align:center;}
+.mt td.right,.mt th.right{text-align:right;}
+
+/* status pills */
+.pill{display:inline-flex;align-items:center;gap:3px;font-family:'Kanit',sans-serif;font-size:.6rem;font-weight:600;padding:2px 8px;border-radius:99px;white-space:nowrap;}
+.p-ok{background:var(--embg);border:1px solid var(--bda);color:var(--em);}
+.p-late{background:var(--ambg);border:1px solid var(--amb);color:var(--am);}
+.p-pending{background:var(--pubg);border:1px solid var(--pub);color:var(--pu);}
+.p-approved{background:var(--embg);border:1px solid var(--bda);color:var(--em);}
+.p-rejected{background:var(--robg);border:1px solid var(--rob);color:var(--ro);}
+.p-none{background:var(--sur);border:1px solid var(--bd);color:var(--tx3);}
+
+/* btn */
+.btn-prim{font-family:'Kanit',sans-serif;font-size:.75rem;font-weight:600;padding:.42rem .9rem;border-radius:var(--rr-sm);border:1px solid var(--bda);background:var(--embg);color:var(--em);cursor:pointer;display:flex;align-items:center;gap:6px;transition:all var(--T);}
+.btn-prim:hover{background:var(--emd);color:#fff;border-color:var(--emd);}
+.btn-sec{font-family:'Kanit',sans-serif;font-size:.75rem;font-weight:500;padding:.42rem .9rem;border-radius:var(--rr-sm);border:1px solid var(--bd);background:var(--sur);color:var(--tx2);cursor:pointer;display:flex;align-items:center;gap:6px;transition:all var(--T);}
+.btn-sec:hover{background:var(--sur2);color:var(--tx);border-color:var(--bd2);}
+
+/* dropdown export */
+.export-wrap{position:relative;}
+.export-dd{position:absolute;right:0;top:calc(100% + 6px);background:var(--bg3);border:1px solid var(--bd2);border-radius:var(--rr-sm);min-width:160px;box-shadow:var(--shad);opacity:0;visibility:hidden;transform:translateY(6px);transition:all .18s ease;z-index:200;padding:.3rem;}
+.export-dd.show{opacity:1;visibility:visible;transform:translateY(0);}
+.export-item{display:flex;align-items:center;gap:8px;padding:.55rem .8rem;border-radius:8px;font-size:.75rem;color:var(--tx2);cursor:pointer;transition:background .15s;}
+.export-item:hover{background:var(--sur2);color:var(--tx);}
+.export-item i{font-size:.72rem;width:14px;text-align:center;}
+
+/* skeleton */
+.sk{background:linear-gradient(90deg,var(--sur) 25%,var(--sur2) 50%,var(--sur) 75%);background-size:200% 100%;animation:skL 1.4s infinite;border-radius:6px;}
+@keyframes skL{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+/* toast */
+.toast{position:fixed;bottom:1.5rem;right:1.5rem;z-index:9999;display:flex;align-items:center;gap:10px;padding:.7rem 1.1rem;border-radius:var(--rr-sm);font-size:.78rem;font-weight:500;font-family:'Kanit',sans-serif;box-shadow:var(--shad);animation:toIn .25s var(--ease);backdrop-filter:blur(12px);}
+.toast.ok{background:var(--embg);border:1px solid var(--bda);color:var(--em);}
+.toast.err{background:var(--robg);border:1px solid var(--rob);color:var(--ro);}
+@keyframes toIn{from{transform:translateY(12px);opacity:0}to{transform:translateY(0);opacity:1}}
+
+/* empty */
+.empty-state{padding:3rem 1rem;text-align:center;color:var(--tx3);}
+.empty-state i{font-size:2.5rem;opacity:.3;margin-bottom:.75rem;display:block;}
+.empty-state p{font-size:.8rem;}
+
+/* ── finance modal ── */
+.modal-ov{position:fixed;inset:0;z-index:900;background:rgba(0,0,0,.6);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:1rem;}
+.modal-box{background:var(--card-s);border:1px solid var(--bd2);border-radius:var(--rr-lg);width:100%;max-width:600px;max-height:90vh;overflow-y:auto;box-shadow:var(--shad);animation:fu .25s var(--ease);}
+.modal-head{display:flex;align-items:center;justify-content:space-between;padding:1.1rem 1.3rem;border-bottom:1px solid var(--bd);}
+.modal-title{font-family:'Kanit',sans-serif;font-size:.9rem;font-weight:700;display:flex;align-items:center;gap:8px;}
+.modal-close{width:30px;height:30px;border-radius:8px;border:none;background:var(--sur2);color:var(--tx2);cursor:pointer;font-size:.8rem;display:flex;align-items:center;justify-content:center;transition:all var(--T);}
+.modal-close:hover{background:var(--rob);color:var(--ro);}
+.modal-body{padding:1.2rem 1.3rem;}
+.modal-foot{padding:.9rem 1.3rem;border-top:1px solid var(--bd);display:flex;align-items:center;justify-content:flex-end;gap:.6rem;}
+
+/* form fields */
+.fgrp{margin-bottom:.9rem;}
+.fgrp label{display:block;font-family:'Kanit',sans-serif;font-size:.68rem;font-weight:600;color:var(--tx2);margin-bottom:.3rem;letter-spacing:.04em;}
+.fin{width:100%;font-family:'Sarabun',sans-serif;font-size:.82rem;padding:.42rem .75rem;border-radius:var(--rr-sm);border:1px solid var(--bd);background:var(--bg3);color:var(--tx);outline:none;transition:border-color var(--T);}
+.fin:focus{border-color:var(--bda);}
+.fin:read-only{opacity:.55;cursor:not-allowed;}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;}
+.frow3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.75rem;}
+.fsec-title{font-family:'Kanit',sans-serif;font-size:.63rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--tx3);padding:.15rem 0 .5rem;border-bottom:1px solid var(--bd);margin:.1rem 0 .75rem;}
+
+/* finance badge ในตาราง */
+.badge-finance{display:inline-flex;align-items:center;gap:3px;font-family:'Kanit',sans-serif;font-size:.55rem;font-weight:600;padding:1px 5px;border-radius:99px;background:var(--cybg);border:1px solid var(--cyb);color:var(--cy);white-space:nowrap;}
+.btn-finance{font-family:'Kanit',sans-serif;font-size:.68rem;font-weight:600;padding:.3rem .65rem;border-radius:8px;border:1px solid var(--cyb);background:var(--cybg);color:var(--cy);cursor:pointer;display:inline-flex;align-items:center;gap:5px;transition:all var(--T);}
+.btn-finance:hover{background:var(--cy);color:#000;}
+
+/* pills สถานะการเงิน */
+.p-fin-verified{background:var(--embg);border:1px solid var(--bda);color:var(--em);}
+.p-fin-rejected{background:var(--robg);border:1px solid var(--rob);color:var(--ro);}
+.p-fin-pending{background:var(--sur);border:1px solid var(--bd2);color:var(--tx3);}
+
+/* สถานะการเงิน radio group ใน modal */
+.fin-status-grp{display:flex;gap:.5rem;flex-wrap:wrap;}
+.fin-status-opt{flex:1;min-width:80px;}
+.fin-status-opt input[type=radio]{display:none;}
+.fin-status-opt label{display:flex;align-items:center;justify-content:center;gap:5px;padding:.45rem .5rem;border-radius:var(--rr-sm);border:1px solid var(--bd);background:var(--sur);font-family:'Kanit',sans-serif;font-size:.72rem;font-weight:600;cursor:pointer;transition:all var(--T);text-align:center;}
+.fin-status-opt input:checked + label.opt-verified{background:var(--embg);border-color:var(--bda);color:var(--em);}
+.fin-status-opt input:checked + label.opt-rejected{background:var(--robg);border-color:var(--rob);color:var(--ro);}
+.fin-status-opt input:checked + label.opt-pending{background:var(--sur2);border-color:var(--bd2);color:var(--tx2);}
+.fin-status-opt label:hover{border-color:var(--bd2);background:var(--sur2);}
+
+/* ref link */
+.ref-link{font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--bl);text-decoration:none;}
+
+/* pager */
+.pager{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:1rem 1.2rem;border-top:1px solid var(--bd);flex-wrap:wrap;}
+.pager-info{font-family:'JetBrains Mono', monospace;font-size:.68rem;color:var(--tx3);}
+.pager-btns{display:flex;align-items:center;gap:.4rem;flex-wrap:wrap;}
+.pg-btn{min-width:36px;height:36px;padding:0 .8rem;border-radius:12px;border:1px solid var(--bd);background:var(--sur);color:var(--tx2);font-family:'Kanit', sans-serif;font-size:.75rem;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all var(--T) var(--ease);backdrop-filter:blur(10px);}
+.pg-btn:hover:not(:disabled){background:var(--sur2);border-color:var(--bd2);color:var(--tx);transform:translateY(-1px);}
+.pg-btn:active:not(:disabled){transform:scale(.96);}
+.pg-btn.active{background:linear-gradient(135deg,var(--emd),var(--em));border-color:transparent;color:#fff;box-shadow:0 10px 25px -10px var(--em),0 0 0 1px rgba(255,255,255,.06);}
+.pg-btn:disabled{opacity:.4;cursor:not-allowed;filter:grayscale(.2);}
+.pg-btn i{font-size:.72rem;}
+
+/* ══════════════════════════════════
+   PRINT STYLES
+   ══════════════════════════════════ */
+@media print {
+  @font-face {
+    font-family: 'TH SarabunPSK';
+    src: url('https://cdn.jsdelivr.net/gh/google/fonts@main/ofl/sarabun/Sarabun-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+  }
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  html, body { background: #fff !important; color: #000 !important; }
+  .bg-l, .sidebar, .topbar, .filter-bar, .menu-btn, .sb-ov,
+  .kpi-row, .sh, .ph .pm, .ph .export-wrap,
+  .ph .btn-prim, .icon-btn { display: none !important; }
+  .main { margin-left: 0 !important; padding: 0 !important; }
+  .content { padding: 0 !important; }
+  .panel { border: none !important; background: transparent !important; box-shadow: none !important; }
+  .print-header { display: block !important; }
+  .tbl-wrap { overflow: visible !important; }
+  .mt { font-family: 'TH SarabunPSK', 'Sarabun', sans-serif !important; font-size: 14pt !important; }
+  .mt th { font-family: 'TH SarabunPSK', 'Sarabun', sans-serif !important; font-size: 10pt !important; background: #f5f5f5 !important; color: #000 !important; border: 1px solid #999 !important; padding: 5px 8px !important; }
+  .mt td { color: #000 !important; border: 1px solid #ccc !important; padding: 5px 8px !important; }
+  .mt tr:hover td { background: transparent !important; }
+  .pill { display: none !important; }
+
+.th-col-sig1::after { content: 'ลายเซ็น(มา)'; }
+.th-col-sig1 { font-size: 0 !important; }
+.th-col-sig2::after { content: 'ลายเซ็น(กลับ)'; }
+.th-col-sig2 { font-size: 0 !important; }
+
+  /* hide pills on print, signature cell shows img */
+  .pill { display: none !important; }
+  .sig-col .pill { display: none !important; }
+
+  td img.sig-img { display: block !important; max-width: 72px !important; max-height: 36px !important; object-fit: contain !important; margin: auto !important; }
+  .mt td.sig-col { min-height: 40px !important; vertical-align: middle !important; }
+  .mt td { min-height: 36px !important; vertical-align: middle !important; }
+
+  .pager, .btn-prim, .export-wrap { display: none !important; }
+  .modal-ov, .btn-finance { display: none !important; }
+  .print-summary { display: block !important; margin-top: 10px; padding: 0 0 4px; }
+  .print-sum-tbl { width: 100%; border-collapse: collapse; font-family: 'TH SarabunPSK','Sarabun',sans-serif; font-size: 10pt; }
+  .print-sum-tbl th { background: #f0f0f0 !important; color: #000 !important; border: 1px solid #999 !important; padding: 4px 8px !important; text-align: center; font-weight: bold; }
+  .print-sum-tbl td { border: 1px solid #ccc !important; padding: 4px 8px !important; text-align: center; color: #000 !important; font-size: 11pt; font-weight: 600; }
+
+  @page { size: landscape; margin: 8mm; }
+  html, body { width: 100%; overflow: hidden !important; }
+  .mt { width: 100% !important; table-layout: fixed; border-collapse: collapse; font-size: 10pt !important; }
+  .mt th, .mt td { padding: 4px 5px !important; word-break: break-word; white-space: normal !important; overflow-wrap: break-word; vertical-align: middle; }
+
+  /* ซ่อน col จัดการ / ชั่วโมง / จำนวนเงิน / สถานะการเงิน เมื่อพิมพ์ */
+  .th-manage-col, tr td:last-child,
+  .th-hours-col, .th-amt-col, .th-finstatus-col { display: none !important; }
+
+  /* 12 cols print: ลำดับ|ชื่อ|หน่วยงาน|วันที่|ประเภท|เวลามา|ลายเซ็น|เวลากลับ|ลายเซ็น|ผู้รับรอง|หมายเหตุ|อ้างอิง */
+  .mt th:nth-child(1),  .mt td:nth-child(1)  { width: 3%;  text-align: center; } /* ลำดับ */
+  .mt th:nth-child(2),  .mt td:nth-child(2)  { width: 8%;  text-align: center; } /* วันที่ (เดิม 7% เพิ่มนิดหน่อย) */
+  .mt th:nth-child(3),  .mt td:nth-child(3)  { width: 16%; }                     /* ชื่อ */
+  .mt th:nth-child(4),  .mt td:nth-child(4)  { width: 14%; }                     /* หน่วยงาน) */
+  .mt th:nth-child(5),  .mt td:nth-child(5)  { width: 6%;  text-align: center; } /* ประเภท */
+  .mt th:nth-child(6),  .mt td:nth-child(6)  { width: 6%;  text-align: center; } /* เวลามา */
+  .mt th:nth-child(7),  .mt td:nth-child(7)  { width: 8%;  text-align: center; } /* ลายเซ็นมา */
+  .mt th:nth-child(8),  .mt td:nth-child(8)  { width: 6%;  text-align: center; } /* เวลากลับ */
+  .mt th:nth-child(9),  .mt td:nth-child(9)  { width: 8%;  text-align: center; } /* ลายเซ็นกลับ */
+   .mt th:nth-child(10), .mt td:nth-child(10) { width: 8%;  }                  /* ผู้รับรอง */
+    .mt th:nth-child(11), .mt td:nth-child(11) { width: 13%; text-align: center; }                   /* หมายเหตุ */
+  .mt th:nth-child(15), .mt td:nth-child(15) { width: 10%; text-align: center; } /* อ้างอิง */
+}
+.print-header { display: none; }
+</style>
+</head>
+<body>
+
+<div class="bg-l">
+  <div class="orb o1"></div>
+  <div class="orb o2"></div>
+  <div class="orb o3"></div>
+</div>
+
+<div class="sb-ov" id="sbOv" onclick="closeSb()"></div>
+<button class="menu-btn" onclick="openSb()"><i class="fa-solid fa-bars"></i></button>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sb-logo">
+    <div class="logo-mk"><i class="fa-solid fa-chart-line"></i></div>
+    <div><div class="logo-tx">HR System</div><div class="logo-sub">บริหารงานบุคคล</div></div>
+  </div>
+  <nav class="nav">
+  <div class="nav-sec">หลัก</div> 
+  <a class="ni" href="index.html" title="Dashboard">    <i class="fa-solid fa-gauge-high"></i>    Dashboard  </a>
+
+  <div class="nav-sec">การลงเวลา</div>
+  <a class="ni" href="attendance.html" title="การลงเวลารายวัน">    <i class="fa-solid fa-user-check"></i>    การลงเวลารายวัน  </a>
+  <a class="ni" href="attendance-monthly.html" title="สรุปการลงเวลารายเดือน">    <i class="fa-solid fa-chart-column"></i>    สรุปการลงเวลารายเดือน  </a>
+
+  <div class="nav-sec">นอกเวลา</div>
+  <a class="ni active" href="overtime.html" title="การปฏิบัติงานล่วงเวลา"><i class="fa-solid fa-business-time"></i>การปฏิบัติงานล่วงเวลา</a>
+
+  <div class="nav-sec">ประวัติการลา</div>
+  <a class="ni" href="leave-record.html" title="บันทึกการลา">    <i class="fa-solid fa-plane-departure"></i>    บันทึกการลา  </a>
+
+  <div class="nav-sec">ระบบ</div>
+  <a class="ni" href="users.html" title="ผู้ใช้งาน">    <i class="fa-solid fa-id-card"></i>    ผู้ใช้งาน  </a>
+  <a class="ni" href="organizations.html" title="หน่วยงาน">   <i class="fa-solid fa-building-user"></i>    หน่วยงาน  </a>
+  <a class="ni" href="holidays.html" title="วันหยุดนักขัตฤกษ์">    <i class="fa-solid fa-umbrella-beach"></i>    วันหยุดนักขัตฤกษ์  </a>
+  </nav>
+  <div class="sb-foot">
+    <div class="user-pill" id="userMenuBtn">
+      <div class="u-av" id="uAv">A</div>
+      <div><div class="u-nm" id="uNm">กำลังโหลด…</div><div class="u-rl" id="uRl">—</div></div>
+      <i class="fa-solid fa-chevron-right u-arr"></i>
+      <div class="user-dropdown" id="userDropdown">
+        <a href="/index.html"><i class="fa-solid fa-house"></i>กลับหน้าหลัก</a>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+  <div class="topbar">
+    <div class="tb-left">
+      <div class="tb-title">
+        <button class="nav-back" onclick="history.length>1?history.back():location.href='index.html'" title="ย้อนกลับ">
+          <i class="fa-solid fa-arrow-left"></i>
+        </button>
+        <i class="fa-solid fa-business-time" style="font-size:.85rem;opacity:.6"></i>การปฏิบัติงานล่วงเวลา (OT)
+      </div>
+      <div class="tb-sub" id="tbSub">—</div>
+    </div>
+    <div class="tb-right">
+        <button class="icon-btn" onclick="toggleSidebar()" title="แสดง/ซ่อนแถบเมนู"><i class="fa-solid fa-bars"></i></button>
+      <button class="icon-btn" id="refBtn" onclick="loadAll()" title="รีเฟรช"><i class="fa-solid fa-rotate-right"></i></button>
+      <button class="icon-btn" onclick="toggleTheme()" title="เปลี่ยนธีม"><i class="fa-solid fa-circle-half-stroke"></i></button>
+    </div>
+  </div>
+
+  <!-- Filter Bar -->
+  <div class="filter-bar">
+    <span class="filter-label"><i class="fa-solid fa-calendar-days"></i>เดือน</span>
+    <button class="date-nav-btn" onclick="shiftMonth(-1)" title="เดือนก่อนหน้า"><i class="fa-solid fa-chevron-left"></i></button>
+    <input type="month" id="monthIn" class="month-in" onchange="loadAll()">
+    <button class="date-nav-btn" onclick="shiftMonth(1)" title="เดือนถัดไป"><i class="fa-solid fa-chevron-right"></i></button>
+    <button class="date-nav-btn" onclick="goThisMonth()" title="เดือนนี้" style="width:auto;padding:0 8px;font-size:.65rem;font-family:'Kanit',sans-serif;">เดือนนี้</button>
+
+    <span class="filter-label" style="margin-left:.5rem"><i class="fa-solid fa-magnifying-glass"></i>ค้นหา</span>
+    <input type="text" id="searchIn" class="search-in" placeholder="ชื่อ, กอง/แผนก…" oninput="applyFilter()">
+
+    <select class="fsel" id="selAff" onchange="filterByAff()">
+      <option value="">— ทุกหน่วยงาน —</option>
+    </select>
+    <select class="fsel" id="selDep" onchange="applyFilter()">
+      <option value="">— ทุกกอง/แผนก —</option>
+    </select>
+    <select class="fsel" id="selStatus" onchange="applyFilter()">
+      <option value="">— ทุกสถานะ —</option>
+      <option value="pending">รอรับรอง</option>
+      <option value="approved">รับรองแล้ว</option>
+      <option value="rejected">ไม่รับรอง</option>
+    </select>
+    <select class="fsel" id="selFinStatus" onchange="applyFilter()" title="สถานะตรวจสอบการเงิน">
+      <option value="">— ทุกสถานะการเงิน —</option>
+      <option value="pending">ยังไม่ตรวจสอบ</option>
+      <option value="verified">ตรวจสอบแล้ว</option>
+      <option value="rejected">ไม่ผ่านการตรวจสอบ</option>
+    </select>
+    <div class="filter-bar-right">
+      <span id="filterCount" style="font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--tx3)"></span>
+      <button class="btn-sec" onclick="clearFilter()" style="padding:.3rem .65rem;font-size:.68rem;"><i class="fa-solid fa-xmark"></i>ล้าง</button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- KPI -->
+    <div class="kpi-row" id="kpiRow"></div>
+
+    <!-- Table -->
+    <div class="sh">
+      <div class="sh-t"><i class="fa-solid fa-table-list" style="opacity:.4"></i>บัญชีการปฏิบัติงานล่วงเวลา</div>
+      <div class="sh-m" id="tableInfo">—</div>
+    </div>
+
+    <div class="panel">
+      <div class="ph">
+        <div class="pt"><i class="fa-solid fa-business-time"></i><span id="panelTitle">—</span></div>
+        <div style="display:flex;align-items:center;gap:.5rem;">
+          <div class="pm" id="lastUp">—</div>
+          <div class="export-wrap" id="exportWrap">
+            <button class="btn-prim" onclick="toggleExport()" style="gap:5px;">
+              <i class="fa-solid fa-download"></i>ส่งออก<i class="fa-solid fa-chevron-down" style="font-size:.55rem;margin-left:1px"></i>
+            </button>
+            <div class="export-dd" id="exportDd">
+              <div class="export-item" onclick="exportExcel()"><i class="fa-solid fa-file-excel" style="color:#22c55e"></i>ส่งออก Excel (.xlsx)</div>
+              <div class="export-item" onclick="exportPDF()"><i class="fa-solid fa-file-pdf" style="color:#ef4444"></i>ส่งออก PDF</div>
+              <div class="export-item" onclick="printPage()"><i class="fa-solid fa-print"></i>พิมพ์ (ลายเซ็นโหลดอัตโนมัติ)</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- print header (hidden on screen) -->
+      <div class="print-header" id="printHeader" style="padding:1rem 1.2rem 0;font-family:'TH SarabunPSK','Sarabun',sans-serif;">
+        <div style="text-align:center;font-size:14pt;font-weight:bold;margin-bottom:4px">บัญชีลงเวลาปฏิบัติงานนอกเวลาราชการและวันหยุดราชการ</div>
+        <div style="text-align:center;font-size:14pt;margin-bottom:4px" id="phAff">—</div>
+        <div style="text-align:center;font-size:13pt;margin-bottom:8px" id="phMonth">—</div>
+      </div>
+
+      <div class="tbl-wrap">
+        <table class="mt" id="mainTable">
+          <thead>
+            <tr>
+              <th style="width:36px">ลำดับ</th>
+              <th class="center">วันที่</th>              
+              <th>ชื่อ - สกุล</th>
+              <th>หน่วยงาน/กลุ่มงาน</th>
+              <th class="center">ประเภท</th>
+              <th class="center">เวลามา</th>
+              <th class="center th-col-sig1">มา</th>
+              <th class="center">เวลากลับ</th>
+              <th class="center th-col-sig2">กลับ</th>
+              <!-- ★ สลับ: หมายเหตุ มาก่อน -->
+              <th>หมายเหตุ</th>
+              <th>ผู้รับรอง</th>
+              <!-- ★ จบส่วนสลับ -->
+              <th class="center th-hours-col">ชั่วโมง</th>
+              <th class="right th-amt-col">จำนวนเงิน</th>
+              <th class="center th-finstatus-col">สถานะการเงิน</th>
+              <th class="center">อ้างอิง</th>
+              <th class="center th-manage-col">จัดการ</th>
+            </tr>
+          </thead>
+          <tbody id="otTbody">
+            <tr><td colspan="15"><div class="sk" style="height:44px;margin:.4rem"></div></td></tr>
+            <tr><td colspan="15"><div class="sk" style="height:44px;margin:.4rem"></div></td></tr>
+            <tr><td colspan="15"><div class="sk" style="height:44px;margin:.4rem"></div></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="pager" id="pager"></div>
+
+      <!-- print summary -->
+      <div class="print-summary" id="printSummary" style="display:none;">
+        <table class="print-sum-tbl">
+          <thead>
+            <tr>
+              <th>รายการทั้งหมด</th>
+              <th>รอรับรอง</th>
+              <th>รับรองแล้ว</th>
+              <th>ไม่รับรอง</th>
+              <th>รวมชั่วโมง OT</th>
+              <th>รวมค่าตอบแทน (ชม.)</th>
+              <th>รวมค่าตอบแทน (วัน)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td id="psTotal">—</td>
+              <td id="psPending">—</td>
+              <td id="psApproved">—</td>
+              <td id="psRejected">—</td>
+              <td id="psTotalHours">—</td>
+              <td id="psTotalAmountH">—</td>
+              <td id="psTotalAmountD">—</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<!-- ══════════════════════════════════
+     FINANCE EDIT MODAL
+     ══════════════════════════════════ -->
+<div id="financeModal" class="modal-ov" style="display:none;">
+  <div class="modal-box">
+    <div class="modal-head">
+      <div class="modal-title">
+        <i class="fa-solid fa-calculator" style="color:var(--cy)"></i>
+        <span>แก้ไขข้อมูล OT</span>
+        <span id="fmRef" style="font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--tx3);font-weight:400"></span>
+      </div>
+      <button class="modal-close" onclick="closeFinanceModal()"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <!-- ข้อมูลเจ้าของ OT (อ่านอย่างเดียว) -->
+      <div class="fsec-title"><i class="fa-solid fa-user" style="opacity:.5"></i> ข้อมูลผู้ทำ OT</div>
+      <div class="frow">
+        <div class="fgrp">
+          <label>ชื่อ - สกุล</label>
+          <input class="fin" id="fmName" readonly>
+        </div>
+        <div class="fgrp">
+          <label>หน่วยงาน</label>
+          <input class="fin" id="fmDept" readonly>
+        </div>
+      </div>
+      <div class="frow">
+        <div class="fgrp">
+          <label>ประเภท OT</label>
+          <input class="fin" id="fmWorkType" readonly style="background:var(--sur2);cursor:default;">
+        </div>
+        <div class="fgrp">
+          <label>วันที่ OT <span style="color:var(--ro)">*</span></label>
+          <input type="date" class="fin" id="fmDate">
+        </div>
+      </div>
+
+      <!-- วันที่และเวลา -->
+      <div class="fsec-title"><i class="fa-solid fa-calendar-days" style="opacity:.5"></i> วันที่และเวลา</div>
+      <div class="frow">
+        <div class="fgrp">
+          <label>เวลาเริ่ม <span style="color:var(--ro)">*</span></label>
+          <input type="time" class="fin" id="fmStart" oninput="calcOtHours()">
+        </div>
+        <div class="fgrp">
+          <label>เวลาสิ้นสุด <span style="color:var(--ro)">*</span></label>
+          <input type="time" class="fin" id="fmEnd" oninput="calcOtHours()">
+        </div>
+      </div>
+      <div class="frow">
+        <div class="fgrp">
+          <label>ชั่วโมง OT</label>
+          <input type="number" class="fin" id="fmHours" step="0.1" min="0" placeholder="0.0" oninput="calcFinanceAmount()" readonly style="background:var(--sur2);cursor:default;">
+        </div>
+        <div class="fgrp">
+          <label>วัน OT</label>
+          <input type="number" class="fin" id="fmDays" step="0.5" min="0" placeholder="0.0" oninput="calcFinanceAmount()">
+        </div>
+      </div>
+
+      <!-- อัตราค่าตอบแทน -->
+      <div class="fsec-title"><i class="fa-solid fa-coins" style="opacity:.5"></i> อัตราและค่าตอบแทน</div>
+      <div class="frow3">
+        <div class="fgrp">
+          <label>อัตรา/ชั่วโมง (บาท)</label>
+          <input type="number" class="fin" id="fmRateH" step="0.01" min="0" placeholder="0.00" oninput="calcFinanceAmount()">
+        </div>
+        <div class="fgrp">
+          <label>อัตรา/วัน (บาท)</label>
+          <input type="number" class="fin" id="fmRateD" step="0.01" min="0" placeholder="0.00" oninput="calcFinanceAmount()">
+        </div>
+        <div class="fgrp">
+          <label>ชั่วโมงสูงสุด</label>
+          <input type="number" class="fin" id="fmMaxH" step="0.5" min="0" placeholder="0">
+        </div>
+      </div>
+      <div class="frow">
+        <div class="fgrp">
+          <label>ค่าตอบแทน (ชั่วโมง) บาท</label>
+          <input type="number" class="fin" id="fmAmtH" step="0.01" min="0" placeholder="0.00">
+        </div>
+        <div class="fgrp">
+          <label>ค่าตอบแทน (วัน) บาท</label>
+          <input type="number" class="fin" id="fmAmtD" step="0.01" min="0" placeholder="0.00">
+        </div>
+      </div>
+
+      <!-- ผู้แก้ไข (อ่านอย่างเดียว) -->
+      <div id="fmEditorWrap" style="display:none">
+        <div class="fsec-title"><i class="fa-solid fa-pen-to-square" style="opacity:.5"></i> ผู้ตรวจสอบล่าสุด</div>
+        <div class="frow">
+          <div class="fgrp">
+            <label>ตรวจสอบโดย</label>
+            <input class="fin" id="fmEditorName" readonly>
+          </div>
+          <div class="fgrp">
+            <label>อัปเดตล่าสุด</label>
+            <input class="fin" id="fmUpdatedAt" readonly>
+          </div>
+        </div>
+      </div>
+
+      <!-- สถานะการตรวจสอบการเงิน -->
+      <div class="fsec-title"><i class="fa-solid fa-stamp" style="opacity:.5"></i> สถานะการตรวจสอบ</div>
+      <div class="fgrp">
+        <label>ผลการตรวจสอบ <span style="color:var(--ro)">*</span></label>
+        <div class="fin-status-grp">
+          <div class="fin-status-opt">
+            <input type="radio" name="fmFinStatus" id="fsFin_verified" value="verified">
+            <label for="fsFin_verified" class="opt-verified">
+              <i class="fa-solid fa-circle-check"></i>ตรวจสอบแล้ว
+            </label>
+          </div>
+          <div class="fin-status-opt">
+            <input type="radio" name="fmFinStatus" id="fsFin_rejected" value="rejected">
+            <label for="fsFin_rejected" class="opt-rejected">
+              <i class="fa-solid fa-circle-xmark"></i>ไม่ผ่านการตรวจสอบ
+            </label>
+          </div>
+          <div class="fin-status-opt">
+            <input type="radio" name="fmFinStatus" id="fsFin_pending" value="pending" checked>
+            <label for="fsFin_pending" class="opt-pending">
+              <i class="fa-regular fa-clock"></i>ยังไม่ตรวจสอบ
+            </label>
+          </div>
+        </div>
+      </div>
+      <div class="fgrp">
+        <label>หมายเหตุจากการเงิน</label>
+        <textarea class="fin" id="fmFinNote" rows="2" style="resize:vertical;min-height:58px" placeholder="บันทึกเพิ่มเติม เช่น เหตุผลไม่ผ่าน หรือข้อสังเกต…"></textarea>
+      </div>
+
+    </div>
+    <div class="modal-foot">
+      <span id="fmSaving" style="font-size:.72rem;color:var(--tx3);display:none"><i class="fa-solid fa-spinner fa-spin"></i> กำลังบันทึก…</span>
+      <button class="btn-sec" onclick="closeFinanceModal()"><i class="fa-solid fa-xmark"></i>ยกเลิก</button>
+      <button class="btn-prim" onclick="saveFinanceEdit()" style="background:var(--cybg);border-color:var(--cyb);color:var(--cy)">
+        <i class="fa-solid fa-floppy-disk"></i>บันทึก
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- SheetJS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<!-- jsPDF + autotable -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+
+<script>
+/* ════════════ UTILS ════════════ */
+const $ = id => document.getElementById(id);
+const API = '/api';
+const getToken = () => localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token') || '';
+const authH = () => ({ 'Authorization': `Bearer ${getToken()}`, 'Content-Type': 'application/json' });
+
+async function safeJson(res) {
+  try {
+    const text = await res.text();
+    if (!text?.trim()) return { success: res.ok, message: `HTTP ${res.status}` };
+    return JSON.parse(text);
+  } catch(e) { return { success: false, message: `Parse error: ${e.message}` }; }
+}
+
+function toast(msg, type='ok', ms=3200) {
+  document.querySelectorAll('.toast').forEach(t => t.remove());
+  const d = document.createElement('div');
+  d.className = `toast ${type}`;
+  d.innerHTML = `<i class="fa-solid fa-${type==='ok'?'circle-check':'circle-exclamation'}"></i>${msg}`;
+  document.body.appendChild(d);
+  setTimeout(() => d.remove(), ms);
+}
+
+/* ════════════ THEME ════════════ */
+function toggleTheme() {
+  const html = document.documentElement;
+  const t = html.dataset.theme === 'light' ? 'dark' : 'light';
+  html.dataset.theme = t; localStorage.setItem('theme', t);
+}
+(()=>{ const t = localStorage.getItem('theme'); if(t) document.documentElement.dataset.theme = t; })();
+
+/* ════════════ SIDEBAR ════════════ */
+function openSb(){ $('sidebar').classList.add('open'); $('sbOv').classList.add('show'); }
+function closeSb(){ $('sidebar').classList.remove('open'); $('sbOv').classList.remove('show'); }
+
+function toggleSidebar(){
+  const sidebar = document.getElementById('sidebar');
+  const main = document.querySelector('.main');
+  sidebar.classList.toggle('collapsed');
+  main.classList.toggle('collapsed');
+  localStorage.setItem(
+    'sidebarCollapsed',
+    sidebar.classList.contains('collapsed')
+  );
+}
+
+/* ════════════ DATE UTILS ════════════ */
+function thisMonthISO() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+}
+
+const THAI_MON = ['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน',
+                  'กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
+
+function fmtThaiMonth(ym) {
+  if(!ym) return '—';
+  const [y, m] = ym.split('-').map(Number);
+  return `${THAI_MON[m-1]} พ.ศ. ${y+543}`;
+}
+
+function fmtThaiDate(iso) {
+  if(!iso) return '—';
+  const d = new Date(iso + 'T00:00:00');
+  return `${d.getDate()} ${THAI_MON[d.getMonth()]} ${d.getFullYear()+543}`;
+}
+
+// แสดงวันที่สั้น เช่น "12 มิ.ย." หรือ "12 มิ.ย. 68" ถ้าปีต่างจากปัจจุบัน
+const MONTH_SHORT_TH = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+
+function fmtDateShort(iso) {
+  if (!iso) return '—';
+
+  const [y, m, d] = iso.split('-').map(Number);
+  const buddYear = y + 543;
+  const mon = MONTH_SHORT_TH[m - 1] || '';
+
+  return `${d} ${mon} ${String(buddYear).slice(-2)}`;
+}
+
+function fmtMoney(val) {
+  if(val == null || val === '') return '—';
+  return Number(val).toLocaleString('th-TH', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+}
+
+function shiftMonth(n) {
+  const [y, m] = $('monthIn').value.split('-').map(Number);
+  const d = new Date(y, m-1+n, 1);
+  $('monthIn').value = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+  loadAll();
+}
+function goThisMonth() { $('monthIn').value = thisMonthISO(); loadAll(); }
+
+/* ════════════ STATE ════════════ */
+let allRows = [], filteredRows = [], metaInfo = {};
+let allDepartments = [];
+let curPage = 1;
+const PAGE_SIZE = 50;
+
+// state สำหรับ finance modal
+let _financeCurrentRef = null;
+
+// ตรวจสอบสิทธิ์ finance edit (admin หรือ finance role)
+function canFinanceEdit() {
+  const userData =
+    JSON.parse(localStorage.getItem('user_data')) ||
+    JSON.parse(sessionStorage.getItem('user_data')) || {};
+  const role = (userData.role || '').toLowerCase();
+  return role === 'admin' || role === 'finance';
+}
+
+/* ════════════ LOAD ════════════ */
+async function loadAll() {
+  const month = $('monthIn').value || thisMonthISO();
+  $('monthIn').value = month;
+
+  $('otTbody').innerHTML = `
+    <tr><td colspan="15"><div class="sk" style="height:44px;margin:.4rem"></div></td></tr>
+    <tr><td colspan="15"><div class="sk" style="height:44px;margin:.4rem"></div></td></tr>
+    <tr><td colspan="15"><div class="sk" style="height:44px;margin:.4rem"></div></td></tr>`;
+  $('kpiRow').innerHTML = `<div class="kpi-s cg"><div class="kpi-s-ico"><i class="fa-solid fa-business-time"></i></div><div><div class="kpi-s-val sk" style="width:40px;height:24px"></div><div class="kpi-s-lbl">รายการ OT</div></div></div>`;
+
+  const btn = $('refBtn'); btn.classList.add('spin');
+
+  try {
+    const url = new URL(`${API}/dash/overtime`, location.origin);
+    url.searchParams.set('month', month);
+    const af = $('selAff').value, dp = $('selDep').value, st = $('selStatus').value;
+    if(af) url.searchParams.set('aff', af);
+    if(dp) url.searchParams.set('dep', dp);
+    if(st) url.searchParams.set('status', st);
+
+    const res = await fetch(url.toString(), { headers: authH() });
+    const j = await safeJson(res);
+    if(!j.success) throw new Error(j.message || `HTTP ${res.status}`);
+
+    allRows = j.data?.records ?? [];
+    metaInfo = j.meta ?? {};
+
+    populateFilters(j.data);
+
+    const monthLabel = fmtThaiMonth(month);
+    $('panelTitle').textContent = monthLabel;
+    $('tbSub').textContent = `${monthLabel} · ${getAffLabel() || '—'}`;
+    $('lastUp').textContent = `อัปเดต ${new Date().toLocaleTimeString('th-TH')}`;
+    $('phAff').textContent = getAffLabel();
+    $('phMonth').textContent = monthLabel;
+
+    applyFilter();
+
+  } catch(err) {
+    console.error(err);
+    toast(err.message, 'err');
+    $('otTbody').innerHTML = `<tr><td colspan="13"><div class="empty-state"><i class="fa-solid fa-triangle-exclamation"></i><p>${err.message}</p></div></td></tr>`;
+  }
+
+  btn.classList.remove('spin');
+}
+
+function getAffLabel() {
+  const sel = $('selAff');
+  const val = sel?.value;
+  if(val) {
+    const opt = sel.querySelector(`option[value="${val}"]`);
+    if(opt) return opt.textContent.trim();
+  }
+  return metaInfo.affiliation || '';
+}
+
+function populateFilters(data) {
+  const canAff = metaInfo.canFilter?.aff !== false;
+  const canDep = metaInfo.canFilter?.dep !== false;
+  const affSel = $('selAff'), depSel = $('selDep');
+  const prevAff = affSel.value, prevDep = depSel.value;
+  affSel.style.display = canAff ? '' : 'none';
+  depSel.style.display = canDep ? '' : 'none';
+  allDepartments = data?.departments || [];
+  if(canAff) {
+    affSel.innerHTML = '<option value="">— ทุกหน่วยงาน —</option>';
+    (data?.affiliations || []).forEach(a => {
+      const o = document.createElement('option');
+      o.value = a.aff_code; o.textContent = a.affiliation || a.aff_code;
+      if(a.aff_code === prevAff) o.selected = true;
+      affSel.appendChild(o);
+    });
+  }
+  if(canDep) renderDepOptions(prevDep);
+}
+
+function renderDepOptions(keepVal='') {
+  const af = $('selAff').value;
+  const depSel = $('selDep');
+  const filtered = af ? allDepartments.filter(d => d.aff_code === af) : allDepartments;
+  depSel.innerHTML = '<option value="">— ทุกกอง/แผนก —</option>';
+  filtered.forEach(d => {
+    const o = document.createElement('option');
+    o.value = d.dep_code; o.textContent = d.department || d.dep_code;
+    if(d.dep_code === keepVal) o.selected = true;
+    depSel.appendChild(o);
+  });
+}
+
+function filterByAff() {
+  $('selDep').value = '';
+  renderDepOptions();
+  applyFilter();
+}
+
+/* ════════════ KPI ════════════ */
+function renderKPI(sum) {
+  const total    = sum.total || 0;
+  const pending  = sum.pending || 0;
+  const approved = sum.approved || 0;
+  const rejected = sum.rejected || 0;
+  const totalHrs = sum.totalHours || 0;
+  const totalAmH = sum.totalAmountH || 0;
+  const totalAmD = sum.totalAmountD || 0;
+  const finVerified = sum.finVerified || 0;
+  const finRejected = sum.finRejected || 0;
+  const finPending  = sum.finPending  || 0;
+
+  $('kpiRow').innerHTML = `
+    <div class="kpi-s cg" style="animation-delay:.0s">
+      <div class="kpi-s-ico"><i class="fa-solid fa-list-check"></i></div>
+      <div><div class="kpi-s-val">${total}</div><div class="kpi-s-lbl">รายการทั้งหมด</div></div>
+    </div>
+    <div class="kpi-s cp" style="animation-delay:.05s">
+      <div class="kpi-s-ico"><i class="fa-solid fa-hourglass-half"></i></div>
+      <div><div class="kpi-s-val">${pending}</div><div class="kpi-s-lbl">รอรับรอง</div></div>
+    </div>
+    <div class="kpi-s cg" style="animation-delay:.1s">
+      <div class="kpi-s-ico"><i class="fa-solid fa-circle-check"></i></div>
+      <div><div class="kpi-s-val">${approved}</div><div class="kpi-s-lbl">รับรองแล้ว</div></div>
+    </div>
+    <div class="kpi-s cr" style="animation-delay:.15s">
+      <div class="kpi-s-ico"><i class="fa-solid fa-circle-xmark"></i></div>
+      <div><div class="kpi-s-val">${rejected}</div><div class="kpi-s-lbl">ไม่รับรอง</div></div>
+    </div>
+    <div class="kpi-s ca" style="animation-delay:.2s">
+      <div class="kpi-s-ico"><i class="fa-solid fa-clock"></i></div>
+      <div><div class="kpi-s-val">${totalHrs.toLocaleString('th-TH',{maximumFractionDigits:1})}</div><div class="kpi-s-lbl">ชั่วโมง OT รวม</div></div>
+    </div>
+    <div class="kpi-s cb" style="animation-delay:.25s">
+      <div class="kpi-s-ico"><i class="fa-solid fa-coins"></i></div>
+      <div><div class="kpi-s-val" style="font-size:1.1rem">${fmtMoney(totalAmH + totalAmD)}</div><div class="kpi-s-lbl">ค่าตอบแทนรวม</div></div>
+    </div>
+    <div class="kpi-s" style="animation-delay:.3s;border-color:var(--bda)">
+      <div class="kpi-s-ico" style="color:var(--em)"><i class="fa-solid fa-calculator"></i></div>
+      <div>
+        <div class="kpi-s-val" style="font-size:.85rem;display:flex;gap:6px;align-items:baseline">
+          <span style="color:var(--em)">${finVerified}</span>
+          <span style="font-size:.6rem;color:var(--tx3)">/</span>
+          <span style="color:var(--ro);font-size:.85rem">${finRejected}</span>
+          <span style="font-size:.6rem;color:var(--tx3)">/</span>
+          <span style="color:var(--tx3);font-size:.85rem">${finPending}</span>
+        </div>
+        <div class="kpi-s-lbl">การเงิน ✓/✗/รอ</div>
+      </div>
+    </div>`;
+
+  $('psTotal').textContent     = total;
+  $('psPending').textContent   = pending;
+  $('psApproved').textContent  = approved;
+  $('psRejected').textContent  = rejected;
+  $('psTotalHours').textContent   = totalHrs.toLocaleString('th-TH',{maximumFractionDigits:1}) + ' ชม.';
+  $('psTotalAmountH').textContent = fmtMoney(totalAmH) + ' บาท';
+  $('psTotalAmountD').textContent = fmtMoney(totalAmD) + ' บาท';
+}
+
+function computeSummary(rows) {
+  let pending=0, approved=0, rejected=0, totalHours=0, totalAmountH=0, totalAmountD=0;
+  let finVerified=0, finRejected=0, finPending=0;
+  rows.forEach(r => {
+    const st = r.supervisor_status;
+    if(st === 'pending')   pending++;
+    else if(st === 'approved') approved++;
+    else if(st === 'rejected') rejected++;
+    totalHours   += Number(r.ot_hours    || 0);
+    totalAmountH += Number(r.amount_hour || 0);
+    totalAmountD += Number(r.amount_day  || 0);
+    const fs = r.finance_status || 'pending';
+    if(fs === 'verified') finVerified++;
+    else if(fs === 'rejected') finRejected++;
+    else finPending++;
+  });
+  return { total: rows.length, pending, approved, rejected,
+           totalHours, totalAmountH, totalAmountD,
+           finVerified, finRejected, finPending };
+}
+
+/* ════════════ FILTER ════════════ */
+function applyFilter() {
+  const q   = $('searchIn').value.trim().toLowerCase();
+  const af  = $('selAff').value;
+  const dp  = $('selDep').value;
+  const st  = $('selStatus').value;
+  const fst = $('selFinStatus').value;
+
+  filteredRows = allRows.filter(r => {
+    if(af && r.aff_code !== af) return false;
+    if(dp && r.dep_code !== dp) return false;
+    if(st && r.supervisor_status !== st) return false;
+    if(fst) {
+      const rfs = r.finance_status || 'pending';
+      if(rfs !== fst) return false;
+    }
+    if(q) {
+      const hay = `${r.name||''} ${r.department||''} ${r.supervisor_name||''} ${r.reference||''} ${r.finance_name||''}`.toLowerCase();
+      if(!hay.includes(q)) return false;
+    }
+    return true;
+  });
+
+  curPage = 1;
+  renderKPI(computeSummary(filteredRows));
+  renderTable();
+  const total = allRows.length, shown = filteredRows.length;
+  $('filterCount').textContent = total !== shown ? `แสดง ${shown}/${total}` : `${total} รายการ`;
+  $('tableInfo').textContent = `${filteredRows.length} รายการ`;
+}
+
+function clearFilter() {
+  $('searchIn').value = '';
+  $('selAff').value = '';
+  $('selDep').value = '';
+  $('selStatus').value = '';
+  $('selFinStatus').value = '';
+  renderDepOptions();
+  applyFilter();
+}
+
+/* ════════════ BUILD ROW HTML ════════════ */
+function buildRow(r, no) {
+  const st = r.supervisor_status || 'pending';
+  const stBadge = {
+    pending:  `<span class="pill p-pending">รอรับรอง</span>`,
+    approved: `<span class="pill p-approved">อนุมัติ</span>`,
+    rejected: `<span class="pill p-rejected">ไม่รับรอง</span>`,
+  }[st] || `<span class="pill p-none">${st}</span>`;
+
+  // ประเภทงาน — ย่อให้สั้นลงบนหน้าจอ
+  const workType = (r.work_type || '—').replace('นอกเวลาราชการ (OT)', 'นอกเวลา');
+
+  // พื้นที่ pill
+  const rangePill = (inRange) => Number(inRange) === 1
+    ? `<span class="pill p-ok" style="font-size:.55rem">ในพื้นที่</span>`
+    : `<span class="pill p-late" style="font-size:.55rem">นอกพื้นที่</span>`;
+
+  // ผู้รับรอง + สถานะ (รวมกัน)
+  const svCell = r.supervisor_name
+    ? `<span style="font-size:.72rem">${r.supervisor_name}</span><br>${stBadge}`
+    : stBadge;
+
+  // ── จำนวนเงิน (amount_hour + amount_day รวมในเซลล์เดียว) ──
+  const hasAmtH = r.amount_hour != null && r.amount_hour !== '';
+  const hasAmtD = r.amount_day  != null && r.amount_day  !== '';
+  let amtCell = '—';
+  if (hasAmtH || hasAmtD) {
+    const parts = [];
+    if (hasAmtH) parts.push(`<span title="ค่าตอบแทน/ชม." style="white-space:nowrap"><span style="font-size:.55rem;color:var(--tx3)">ชม.</span> ${fmtMoney(r.amount_hour)}</span>`);
+    if (hasAmtD) parts.push(`<span title="ค่าตอบแทน/วัน" style="white-space:nowrap"><span style="font-size:.55rem;color:var(--tx3)">วัน</span> ${fmtMoney(r.amount_day)}</span>`);
+    amtCell = parts.join('<br>');
+  }
+
+  // ── สถานะการเงิน ──
+  const fs = r.finance_status || 'pending';
+  const finStatusBadge = {
+    verified: `<span class="pill p-fin-verified"><i class="fa-solid fa-circle-check" style="font-size:.5rem"></i>ตรวจสอบแล้ว</span>`,
+    rejected: `<span class="pill p-fin-rejected"><i class="fa-solid fa-circle-xmark" style="font-size:.5rem"></i>ไม่ผ่าน</span>`,
+    pending:  `<span class="pill p-fin-pending"><i class="fa-regular fa-clock" style="font-size:.5rem"></i>ยังไม่ตรวจ</span>`,
+  }[fs] || `<span class="pill p-none">${fs}</span>`;
+
+  // badge แสดงว่าถูก finance แก้ไขแล้ว
+  const finBadge = r.finance_name
+    ? `<span class="badge-finance" title="แก้ไขโดย: ${r.finance_name}"><i class="fa-solid fa-calculator"></i>${r.finance_name}</span>`
+    : '';
+
+  // ปุ่มจัดการ finance (แสดงเฉพาะ admin/finance)
+  const finBtn = canFinanceEdit()
+    ? `<button class="btn-finance" onclick='openFinanceModal(${JSON.stringify(r)})' title="แก้ไขข้อมูล OT">
+         <i class="fa-solid fa-calculator"></i>จัดการ
+       </button>`
+    : '';
+
+ return `<tr data-ref="${r.reference||''}" data-uuid="${r.uuid||''}">
+    <td class="center mono" style="color:var(--tx3);font-size:.7rem">${no}</td>
+    <td class="center mono" style="font-size:.72rem;color:var(--tx2);white-space:nowrap">${r.ot_date ? fmtDateShort(r.ot_date) : '—'}</td>
+     <td class="hl" style="white-space:nowrap">${r.name||'—'}</td>
+    <td style="font-size:.7rem;color:var(--tx2);max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${r.department||''}">${r.department||'—'}</td>
+    <td class="center" style="font-size:.72rem;white-space:nowrap">${workType}</td>
+    <td class="center mono" style="color:var(--em);font-weight:700">${r.ot_start||'—'}</td>
+    <td class="center sig-col">${rangePill(r.is_in_range)}</td>
+    <td class="center mono" style="color:var(--tx2)">${r.ot_end||'—'}</td>
+    <td class="center sig-col">${rangePill(r.checkout_in_range ?? r.is_in_range)}</td>
+    <td style="font-size:.7rem;color:var(--tx3)">${r.note||r.supervisor_note||''}</td>
+    <td style="font-size:.72rem">${svCell}</td>
+    <td class="center mono th-hours-col" style="color:var(--cy);font-weight:700;font-size:.8rem">${r.ot_hours != null ? Number(r.ot_hours).toLocaleString('th-TH',{maximumFractionDigits:1}) : '—'}<span style="font-size:.55rem;color:var(--tx3);font-weight:400"> ชม.</span></td>
+    <td class="right mono th-amt-col" style="font-size:.72rem;color:var(--am)">${amtCell}</td>
+    <td class="center th-finstatus-col">${finStatusBadge}</td>
+    <td class="center mono" style="font-size:.62rem;color:var(--bl)">${r.reference}</td>
+    <td class="center th-manage-col" style="white-space:nowrap">${finBadge}${finBtn}</td>
+  </tr>`;
+}
+
+/* ════════════ RENDER TABLE ════════════ */
+function renderTable() {
+  const tbody = $('otTbody');
+  const start = (curPage - 1) * PAGE_SIZE;
+  const slice = filteredRows.slice(start, start + PAGE_SIZE);
+
+  if(!slice.length) {
+    tbody.innerHTML = `<tr><td colspan="15"><div class="empty-state"><i class="fa-solid fa-briefcase"></i><p>ไม่มีข้อมูลการปฏิบัติงานล่วงเวลา</p></div></td></tr>`;
+    renderPager(); return;
+  }
+
+  tbody.innerHTML = slice.map((r, i) => buildRow(r, start + i + 1)).join('');
+  renderPager();
+}
+
+/* ════════════ PAGER ════════════ */
+function renderPager() {
+  const total = filteredRows.length;
+  const pages = Math.ceil(total / PAGE_SIZE);
+  const pg = $('pager');
+  if(pages <= 1){ pg.innerHTML = ''; return; }
+  const info = `<span class="pager-info">หน้า ${curPage}/${pages} · ${total} รายการ</span>`;
+  let btns = '<div class="pager-btns">';
+  btns += `<button class="pg-btn" onclick="goPage(1)" ${curPage===1?'disabled':''}><i class="fa-solid fa-angles-left"></i></button>`;
+  btns += `<button class="pg-btn" onclick="goPage(${curPage-1})" ${curPage===1?'disabled':''}><i class="fa-solid fa-angle-left"></i></button>`;
+  const s = Math.max(1, curPage-2), e = Math.min(pages, curPage+2);
+  for(let p = s; p <= e; p++) btns += `<button class="pg-btn ${p===curPage?'active':''}" onclick="goPage(${p})">${p}</button>`;
+  btns += `<button class="pg-btn" onclick="goPage(${curPage+1})" ${curPage===pages?'disabled':''}><i class="fa-solid fa-angle-right"></i></button>`;
+  btns += `<button class="pg-btn" onclick="goPage(${pages})" ${curPage===pages?'disabled':''}><i class="fa-solid fa-angles-right"></i></button>`;
+  btns += '</div>';
+  pg.innerHTML = info + btns;
+}
+function goPage(p){ curPage = p; renderTable(); }
+
+/* ════════════ EXPORT ════════════ */
+function toggleExport(){ $('exportDd').classList.toggle('show'); }
+document.addEventListener('click', e => {
+  if(!$('exportWrap').contains(e.target)) $('exportDd').classList.remove('show');
+});
+
+// ── EXCEL ──
+function exportExcel() {
+  $('exportDd').classList.remove('show');
+  const month = $('monthIn').value;
+  const affLabel = getAffLabel();
+
+  const header = [
+    ['บัญชีลงเวลาปฏิบัติงานนอกเวลาราชการและวันหยุดราชการ'],
+    [affLabel],
+    [fmtThaiMonth(month)],
+    [],
+    ['ลำดับ','เลขอ้างอิง','ชื่อ - สกุล','หน่วยงาน','วันที่ OT','เวลาเริ่ม','เวลาสิ้นสุด',
+     'ชั่วโมง','ประเภทงาน','อัตรา/ชม.','อัตรา/วัน','ค่าตอบแทน(ชม.)','ค่าตอบแทน(วัน)',
+     'รวมค่าตอบแทน','พื้นที่','หัวหน้า','สถานะหัวหน้า','หมายเหตุ',
+     'สถานะการเงิน','หมายเหตุการเงิน','ผู้ตรวจสอบ'],
+  ];
+
+  const finStatusTH = { verified:'ตรวจสอบแล้ว', rejected:'ไม่ผ่านการตรวจสอบ', pending:'ยังไม่ตรวจสอบ' };
+
+  const rows = filteredRows.map((r, i) => [
+    i+1, r.reference||'', r.name||'', r.department||'',
+    r.ot_date||'', r.ot_start||'', r.ot_end||'',
+    r.ot_hours != null ? Number(r.ot_hours) : '',
+    r.work_type||'',
+    r.ot_rate_per_hour != null ? Number(r.ot_rate_per_hour) : '',
+    r.ot_rate_per_day  != null ? Number(r.ot_rate_per_day)  : '',
+    r.amount_hour != null ? Number(r.amount_hour) : '',
+    r.amount_day  != null ? Number(r.amount_day)  : '',
+    ((Number(r.amount_hour)||0) + (Number(r.amount_day)||0)) || '',
+    Number(r.is_in_range)===1 ? 'ในพื้นที่' : 'นอกพื้นที่',
+    r.supervisor_name||'',
+    r.supervisor_status==='approved'?'รับรองแล้ว':r.supervisor_status==='rejected'?'ไม่รับรอง':'รอรับรอง',
+    r.supervisor_note||'',
+    finStatusTH[r.finance_status || 'pending'] || 'ยังไม่ตรวจสอบ',
+    r.finance_note||'',
+    r.finance_name||'',
+  ]);
+
+  const ws = XLSX.utils.aoa_to_sheet([...header, ...rows]);
+  ws['!cols'] = [
+    {wch:5},{wch:22},{wch:28},{wch:26},{wch:14},{wch:9},{wch:11},
+    {wch:8},{wch:18},{wch:10},{wch:10},{wch:14},{wch:14},{wch:12},
+    {wch:10},{wch:18},{wch:12},{wch:20},
+    {wch:16},{wch:24},{wch:18},
+  ];
+  const lastCol = 20; // 21 columns → index 0-20
+  ws['!merges'] = [
+    {s:{r:0,c:0},e:{r:0,c:lastCol}},
+    {s:{r:1,c:0},e:{r:1,c:lastCol}},
+    {s:{r:2,c:0},e:{r:2,c:lastCol}},
+  ];
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'OT');
+  XLSX.writeFile(wb, `overtime_${month}.xlsx`);
+  toast('ส่งออก Excel สำเร็จ');
+}
+
+// ── PDF ──
+async function exportPDF() {
+  $('exportDd').classList.remove('show');
+  const month = $('monthIn').value;
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+
+  try {
+    const fontRes = await fetch('https://raw.githubusercontent.com/google/fonts/main/ofl/sarabun/Sarabun-Regular.ttf');
+    const fontBuf = await fontRes.arrayBuffer();
+    const fontB64 = arrayBufferToBase64(fontBuf);
+    const fontResB = await fetch('https://raw.githubusercontent.com/google/fonts/main/ofl/sarabun/Sarabun-Bold.ttf');
+    const fontBufB = await fontResB.arrayBuffer();
+    const fontB64B = arrayBufferToBase64(fontBufB);
+    doc.addFileToVFS('Sarabun-Regular.ttf', fontB64);
+    doc.addFont('Sarabun-Regular.ttf', 'Sarabun', 'normal');
+    doc.addFileToVFS('Sarabun-Bold.ttf', fontB64B);
+    doc.addFont('Sarabun-Bold.ttf', 'Sarabun', 'bold');
+    doc.setFont('Sarabun');
+  } catch(e) { console.warn('Thai font failed:', e); }
+
+  const affLabel = getAffLabel();
+  doc.setFont('Sarabun','bold'); doc.setFontSize(16);
+  doc.text('บัญชีการปฏิบัติงานล่วงเวลา (OT)', doc.internal.pageSize.getWidth()/2, 14, {align:'center'});
+  doc.setFont('Sarabun','normal'); doc.setFontSize(12);
+  doc.text(affLabel, doc.internal.pageSize.getWidth()/2, 21, {align:'center'});
+  doc.setFontSize(11);
+  doc.text(fmtThaiMonth(month), doc.internal.pageSize.getWidth()/2, 27, {align:'center'});
+
+  const head = [['#','ชื่อ - สกุล','หน่วยงาน','วันที่ OT','เริ่ม','สิ้นสุด','ชม.','ค่าตอบแทน','พื้นที่','หัวหน้า','สถานะ']];
+  const body = filteredRows.map((r,i) => [
+    i+1, r.name||'—', r.department||'—',
+    r.ot_date||'—', r.ot_start||'—', r.ot_end||'—',
+    r.ot_hours != null ? Number(r.ot_hours).toFixed(1) : '—',
+    r.amount_hour != null ? fmtMoney(r.amount_hour) : '—',
+    Number(r.is_in_range)===1 ? 'ในพื้นที่' : 'นอกพื้นที่',
+    r.supervisor_name||'—',
+    r.supervisor_status==='approved'?'อนุมัติ':r.supervisor_status==='rejected'?'ไม่รับรอง':'รอรับรอง',
+  ]);
+
+  doc.autoTable({
+    startY: 32, head, body,
+    styles:{ font:'Sarabun', fontSize:9, cellPadding:2, overflow:'linebreak' },
+    headStyles:{ fillColor:[15,118,110], textColor:255, fontStyle:'bold' },
+    alternateRowStyles:{ fillColor:[245,250,248] },
+    columnStyles:{
+      0:{cellWidth:8,halign:'center'},1:{cellWidth:36},2:{cellWidth:30},
+      3:{cellWidth:22,halign:'center'},4:{cellWidth:12,halign:'center'},5:{cellWidth:12,halign:'center'},
+      6:{cellWidth:10,halign:'center'},7:{cellWidth:20,halign:'right'},
+      8:{cellWidth:18,halign:'center'},9:{cellWidth:24},10:{cellWidth:18,halign:'center'},
+    },
+    margin:{left:8,right:8},
+  });
+
+  doc.save(`overtime_${month}.pdf`);
+  toast('ส่งออก PDF สำเร็จ');
+}
+
+function arrayBufferToBase64(buffer) {
+  let binary = '';
+  const bytes = new Uint8Array(buffer);
+  for(let i=0; i<bytes.byteLength; i++) binary += String.fromCharCode(bytes[i]);
+  return btoa(binary);
+}
+
+// ── PRINT with JIT signatures ──
+async function printPage() {
+  $('exportDd').classList.remove('show');
+
+  const roleLevel = Number(metaInfo.role_level || 0);
+  if(roleLevel <= 1) {
+    toast('คุณไม่มีสิทธิ์พิมพ์ลายเซ็น (ต้องมีระดับมากกว่า 1)', 'err', 4000);
+    return;
+  }
+
+  function waitForImages(container) {
+    const imgs = Array.from(container.querySelectorAll('img'));
+    if(!imgs.length) return Promise.resolve();
+    return Promise.all(imgs.map(img =>
+      img.complete ? Promise.resolve() :
+      new Promise(res => { img.onload = res; img.onerror = res; })
+    ));
+  }
+
+
+function injectSignatures(sigMap) {
+    const tbody = $('otTbody');
+    tbody.querySelectorAll('tr[data-uuid]').forEach(tr => {
+      const uuid = tr.getAttribute('data-uuid');
+      const sigs = sigMap[uuid] || {};
+      const tds  = tr.querySelectorAll('td');
+
+      const sigImg = (src, alt) =>
+        `<img src="${src}" alt="${alt}" class="sig-img"
+          style="max-width:72px;max-height:36px;object-fit:contain;display:block;margin:auto;">`;
+      const sigBlank = () =>
+        `<div style="border-bottom:1px solid #aaa;width:72px;height:32px;margin:0 auto;"></div>`;
+
+      // ─── แก้ไข: index ถูกต้องตาม buildRow ───
+      // tds[0]=ลำดับ [1]=ชื่อ [2]=หน่วยงาน [3]=วันที่ [4]=ประเภท
+      // tds[5]=เวลามา  [6]=มา/ลายเซ็น  [7]=เวลากลับ  [8]=กลับ/ลายเซ็น
+      // tds[9]=ผู้รับรอง  [10]=หมายเหตุ  [11]=ชั่วโมง  [12]=จำนวนเงิน
+      // tds[13]=สถานะการเงิน  [14]=อ้างอิง  [15]=จัดการ
+
+      // tds[6] — ลายเซ็นผู้ทำ OT (คอลัมน์ "มา")
+      if (tds[6]) tds[6].innerHTML = sigs.user_signature
+        ? sigImg(sigs.user_signature, 'ลายเซ็น')
+        : sigBlank();
+
+      // tds[8] — ลายเซ็นผู้ทำ OT (คอลัมน์ "กลับ" — ใช้รูปเดียวกัน)
+      if (tds[8]) tds[8].innerHTML = sigs.user_signature
+        ? sigImg(sigs.user_signature, 'ลายเซ็น')
+        : sigBlank();
+
+      // tds[10] — ผู้รับรอง: ลายเซ็นหัวหน้า + ชื่อ
+      if (tds[10]) {
+        const svSig = sigs.approver_signature
+          ? sigImg(sigs.approver_signature, 'ลายเซ็นผู้รับรอง')
+          : sigBlank();
+        tds[10].innerHTML = `${svSig}<div style="font-size:9pt;text-align:center;margin-top:2px">${sigs.approver_name || ''}</div>`;
+      }
+    });
+  }
+  // render all filtered rows before printing (ไม่ใช้ pagination)
+  function renderAllRows() {
+    const tbody = $('otTbody');
+    if(!filteredRows.length) return;
+    tbody.innerHTML = filteredRows.map((r, i) => buildRow(r, i + 1)).join('');
+  }
+
+  function cleanup() {
+    $('printHeader').style.display = 'none';
+    $('printSummary').style.display = 'none';
+    renderTable();
+  }
+
+  toast('กำลังเตรียมข้อมูลสำหรับพิมพ์…', 'ok', 500);
+  renderAllRows();
+
+  // โหลดลายเซ็นจาก API  (ใช้ endpoint get-ot-signatures ซึ่งคืน uuid → signature)
+  try {
+    const month = $('monthIn').value;
+    const af = $('selAff').value, dp = $('selDep').value;
+    const sigUrl = new URL(`${API}/dash/overtime-signatures`, location.origin);
+    sigUrl.searchParams.set('month', month);
+    if(af) sigUrl.searchParams.set('aff', af);
+    if(dp) sigUrl.searchParams.set('dep', dp);
+
+    const res = await fetch(sigUrl.toString(), { headers: authH() });
+    const j = await safeJson(res);
+    if(!j.success) throw new Error(j.message || 'ดึงข้อมูลลายเซ็นล้มเหลว');
+
+    const sigMap = {};
+    (j.data || []).forEach(s => { sigMap[s.uuid] = s; });
+    injectSignatures(sigMap);
+
+    await waitForImages($('otTbody'));
+
+  } catch(err) {
+    console.error('[printPage OT]', err);
+    toast(`โหลดลายเซ็นไม่สำเร็จ: ${err.message} — พิมพ์แบบไม่มีลายเซ็น`, 'err', 3500);
+    injectSignatures({});
+  }
+
+  $('printHeader').style.display = 'block';
+  $('printSummary').style.display = 'block';
+
+  const onAfterPrint = () => {
+    window.removeEventListener('afterprint', onAfterPrint);
+    cleanup();
+  };
+  window.addEventListener('afterprint', onAfterPrint);
+  setTimeout(() => window.print(), 80);
+}
+
+/* ════════════ FINANCE MODAL ════════════ */
+function openFinanceModal(r) {
+  _financeCurrentRef = r.reference;
+
+  // ข้อมูลอ่านอย่างเดียว
+  $('fmRef').textContent = r.reference || '';
+  $('fmName').value = r.name || '';
+  $('fmDept').value = r.department || '';
+
+  // ประเภท OT (แสดงเท่านั้น)
+  $('fmWorkType').value = r.work_type || 'นอกเวลาราชการ (OT)';
+
+  // ข้อมูลแก้ไขได้
+  $('fmDate').value  = r.ot_date  || '';
+  $('fmStart').value = r.ot_start || '';
+  $('fmEnd').value   = r.ot_end   || '';
+  $('fmHours').value = r.ot_hours  != null ? r.ot_hours  : '';
+  $('fmDays').value  = r.ot_days   != null ? r.ot_days   : '';
+  $('fmRateH').value = r.ot_rate_per_hour != null ? r.ot_rate_per_hour : '';
+  $('fmRateD').value = r.ot_rate_per_day  != null ? r.ot_rate_per_day  : '';
+  $('fmMaxH').value  = r.ot_max_hours     != null ? r.ot_max_hours     : '';
+  $('fmAmtH').value  = r.amount_hour != null ? r.amount_hour : '';
+  $('fmAmtD').value  = r.amount_day  != null ? r.amount_day  : '';
+
+  // สถานะการเงิน
+  const fs = r.finance_status || 'pending';
+  const radio = document.querySelector(`input[name="fmFinStatus"][value="${fs}"]`);
+  if (radio) radio.checked = true;
+  $('fmFinNote').value = r.finance_note || '';
+
+  // ผู้แก้ไขล่าสุด
+  if (r.finance_name) {
+    $('fmEditorName').value = r.finance_name;
+    $('fmUpdatedAt').value  = (r.finance_at || r.updated_at || '').slice(0, 16).replace('T',' ');
+    $('fmEditorWrap').style.display = '';
+  } else {
+    $('fmEditorWrap').style.display = 'none';
+  }
+
+  $('fmSaving').style.display = 'none';
+  $('financeModal').style.display = 'flex';
+  setTimeout(() => $('fmDate').focus(), 80);
+}
+
+function closeFinanceModal() {
+  $('financeModal').style.display = 'none';
+  _financeCurrentRef = null;
+}
+
+async function saveFinanceEdit() {
+  if (!_financeCurrentRef) return;
+
+  const ot_date  = $('fmDate').value.trim();
+  const ot_start = $('fmStart').value.trim();
+  const ot_end   = $('fmEnd').value.trim();
+
+  if (!ot_date || !ot_start || !ot_end) {
+    toast('กรุณากรอกวันที่ เวลาเริ่ม และเวลาสิ้นสุด', 'err');
+    return;
+  }
+
+  // อ่านค่า finance_status จาก radio
+  const finStatusEl = document.querySelector('input[name="fmFinStatus"]:checked');
+  const finance_status = finStatusEl ? finStatusEl.value : 'pending';
+
+  const body = {
+    action: 'finance',
+    ot_date,
+    ot_start,
+    ot_end,
+    ot_hours:         $('fmHours').value !== '' ? Number($('fmHours').value) : null,
+    ot_days:          $('fmDays').value  !== '' ? Number($('fmDays').value)  : null,
+    ot_rate_per_hour: $('fmRateH').value !== '' ? Number($('fmRateH').value) : null,
+    ot_rate_per_day:  $('fmRateD').value !== '' ? Number($('fmRateD').value) : null,
+    ot_max_hours:     $('fmMaxH').value  !== '' ? Number($('fmMaxH').value)  : null,
+    amount_hour:      $('fmAmtH').value  !== '' ? Number($('fmAmtH').value)  : null,
+    amount_day:       $('fmAmtD').value  !== '' ? Number($('fmAmtD').value)  : null,
+    finance_status,
+    finance_note:     $('fmFinNote').value.trim() || null,
+  };
+
+  $('fmSaving').style.display = '';
+
+  try {
+    const res = await fetch(`${API}/dash/overtime/${encodeURIComponent(_financeCurrentRef)}`, {
+      method: 'PATCH',
+      headers: authH(),
+      body: JSON.stringify(body),
+    });
+    const j = await safeJson(res);
+    if (!j.success) throw new Error(j.message || `HTTP ${res.status}`);
+
+    toast('บันทึกข้อมูล OT สำเร็จ');
+    closeFinanceModal();
+    await loadAll();
+  } catch (err) {
+    console.error('[saveFinanceEdit]', err);
+    toast(err.message || 'เกิดข้อผิดพลาด', 'err');
+  } finally {
+    $('fmSaving').style.display = 'none';
+  }
+}
+
+// คำนวณชั่วโมง OT จาก fmStart → fmEnd → set fmHours
+// รองรับข้ามเที่ยงคืน (เช่น 20:00 → 02:00 = 6 ชม.)
+function calcOtHours() {
+  const s = $('fmStart').value;
+  const e = $('fmEnd').value;
+  if (!s || !e) return;
+
+  const [sh, sm] = s.split(':').map(Number);
+  const [eh, em] = e.split(':').map(Number);
+
+  let diffMin = (eh * 60 + em) - (sh * 60 + sm);
+  if (diffMin <= 0) diffMin += 24 * 60; // ข้ามเที่ยงคืน
+
+  const hrs = Math.round((diffMin / 60) * 10) / 10; // ปัดทศนิยม 1 ตำแหน่ง
+  $('fmHours').value = hrs;
+  calcFinanceAmount();
+}
+
+function calcFinanceAmount() {
+  const hours = parseFloat($('fmHours').value) || 0;
+  const rateH = parseFloat($('fmRateH').value) || 0;
+
+  const days  = parseFloat($('fmDays').value) || 0;
+  const rateD = parseFloat($('fmRateD').value) || 0;
+
+  $('fmAmtH').value = hours && rateH
+    ? (hours * rateH).toFixed(2)
+    : '';
+
+  $('fmAmtD').value = days && rateD
+    ? (days * rateD).toFixed(2)
+    : '';
+}
+
+/* ════════════ USER INFO ════════════ */
+function loadUser() {
+  const userData =
+    JSON.parse(localStorage.getItem('user_data')) ||
+    JSON.parse(sessionStorage.getItem('user_data')) || {};
+  const name = `${userData.firstName||''} ${userData.lastName||''}`.trim() || '—';
+  const role = userData.role || '';
+  const roleMap = {
+    user:'<i class="fa-solid fa-user"></i> บุคลากร',
+    admin:'<i class="fa-solid fa-user-shield"></i> ผู้ดูแลระบบ',
+    supervisor:'<i class="fa-solid fa-user-tie"></i> หัวหน้า',
+    executive:'<i class="fa-solid fa-user-crown"></i> ผู้บริหาร',
+  };
+  $('uNm').textContent = name;
+  $('uRl').innerHTML = roleMap[role] || role;
+  $('uAv').textContent = name.charAt(0).toUpperCase();
+}
+
+const userMenuBtn = $('userMenuBtn'), userDropdown = $('userDropdown');
+userMenuBtn.addEventListener('click', e => { e.stopPropagation(); userDropdown.classList.toggle('show'); });
+document.addEventListener('click', () => userDropdown.classList.remove('show'));
+
+/* ════════════ INIT ════════════ */
+document.addEventListener('DOMContentLoaded', () => {
+      if(localStorage.getItem('sidebarCollapsed') === 'true'){
+    document.getElementById('sidebar').classList.add('collapsed');
+    document.querySelector('.main').classList.add('collapsed');
+  }
+  $('monthIn').value = thisMonthISO();
+  loadUser();
+  loadAll();
+});
+document.addEventListener('keydown', e => {
+  if(e.key === 'Escape') {
+    $('exportDd').classList.remove('show');
+    if($('financeModal').style.display !== 'none') closeFinanceModal();
+  }
+});
+</script>
+</body>
+</html>
