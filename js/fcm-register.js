@@ -40,7 +40,7 @@ const fcmToken = await messaging.getToken({
 }
 // เรียกหลัง login สำเร็จ หรือ page load ที่ login แล้ว
 document.addEventListener('DOMContentLoaded', () => {
-  if (localStorage.getItem('token')) {
+  if (localStorage.getItem('auth_token')) {
     registerFCMToken();
   }
 });
