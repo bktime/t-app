@@ -1,6 +1,4 @@
 // reminder-scheduler.js
-// ฝังในทุกหน้า HTML: <script src="/js/reminder-scheduler.js"></script>
-
 class ReminderScheduler {
   constructor() {
     this.morningHour = 7;
@@ -8,11 +6,12 @@ class ReminderScheduler {
     this.afternoonHour = 16;
     this.afternoonMinute = 32;
     this.checkInterval = null;
+    this._attendanceCache = null;
+    this._attendanceCacheDate = null;
   }
 
-  // ✅ แก้ไข: อ่าน/เขียน state ผ่าน localStorage เพื่อให้คงอยู่แม้ refresh หน้า
   _getTodayKey(type) {
-    const today = new Date().toISOString().slice(0, 10); // "2024-01-15"
+    const today = new Date().toISOString().slice(0, 10);
     return `reminded_${type}_${today}`;
   }
 
@@ -27,10 +26,9 @@ class ReminderScheduler {
   _markNotifiedToday(type) {
     try {
       localStorage.setItem(this._getTodayKey(type), '1');
-      // ลบ key เก่า (เก่ากว่า 3 วัน) ไม่ให้ localStorage พอง
       this._cleanOldKeys();
     } catch {
-      // ignore quota errors
+      // ignore
     }
   }
 
@@ -82,74 +80,120 @@ class ReminderScheduler {
     });
   }
 
-async checkAndNotify() {
-  const now = new Date();
-  const currentMinutes = now.getHours() * 60 + now.getMinutes();
+  async checkAndNotify() {
+    const now = new Date();
+    const currentMinutes = now.getHours() * 60 + now.getMinutes();
 
-  const morningStart = this.morningHour * 60 + (this.morningMinute - 5);
-  const morningEnd   = this.morningHour * 60 + (this.morningMinute + 30);
+    const morningStart = this.morningHour * 60 + (this.morningMinute - 5);
+    const morningEnd   = this.morningHour * 60 + (this.morningMinute + 30);
 
-  if (currentMinutes >= morningStart && currentMinutes <= morningEnd) {
-    if (!this._hasNotifiedToday('morning')) {
-      // ✅ เช็คก่อนว่าลงเวลาเข้าแล้วหรือยัง
-      const checkedIn = await this._hasCheckedInToday();
-      if (!checkedIn) {
-        this.sendReminder('morning', '🕒 ถึงเวลาลงเวลาเข้างานแล้ว', 'กรุณากดลงเวลาเข้างานวันนี้ครับ', 'reminder-morning');
+    if (currentMinutes >= morningStart && currentMinutes <= morningEnd) {
+      if (!this._hasNotifiedToday('morning')) {
+        const checkedIn = await this._hasCheckedInToday();
+        if (!checkedIn) {
+          this.sendReminder('morning', '🕒 ถึงเวลาลงเวลาเข้างานแล้ว', 'กรุณากดลงเวลาเข้างานวันนี้ครับ', 'reminder-morning');
+        }
+        this._markNotifiedToday('morning');
       }
-      this._markNotifiedToday('morning'); // mark ไว้เสมอไม่ให้ถามซ้ำ
+    }
+
+    const afternoonStart = this.afternoonHour * 60 + (this.afternoonMinute - 1);
+    const afternoonEnd   = this.afternoonHour * 60 + (this.afternoonMinute + 30);
+
+    if (currentMinutes >= afternoonStart && currentMinutes <= afternoonEnd) {
+      if (!this._hasNotifiedToday('afternoon')) {
+        const checkedOut = await this._hasCheckedOutToday();
+        if (!checkedOut) {
+          this.sendReminder('afternoon', '🕒 ใกล้ถึงเวลาออกงานแล้ว', 'อย่าลืมลงเวลาออกงานก่อนกลับบ้านนะครับ', 'reminder-afternoon');
+        }
+        this._markNotifiedToday('afternoon');
+      }
     }
   }
 
-  const afternoonStart = this.afternoonHour * 60 + (this.afternoonMinute - 1);
-  const afternoonEnd   = this.afternoonHour * 60 + (this.afternoonMinute + 30);
+  // ============================================================
+  // ✅ ดึงข้อมูลจาก API (1 ครั้ง + cache)
+  // ============================================================
+  async _fetchTodayAttendance() {
+    const today = new Date().toISOString().slice(0, 10);
 
-  if (currentMinutes >= afternoonStart && currentMinutes <= afternoonEnd) {
-    if (!this._hasNotifiedToday('afternoon')) {
-      // ✅ เช็คก่อนว่า checkout แล้วหรือยัง
-      const checkedOut = await this._hasCheckedOutToday();
-      if (!checkedOut) {
-        this.sendReminder('afternoon', '🕒 ใกล้ถึงเวลาออกงานแล้ว', 'อย่าลืมลงเวลาออกงานก่อนกลับบ้านนะครับ', 'reminder-afternoon');
+    if (this._attendanceCache && this._attendanceCacheDate === today) {
+      return this._attendanceCache;
+    }
+
+    try {
+      const token = localStorage.getItem('auth_token');
+      if (!token) {
+        console.warn('⚠️ Reminder: ไม่พบ auth_token');
+        return null;
       }
-      this._markNotifiedToday('afternoon');
+
+      let uuid;
+      try {
+        const raw = localStorage.getItem('user_data');
+        if (!raw) {
+          console.warn('⚠️ Reminder: ไม่พบ user_data ใน localStorage');
+          return null;
+        }
+        const userData = JSON.parse(raw);
+        uuid = userData.uuid;
+      } catch (parseErr) {
+        console.error('❌ Reminder: parse user_data ไม่ได้:', parseErr);
+        return null;
+      }
+
+      if (!uuid) {
+        console.warn('⚠️ Reminder: ไม่พบ uuid ใน user_data');
+        return null;
+      }
+
+      const url = `/api/attendance/today?uuid=${encodeURIComponent(uuid)}&date=${today}`;
+      console.log(`🔄 Reminder fetching: ${url}`);
+
+      const res = await fetch(url, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+
+      if (!res.ok) {
+        const text = await res.text().catch(() => '');
+        console.warn(`⚠️ Reminder API ${res.status}: ${text}`);
+        return null;
+      }
+
+      const json = await res.json();
+
+      if (!json.success) {
+        console.warn('⚠️ Reminder API error:', json.message);
+        return null;
+      }
+
+      this._attendanceCache = json.data;
+      this._attendanceCacheDate = today;
+
+      console.log('✅ Reminder: ดึงข้อมูลสำเร็จ', {
+        has_checkin:  json.data.has_checkin,
+        has_checkout: json.data.has_checkout,
+      });
+
+      return json.data;
+
+    } catch (err) {
+      console.error('❌ Reminder fetch error:', err);
+      return null;
     }
   }
-}
 
-// ✅ เช็ค checkin จาก API
-async _hasCheckedInToday() {
-  try {
-    const token = localStorage.getItem('auth_token');
-    if (!token) return false;
-
-    const res = await fetch('/api/attendance/today', {
-      headers: { 'Authorization': `Bearer ${token}` }
-    });
-
-    if (!res.ok) return false;
-    const data = await res.json();
-    return !!data?.checkin_time; // มี checkin_time = ลงเวลาแล้ว
-  } catch {
-    return false; // ถ้า API ล้มเหลว ไม่แจ้งเตือน
+  async _hasCheckedInToday() {
+    const data = await this._fetchTodayAttendance();
+    if (!data) return false;
+    return data.has_checkin === true;
   }
-}
 
-// ✅ เช็ค checkout จาก API
-async _hasCheckedOutToday() {
-  try {
-    const token = localStorage.getItem('auth_token');
-    if (!token) return false;
-
-    const res = await fetch('/api/attendance/today', {
-      headers: { 'Authorization': `Bearer ${token}` }
-    });
-
-    if (!res.ok) return false;
-    const data = await res.json();
-    return !!data?.checkout_at; // มี checkout_at = ออกงานแล้ว
-  } catch {
-    return false;
+  async _hasCheckedOutToday() {
+    const data = await this._fetchTodayAttendance();
+    if (!data) return false;
+    return data.has_checkout === true;
   }
-}
 
   async sendReminder(type, title, body, tag) {
     try {
@@ -188,14 +232,14 @@ async _hasCheckedOutToday() {
 
         if (status.state === 'granted') {
           await registration.periodicSync.register('attendance-reminder', {
-            minInterval: 15 * 60 * 1000 // ขั้นต่ำ 15 นาที
+            minInterval: 15 * 60 * 1000
           });
           console.log('✅ Periodic Background Sync registered');
         } else {
           console.warn('⚠️ Periodic Background Sync not granted');
         }
       } else {
-        console.warn('⚠️ Periodic Background Sync not supported (iOS/Firefox) — แจ้งเตือนได้เฉพาะเมื่อเปิดแอปไว้');
+        console.warn('⚠️ Periodic Background Sync not supported');
       }
     } catch (err) {
       console.warn('⚠️ Periodic Sync registration failed:', err);
@@ -209,7 +253,7 @@ async _hasCheckedOutToday() {
   }
 }
 
-// Auto-initialize (ป้องกัน duplicate init ถ้าโหลดสคริปต์ซ้ำ)
+// Auto-initialize
 if (!window.__reminderSchedulerInit) {
   window.__reminderSchedulerInit = true;
   if (document.readyState === 'loading') {
