@@ -77,7 +77,7 @@ if (!reviewer) return json({ success: false, message: 'Unauthorized' }, 401);
                a.supervisor_status,
                a.supervisor_note  AS att_supervisor_note,
                a.checkin_time, a.checkout_time, a.checkout_type,
-               a.checkin_in_range, a.checkin_distance_m
+               a.checkin_in_range, a.checkin_distance_m, a.checkin_work_type
         FROM attendance_requests r
         LEFT JOIN users u ON u.uuid = r.uuid
         LEFT JOIN attendance a ON a.uuid = r.uuid AND a.date = r.req_date

@@ -36,7 +36,16 @@ export async function onRequestGet({ request, env }) {
   const inUUIDs = scopedUUIDsSQL(scopeSQL);
 
   try {
-    const [workTypes, supervisorStatus, dailyCounts, inRangeStats, checkoutTypes] = await Promise.all([
+    const [
+      workTypes,
+      supervisorStatus,
+      dailyCounts,
+      inRangeStats,
+      checkoutTypes,
+      checkinByDept,
+      hourlyCheckin,
+      distanceBuckets,
+    ] = await Promise.all([
 
       // ประเภทงาน
       env.DB.prepare(`
@@ -70,6 +79,7 @@ export async function onRequestGet({ request, env }) {
           COUNT(*)                                                           AS total,
           SUM(CASE WHEN a.checkin_time IS NOT NULL THEN 1 ELSE 0 END)       AS checkins,
           SUM(CASE WHEN a.checkin_time > '08:30:00' THEN 1 ELSE 0 END)      AS late,
+          SUM(CASE WHEN a.checkout_time IS NOT NULL THEN 1 ELSE 0 END)      AS checkouts,
           SUM(CASE WHEN a.checkout_type = 'manual' THEN 1 ELSE 0 END)       AS manual_checkout,
           SUM(CASE WHEN a.checkin_in_range = 1 THEN 1 ELSE 0 END)           AS in_range
         FROM attendance a
@@ -101,6 +111,83 @@ export async function onRequestGet({ request, env }) {
           AND a.checkout_time IS NOT NULL
           AND a.uuid IN (${inUUIDs})
         GROUP BY a.checkout_type
+        ORDER BY count DESC
+      `).bind(from, to, ...scopeParams).all(),
+
+      // Checkin rate รายหน่วยงาน
+      env.DB.prepare(`
+        SELECT
+          COALESCE(u.department, 'ไม่ระบุ')  AS department,
+          u.dep_code,
+          COUNT(DISTINCT u.uuid)              AS total_users,
+          COUNT(DISTINCT CASE WHEN a.checkin_time IS NOT NULL
+                               AND a.supervisor_status <> 'cancelled'
+                               THEN a.uuid END) AS checkin_users,
+          COUNT(CASE WHEN a.checkin_time IS NOT NULL
+                      AND a.supervisor_status <> 'cancelled'
+                      THEN 1 END)            AS checkin_count,
+          COUNT(CASE WHEN a.checkin_time > '08:30:00'
+                      AND a.supervisor_status <> 'cancelled'
+                      THEN 1 END)            AS late_count
+        FROM users u
+        LEFT JOIN attendance a
+          ON a.uuid = u.uuid AND a.date BETWEEN ? AND ?
+        WHERE u.status = 'Active' ${scopeSQL}
+        GROUP BY u.department, u.dep_code
+        ORDER BY checkin_count DESC
+        LIMIT 15
+      `).bind(from, to, ...scopeParams).all(),
+
+      // การกระจายชั่วโมงเช็คอิน
+      env.DB.prepare(`
+        SELECT
+          CASE
+            WHEN a.checkin_time < '07:00:00' THEN 'ก่อน 07:00'
+            WHEN a.checkin_time < '07:30:00' THEN '07:00–07:30'
+            WHEN a.checkin_time < '08:00:00' THEN '07:30–08:00'
+            WHEN a.checkin_time < '08:30:00' THEN '08:00–08:30'
+            WHEN a.checkin_time < '09:00:00' THEN '08:30–09:00'
+            WHEN a.checkin_time < '09:30:00' THEN '09:00–09:30'
+            WHEN a.checkin_time < '10:00:00' THEN '09:30–10:00'
+            ELSE 'หลัง 10:00'
+          END AS bucket,
+          COUNT(*) AS count,
+          CASE
+            WHEN a.checkin_time < '07:00:00' THEN 1
+            WHEN a.checkin_time < '07:30:00' THEN 2
+            WHEN a.checkin_time < '08:00:00' THEN 3
+            WHEN a.checkin_time < '08:30:00' THEN 4
+            WHEN a.checkin_time < '09:00:00' THEN 5
+            WHEN a.checkin_time < '09:30:00' THEN 6
+            WHEN a.checkin_time < '10:00:00' THEN 7
+            ELSE 8
+          END AS sort_order
+        FROM attendance a
+        WHERE a.date BETWEEN ? AND ?
+          AND a.checkin_time IS NOT NULL AND a.supervisor_status <> 'cancelled'
+          AND a.uuid IN (${inUUIDs})
+        GROUP BY bucket
+        ORDER BY sort_order ASC
+      `).bind(from, to, ...scopeParams).all(),
+
+      // bucket ระยะทาง
+      env.DB.prepare(`
+        SELECT
+          CASE
+            WHEN a.checkin_distance_m IS NULL        THEN 'ไม่ทราบ'
+            WHEN a.checkin_distance_m <= 50           THEN '≤50 ม.'
+            WHEN a.checkin_distance_m <= 200          THEN '51–200 ม.'
+            WHEN a.checkin_distance_m <= 500          THEN '201–500 ม.'
+            WHEN a.checkin_distance_m <= 1000         THEN '501 ม.–1 กม.'
+            ELSE '>1 กม.'
+          END AS bucket,
+          COUNT(*) AS count
+        FROM attendance a
+        WHERE a.date BETWEEN ? AND ?
+          AND a.checkin_time IS NOT NULL AND a.supervisor_status <> 'cancelled'
+          AND a.uuid IN (${inUUIDs})
+        GROUP BY bucket
+        ORDER BY MIN(COALESCE(a.checkin_distance_m, 99999)) ASC
       `).bind(from, to, ...scopeParams).all(),
     ]);
 
@@ -115,7 +202,10 @@ export async function onRequestGet({ request, env }) {
           outRange: Number(inRangeStats?.out_range ?? 0),
           unknown:  Number(inRangeStats?.unknown   ?? 0),
         },
-        checkoutTypes: checkoutTypes.results ?? [],
+        checkoutTypes:    checkoutTypes.results    ?? [],
+        hourlyCheckin:    hourlyCheckin.results    ?? [],
+        distanceBuckets:  distanceBuckets.results  ?? [],
+        checkinByDept:    checkinByDept.results    ?? [],
       },
       meta: { from, to, role: me.role, canFilter, ...scopeMeta },
     }, { headers: CORS });

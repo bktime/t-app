@@ -64,7 +64,7 @@ bind.push(reviewer.uuid);
         a.created_at,
         u.name, u.firstName, u.lastName, u.prefix,
         u.picture, u.profileImage,
-        u.position, u.personnelType, u.dep_code, u.affiliation
+        u.position, u.personnelType, u.department, u.affiliation
       FROM attendance a
       LEFT JOIN users u ON u.uuid = a.uuid
       ${where} 

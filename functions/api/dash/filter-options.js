@@ -4,7 +4,7 @@
 // คืนค่า dropdown สำหรับ filter bar
 //   user       → { canFilter:{aff:false,dep:false}, affiliation:null, departments:null }
 //   supervisor → { canFilter:{aff:false,dep:true},  affiliation:{...}, departments:[...] }
-//   admin      → { canFilter:{aff:true,dep:true},   affiliations:[...], departments:[...] }
+//   admin/exec → { canFilter:{aff:true,dep:true},   affiliations:[...], departments:[...] }
 //                 admin ส่ง ?aff=xxx มาเพื่อโหลด dep list ของ aff นั้น
 
 import { authUser, extractToken, unauthorized } from '../_auth.js';
@@ -31,7 +31,6 @@ export async function onRequestGet({ request, env }) {
   if (!session) return unauthorized(CORS);
 
   const me = session;
-
   const url = new URL(request.url);
 
   try {
@@ -50,27 +49,30 @@ export async function onRequestGet({ request, env }) {
 
     /* ── supervisor ── เห็น aff ตัวเอง + dep list ใน aff */
     if (me.role === 'supervisor') {
-      const deps = await env.DB.prepare(`
-        SELECT DISTINCT dep_code, department
-        FROM users
-        WHERE status = 'Active'
-          AND aff_code = ?
-          AND dep_code IS NOT NULL
-        ORDER BY department ASC
-      `).bind(me.aff_code).all();
+      // ✅ ป้องกัน Query พังกรณีที่ supervisor ไม่มี aff_code ในระบบ
+      const deps = me.aff_code 
+        ? (await env.DB.prepare(`
+            SELECT DISTINCT dep_code, department
+            FROM users
+            WHERE status = 'Active'
+              AND aff_code = ?
+              AND dep_code IS NOT NULL
+            ORDER BY department ASC
+          `).bind(me.aff_code).all()).results ?? []
+        : [];
 
       return Response.json({
         success: true,
         data: {
           canFilter: { aff: false, dep: true },
-          affiliation: { aff_code: me.aff_code, affiliation: me.affiliation },
-          departments: deps.results ?? [],
+          affiliation: me.aff_code ? { aff_code: me.aff_code, affiliation: me.affiliation } : null,
+          departments: deps,
         },
         meta: { role: me.role, scope: 'affiliation', aff_code: me.aff_code },
       }, { headers: CORS });
     }
 
-    /* ── admin ── affiliations ทั้งหมด + dep list ตาม ?aff= */
+    /* ── admin / executive / finance ── affiliations ทั้งหมด + dep list ตาม ?aff= */
     const selectedAff = url.searchParams.get('aff') || null;
 
     const [affiliations, departments] = await Promise.all([
@@ -91,6 +93,7 @@ export async function onRequestGet({ request, env }) {
               AND dep_code IS NOT NULL
             ORDER BY department ASC
           `).bind(selectedAff).all()
+        // ✅ ดึงพร้อม aff_code มาด้วยเสมอเผื่ออนาคตต้องจัดกลุ่ม
         : env.DB.prepare(`
             SELECT DISTINCT dep_code, department, aff_code
             FROM users

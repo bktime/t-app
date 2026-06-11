@@ -37,7 +37,7 @@ export async function onRequestGet({ request, env }) {
   const inUUIDs = scopedUUIDsSQL(scopeSQL);
 
   try {
-    const [recentCheckins, recentRequests, recentOt] = await Promise.all([
+    const [recentCheckins, recentRequests, recentOt, recentLeave] = await Promise.all([
 
       // เช็คอินล่าสุด
       env.DB.prepare(`
@@ -93,11 +93,16 @@ export async function onRequestGet({ request, env }) {
           o.ot_start,
           o.ot_end,
           o.ot_hours,
+          o.ot_days,
           o.work_type,
           o.supervisor_status,
+          o.finance_status,
           o.supervisor_note,
           o.reviewed_at,
           o.submitted_at,
+          COALESCE(o.amount_hour, 0)                    AS amount_hour,
+          COALESCE(o.amount_day, 0)                     AS amount_day,
+          COALESCE(o.amount_hour + COALESCE(o.amount_day, 0), 0) AS total_amount,
           COALESCE(o.name, u.firstName || ' ' || u.lastName) AS name,
           COALESCE(o.department, u.department)               AS department
         FROM attendance_overtime o
@@ -107,6 +112,30 @@ export async function onRequestGet({ request, env }) {
         ORDER BY o.submitted_at DESC
         LIMIT ?
       `).bind(from, to, ...scopeParams, limit).all(),
+
+      // การลาล่าสุด
+      env.DB.prepare(`
+        SELECT
+          lr.uuid,
+          lr.leave_type,
+          lr.start_date,
+          lr.end_date,
+          lr.days,
+          lr.status,
+          lr.reason,
+          lr.created_at,
+          lr.approved_at,
+          u.firstName || ' ' || u.lastName   AS name,
+          u.department,
+          sv.firstName || ' ' || sv.lastName AS supervisor_name
+        FROM leave_records lr
+        JOIN users u ON u.uuid = lr.user_uuid
+        LEFT JOIN users sv ON sv.uuid = lr.supervisor_uuid
+        WHERE (lr.start_date <= ? AND lr.end_date >= ?)
+          AND lr.user_uuid IN (${inUUIDs})
+        ORDER BY lr.created_at DESC
+        LIMIT ?
+      `).bind(to, from, ...scopeParams, limit).all(),
     ]);
 
     return Response.json({
@@ -115,6 +144,7 @@ export async function onRequestGet({ request, env }) {
         recentCheckins:  recentCheckins.results  ?? [],
         recentRequests:  recentRequests.results  ?? [],
         recentOt:        recentOt.results        ?? [],
+        recentLeave:     recentLeave.results     ?? [],
       },
       meta: { from, to, limit, role: me.role, canFilter, ...scopeMeta },
     }, { headers: CORS });

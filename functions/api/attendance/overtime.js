@@ -266,6 +266,16 @@ export async function onRequest(context) {
       FROM users WHERE uuid = ? LIMIT 1
     `).bind(uuid).first();
 
+    if (
+      (userInfo?.ot_rate_per_hour == null || userInfo?.ot_rate_per_hour <= 0) &&
+      (userInfo?.ot_rate_per_day == null || userInfo?.ot_rate_per_day <= 0)
+    ) {
+      return json({
+        success: false,
+        message: 'ไม่สามารถบันทึก OT ได้ เนื่องจากยังไม่ได้กำหนดอัตราค่าตอบแทน OT กรุณาตั้งค่าที่เมนู หน้าหลัก > ตั้งค่าโปรไฟล์ > ข้อมูล OT'
+      }, 400);
+    }
+
     const ratePerHour = userInfo?.ot_rate_per_hour     ?? null;
     const ratePerDay  = userInfo?.ot_rate_per_day      ?? null;
 

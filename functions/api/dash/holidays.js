@@ -37,7 +37,7 @@ export async function onRequestGet({ request, env }) {
           id, name, date, type, note, is_recurring,
           created_by, created_at, updated_at
         FROM holidays
-        ORDER BY date ASC
+        ORDER BY date DESC
       `).all(),
 
       env.DB.prepare(`

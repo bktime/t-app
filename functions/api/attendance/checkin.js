@@ -2,6 +2,7 @@
 // POST /api/attendance/checkin  — checkin & checkout
 
 import { authUser, extractToken } from '../_auth.js';
+import {  BUENGKAN_POLYGON,  BUENGKAN_BOUNDS} from '../../lib/buengkan.js';
 
 const CORS = {
   'Access-Control-Allow-Origin':  '*',
@@ -66,41 +67,151 @@ function cleanText(text) {
     .trim();
 }
 
+
+function pointInPolygon(lat, lon, polygon) {
+  let inside = false;
+
+  for (
+    let i = 0, j = polygon.length - 1;
+    i < polygon.length;
+    j = i++
+  ) {
+    const xi = polygon[i][0];
+    const yi = polygon[i][1];
+
+    const xj = polygon[j][0];
+    const yj = polygon[j][1];
+
+    const intersect =
+      ((yi > lat) !== (yj > lat)) &&
+      (
+        lon <
+        ((xj - xi) * (lat - yi)) /
+        (yj - yi) +
+        xi
+      );
+
+    if (intersect) inside = !inside;
+  }
+
+  return inside;
+}
+
+function isBuengKanByBoundingBox(lat, lon) {
+  return (
+    lat >= BUENGKAN_BOUNDS.minLat &&
+    lat <= BUENGKAN_BOUNDS.maxLat &&
+    lon >= BUENGKAN_BOUNDS.minLon &&
+    lon <= BUENGKAN_BOUNDS.maxLon
+  );
+}
+
 async function checkBuengKan(lat, lon, env) {
+
+  // STEP 1 : LocationIQ
   try {
+
     const apiKey = env.LOCATIONIQ_KEY;
-    
+
     const res = await fetch(
-      `https://us1.locationiq.com/v1/reverse?key=${apiKey}&lat=${lat}&lon=${lon}&format=json`
+      `https://us1.locationiq.com/v1/reverse?key=${apiKey}&lat=${lat}&lon=${lon}&format=json`,
+      {
+        signal: AbortSignal.timeout(5000)
+      }
     );
 
-    if (!res.ok) {
-      console.error(`LocationIQ API error: ${res.status} ${res.statusText}`);
-      throw new Error(`API ERROR: ${res.status}`);
+    if (res.ok) {
+
+      const data = await res.json();
+      const addr = data.address || {};
+
+      const province =
+        addr.province ||
+        addr.state ||
+        addr.region ||
+        "";
+
+      const p = cleanText(province);
+
+      if (
+        p.includes("บึงกาฬ") ||
+        p.includes("bueng kan")
+      ) {
+
+        return {
+          inProvince: true,
+          source: "locationiq",
+          province,
+          city: addr.city || addr.town || addr.village || "-",
+          displayName: data.display_name || "-"
+        };
+
+      }
     }
 
-    const data = await res.json();
-    const addr = data.address || {};
+  } catch (err) {
 
-    let province = addr.province || addr.state || addr.region || "";
-    const p = cleanText(province);
+    console.warn(
+      "LocationIQ failed:",
+      err.message
+    );
 
-    const isProvince = p.includes("บึงกาฬ") || p.includes("bueng kan");
-
-    return {
-      inProvince: isProvince,
-      displayName: data.display_name || "-",
-      province: province,
-      city: addr.city || addr.town || addr.village || "-"
-    };
-  } catch (e) {
-    console.error('Location check error:', e.message);
-    return {
-      inProvince: false,
-      displayName: "-",
-      error: e.message
-    };
   }
+
+  // STEP 2 : Polygon
+  try {
+
+    if (
+      pointInPolygon(
+        lat,
+        lon,
+        BUENGKAN_POLYGON
+      )
+    ) {
+
+      return {
+        inProvince: true,
+        source: "polygon",
+        province: "บึงกาฬ",
+        city: "-",
+        displayName: "Polygon จังหวัดบึงกาฬ"
+      };
+
+    }
+
+  } catch (err) {
+
+    console.warn(
+      "Polygon failed:",
+      err.message
+    );
+
+  }
+
+  // STEP 3 : Bounding Box
+  if (
+    isBuengKanByBoundingBox(
+      lat,
+      lon
+    )
+  ) {
+
+return {
+  inProvince: true,
+  source: "bounding-box",
+  province: "บึงกาฬ",
+  city: "-",
+  displayName: "Bounding Box จังหวัดบึงกาฬ"
+};
+
+  }
+
+  return {
+    inProvince: false,
+    source: "none",
+    province: "-",
+    city: "-"
+  };
 }
 
 export async function onRequest(context) {
@@ -134,6 +245,9 @@ export async function onRequest(context) {
   ).bind(uuid).first();
   const approverUuid   = userInfo?.supervisor_code || null;
   const supervisorName = userInfo?.supervisor || null;
+  if (!approverUuid || !supervisorName) {
+    return json({ success: false, message: 'กรุณากำหนดหัวหน้าก่อน' }, 400);
+  }
 
   // ✅ เพิ่ม Validation: ตรวจสอบค่าพิกัดให้ถูกต้องก่อนไปใช้งาน
   let lat = latitude ? parseFloat(latitude) : null;
@@ -158,8 +272,14 @@ export async function onRequest(context) {
         inBuengKan: true,
         province: loc.province,
         city: loc.city,
+        source: loc.source,
         displayName: loc.displayName,
-        message: '✅ ตรวจพบว่าอยู่ในพื้นที่จังหวัดบึงกาฬ'
+        message:
+          loc.source === "locationiq"
+            ? "✅ ตรวจสอบจาก LocationIQ"
+            : loc.source === "polygon"
+            ? "✅ ตรวจสอบจาก Polygon จังหวัดบึงกาฬ"
+            : "✅ ตรวจสอบจาก Bounding Box จังหวัดบึงกาฬ"
       };
     } else {
       locationDisplay = `📍 นอกพื้นที่จังหวัดบึงกาฬ`;
