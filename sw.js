@@ -112,13 +112,13 @@ async function checkAndSendReminder() {
   const minute = now.getMinutes();
   const timeStr = `${hour}:${String(minute).padStart(2, '0')}`;
 
-  if (timeStr >= '7:40' && timeStr <= '7:50') {
+  if (timeStr >= '7:00' && timeStr <= '8:00') {
     showLocalNotification(
       '🕒 ถึงเวลาลงเวลาเข้างานแล้ว',
       'กรุณากดลงเวลาเข้างานวันนี้ครับ',
       'reminder-morning'
     );
-  } else if (timeStr >= '16:15' && timeStr <= '16:25') {
+  } else if (timeStr >= '16:30' && timeStr <= '17:00') {
     showLocalNotification(
       '🕒 ใกล้ถึงเวลาออกงานแล้ว',
       'อย่าลืมลงเวลาออกงานก่อนกลับบ้านนะครับ',

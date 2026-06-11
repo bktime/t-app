@@ -888,6 +888,10 @@
     <i class="fa-solid fa-paper-plane"></i>
     <span>ส่งคำขอ</span>
   </button>
+    <button class="btn-action btn-request" id="testBtn" onclick="checkIn()" >
+    <i class="fa-solid fa-paper-plane"></i>
+    <span>ทดสอบ</span>
+  </button>
 </div>
 
 <!-- Scripts -->
@@ -1310,6 +1314,7 @@ async function toggleButtonsByTime() {
         const nte = typea === "อื่นๆ" ? other : note;
         const ud = getUserData();
         const uuid = ud?.uuid || localStorage.getItem("uuid") || "";
+        const boss = ud?.supervisor_code || "";
         const name =
           (ud
             ? `${ud.prefix || ""}${ud.firstName || ""} ${ud.lastName || ""}`.trim()
@@ -1322,6 +1327,19 @@ async function toggleButtonsByTime() {
             title: "ยังไม่ได้เข้าสู่ระบบ",
             text: "กรุณา login ก่อน",
           });
+          return;
+        }
+        if(!boss) {
+        Swal.fire({
+  icon: "error",
+  title: "ยังไม่กำหนดหัวหน้า",
+  text: "กรุณากำหนดหัวหน้าก่อน หรือติดต่อ HR, IT",
+  confirmButtonText: "กำหนดหัวหน้า"
+}).then((result) => {
+  if (result.isConfirmed) {
+    window.open("/profile#sec-related", "_blank");
+  }
+});
           return;
         }
 

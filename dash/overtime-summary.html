@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="th" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>สรุปค่าตอบแทน OT รายเดือน · ระบบบริหารงานบุคคล</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700;800&family=Sarabun:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+:root{
+  --bg:#07090f;--bg2:#0c1018;--bg3:#111827;
+  --card:rgba(17,24,39,0.82);--card-s:#111827;
+  --sur:rgba(255,255,255,0.03);--sur2:rgba(255,255,255,0.055);
+  --bd:rgba(255,255,255,0.07);--bd2:rgba(255,255,255,0.13);--bda:rgba(16,185,129,0.28);
+  --tx:#f1f5f9;--tx2:#94a3b8;--tx3:#4b5563;
+  --em:#10b981;--em2:#34d399;--emd:#059669;--emg:rgba(16,185,129,0.18);--embg:rgba(16,185,129,0.07);
+  --bl:#60a5fa;--blbg:rgba(96,165,250,0.07);--blb:rgba(96,165,250,0.22);
+  --in:#818cf8;--inbg:rgba(129,140,248,0.07);--inb:rgba(129,140,248,0.22);
+  --am:#fbbf24;--ambg:rgba(251,191,36,0.07);--amb:rgba(251,191,36,0.22);
+  --ro:#fb7185;--robg:rgba(251,113,133,0.07);--rob:rgba(251,113,133,0.22);
+  --pu:#c084fc;--pubg:rgba(192,132,252,0.07);--pub:rgba(192,132,252,0.22);
+  --cy:#22d3ee;--cybg:rgba(34,211,238,0.07);--cyb:rgba(34,211,238,0.22);
+  --rr-xs:8px;--rr-sm:12px;--rr-md:16px;--rr-lg:22px;
+  --shad:0 20px 60px -15px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.04);
+  --ease:cubic-bezier(0.16,1,0.3,1);--T:.22s;--sw:240px;
+  --topbar-bg:rgba(7,9,15,.88);
+}
+[data-theme="light"]{
+  --bg:#f0f4fb;--bg2:#e4eaf5;--bg3:#dde5f0;
+  --card:rgba(255,255,255,.92);--card-s:#fff;
+  --sur:rgba(0,0,0,.02);--sur2:rgba(0,0,0,.045);
+  --bd:rgba(0,0,0,.07);--bd2:rgba(0,0,0,.13);--bda:rgba(5,150,105,.25);
+  --tx:#0f172a;--tx2:#475569;--tx3:#94a3b8;
+  --em:#059669;--em2:#047857;--emd:#047857;--emg:rgba(5,150,105,.14);--embg:rgba(5,150,105,.07);
+  --bl:#2563eb;--blbg:rgba(37,99,235,.06);--blb:rgba(37,99,235,.2);
+  --in:#6366f1;--inbg:rgba(99,102,241,.06);--inb:rgba(99,102,241,.2);
+  --am:#d97706;--ambg:rgba(217,119,6,.06);--amb:rgba(217,119,6,.2);
+  --ro:#e11d48;--robg:rgba(225,29,72,.06);--rob:rgba(225,29,72,.2);
+  --pu:#9333ea;--pubg:rgba(147,51,234,.06);--pub:rgba(147,51,234,.2);
+  --cy:#0891b2;--cybg:rgba(8,145,178,.06);--cyb:rgba(8,145,178,.2);
+  --shad:0 8px 30px -6px rgba(0,0,0,.1),0 0 0 1px rgba(0,0,0,.05);
+  --topbar-bg:rgba(240,244,251,.9);
+}
+[data-theme="light"] .orb{opacity:.05;}
+
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;display:flex;-webkit-font-smoothing:antialiased;overflow-x:hidden;}
+
+.bg-l{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none;}
+.orb{position:absolute;border-radius:50%;filter:blur(110px);opacity:.18;animation:oF 28s infinite ease-in-out;}
+.o1{width:600px;height:600px;background:#059669;top:-20%;left:-15%;animation-duration:24s;}
+.o2{width:450px;height:450px;background:#1e40af;bottom:-15%;right:-10%;animation-duration:30s;animation-delay:-8s;}
+.o3{width:300px;height:300px;background:#7c3aed;top:40%;left:45%;opacity:.08;animation-duration:36s;animation-delay:-16s;}
+@keyframes oF{0%,100%{transform:translate(0,0)scale(1);}33%{transform:translate(40px,-30px)scale(1.06);}66%{transform:translate(-25px,35px)scale(.95);}}
+
+.sidebar{position:fixed;left:0;top:0;bottom:0;width:var(--sw);background:var(--card);border-right:1px solid var(--bd);backdrop-filter:blur(24px);z-index:100;display:flex;flex-direction:column;transition:all .25s ease;}
+:root{--sw-mini:72px;}
+.main{margin-left:var(--sw);flex:1;min-width:0;position:relative;z-index:10;padding-bottom:3rem;transition:all .25s ease;}
+.sidebar.collapsed{width:var(--sw-mini);}
+.main.collapsed{margin-left:var(--sw-mini);}
+.sidebar.collapsed .logo-tx,.sidebar.collapsed .logo-sub,.sidebar.collapsed .nav-sec,.sidebar.collapsed .u-nm,
+.sidebar.collapsed .u-rl,.sidebar.collapsed .u-arr{display:none;}
+.sidebar.collapsed .ni{justify-content:center;padding:.7rem;font-size:0;}
+.sidebar.collapsed .ni i{font-size:1rem;width:auto;}
+.sidebar.collapsed .sb-logo{justify-content:center;}
+.sidebar.collapsed .user-pill{justify-content:center;}
+
+.sb-logo{padding:1.4rem 1.2rem 1rem;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--bd);}
+.logo-mk{width:38px;height:38px;border-radius:var(--rr-sm);background:linear-gradient(135deg,var(--emd),var(--em));display:flex;align-items:center;justify-content:center;color:#fff;font-size:1rem;flex-shrink:0;box-shadow:0 6px 20px var(--emg);}
+.logo-tx{font-family:'Kanit',sans-serif;font-size:.88rem;font-weight:700;line-height:1.2;}
+.logo-sub{font-size:.62rem;color:var(--tx3);}
+.nav{flex:1;padding:.9rem .7rem;overflow-y:auto;}
+.nav-sec{font-family:'Kanit',sans-serif;font-size:.57rem;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--tx3);padding:.45rem .5rem .35rem;margin-top:.4rem;}
+.ni{display:flex;align-items:center;gap:9px;padding:.55rem .7rem;border-radius:var(--rr-sm);font-size:.8rem;color:var(--tx2);cursor:pointer;transition:all var(--T);margin-bottom:2px;text-decoration:none;font-family:'Sarabun',sans-serif;font-weight:500;}
+.ni i{font-size:.77rem;width:15px;text-align:center;opacity:.65;}
+.ni:hover{background:var(--sur2);color:var(--tx);}
+.ni:hover i{opacity:1;}
+.ni.active{background:var(--embg);color:var(--em);border:1px solid var(--bda);}
+.ni.active i{opacity:1;}
+.sb-foot{padding:.9rem .7rem;border-top:1px solid var(--bd);}
+.user-pill{position:relative;display:flex;align-items:center;gap:9px;padding:.55rem .7rem;border-radius:var(--rr-sm);background:var(--sur);border:1px solid var(--bd);cursor:pointer;transition:all var(--T);}
+.user-pill:hover{border-color:var(--bd2);}
+.u-av{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--emd),var(--em));display:flex;align-items:center;justify-content:center;color:#fff;font-size:.68rem;font-weight:700;flex-shrink:0;}
+.u-nm{font-size:.73rem;font-weight:600;color:var(--tx);line-height:1.2;}
+.u-rl{font-size:.6rem;color:var(--tx3);}
+.u-arr{margin-left:auto;font-size:.62rem;color:var(--tx3);}
+.user-dropdown{position:absolute;left:0;right:0;bottom:calc(100% + 10px);padding:.35rem;border-radius:14px;background:var(--sur);border:1px solid var(--bd);box-shadow:0 12px 30px rgba(0,0,0,.18);opacity:0;visibility:hidden;transform:translateY(8px);transition:all .2s ease;z-index:1000;}
+.user-dropdown.show{opacity:1;visibility:visible;transform:translateY(0);}
+.user-dropdown a{display:flex;align-items:center;gap:.65rem;padding:.75rem .8rem;border-radius:10px;text-decoration:none;color:var(--tx);font-size:.72rem;font-weight:500;transition:background .18s ease;}
+.user-dropdown a:hover{background:var(--sur2);}
+.nav-back{width:36px;height:36px;border-radius:10px;border:none;background:var(--sur2);color:var(--tx);font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .15s;}
+.nav-back:hover{background:var(--bd);}
+.sb-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:99;backdrop-filter:blur(4px);}
+.sb-ov.show{display:block;}
+.menu-btn{display:none;position:fixed;top:1rem;left:1rem;z-index:101;background:var(--card);border:1px solid var(--bd);color:var(--tx2);cursor:pointer;border-radius:var(--rr-sm);padding:8px 10px;font-size:.9rem;backdrop-filter:blur(16px);transition:all var(--T);}
+.menu-btn:hover{color:var(--tx);border-color:var(--bd2);}
+@media(max-width:900px){.sidebar{transform:translateX(-100%);}.sidebar.open{transform:translateX(0);}.menu-btn{display:flex;align-items:center;}.main{margin-left:0!important;}}
+
+.topbar{position:sticky;top:0;z-index:50;background:var(--topbar-bg);border-bottom:1px solid var(--bd);backdrop-filter:blur(20px);padding:.8rem 1.6rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap;}
+.tb-left{flex:1;min-width:0;}
+.tb-title{font-family:'Kanit',sans-serif;font-size:1.1rem;font-weight:700;display:flex;align-items:center;gap:8px;letter-spacing:-.01em;}
+.tb-sub{font-size:.7rem;color:var(--tx3);margin-top:1px;}
+.tb-right{display:flex;align-items:center;gap:7px;flex-wrap:wrap;}
+.icon-btn{width:33px;height:33px;border-radius:var(--rr-sm);border:1px solid var(--bd);background:var(--sur);color:var(--tx2);cursor:pointer;font-size:.78rem;display:flex;align-items:center;justify-content:center;transition:all var(--T);flex-shrink:0;}
+.icon-btn:hover{color:var(--tx);border-color:var(--bd2);background:var(--sur2);}
+.icon-btn.spin i{animation:spin .7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+.filter-bar{padding:.65rem 1.6rem;background:var(--sur);border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:.65rem;flex-wrap:wrap;min-height:52px;}
+.filter-label{font-family:'Kanit',sans-serif;font-size:.65rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--tx3);display:flex;align-items:center;gap:5px;flex-shrink:0;}
+.fsel{font-family:'Kanit',sans-serif;font-size:.75rem;padding:.38rem .75rem;border-radius:var(--rr-sm);border:1px solid var(--bd);background:var(--card);color:var(--tx2);outline:none;cursor:pointer;transition:all var(--T);min-width:140px;}
+.fsel:focus,.fsel:hover{border-color:var(--bda);color:var(--tx);}
+.month-in{font-family:'Kanit',sans-serif;font-size:.75rem;padding:.38rem .75rem;border-radius:var(--rr-sm);border:1px solid var(--bd);background:var(--card);color:var(--tx2);outline:none;transition:all var(--T);cursor:pointer;}
+.month-in:focus,.month-in:hover{border-color:var(--bda);color:var(--tx);}
+.date-nav-btn{width:30px;height:30px;border-radius:var(--rr-xs);border:1px solid var(--bd);background:var(--sur);color:var(--tx2);cursor:pointer;font-size:.72rem;display:flex;align-items:center;justify-content:center;transition:all var(--T);flex-shrink:0;}
+.date-nav-btn:hover{color:var(--tx);border-color:var(--bd2);background:var(--sur2);}
+.filter-bar-right{margin-left:auto;display:flex;align-items:center;gap:.5rem;}
+
+.content{padding:1.4rem 1.6rem;}
+.sh{display:flex;align-items:center;justify-content:space-between;margin-bottom:.9rem;}
+.sh-t{font-family:'Kanit',sans-serif;font-size:.6rem;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--tx3);display:flex;align-items:center;gap:7px;}
+.sh-t::after{content:'';width:24px;height:1px;background:var(--bd);}
+
+.kpi-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:.7rem;margin-bottom:1.2rem;}
+.kpi-s{background:var(--card);border:1px solid var(--bd);border-radius:var(--rr-md);padding:.85rem 1rem;backdrop-filter:blur(20px);display:flex;align-items:center;gap:.75rem;animation:fu .4s var(--ease) both;}
+@keyframes fu{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.kpi-s-ico{width:34px;height:34px;border-radius:var(--rr-xs);display:flex;align-items:center;justify-content:center;font-size:.82rem;flex-shrink:0;}
+.kpi-s-val{font-family:'Kanit',sans-serif;font-size:1.45rem;font-weight:800;line-height:1;}
+.kpi-s-lbl{font-size:.65rem;color:var(--tx2);margin-top:2px;}
+.cg .kpi-s-ico{background:var(--embg);border:1px solid var(--bda);color:var(--em);}
+.cb .kpi-s-ico{background:var(--blbg);border:1px solid var(--blb);color:var(--bl);}
+.ca .kpi-s-ico{background:var(--ambg);border:1px solid var(--amb);color:var(--am);}
+.cr .kpi-s-ico{background:var(--robg);border:1px solid var(--rob);color:var(--ro);}
+.ci .kpi-s-ico{background:var(--inbg);border:1px solid var(--inb);color:var(--in);}
+
+.panel{background:var(--card);border:1px solid var(--bd);border-radius:var(--rr-md);backdrop-filter:blur(20px);overflow:hidden;animation:fu .4s var(--ease) .08s both;}
+.ph{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.2rem;border-bottom:1px solid var(--bd);flex-wrap:wrap;gap:.5rem;}
+.pt{font-family:'Kanit',sans-serif;font-size:.83rem;font-weight:700;display:flex;align-items:center;gap:7px;}
+.pt i{font-size:.75rem;opacity:.55;}
+
+.btn-prim{font-family:'Kanit',sans-serif;font-size:.75rem;font-weight:600;padding:.42rem .9rem;border-radius:var(--rr-sm);border:1px solid var(--bda);background:var(--embg);color:var(--em);cursor:pointer;display:flex;align-items:center;gap:6px;transition:all var(--T);}
+.btn-prim:hover{background:var(--emd);color:#fff;border-color:var(--emd);}
+
+.export-wrap{position:relative;}
+.export-dd{position:absolute;right:0;top:calc(100% + 6px);background:var(--bg3);border:1px solid var(--bd2);border-radius:var(--rr-sm);min-width:200px;box-shadow:var(--shad);opacity:0;visibility:hidden;transform:translateY(6px);transition:all .18s ease;z-index:200;padding:.3rem;}
+.export-dd.show{opacity:1;visibility:visible;transform:translateY(0);}
+.export-item{display:flex;align-items:center;gap:8px;padding:.55rem .8rem;border-radius:8px;font-size:.75rem;color:var(--tx2);cursor:pointer;transition:background .15s;}
+.export-item:hover{background:var(--sur2);color:var(--tx);}
+.export-item i{font-size:.72rem;width:14px;text-align:center;}
+.export-item.disabled{opacity:.4;cursor:not-allowed;pointer-events:none;}
+
+.sk{background:linear-gradient(90deg,var(--sur) 25%,var(--sur2) 50%,var(--sur) 75%);background-size:200% 100%;animation:skL 1.4s infinite;border-radius:6px;}
+@keyframes skL{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+.toast{position:fixed;bottom:1.5rem;right:1.5rem;z-index:9999;display:flex;align-items:center;gap:10px;padding:.7rem 1.1rem;border-radius:var(--rr-sm);font-size:.78rem;font-weight:500;font-family:'Kanit',sans-serif;box-shadow:var(--shad);animation:toIn .25s var(--ease);backdrop-filter:blur(12px);}
+.toast.ok{background:var(--embg);border:1px solid var(--bda);color:var(--em);}
+.toast.err{background:var(--robg);border:1px solid var(--rob);color:var(--ro);}
+@keyframes toIn{from{transform:translateY(12px);opacity:0}to{transform:translateY(0);opacity:1}}
+
+.empty-state{padding:3rem 1rem;text-align:center;color:var(--tx3);}
+.empty-state i{font-size:2.5rem;opacity:.3;margin-bottom:.75rem;display:block;}
+.empty-state p{font-size:.8rem;}
+
+/* ══════════════════════════════
+   ตาราง OT Grid (แก้ Bug การแสดงผล)
+   ══════════════════════════════ */
+.tbl-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+
+.ot-grid{
+  width:100%;
+  border-collapse:separate; /* แก้บั๊กเส้นขอบหายเวลา scroll */
+  border-spacing:0; 
+  font-family:'Sarabun',sans-serif;
+  font-size:.72rem;
+  table-layout:fixed; /* บังคับให้ช่องมีขนาดตายตัวตามที่เรากำหนด */
+}
+.ot-grid th, .ot-grid td{
+  padding:.35rem .4rem;
+  border-bottom:1px solid var(--bd);
+  border-right:1px solid var(--bd);
+  color:var(--tx2);vertical-align:middle;
+  background:var(--card-s);
+}
+.ot-grid thead th{
+  font-family:'Kanit',sans-serif;font-size:.58rem;font-weight:600;
+  letter-spacing:.06em;text-transform:uppercase;
+  color:var(--tx3);background:var(--sur);
+  text-align:center;white-space:nowrap;
+  position:sticky;top:0;z-index:3;
+}
+
+/* Left Sticky Columns */
+.ot-grid .col-no{position:sticky;left:0;width:40px;min-width:40px;z-index:2;text-align:center;color:var(--tx3);font-family:'JetBrains Mono',monospace;font-size:.68rem;}
+.ot-grid .col-name{position:sticky;left:40px;width:160px;min-width:160px;z-index:2;font-weight:600;color:var(--tx);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ot-grid .col-pos{position:sticky;left:200px;width:140px;min-width:140px;z-index:2;font-size:.68rem;color:var(--tx3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+
+/* ทำให้หัวตารางฝั่งซ้ายติด layer บนสุด */
+.ot-grid thead .col-no,.ot-grid thead .col-name,.ot-grid thead .col-pos{z-index:4;}
+
+/* Day Columns */
+.ot-grid .col-day{
+  text-align:center;font-size:.65rem;padding:.2rem .1rem;
+  width:30px;min-width:30px;max-width:36px;cursor:default;overflow:hidden;
+}
+.ot-grid .col-day.has-ot{background:var(--embg);cursor:pointer;}
+.ot-grid .col-day.has-ot:hover{background:var(--emg);}
+.ot-grid .col-day.is-holiday-col{background:var(--ambg);}
+.ot-grid .col-day.has-ot.is-holiday-col{background:var(--ambg);}
+.ot-grid .col-day.has-ot.is-holiday-col:hover{background:var(--amb);}
+
+/* Right Sticky Columns (กำหนดค่าความกว้างและตำแหน่งแบบตายตัวเพื่อแก้บั๊กคอลัมน์เลื่อน) */
+.ot-grid .col-sum-normal{position:sticky;right:490px;width:70px;min-width:70px;z-index:2;text-align:center;font-family:'JetBrains Mono',monospace;color:var(--cy);}
+.ot-grid .col-sum-holiday{position:sticky;right:420px;width:70px;min-width:70px;z-index:2;text-align:center;font-family:'JetBrains Mono',monospace;color:var(--am);}
+.ot-grid .col-amount{position:sticky;right:320px;width:100px;min-width:100px;z-index:2;text-align:center;font-family:'JetBrains Mono',monospace;color:var(--em);}
+.ot-grid .col-date-recv{position:sticky;right:220px;width:100px;min-width:100px;z-index:2;text-align:center;}
+.ot-grid .col-sig{position:sticky;right:100px;width:120px;min-width:120px;z-index:2;text-align:center;}
+.ot-grid .col-note-fin{position:sticky;right:0;width:100px;min-width:100px;z-index:2;text-align:center;}
+
+/* ทำให้หัวตารางฝั่งขวาติด layer บนสุด */
+.ot-grid thead .col-sum-normal,.ot-grid thead .col-sum-holiday,.ot-grid thead .col-amount,
+.ot-grid thead .col-date-recv,.ot-grid thead .col-sig,.ot-grid thead .col-note-fin{z-index:4;}
+
+/* Hover Effect */
+.ot-grid tbody tr:hover td{background:var(--sur);}
+.ot-grid tbody tr:hover .col-fix,.ot-grid tbody tr:hover .col-sum-normal,
+.ot-grid tbody tr:hover .col-sum-holiday,.ot-grid tbody tr:hover .col-amount,
+.ot-grid tbody tr:hover .col-date-recv,.ot-grid tbody tr:hover .col-sig,
+.ot-grid tbody tr:hover .col-note-fin{background:var(--sur2)!important;}
+
+/* Row Total */
+.ot-grid tr.row-total td{background:var(--sur2)!important;font-family:'Kanit',sans-serif;font-weight:700;color:var(--tx)!important;border-top:2px solid var(--bd2);}
+
+.day-time{
+  font-family:'JetBrains Mono',monospace;font-size:.58rem;
+  line-height:1.2;color:var(--em);font-weight:600;
+  writing-mode:vertical-rl;text-orientation:mixed;
+  transform:rotate(180deg);display:inline-block;white-space:nowrap;
+}
+.day-time.holiday{color:var(--am);}
+
+.sign-section{display:grid;grid-template-columns:1fr 1fr;gap:2rem;padding:1.5rem 1.2rem 1rem;border-top:1px solid var(--bd);}
+.sign-box{text-align:center;}
+.sign-role{font-family:'Kanit',sans-serif;font-size:.72rem;font-weight:600;color:var(--tx2);margin-bottom:1.5rem;}
+.sign-line{padding-top:.4rem;font-size:.72rem;color:var(--tx3);}
+
+.day-detail-popover{
+  position:fixed;z-index:9000;
+  background:var(--card-s);border:1px solid var(--bd2);
+  border-radius:var(--rr-md);box-shadow:var(--shad);
+  padding:.8rem 1rem;min-width:200px;max-width:280px;
+  animation:fu .15s var(--ease);font-size:.75rem;
+}
+.dpo-name{font-family:'Kanit',sans-serif;font-weight:700;font-size:.82rem;color:var(--tx);margin-bottom:.4rem;}
+.dpo-date{font-size:.65rem;color:var(--tx3);margin-bottom:.6rem;}
+.dpo-row{display:flex;justify-content:space-between;gap:.8rem;padding:.25rem 0;border-bottom:1px solid var(--bd);}
+.dpo-row:last-child{border:none;}
+.dpo-lbl{color:var(--tx3);}
+.dpo-val{font-weight:600;color:var(--tx);font-family:'JetBrains Mono',monospace;}
+
+/* ══════════════════
+   PRINT STYLES
+   ══════════════════ */
+@media print {
+  *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;}
+  html,body{background:#fff!important;color:#000!important;}
+  .bg-l,.sidebar,.topbar,.filter-bar,.menu-btn,.sb-ov,
+  .kpi-row,.sh,.ph .export-wrap,.ph .btn-prim,
+  .icon-btn,.day-detail-popover,.toast{display:none!important;}
+  .main{margin-left:0!important;padding:0!important;}
+  .content{padding:0!important;}
+  .panel{border:none!important;background:transparent!important;box-shadow:none!important;overflow:visible!important;}
+  .ph{padding:.5rem 0!important;}
+  .print-header{display:block!important;}
+
+  @page{size:landscape;margin:6mm 8mm;}
+
+  body.prevent-print .panel,
+  body.prevent-print .print-header,
+  body.prevent-print .print-total-row,
+  body.prevent-print .sign-section { display: none !important; }
+  body.prevent-print::after {
+    content: "⚠️ ไม่สามารถพิมพ์ได้ เนื่องจากมีรายการ OT ที่ยังไม่ได้รับการอนุมัติ (Approved) ทั้งหมด";
+    display: flex; align-items: center; justify-content: center;
+    height: 100vh; width: 100vw; font-size: 16pt;
+    font-family: 'Kanit', sans-serif; color: #000; text-align: center;
+  }
+
+  .tbl-scroll{overflow:visible!important;height:auto!important;}
+  .ot-grid{
+    min-width:0!important;width:100%!important;table-layout:auto!important;
+    font-family:'Sarabun',sans-serif!important;font-size:9pt!important;
+    border-collapse:collapse!important;
+  }
+  .ot-grid th{
+    font-size:7pt!important;background:#f5f5f5!important;
+    color:#000!important;border:1px solid #999!important;
+    padding:3px 4px!important;position:static!important;
+    white-space:normal!important;z-index:auto!important;
+  }
+  .ot-grid td{
+    color:#000!important;border:1px solid #ccc!important;
+    padding:3px 4px!important;vertical-align:middle!important;
+    position:static!important;background:#fff!important;
+    font-size:8pt!important;z-index:auto!important;
+  }
+  .ot-grid tr.row-total td{background:#f5f5f5!important;font-weight:bold!important;}
+  .ot-grid td.col-day.has-ot{background:#d1fae5!important;color:#000!important;}
+  .ot-grid td.col-day.has-ot.is-holiday-col{background:#fef3c7!important;}
+
+  .ot-grid .col-pos{display:none!important;}
+  .ot-grid .col-name{width:auto!important;overflow:visible!important;}
+
+  .print-total-row{display:block!important;}
+  .sign-section{border-top:2px solid #000!important;padding:1rem 0 0!important;}
+  .sign-box{font-family:'Sarabun',sans-serif!important;font-size:10pt!important;}
+  .sign-role{margin-bottom:2rem!important;color:#000!important;}
+  .sign-line{color:#000!important;}
+}
+.print-header{display:none;}
+.print-total-row{display:none;}
+</style>
+</head>
+<body>
+
+<div class="bg-l"><div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div></div>
+<div class="sb-ov" id="sbOv" onclick="closeSb()"></div>
+<button class="menu-btn" onclick="openSb()"><i class="fa-solid fa-bars"></i></button>
+
+<aside class="sidebar" id="sidebar">
+  <div class="sb-logo">
+    <div class="logo-mk"><i class="fa-solid fa-chart-line"></i></div>
+    <div><div class="logo-tx">HR System</div><div class="logo-sub">บริหารงานบุคคล</div></div>
+  </div>
+  <nav class="nav">
+    <div class="nav-sec">หลัก</div>
+    <a class="ni" href="index.html"><i class="fa-solid fa-gauge-high"></i>Dashboard</a>
+    <div class="nav-sec">การลงเวลา</div>
+    <a class="ni" href="attendance.html"><i class="fa-solid fa-user-check"></i>การลงเวลารายวัน</a><a class="ni" href="attendance-monthly.html"><i class="fa-solid fa-chart-column"></i>สรุปการลงเวลารายเดือน</a>
+    <div class="nav-sec">นอกเวลา</div>
+    <a class="ni" href="overtime.html"><i class="fa-solid fa-business-time"></i>การปฏิบัติงานล่วงเวลา</a>
+    <a class="ni active" href="overtime-summary.html"><i class="fa-solid fa-file-invoice-dollar"></i>สรุปค่าตอบแทน OT</a>
+    <div class="nav-sec">ประวัติการลา</div>
+    <a class="ni" href="leave-record.html"><i class="fa-solid fa-plane-departure"></i>บันทึกการลา</a>
+    <div class="nav-sec">ระบบ</div>
+    <a class="ni" href="users.html"><i class="fa-solid fa-id-card"></i>ผู้ใช้งาน</a><a class="ni" href="organizations.html"><i class="fa-solid fa-building-user"></i>หน่วยงาน</a><a class="ni" href="holidays.html"><i class="fa-solid fa-umbrella-beach"></i>วันหยุดนักขัตฤกษ์</a>
+  </nav>
+  <div class="sb-foot">
+    <div class="user-pill" id="userMenuBtn">
+      <div class="u-av" id="uAv">A</div><div><div class="u-nm" id="uNm">กำลังโหลด…</div><div class="u-rl" id="uRl">—</div></div>
+      <i class="fa-solid fa-chevron-right u-arr"></i>
+      <div class="user-dropdown" id="userDropdown"><a href="/index.html"><i class="fa-solid fa-house"></i>กลับหน้าหลัก</a></div>
+    </div>
+  </div>
+</aside>
+
+<main class="main">
+  <div class="topbar">
+    <div class="tb-left">
+      <div class="tb-title">
+        <button class="nav-back" onclick="history.length>1?history.back():location.href='overtime.html'" title="ย้อนกลับ"><i class="fa-solid fa-arrow-left"></i></button>
+        <i class="fa-solid fa-file-invoice-dollar" style="font-size:.85rem;opacity:.6"></i>หลักฐานการจ่ายเงินค่าตอบแทน OT
+      </div>
+      <div class="tb-sub" id="tbSub">—</div>
+    </div>
+    <div class="tb-right">
+      <button class="icon-btn" onclick="toggleSidebar()" title="แสดง/ซ่อนแถบเมนู"><i class="fa-solid fa-bars"></i></button>
+      <button class="icon-btn" id="refBtn" onclick="loadAll()" title="รีเฟรช"><i class="fa-solid fa-rotate-right"></i></button>
+      <button class="icon-btn" onclick="toggleTheme()" title="เปลี่ยนธีม"><i class="fa-solid fa-circle-half-stroke"></i></button>
+    </div>
+  </div>
+
+  <div class="filter-bar">
+    <span class="filter-label"><i class="fa-solid fa-calendar-days"></i>เดือน</span>
+    <button class="date-nav-btn" onclick="shiftMonth(-1)"><i class="fa-solid fa-chevron-left"></i></button>
+    <input type="month" id="monthIn" class="month-in" onchange="loadAll()">
+    <button class="date-nav-btn" onclick="shiftMonth(1)"><i class="fa-solid fa-chevron-right"></i></button>
+    <button class="date-nav-btn" onclick="goThisMonth()" style="width:auto;padding:0 8px;font-size:.65rem;font-family:'Kanit',sans-serif;">เดือนนี้</button>
+    <select class="fsel" id="selAff" onchange="filterByAff()"><option value="">— ทุกหน่วยงาน —</option></select>
+    <select class="fsel" id="selDep" onchange="loadAll()"><option value="">— ทุกกอง/แผนก —</option></select>
+    <div class="filter-bar-right"><span id="filterCount" style="font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--tx3)"></span></div>
+  </div>
+
+  <div class="content">
+    <div class="kpi-row" id="kpiRow"></div>
+    <div class="sh"><div class="sh-t"><i class="fa-solid fa-table" style="opacity:.4"></i>ตารางหลักฐานการจ่ายเงิน</div></div>
+
+    <div class="panel" id="mainPanel">
+      <div class="ph">
+        <div class="pt"><i class="fa-solid fa-file-invoice-dollar"></i><span id="panelTitle">—</span></div>
+        <div style="display:flex;align-items:center;gap:.5rem;">
+          <div class="export-wrap">
+            <button class="btn-prim" onclick="toggleExport()" style="gap:5px;"><i class="fa-solid fa-download"></i>ส่งออก<i class="fa-solid fa-chevron-down" style="font-size:.55rem;margin-left:1px"></i></button>
+            <div class="export-dd" id="exportDd">
+              <!-- เพิ่ม id="btnPrint" เพื่อไว้ล็อคปุ่ม -->
+              <div class="export-item" id="btnPrint" onclick="printPage()"><i class="fa-solid fa-print"></i>พิมพ์ตาราง</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="print-header" id="printHeader" style="padding:.8rem 1rem .5rem;font-family:'Sarabun',sans-serif;">
+        <div style="text-align:center;font-size:14pt;font-weight:bold;margin-bottom:2px">หลักฐานการจ่ายเงินค่าตอบแทนการปฏิบัติงานนอกเวลาราชการ</div>
+        <div style="text-align:center;font-size:11pt;margin-bottom:6px">ส่วนราชการ <span id="phAff">—</span>&nbsp;&nbsp;&nbsp;&nbsp;<span id="phMonth2">—</span></div>
+      </div>
+
+      <div class="tbl-scroll" id="tblScroll">
+        <div id="tblContainer"><div class="empty-state"><i class="fa-solid fa-table"></i><p>กำลังโหลดข้อมูล...</p></div></div>
+      </div>
+
+      <div class="print-total-row" id="printTotalRow" style="padding:.4rem 1rem;font-family:'Sarabun',sans-serif;font-size:10pt;font-weight:bold;">
+        รวมเงินจ่ายทั้งสิ้น (อักษร) <span id="printTotalTxt">—</span>
+      </div>
+
+      <div class="sign-section" id="signSection">
+        <div class="sign-box"><div class="sign-role">ผู้รับรองการปฏิบัติงาน</div><div style="margin-bottom:2.5rem"></div><div class="sign-line">ลงชื่อ .................................................</div></div>
+        <div class="sign-box"><div class="sign-role">ผู้จ่ายเงิน</div><div style="margin-bottom:2.5rem"></div><div class="sign-line">ลงชื่อ .................................................</div></div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<div class="day-detail-popover" id="dayPopover" style="display:none;"></div>
+
+<script>
+const API = '/api';
+const $ = id => document.getElementById(id);
+
+function authH() {
+  const t = localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token') || '';
+  return { Authorization: `Bearer ${t}` };
+}
+
+async function safeJson(res) {
+  try { const text = await res.text(); if (!text?.trim()) return { success: res.ok, message: `HTTP ${res.status}` }; return JSON.parse(text); } 
+  catch(e) { return { success: false, message: `Parse error: ${e.message}` }; }
+}
+
+function toast(msg, type='ok', ms=3200) {
+  document.querySelectorAll('.toast').forEach(t => t.remove());
+  const d = document.createElement('div'); d.className = `toast ${type}`;
+  d.innerHTML = `<i class="fa-solid fa-${type==='ok'?'circle-check':'circle-exclamation'}"></i>${msg}`;
+  document.body.appendChild(d); setTimeout(() => d.remove(), ms);
+}
+
+function toggleTheme() { const html = document.documentElement; const t = html.dataset.theme === 'light' ? 'dark' : 'light'; html.dataset.theme = t; localStorage.setItem('theme', t); }
+(()=>{ const t = localStorage.getItem('theme'); if(t) document.documentElement.dataset.theme = t; })();
+
+function openSb(){ $('sidebar').classList.add('open'); $('sbOv').classList.add('show'); }
+function closeSb(){ $('sidebar').classList.remove('open'); $('sbOv').classList.remove('show'); }
+function toggleSidebar(){ const sb = $('sidebar'), mn = document.querySelector('.main'); sb.classList.toggle('collapsed'); mn.classList.toggle('collapsed'); localStorage.setItem('sidebarCollapsed', sb.classList.contains('collapsed')); }
+
+function thisMonthISO() { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`; }
+
+const THAI_MON = ['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
+const DOW_TH   = ['อา','จ','อ','พ','พฤ','ศ','ส'];
+
+function fmtThaiMonth(ym) { if(!ym) return '—'; const [y, m] = ym.split('-').map(Number); return `${THAI_MON[m-1]} พ.ศ. ${y+543}`; }
+
+function bahtText(n) {
+  if (!n || n === 0) return 'ศูนย์บาทถ้วน';
+  const ones  = ['','หนึ่ง','สอง','สาม','สี่','ห้า','หก','เจ็ด','แปด','เก้า'];
+  const units = ['','สิบ','ร้อย','พัน','หมื่น','แสน','ล้าน'];
+  function chunk(num) {
+    let r = '', str = String(Math.floor(num)).split('').reverse();
+    for (let i = 0; i < str.length; i++) {
+      const d = Number(str[i]); if (!d) continue;
+      if (i === 0 && str.length > 1 && d === 1) r = 'เอ็ด' + r;
+      else if (i === 1 && d === 1) r = 'สิบ' + r;
+      else if (i === 1 && d === 2) r = 'ยี่สิบ' + r;
+      else r = ones[d] + units[i] + r;
+    } return r;
+  }
+  const parts = String(Math.round(n * 100) / 100).split('.');
+  const intPart  = parseInt(parts[0], 10);
+  const decPart  = parts[1] ? parseInt(parts[1].padEnd(2,'0').slice(0,2), 10) : 0;
+  let txt = chunk(intPart) + 'บาท';
+  if (decPart) txt += chunk(decPart) + 'สตางค์'; else txt += 'ถ้วน';
+  return txt;
+}
+
+function shiftMonth(n) { const [y, m] = $('monthIn').value.split('-').map(Number); const d = new Date(y, m-1+n, 1); $('monthIn').value = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`; loadAll(); }
+function goThisMonth() { $('monthIn').value = thisMonthISO(); loadAll(); }
+
+let _data = null; let _meta = null; let _month = ''; let _allDepts = [];
+
+function populateFilters(data) {
+  const canAff = _meta.canFilter?.aff !== false; const affSel = $('selAff'), depSel = $('selDep');
+  const prevAff = affSel.value, prevDep = depSel.value; affSel.style.display = canAff ? '' : 'none'; _allDepts = data?.departments || [];
+  if (canAff) { affSel.innerHTML = '<option value="">— ทุกหน่วยงาน —</option>'; (data?.affiliations || []).forEach(a => { const o = document.createElement('option'); o.value = a.aff_code; o.textContent = a.affiliation || a.aff_code; if (a.aff_code === prevAff) o.selected = true; affSel.appendChild(o); }); }
+  renderDepOptions(prevDep);
+}
+function renderDepOptions(keepVal='') { const af = $('selAff').value, depSel = $('selDep'); const filtered = af ? _allDepts.filter(d => d.aff_code === af) : _allDepts; depSel.innerHTML = '<option value="">— ทุกกอง/แผนก —</option>'; filtered.forEach(d => { const o = document.createElement('option'); o.value = d.dep_code; o.textContent = d.department || d.dep_code; if (d.dep_code === keepVal) o.selected = true; depSel.appendChild(o); }); }
+function filterByAff() { $('selDep').value = ''; renderDepOptions(); loadAll(); }
+
+/* ══════ ฟังก์ชันเช็คสถานะ Approved ทั้งหมด ══════ */
+function isAllApproved() {
+  if (!_data || !_data.persons || _data.persons.length === 0) return false;
+  return _data.persons.every(p => {
+    return Object.values(p.days).every(entries => {
+      return entries.every(entry => entry.fin_status === 'approved');
+    });
+  });
+}
+
+async function loadAll() {
+  const month = $('monthIn').value || thisMonthISO(); $('monthIn').value = month; _month = month;
+  $('tblContainer').innerHTML = `<div style="padding:2rem"><div class="sk" style="height:48px;margin:.4rem;border-radius:8px"></div><div class="sk" style="height:48px;margin:.4rem;border-radius:8px"></div></div>`;
+  $('kpiRow').innerHTML = `<div class="kpi-s cg"><div class="kpi-s-ico"><i class="fa-solid fa-users"></i></div><div><div class="kpi-s-val sk" style="width:40px;height:24px"></div><div class="kpi-s-lbl">บุคลากร</div></div></div>`;
+  const btn = $('refBtn'); btn.classList.add('spin');
+
+  try {
+    const url = new URL(`${API}/dash/overtime-summary`, location.origin); url.searchParams.set('month', month);
+    const af = $('selAff').value, dp = $('selDep').value; if (af) url.searchParams.set('aff', af); if (dp) url.searchParams.set('dep', dp);
+    const res = await fetch(url.toString(), { headers: authH() }); const j = await safeJson(res);
+    if (!j.success) throw new Error(j.message || `HTTP ${res.status}`);
+
+    _data = j.data; _meta = j.meta; populateFilters(j.data);
+    const monthLabel = fmtThaiMonth(month);
+    const affLabel = (() => { const sel = $('selAff'), val = sel?.value; if (val) { const opt = sel.querySelector(`option[value="${val}"]`); if (opt) return opt.textContent.trim(); } return _meta.affiliation || 'ทุกหน่วยงาน'; })();
+    $('panelTitle').textContent = monthLabel; $('tbSub').textContent = `${monthLabel} · ${affLabel}`; $('phAff').textContent = affLabel; $('phMonth2').textContent = monthLabel;
+    renderKPI(j.data.summary, j.data.persons.length); renderGrid(j.data, month);
+    $('filterCount').textContent = `${j.data.persons.length} คน · ${allOTCount(j.data.persons)} รายการ OT`;
+
+    /* ══════ ล็อค/ปลดล็อคปุ่มพิมพ์ตามสถานะ Approved ══════ */
+    const printBtn = $('btnPrint');
+    if (isAllApproved()) {
+      printBtn.classList.remove('disabled');
+      printBtn.innerHTML = '<i class="fa-solid fa-print"></i>พิมพ์ตาราง';
+      document.body.classList.remove('prevent-print'); 
+    } else {
+      printBtn.classList.add('disabled');
+      printBtn.innerHTML = '<i class="fa-solid fa-print"></i>พิมพ์ตาราง (รออนุมัติ)';
+      document.body.classList.add('prevent-print');
+    }
+
+  } catch(err) { console.error(err); toast(err.message, 'err'); $('tblContainer').innerHTML = `<div class="empty-state"><i class="fa-solid fa-triangle-exclamation"></i><p>${err.message}</p></div>`; }
+  btn.classList.remove('spin');
+}
+
+function allOTCount(persons) { return persons.reduce((acc, p) => acc + Object.values(p.days).reduce((a, d) => a + d.length, 0), 0); }
+
+function renderKPI(s, personCount) {
+  const totalAmt = (s.totalAmountHour||0) + (s.totalAmountDay||0);
+  $('kpiRow').innerHTML = `<div class="kpi-s cg"><div class="kpi-s-ico"><i class="fa-solid fa-users"></i></div><div><div class="kpi-s-val">${personCount}</div><div class="kpi-s-lbl">บุคลากร OT</div></div></div><div class="kpi-s ci"><div class="kpi-s-ico"><i class="fa-solid fa-clock"></i></div><div><div class="kpi-s-val">${Number(s.totalHoursNormal||0).toLocaleString('th-TH',{maximumFractionDigits:1})}</div><div class="kpi-s-lbl">ชม. วันปกติ</div></div></div><div class="kpi-s ca"><div class="kpi-s-ico"><i class="fa-solid fa-sun"></i></div><div><div class="kpi-s-val">${Number(s.totalHoursHoliday||0).toLocaleString('th-TH',{maximumFractionDigits:1})}</div><div class="kpi-s-lbl">ชม. วันหยุด</div></div></div><div class="kpi-s cb"><div class="kpi-s-ico"><i class="fa-solid fa-coins"></i></div><div><div class="kpi-s-val" style="font-size:1rem">${Number(totalAmt).toLocaleString('th-TH',{maximumFractionDigits:2})}</div><div class="kpi-s-lbl">ค่าตอบแทนรวม (฿)</div></div></div>`;
+}
+
+function renderGrid(data, monthISO) {
+  const { persons, lastDay, summary } = data;
+  if (!persons.length) { $('tblContainer').innerHTML = `<div class="empty-state"><i class="fa-solid fa-file-invoice-dollar"></i><p>ไม่มีข้อมูล OT ในเดือนนี้</p></div>`; $('printTotalRow').style.display = 'none'; return; }
+  const [year, mon] = monthISO.split('-').map(Number);
+
+  let headDayHTML = ''; const dayDOW = {};
+  for (let d = 1; d <= lastDay; d++) { const dow = new Date(year, mon-1, d).getDay(); dayDOW[d] = dow; const isWknd = dow === 0 || dow === 6; headDayHTML += `<th class="col-day" style="${isWknd?'color:var(--am);background:var(--ambg);':''}" title="${d} - ${DOW_TH[dow]}"><div>${d}</div><div style="font-size:.5rem;margin-top:1px">${DOW_TH[dow]}</div></th>`; }
+
+  let html = `<table class="ot-grid"><thead><tr>
+    <th class="col-no">ลำดับ</th><th class="col-name">ชื่อ - สกุล</th><th class="col-pos">ตำแหน่ง</th>
+    ${headDayHTML}
+    <th class="col-sum-normal"><div>วันปกติ</div><div style="font-size:.5rem">(ชม.)</div></th>
+    <th class="col-sum-holiday"><div>วันหยุด</div><div style="font-size:.5rem">(ชม.)</div></th>
+    <th class="col-amount"><div>จำนวนเงิน</div><div style="font-size:.5rem">(บาท)</div></th>
+    <th class="col-date-recv">วันเดือนปี<br>ที่รับเงิน</th>
+    <th class="col-sig">ลายมือชื่อ<br>ผู้รับเงิน</th>
+    <th class="col-note-fin">หมายเหตุ</th>
+  </tr></thead><tbody>`;
+
+  persons.forEach((p, idx) => {
+    const totalAmt = (p.totalAmountHour||0) + (p.totalAmountDay||0);
+    let dayCells = '';
+    for (let d = 1; d <= lastDay; d++) {
+      const entries = p.days[d] || []; const isWknd = dayDOW[d] === 0 || dayDOW[d] === 6;
+      let cellCls = 'col-day'; if (isWknd) cellCls += ' is-holiday-col'; if (entries.length) cellCls += ' has-ot';
+      if (!entries.length) { dayCells += `<td class="${cellCls}"></td>`; } 
+      else {
+        const isHol = entries.some(e => e.is_holiday);
+        const timeTxt = entries.map(e => `${e.start?e.start.slice(0,5):'—'}-${e.end?e.end.slice(0,5):'—'}`).join(' ');
+        dayCells += `<td class="${cellCls}" data-day="${d}" data-uuid="${p.uuid}" onclick="showDayDetail(event,${idx},${d})"><div class="day-time ${isHol?'holiday':''}">${timeTxt}</div></td>`;
+      }
+    }
+    html += `<tr data-uuid="${p.uuid}">
+      <td class="col-no">${idx+1}</td><td class="col-name" title="${p.name}">${p.name}</td><td class="col-pos" title="${p.position||'—'}">${p.position||'—'}</td>
+      ${dayCells}
+      <td class="col-sum-normal">${Number(p.totalHoursNormal||0).toLocaleString('th-TH',{maximumFractionDigits:1})}</td>
+      <td class="col-sum-holiday">${Number(p.totalHoursHoliday||0).toLocaleString('th-TH',{maximumFractionDigits:1})}</td>
+      <td class="col-amount">${totalAmt ? Number(totalAmt).toLocaleString('th-TH',{minimumFractionDigits:2,maximumFractionDigits:2}) : '—'}</td>
+      <td class="col-date-recv"></td><td class="col-sig"></td><td class="col-note-fin"></td>
+    </tr>`;
+  });
+
+  const footerTotalAmt = (summary.totalAmountHour||0) + (summary.totalAmountDay||0);
+  html += `<tr class="row-total">
+    <td class="col-no"></td><td class="col-name" style="text-align:center;">รวมทั้งสิ้น</td><td class="col-pos"></td>
+    ${Array.from({length: lastDay}, () => '<td></td>').join('')}
+    <td class="col-sum-normal">${Number(summary.totalHoursNormal||0).toLocaleString('th-TH',{maximumFractionDigits:1})}</td>
+    <td class="col-sum-holiday">${Number(summary.totalHoursHoliday||0).toLocaleString('th-TH',{maximumFractionDigits:1})}</td>
+    <td class="col-amount">${footerTotalAmt ? Number(footerTotalAmt).toLocaleString('th-TH',{minimumFractionDigits:2,maximumFractionDigits:2}) : '—'}</td>
+    <td class="col-date-recv" colspan="3"></td>
+  </tr></tbody></table>`;
+
+  $('tblContainer').innerHTML = html;
+  if (footerTotalAmt) { $('printTotalRow').style.display = ''; $('printTotalTxt').textContent = bahtText(footerTotalAmt); } 
+  else { $('printTotalRow').style.display = 'none'; }
+}
+
+function showDayDetail(e, personIdx, day) {
+  e.stopPropagation(); const p = _data.persons[personIdx]; const entries = p.days[day] || []; if (!entries.length) return;
+  const [year, mon] = _month.split('-').map(Number); const dateStr = `${day} ${THAI_MON[mon-1]} ${year+543}`;
+  let rows = ''; entries.forEach((en, i) => { const hrs = Number(en.hours||0).toLocaleString('th-TH',{maximumFractionDigits:1}); const amt = (en.amount_hour||0) + (en.amount_day||0); rows += `${entries.length > 1 ? `<div style="font-size:.62rem;color:var(--tx3);margin-bottom:2px">รายการ ${i+1}</div>` : ''}<div class="dpo-row"><span class="dpo-lbl">เวลา</span><span class="dpo-val">${en.start.slice(0,5)} – ${en.end.slice(0,5)}</span></div><div class="dpo-row"><span class="dpo-lbl">ชั่วโมง</span><span class="dpo-val">${hrs} ชม.</span></div><div class="dpo-row"><span class="dpo-lbl">ประเภท</span><span class="dpo-val" style="font-family:'Sarabun';font-size:.72rem">${en.work_type||'—'}</span></div>${amt ? `<div class="dpo-row"><span class="dpo-lbl">จำนวนเงิน</span><span class="dpo-val">${Number(amt).toLocaleString('th-TH',{minimumFractionDigits:2})} ฿</span></div>` : ''}${en.note ? `<div class="dpo-row"><span class="dpo-lbl">หมายเหตุ</span><span class="dpo-val" style="font-family:'Sarabun'">${en.note}</span></div>` : ''}`; });
+  const pop = $('dayPopover'); pop.innerHTML = `<div class="dpo-name">${p.name}</div><div class="dpo-date">${dateStr}</div>${rows}`; pop.style.display = '';
+  const rect = e.currentTarget.getBoundingClientRect(); const pw = pop.offsetWidth || 220; const ph = pop.offsetHeight || 120;
+  let left = rect.left; let top = rect.bottom + 6; 
+  if (left + pw > window.innerWidth - 12) left = rect.right - pw; if (top + ph > window.innerHeight - 12) top = rect.top - ph - 6;
+  pop.style.left = left + 'px'; pop.style.top = top + 'px';
+}
+
+document.addEventListener('click', () => { $('dayPopover').style.display = 'none'; $('exportDd').classList.remove('show'); });
+
+function toggleExport() { event.stopPropagation(); $('exportDd').classList.toggle('show'); }
+
+function printPage() {
+  $('exportDd').classList.remove('show');
+  if (!isAllApproved()) { toast('ไม่สามารถพิมพ์ได้ เนื่องจากมีรายการ OT ที่ยังไม่ได้รับการอนุมัติทั้งหมด', 'err', 4000); return; }
+  window.print();
+}
+
+function loadUser() {
+  const u = JSON.parse(localStorage.getItem('user_data')) || JSON.parse(sessionStorage.getItem('user_data')) || {};
+  const name = `${u.firstName||''} ${u.lastName||''}`.trim() || '—';
+  const roleMap = { user:'<i class="fa-solid fa-user"></i> บุคลากร', admin:'<i class="fa-solid fa-user-shield"></i> ผู้ดูแลระบบ', supervisor:'<i class="fa-solid fa-user-tie"></i> หัวหน้า', executive:'<i class="fa-solid fa-user-crown"></i> ผู้บริหาร' };
+  $('uNm').textContent = name; $('uRl').innerHTML = roleMap[u.role] || u.role || ''; $('uAv').textContent = name.charAt(0).toUpperCase();
+}
+
+const userMenuBtn = $('userMenuBtn'), userDropdown = $('userDropdown');
+userMenuBtn.addEventListener('click', e => { e.stopPropagation(); userDropdown.classList.toggle('show'); });
+document.addEventListener('click', () => userDropdown.classList.remove('show'));
+
+document.addEventListener('DOMContentLoaded', () => {
+  if (localStorage.getItem('sidebarCollapsed') === 'true') { $('sidebar').classList.add('collapsed'); document.querySelector('.main').classList.add('collapsed'); }
+  $('monthIn').value = thisMonthISO(); loadUser(); loadAll();
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { $('dayPopover').style.display = 'none'; $('exportDd').classList.remove('show'); } });
+</script>
+</body>
+</html>

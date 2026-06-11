@@ -421,12 +421,25 @@ try {
           `https://ui-avatars.com/api/?background=60a5fa&color=fff&size=64&bold=true&name=${encodeURIComponent((fname||'U').charAt(0))}`;
         const ciTime = item.checkin_time  || '—';
         const coTime = item.checkout_time || '—';
-        const coType = item.checkout_type === 'auto' ? ' ⚙️' : item.checkout_type === 'manual' ? ' ✋' : '';
-        const dist   = item.checkin_distance_m != null
-          ? (item.checkin_distance_m >= 1000
-              ? (item.checkin_distance_m/1000).toFixed(1)+' กม.'
-              : item.checkin_distance_m+' ม.') + (item.checkin_in_range ? ' ✅' : ' ⚠️')
-          : '';
+        const coType =
+  item.checkout_type === 'auto'
+    ? ' <i class="fa-solid fa-robot"></i>'
+    : item.checkout_type === 'manual'
+    ? ' <i class="fa-solid fa-user-check"></i>'
+    : '';
+const dist = item.checkin_distance_m != null
+  ? (
+      item.checkin_distance_m >= 1000
+        ? (item.checkin_distance_m / 1000).toFixed(1) + ' กม.'
+        : item.checkin_distance_m + ' ม.'
+    ) +
+    ' ' +
+    (
+      item.checkin_in_range
+        ? '<i class="fa-solid fa-circle-check" style="color:#22c55e"></i>'
+        : '<i class="fa-solid fa-triangle-exclamation" style="color:#f59e0b"></i>'
+    )
+  : '';
         const ago = _ago(item.checkin_at || item.submitted_at);
         return `
 <div class="nitem${isNew ? ' unread' : ''}"
@@ -436,7 +449,7 @@ try {
           <div class="ni-body">
             <div class="ni-title">${_esc(fname)}</div>
             <div class="ni-sub">${item.date ? _fmtDate(item.date) : ''} · เข้า <b>${_esc(ciTime)}</b> ออก ${_esc(coTime)}${coType}</div>
-            ${dist ? `<div class="ni-sub">📍 ${_esc(dist)}</div>` : ''}
+            ${dist ? `<div class="ni-sub"><i class="fa-solid fa-location-dot"></i> ${(dist)}</div>` : ''}
             ${item.request_type ? `<div class="ni-sub" style="color:var(--amber)"><i class="fas fa-file-pen" style="font-size:.6rem" aria-hidden="true"></i> ${_esc(item.request_type)}</div>` : ''}
             <div class="ni-time">${ago} &nbsp;<span class="ni-status nis-pending"><i class="fas fa-hourglass-half" style="font-size:.55rem" aria-hidden="true"></i> รอรับรอง</span></div>
           </div>
@@ -454,7 +467,7 @@ try {
       const isDark  = document.documentElement.getAttribute('data-theme') !== 'light';
       const color   = stColor[item.status] || '#94a3b8';
       const ciTime  = item.checkin_time  ? `<b>${_esc(item.checkin_time.slice(0,5))}</b>` : '<span style="color:#94a3b8">—</span>';
-      const coTime  = item.checkout_time ? `<b>${_esc(item.checkout_time.slice(0,5))}</b> <span style="font-size:.75rem;color:#94a3b8">${item.checkout_type==='auto'?'⚙️ Auto':'✋ Manual'}</span>` : '<span style="color:#94a3b8">—</span>';
+      const coTime  = item.checkout_time ? `<b>${_esc(item.checkout_time.slice(0,5))}</b> <span style="font-size:.75rem;color:#94a3b8">${item.checkout_type==='auto'?'<i class="fa-solid fa-robot"></i> Auto':'<i class="fa-solid fa-hand"></i>'}</span>` : '<span style="color:#94a3b8">—</span>';
       const supSt   = item.supervisor_status;
       const supLine = supSt ? `<tr><td style="color:#94a3b8;padding:4px 10px 4px 0;white-space:nowrap;font-size:.82rem">รับรองโดย</td><td style="font-size:.82rem;font-weight:600">${_esc(item.supervisor_name||'—')}</td></tr>
         <tr><td style="color:#94a3b8;padding:4px 10px 4px 0;white-space:nowrap;font-size:.82rem">สถานะรับรอง</td><td><span style="font-size:.72rem;font-weight:700;padding:2px 9px;border-radius:20px;background:${supSt==='approved'?'rgba(0,245,176,.12)':supSt==='rejected'?'rgba(248,113,133,.12)':'rgba(251,191,36,.12)'};color:${supSt==='approved'?'#00c98a':supSt==='rejected'?'#f87171':'#fbbf24'}">${supSt==='approved'?'รับรองแล้ว':supSt==='rejected'?'ไม่รับรอง':'รอรับรอง'}</span></td></tr>` : '';
@@ -516,11 +529,13 @@ try {
       });
       if (!cf.isConfirmed) return;
       Swal.fire({ title: 'กำลังยกเลิก...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+      const ud   = JSON.parse(localStorage.getItem('user_data') || '{}');
+      const uuid = ud?.uuid || localStorage.getItem('uuid');
       try {
-        const r = await fetch(`${API_BASE}/request/cancel`, {
-          method: 'PATCH',
+        const r = await fetch(`${API_BASE}/attendance/request`, {
+          method: 'DELETE',
           headers: { 'Content-Type': 'application/json', ...AUTH_HEADER() },
-          body: JSON.stringify({ reference }),
+          body: JSON.stringify({uuid, reference }),
         });
         const d = await r.json();
         if (!d.success) throw new Error(d.message);
@@ -875,10 +890,10 @@ function getAttendanceAction() {
         dateCheckIn = localStorage.getItem('datecheck'),
         dateCheckOut = localStorage.getItem('datecheckout');
 
-  if (dateCheckOut === today) return 'checktoday';
+  if (dateCheckOut === today) return 'checktodayX';
 
   if (dateCheckIn === today) {
-    if (total <= 16 * 60 + 30) return 'checktoday';
+    if (total <= 16 * 60 + 30) return 'checktodayX';
     return 'checkOut';
   }
 
@@ -914,28 +929,28 @@ function updateAttendanceBtnLabel() {
     checkIn: 'แตะเพื่อลงเวลาเข้างาน',
     sendRequest: 'ส่งคำขอ / แก้ไขเวลา',
     checkOut: 'แตะเพื่อลงเวลาออกงาน',
-    checktoday: 'วันนี้บันทึกเวลาแล้ว',
+    checktodayX: 'วันนี้บันทึกเวลาแล้ว',
   };
 
   const toneClass = {
     checkIn: 'card-featured-mint',
     sendRequest: 'card-featured-amber',
     checkOut: 'card-featured-red',
-    checktoday: 'card-featured-blue',
+    checktodayX: 'card-featured-blue',
   };
 
   const iconTone = {
     checkIn: 'ic-mint',
     sendRequest: 'ic-amber',
     checkOut: 'ic-rose',
-    checktoday: 'ic-cyan',
+    checktodayX: 'ic-cyan',
   };
 
   const iconClass = {
     checkIn: 'fa-solid fa-right-to-bracket',
     sendRequest: 'fa-solid fa-pen-to-square',
     checkOut: 'fa-solid fa-right-from-bracket',
-    checktoday: 'fa-solid fa-circle-check',
+    checktodayX: 'fa-solid fa-circle-check',
   };
 
   subEl.textContent = labels[action] || 'เข้า-ออกงาน';

@@ -421,6 +421,8 @@
       .summary-row { grid-template-columns:repeat(3,1fr); }
       .sc-val { font-size:1.25rem; }
     }
+
+    
   </style>
 </head>
 <body>
@@ -565,12 +567,9 @@ window.addEventListener('DOMContentLoaded', () => {
     return;
   }
 
-  // const hasSupervisor = ud.role === 'supervisor' || ud.role === 'admin' || ud.isSupervisor;
-  // if (hasSupervisor) document.getElementById('tabSup').style.display = '';
   document.getElementById('tabSup').style.display = '';
 
   const now = new Date();
-  
   const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
 
   const y = firstDay.getFullYear();
@@ -578,9 +577,17 @@ window.addEventListener('DOMContentLoaded', () => {
   const d = String(firstDay.getDate()).padStart(2, '0');
 
   document.getElementById('dateFrom').value = `${y}-${m}-${d}`;
-  document.getElementById('dateTo').value   = now.toISOString().slice(0, 10);
+  document.getElementById('dateTo').value = now.toISOString().slice(0, 10);
 
+// ตรวจสอบ action=view
+const action = new URLSearchParams(location.search).get('action');
+
+if (action === 'view') {
+  switchTab('supervisor');
+  filterStatus('pending');
+} else {
   loadList();
+}
 });
 
 /* ─── Tab switching ──────────────────────────────────── */

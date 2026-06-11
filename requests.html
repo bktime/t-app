@@ -462,7 +462,7 @@ function renderTL(tls){
   if(!tls?.length)return'<span class="tln">ไม่มีข้อมูลบันทึกเวลาวันนั้น</span>';
   return tls.map(t=>{
     if(t.action==='checkin')return`<span class="tlch in"><i class="fas fa-play" style="font-size:.58rem"></i> เข้า ${esc(t.time_str)}</span>`;
-    const cl=t.checkout_type==='auto'?'oa':'om',lb=t.checkout_type==='auto'?'ออก Auto':'ออก Manual';
+    const cl=t.checkout_type==='auto'?'oa':'om',lb=t.checkout_type==='auto'? '<i class="fa-solid fa-robot"></i> Auto' :'<i class="fa-solid fa-user-check"></i>';
     return`<span class="tlch ${cl}"><i class="fas fa-stop" style="font-size:.58rem"></i> ${lb} ${esc(t.time_str)}</span>`;
   }).join('');
 }
@@ -480,7 +480,7 @@ function renderList(items){
         <img class="rav" src="${esc(avSrc(it))}" alt="" onerror="this.src='https://ui-avatars.com/api/?background=6366f1&color=fff&size=84&bold=true&name=U'">
         <div class="rm">
           <div class="rn">${esc(it.name||'—')}</div>
-          <div class="rd">${esc(it.department||'')}${it.affiliation?' · '+esc(it.affiliation):''}</div>
+          <div class="rd">${esc(it.position||'')}${it.department?' · '+esc(it.department):''}</div>
           <span class="rtb"><i class="fas ${TICO[it.request_type]||'fa-ellipsis'}"></i> ${esc(it.request_type)}</span>
         </div>
         <div class="rr">
@@ -493,8 +493,16 @@ function renderList(items){
         <div class="rrow">
           <div class="rfl"><label>วันที่ขอ</label><span>${fmtS(it.req_date)}</span></div>
           ${it.req_time?`<div class="rfl"><label>เวลา</label><span>${esc(it.req_time)}</span></div>`:''}
-          ${it.position?`<div class="rfl"><label>ตำแหน่ง</label><span>${esc(it.position)}</span></div>`:''}
-          ${it.supervisor?`<div class="rfl"><label>ผู้บังคับบัญชา</label><span>${esc(it.supervisor)}</span></div>`:''}
+          ${it.checkin_work_type?`<div class="rfl"><label>การปฏิบัติงาน</label><span>${esc(it.checkin_work_type)}</span></div>`:''}
+          ${it.checkin_in_range !== undefined ? `
+    <div class="rfl">
+      <label>พิกัด</label>
+      <span style="font-weight:600;color:${it.checkin_in_range ? '#16a34a' : '#dc2626'}">
+        <i class="fas ${it.checkin_in_range ? 'fa-location-dot' : 'fa-triangle-exclamation'}"></i>
+        ${it.checkin_in_range ? 'ในพื้นที่' : 'นอกพื้นที่'}</span>
+    </div>
+  ` : ''}
+  
         </div>
         <div class="rrea">${esc(it.reason)}</div>
         <div style="margin-top:.5rem">

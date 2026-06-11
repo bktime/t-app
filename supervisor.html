@@ -362,9 +362,34 @@ function fmtD(iso) { if (!iso) return '—'; try { return new Date(iso).toLocale
 function fmtS(s)   { if (!s)   return '—'; try { return new Date(s+'T00:00:00').toLocaleDateString('th-TH', { day:'numeric', month:'short', year:'numeric' }); } catch { return s; } }
 function ago(iso)  { if (!iso) return ''; const d = (Date.now() - new Date(iso)) / 1000; if (d < 60) return 'เมื่อกี้'; if (d < 3600) return Math.floor(d/60)+' นาทีที่แล้ว'; if (d < 86400) return Math.floor(d/3600)+' ชม.ที่แล้ว'; return Math.floor(d/86400)+' วันที่แล้ว'; }
 function distFmt(m, inRange) {
-  if (m == null) return '';
-  const s = m >= 1000 ? (m/1000).toFixed(1)+' กม.' : m+' ม.';
-  return `<span class="dist ${inRange ? 'ok' : 'out'}"><i class="fas ${inRange ? 'fa-circle-check' : 'fa-triangle-exclamation'}" style="font-size:.6rem"></i> ${s}</span>`;
+  if (inRange) {
+    return `
+      <span class="dist ok">
+        <i class="fas fa-circle-check" style="font-size:.6rem"></i>
+        ในพื้นที่
+      </span>
+    `;
+  }
+
+  if (m == null) {
+    return `
+      <span class="dist out">
+        <i class="fas fa-triangle-exclamation" style="font-size:.6rem"></i>
+        นอกพื้นที่
+      </span>
+    `;
+  }
+
+  const s = m >= 1000
+    ? (m / 1000).toFixed(1) + ' กม.'
+    : m + ' ม.';
+
+  return `
+    <span class="dist out">
+      <i class="fas fa-triangle-exclamation" style="font-size:.6rem"></i>
+      นอกพื้นที่ (${s})
+    </span>
+  `;
 }
 
 function initUser() {
@@ -427,7 +452,7 @@ function renderList(items) {
     const ciTime = it.checkin_time  || '—';
     const coTime = it.checkout_time || '—';
     const coType = it.checkout_type === 'auto' ? 'oa' : 'om';
-    const coLbl  = it.checkout_type === 'auto' ? 'Auto ⚙️' : 'Manual ✋';
+    const coLbl  = it.checkout_type === 'auto' ? '<i class="fa-solid fa-robot"></i> Auto' : '<i class="fa-solid fa-user-check"></i>';
     const dist   = distFmt(it.checkin_distance_m, it.checkin_in_range);
     const reqInfo = it.request_type
       ? `<div class="req-info"><i class="fas fa-file-pen" style="font-size:.75rem;margin-right:4px"></i>
@@ -443,7 +468,7 @@ function renderList(items) {
         <img class="rav" src="${esc(avSrc(it))}" alt="" onerror="this.src='https://ui-avatars.com/api/?background=1d4ed8&color=fff&size=84&bold=true&name=U'">
         <div class="rm">
           <div class="rn">${esc(it.name || (it.firstName ? (it.prefix||'')+(it.firstName||'')+' '+(it.lastName||'') : '—'))}</div>
-          <div class="rd">${esc(it.position||'')}${it.affiliation?' · '+esc(it.affiliation):''}</div>
+          <div class="rd">${esc(it.position||'')}${it.department?' · '+esc(it.department):''}</div>
         </div>
         <div class="rr">
           <span class="sp ${SPCL[st]}">
@@ -463,7 +488,7 @@ function renderList(items) {
         <!-- ข้อมูลอื่น -->
         <div class="rrow" style="margin-top:.6rem">
           ${it.checkin_work_type ? `<div class="rfl"><label>ประเภทงาน</label><span>${esc(it.checkin_work_type)}</span></div>` : ''}
-          ${it.dep_code ? `<div class="rfl"><label>หน่วยงาน</label><span>${esc(it.dep_code)}</span></div>` : ''}
+          ${it.department ? `<div class="rfl"><label>หน่วยงาน</label><span>${esc(it.department)} - ${esc(it.affiliation)}</span></div>` : ''}
         </div>
         ${it.checkin_note ? `<div style="font-size:.8rem;color:var(--sub);margin-top:.35rem"><i class="fas fa-note-sticky" style="font-size:.65rem;margin-right:3px"></i>${esc(it.checkin_note)}</div>` : ''}
         ${reqInfo}

@@ -279,6 +279,10 @@ select.form-in{cursor:pointer;}
   <a class="ni" href="attendance.html" title="การลงเวลารายวัน">    <i class="fa-solid fa-user-check"></i>    การลงเวลารายวัน  </a>
   <a class="ni" href="attendance-monthly.html" title="สรุปการลงเวลารายเดือน">    <i class="fa-solid fa-chart-column"></i>    สรุปการลงเวลารายเดือน  </a>
 
+     <div class="nav-sec">นอกเวลา</div>
+    <a class="ni" href="overtime.html"><i class="fa-solid fa-business-time"></i>การปฏิบัติงานล่วงเวลา</a>
+    <a class="ni" href="overtime-summary.html"><i class="fa-solid fa-file-invoice-dollar"></i>สรุปค่าตอบแทน OT</a>
+
   <div class="nav-sec">ประวัติการลา</div>
   <a class="ni active" href="leave-record.html" title="บันทึกการลา">    <i class="fa-solid fa-plane-departure"></i>    บันทึกการลา  </a>
 
@@ -375,21 +379,21 @@ select.form-in{cursor:pointer;}
       </div>
       <div class="tbl-wrap">
         <table class="mt">
-          <thead>
-            <tr>
-              <th onclick="sortBy('user_name')" id="th-user_name">ผู้ลา <i class="fa-solid fa-sort si"></i></th>
-              <th onclick="sortBy('leave_type')" id="th-leave_type">ประเภท <i class="fa-solid fa-sort si"></i></th>
-              <th onclick="sortBy('start_date')" id="th-start_date" class="sorted">วันที่เริ่ม <i class="fa-solid fa-sort si"></i></th>
-              <th onclick="sortBy('end_date')" id="th-end_date">วันที่สิ้นสุด <i class="fa-solid fa-sort si"></i></th>
-              <th onclick="sortBy('days')" id="th-days">จำนวนวัน <i class="fa-solid fa-sort si"></i></th>
-              <th class="no-sort">ผู้บังคับบัญชา</th>
-              <th class="no-sort">ความเห็นหัวหน้า</th>
-              <th class="no-sort">ผู้อนุมัติ</th>
-              <th onclick="sortBy('status')" id="th-status">สถานะ <i class="fa-solid fa-sort si"></i></th>
-              <th class="no-sort">อนุมัติโดย / หมายเหตุ</th>
-              <th style="width:100px" class="no-sort">จัดการ</th>
-            </tr>
-          </thead>
+<thead>
+  <tr>
+    <th onclick="sortBy('user_name')" id="th-user_name">ผู้ลา <i class="fa-solid fa-sort si"></i></th>
+    <th onclick="sortBy('leave_type')" id="th-leave_type">ประเภท <i class="fa-solid fa-sort si"></i></th>
+    <th onclick="sortBy('start_date')" id="th-start_date" class="sorted">วันที่เริ่ม <i class="fa-solid fa-sort si"></i></th>
+    <th onclick="sortBy('end_date')" id="th-end_date">วันที่สิ้นสุด <i class="fa-solid fa-sort si"></i></th>
+    <th onclick="sortBy('days')" id="th-days">จำนวนวัน <i class="fa-solid fa-sort si"></i></th>
+    <th class="no-sort">ความเห็นหัวหน้า</th>
+    <th class="no-sort">ผู้บังคับบัญชา</th>
+    <th class="no-sort">ผู้อนุมัติ</th>
+    <th onclick="sortBy('status')" id="th-status">สถานะ <i class="fa-solid fa-sort si"></i></th>
+    <th class="no-sort">ตรวจสอบโดย / หมายเหตุ</th>
+    <th style="width:100px" class="no-sort">จัดการ</th>
+  </tr>
+</thead>
           <tbody id="lTbody">
             <tr><td colspan="10"><div class="sk" style="height:44px;margin:.4rem"></div></td></tr>
             <tr><td colspan="10"><div class="sk" style="height:44px;margin:.4rem"></div></td></tr>
@@ -411,7 +415,7 @@ select.form-in{cursor:pointer;}
       <div class="modal-title" id="formTitle"><i class="fa-solid fa-calendar-plus"></i>บันทึกการลา</div>
       <button class="modal-close" onclick="closeForm()"><i class="fa-solid fa-xmark"></i></button>
     </div>
-    <div class="modal-body">
+      <div class="modal-body">
       <div class="form-grid">
         <div class="form-sec form-full"><i class="fa-solid fa-user"></i>ข้อมูลผู้ลา</div>
 
@@ -479,6 +483,12 @@ select.form-in{cursor:pointer;}
 
         <div class="form-sec form-full"><i class="fa-solid fa-users"></i>ผู้เกี่ยวข้อง</div>
 
+        <!-- สลับตำแหน่ง: ความคิดเห็นหัวหน้า ขึ้นก่อน ผู้บังคับบัญชา -->
+        <div class="form-grp form-full">
+          <label class="form-lbl"><i class="fa-solid fa-comment-dots" style="opacity:.55"></i> ความคิดเห็นหัวหน้า <span style="font-size:.58rem;color:var(--tx3)">(ไม่บังคับ)</span></label>
+          <textarea id="fSupervisorNote" class="sup-note-in" placeholder="ระบุความคิดเห็น / เงื่อนไขของหัวหน้า (ถ้ามี)…"></textarea>
+        </div>
+
         <div class="form-grp form-full">
           <label class="form-lbl">ผู้บังคับบัญชา <span class="req">*</span></label>
           <div class="staff-picker" id="pickerSupervisor">
@@ -496,11 +506,6 @@ select.form-in{cursor:pointer;}
             <div id="selectedSupervisor" style="display:none"></div>
             <input type="hidden" id="fSupervisorUuid">
           </div>
-        </div>
-
-        <div class="form-grp form-full">
-          <label class="form-lbl"><i class="fa-solid fa-comment-dots" style="opacity:.55"></i> ความคิดเห็นหัวหน้า <span style="font-size:.58rem;color:var(--tx3)">(ไม่บังคับ)</span></label>
-          <textarea id="fSupervisorNote" class="sup-note-in" placeholder="ระบุความคิดเห็น / เงื่อนไขของหัวหน้า (ถ้ามี)…"></textarea>
         </div>
 
         <div class="form-grp form-full">
@@ -875,7 +880,7 @@ function renderTable(){
       
       // ปุ่มอนุมัติ/ปฏิเสธ แสดงเฉพาะแอดมิน
       var apvBtns = canEdit ? 
-        '<button class="act-btn approve" onclick="openApproveModal('+l.id+',\'approved\')" title="อนุมัติ"'+(isApproved?' style="color:var(--em);border-color:var(--bda)"':'')+'>'+
+        '<button class="act-btn approve" onclick="openApproveModal('+l.id+',\'approved\')" title="ตรวจสอบอนุมัติ"'+(isApproved?' style="color:var(--em);border-color:var(--bda)"':'')+'>'+
           '<i class="fa-solid fa-circle-check"></i></button>'+
         '<button class="act-btn reject" onclick="openApproveModal('+l.id+',\'rejected\')" title="ปฏิเสธ"'+(isRejected?' style="color:var(--ro);border-color:var(--rob)"':'')+'>'+
           '<i class="fa-solid fa-circle-xmark"></i></button>' 
@@ -894,8 +899,8 @@ function renderTable(){
       '<td class="mono">'+fmtDate(l.start_date)+'</td>'+
       '<td class="mono">'+fmtDate(l.end_date)+'</td>'+
       '<td style="text-align:center;font-family:\'JetBrains Mono\',monospace;font-size:.75rem">'+(l.days!=null?l.days:'—')+'</td>'+
-      '<td style="font-size:.72rem">'+(l.supervisor_name||'—')+'</td>'+
       '<td style="min-width:140px;max-width:180px">'+supNoteCell+'</td>'+
+      '<td style="font-size:.72rem">'+(l.supervisor_name||'—')+'</td>'+
       '<td style="font-size:.72rem">'+(l.approver_name||'—')+'</td>'+
       '<td>'+statusPill(l.status)+'</td>'+
       '<td style="min-width:160px;max-width:220px">'+apvCell+'</td>'+
@@ -1249,9 +1254,9 @@ function openApproveModal(id, mode){
 
   if(isApprove){
     icoEl.className='apv-header-ico approved'; icoI.className='fa-solid fa-circle-check';
-    $('apvTitle').innerHTML='<i class="fa-solid fa-circle-check"></i>อนุมัติการลา';
-    $('apvHeading').textContent='อนุมัติการลา';
-    $('apvBtnTx').textContent='อนุมัติ';
+    $('apvTitle').innerHTML='<i class="fa-solid fa-circle-check"></i>ตรวจสอบการอนุมัติการลา';
+    $('apvHeading').textContent='ตรวจสอบการอนุมัติการลา';
+    $('apvBtnTx').textContent='มีการลาจริง';
     $('apvConfirmBtn').style.cssText='background:var(--embg);border-color:var(--bda);color:var(--em)';
     $('apvNoteReq').style.display='none';
     $('apvNote').placeholder='หมายเหตุประกอบการอนุมัติ (ถ้ามี)…';
@@ -1260,7 +1265,7 @@ function openApproveModal(id, mode){
     icoEl.className='apv-header-ico rejected'; icoI.className='fa-solid fa-circle-xmark';
     $('apvTitle').innerHTML='<i class="fa-solid fa-circle-xmark"></i>ปฏิเสธการลา';
     $('apvHeading').textContent='ปฏิเสธการลา';
-    $('apvBtnTx').textContent='ปฏิเสธ';
+    $('apvBtnTx').textContent='ไม่พบการลา';
     $('apvConfirmBtn').style.cssText='background:var(--robg);border-color:var(--rob);color:var(--ro)';
     $('apvNoteReq').style.display='inline';
     $('apvNote').placeholder='กรุณาระบุเหตุผลที่ไม่อนุมัติ…';
@@ -1331,15 +1336,15 @@ function exportExcel(){
     ['reason','เหตุผลการลา','reason',28,OPT_BG,'ไม่บังคับ'],
     ['supervisor_uuid','uuid ผู้บังคับบัญชา *','UUID',36,REQ_BG,'จำเป็น'],
     ['supervisor_name','ชื่อผู้บังคับบัญชา','supervisor name',24,RO_BG,'อ้างอิง'],
-    ['supervisor_note','ความเห็นหัวหน้า','supervisor note',28,OPT_BG,'ไม่บังคับ'],
+    ['supervisor_note','ความเห็นหัวหน้า','supervisor note',20,OPT_BG,'ไม่บังคับ'],
     ['approver_uuid','uuid ผู้อนุมัติ *','UUID',36,REQ_BG,'จำเป็น'],
     ['approver_name','ชื่อผู้อนุมัติ','approver name',24,RO_BG,'อ้างอิง'],
     ['delegate_uuid','uuid ผู้รับมอบ','UUID',36,OPT_BG,'ไม่บังคับ'],
     ['delegate_name','ชื่อผู้รับมอบ','delegate name',24,RO_BG,'อ้างอิง'],
     ['status','สถานะ','pending/approved/rejected',18,OPT_BG,'ค่าเริ่ม=pending'],
-    ['approval_note','หมายเหตุอนุมัติ','approval note',28,RO_BG,'กรอกโดยผู้อนุมัติ'],
-    ['approved_by_name','อนุมัติโดย','approved by',24,RO_BG,'กรอกโดยระบบ'],
-    ['approved_at','วันเวลาอนุมัติ','approved at',22,RO_BG,'กรอกโดยระบบ'],
+    ['approval_note','หมายเหตุตรวจสอบ','approval note',28,RO_BG,'กรอกโดยผู้ตรวจสอบ'],
+    ['approved_by_name','ตรวจสอบโดย','approved by',24,RO_BG,'กรอกโดยระบบ'],
+    ['approved_at','วันเวลาตรวจสอบ','approved at',22,RO_BG,'กรอกโดยระบบ'],
   ];
 
   var wb = XLSX.utils.book_new();
