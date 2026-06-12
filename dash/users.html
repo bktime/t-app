@@ -787,7 +787,7 @@ async function loadAll() {
     myRole   = j.meta?.role       || '';
     myLevel  = Number(j.meta?.role_level ?? 0);
     canEdit  = !!j.meta?.can_edit;
-    renderKpi(j.data.summary || {});
+    renderKpi(allUsers);
     buildDropdowns(j.data.affiliations || [], j.data.departments || [], j.data.personnelTypes || []);
     buildRoleDropdown(); // สร้าง role options ตาม level
     applyFilter();
@@ -801,18 +801,24 @@ async function loadAll() {
 }
 
 /* ════════════ KPI ════════════ */
-function renderKpi(s) {
+function renderKpi(arr) {
+  const thisMonth = new Date().toISOString().slice(0,7);
+  const total     = arr.length;
+  const active    = arr.filter(u=>u.status==='Active').length;
+  const inactive  = arr.filter(u=>u.status==='Inactive').length;
+  const suspended = arr.filter(u=>u.status==='Suspended').length;
+  const newMonth  = arr.filter(u=>u.created_at&&u.created_at.slice(0,7)===thisMonth).length;
   $('kpiRow').innerHTML = `
     <div class="kpi-s cg"><div class="kpi-s-ico"><i class="fa-solid fa-users"></i></div>
-      <div><div class="kpi-s-val">${fmt(s.total||0)}</div><div class="kpi-s-lbl">ทั้งหมด</div></div></div>
+      <div><div class="kpi-s-val">${total.toLocaleString('th-TH')}</div><div class="kpi-s-lbl">ทั้งหมด</div></div></div>
     <div class="kpi-s cb"><div class="kpi-s-ico"><i class="fa-solid fa-circle-check"></i></div>
-      <div><div class="kpi-s-val">${fmt(s.active||0)}</div><div class="kpi-s-lbl">Active</div></div></div>
+      <div><div class="kpi-s-val">${active.toLocaleString('th-TH')}</div><div class="kpi-s-lbl">Active</div></div></div>
     <div class="kpi-s ca"><div class="kpi-s-ico"><i class="fa-solid fa-circle-pause"></i></div>
-      <div><div class="kpi-s-val">${fmt(s.inactive||0)}</div><div class="kpi-s-lbl">Inactive</div></div></div>
+      <div><div class="kpi-s-val">${inactive.toLocaleString('th-TH')}</div><div class="kpi-s-lbl">Inactive</div></div></div>
     <div class="kpi-s cr"><div class="kpi-s-ico"><i class="fa-solid fa-ban"></i></div>
-      <div><div class="kpi-s-val">${fmt(s.suspended||0)}</div><div class="kpi-s-lbl">Suspended</div></div></div>
+      <div><div class="kpi-s-val">${suspended.toLocaleString('th-TH')}</div><div class="kpi-s-lbl">Suspended</div></div></div>
     <div class="kpi-s cp"><div class="kpi-s-ico"><i class="fa-solid fa-user-plus"></i></div>
-      <div><div class="kpi-s-val">${fmt(s.new_this_month||0)}</div><div class="kpi-s-lbl">ใหม่เดือนนี้</div></div></div>`;
+      <div><div class="kpi-s-val">${newMonth.toLocaleString('th-TH')}</div><div class="kpi-s-lbl">ใหม่เดือนนี้</div></div></div>`;
 }
 const fmt = n => Number(n).toLocaleString('th-TH');
 
@@ -873,7 +879,7 @@ function applyFilter() {
     }
     return true;
   });
-  doSort(); page=1; renderTable();
+  doSort(); page=1; renderTable(); renderKpi(filtered);
   $('filterCount').textContent = filtered.length !== allUsers.length
     ? `${filtered.length} / ${allUsers.length}` : `${allUsers.length} รายการ`;
 }
@@ -1178,7 +1184,7 @@ async function saveUser(){
     toast('แก้ไขผู้ใช้งานสำเร็จ');
     closeEdit(); loadAll();
   }catch(e){toast(e.message,'err');}
-  btn.disabled=false; btn.innerHTML='<i class="fa-solid fa-floppy-disk"></i>บันทึก';
+  finally{btn.disabled=false; btn.innerHTML='<i class="fa-solid fa-floppy-disk"></i>บันทึก';}
 }
 
 /* ════════════ SAFE JSON ════════════ */
