@@ -262,6 +262,7 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--tx);min-h
 .mt tr:hover td{background:var(--sur);}
 td.hl{color:var(--tx);font-weight:600;}
 td.mono{font-family:'JetBrains Mono',monospace;font-size:.7rem;}
+td.td-sup{max-width:140px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .av{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Kanit',sans-serif;font-size:.72rem;font-weight:700;color:#fff;flex-shrink:0;}
 .av-cell{display:flex;align-items:center;gap:.6rem;}
 .av-name{font-weight:600;color:var(--tx);line-height:1.3;}
@@ -512,6 +513,7 @@ select.form-in{cursor:pointer;}
               <th onclick="sortBy('role')" id="th-role">Role <i class="fa-solid fa-sort si"></i></th>
               <th onclick="sortBy('department')" id="th-dep">กอง/แผนก <i class="fa-solid fa-sort si"></i></th>
               <th onclick="sortBy('position')" id="th-pos">ตำแหน่ง <i class="fa-solid fa-sort si"></i></th>
+              <th onclick="sortBy('supervisor')" id="th-sup">หัวหน้า <i class="fa-solid fa-sort si"></i></th>
               <th style="cursor:default">Login</th>
               <th onclick="sortBy('status')" id="th-status">สถานะ <i class="fa-solid fa-sort si"></i></th>
               <th onclick="sortBy('created_at')" id="th-created">สร้างเมื่อ <i class="fa-solid fa-sort si"></i></th>
@@ -519,10 +521,10 @@ select.form-in{cursor:pointer;}
             </tr>
           </thead>
           <tbody id="userTbody">
-            <tr><td colspan="9"><div class="sk" style="height:44px;margin:.4rem"></div></td></tr>
-            <tr><td colspan="9"><div class="sk" style="height:44px;margin:.4rem"></div></td></tr>
-            <tr><td colspan="9"><div class="sk" style="height:44px;margin:.4rem"></div></td></tr>
-            <tr><td colspan="9"><div class="sk" style="height:44px;margin:.4rem"></div></td></tr>
+            <tr><td colspan="10"><div class="sk" style="height:44px;margin:.4rem"></div></td></tr>
+            <tr><td colspan="10"><div class="sk" style="height:44px;margin:.4rem"></div></td></tr>
+            <tr><td colspan="10"><div class="sk" style="height:44px;margin:.4rem"></div></td></tr>
+            <tr><td colspan="10"><div class="sk" style="height:44px;margin:.4rem"></div></td></tr>
           </tbody>
         </table>
       </div>
@@ -793,7 +795,7 @@ async function loadAll() {
     $('tbSub').textContent  = `${allUsers.length} ผู้ใช้งาน · ${myRole}`;
   } catch (e) {
     toast('โหลดข้อมูลล้มเหลว: ' + e.message, 'err');
-    $('userTbody').innerHTML = `<tr><td colspan="9"><div class="empty"><i class="fa-solid fa-triangle-exclamation"></i>${e.message}</div></td></tr>`;
+    $('userTbody').innerHTML = `<tr><td colspan="10"><div class="empty"><i class="fa-solid fa-triangle-exclamation"></i>${e.message}</div></td></tr>`;
   }
   $('refBtn').classList.remove('spin');
 }
@@ -884,7 +886,7 @@ function clearFilter() {
 function sortBy(col) {
   if (sortCol===col) sortAsc=!sortAsc; else { sortCol=col; sortAsc=true; }
   document.querySelectorAll('.mt th').forEach(th=>th.classList.remove('sorted'));
-  const map={firstName:'th-name',personnelType:'th-pt',role:'th-role',department:'th-dep',position:'th-pos',status:'th-status',created_at:'th-created'};
+  const map={firstName:'th-name',personnelType:'th-pt',role:'th-role',department:'th-dep',position:'th-pos',supervisor:'th-sup',status:'th-status',created_at:'th-created'};
   const th=$(map[col]);
   if(th){th.classList.add('sorted');const si=th.querySelector('.si');if(si)si.className=`fa-solid ${sortAsc?'fa-sort-up':'fa-sort-down'} si`;}
   doSort(); renderTable();
@@ -951,7 +953,7 @@ function renderTable(){
   const slice=filtered.slice(start,start+PAGE_SIZE);
   $('tableInfo').textContent=filtered.length?`${start+1}–${Math.min(start+PAGE_SIZE,filtered.length)} จาก ${filtered.length}`:'0 รายการ';
 
-  if(!slice.length){tbody.innerHTML=`<tr><td colspan="9"><div class="empty"><i class="fa-solid fa-users-slash"></i>ไม่พบผู้ใช้งาน</div></td></tr>`;$('pager').innerHTML='';return;}
+  if(!slice.length){tbody.innerHTML=`<tr><td colspan="10"><div class="empty"><i class="fa-solid fa-users-slash"></i>ไม่พบผู้ใช้งาน</div></td></tr>`;$('pager').innerHTML='';return;}
 
   tbody.innerHTML=slice.map(u=>{
     const full=`${u.prefix?u.prefix+' ':''}${u.firstName||''} ${u.lastName||''}`.trim();
@@ -971,6 +973,7 @@ function renderTable(){
       <td>${pillRole(u.role)}</td>
       <td class="hl">${u.department||'—'}</td>
       <td style="font-size:.72rem">${u.position||'—'}</td>
+      <td class="td-sup" style="font-size:.72rem;color:var(--tx2)" title="${u.supervisor||''}">${u.supervisor||'—'}</td>
       <td>${pillSocial(u)}</td>
       <td>${pillStatus(u.status)}</td>
       <td class="mono">${u.created_at?u.created_at.slice(0,10):'—'}</td>
@@ -1065,7 +1068,6 @@ async function pickerSearch(role){
 }
 
 function pickerSelect(role,uuid,name,dept,pos){
-  $(`f${role}Code`).value=$(`f${role}Search`).value=name;
   $(`f${role}Code`).value=uuid;
   $(`f${role}Search`).value=name;
   $(`pd${role}`).classList.remove('open');
