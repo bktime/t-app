@@ -901,12 +901,19 @@
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-messaging-compat.js"></script>
 
+
 <!-- Firebase init (มีอยู่แล้ว) -->
 <script src="/js/firebase-init.js"></script>
 
 <!-- เพิ่มใหม่ — ต้องโหลดหลัง Firebase init -->
 <script src="/js/fcm-register.js"></script>
 <script src="/js/reminder-scheduler.js"></script>
+
+<!-- Android install (ต้องโหลดก่อน DOMContentLoaded) -->
+<script src="/js/android-install-banner.js"></script>
+
+<!-- iOS install (แยกไฟล์) -->
+<script src="/js/ios-install-banner.js"></script>
 
 <script>
 // ===================== CONFIG =====================
