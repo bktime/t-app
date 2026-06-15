@@ -171,7 +171,7 @@ async function generateSecureToken(userUuid, socialType, env) {
   const random      = Math.random().toString(36).substring(2, 15);
   const payload     = `${userUuid.substring(0, 8)}|${socialType}|${timestamp}|${random}`;
   const encoder     = new TextEncoder();
-  const secretKey   = env.TOKEN_SECRET;
+  const secretKey   = env.TOKEN_SECRET || 'anicca-dukkha-anatta'; // ควรตั้งค่า TOKEN_SECRET ใน Environment Variables ของคุณเพื่อความปลอดภัย
 
   const key = await crypto.subtle.importKey(
     'raw', encoder.encode(secretKey),
