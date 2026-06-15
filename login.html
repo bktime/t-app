@@ -646,6 +646,61 @@
         transition-duration: 0.01ms !important;
       }
     }
+
+    /* ═══════════════════════════════════
+   Login Method Tabs
+═══════════════════════════════════ */
+.login-method-tabs {
+  display: flex; gap: 8px; margin-bottom: 1rem;
+  background: var(--bg-elevated); padding: 4px; border-radius: var(--radius-sm);
+  border: 1px solid var(--border-subtle);
+}
+.tab-btn {
+  flex: 1; padding: 0.55rem; border: 1px solid transparent; background: transparent;
+  color: var(--text-secondary); font-family: 'Kanit', sans-serif; font-size: 0.78rem;
+  border-radius: var(--radius-xs); cursor: pointer; transition: all var(--transition);
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+}
+.tab-btn:hover { color: var(--text-primary); background: var(--bg-surface); }
+.tab-btn.active {
+  background: var(--accent-bg); color: var(--accent); border-color: var(--border-accent);
+  font-weight: 600;
+}
+.tab-btn i { font-size: 0.72rem; }
+
+/* ═══════════════════════════════════
+   Password Visibility Toggle
+═══════════════════════════════════ */
+.password-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-wrapper input {
+  width: 100%;
+  padding: 0.75rem 2.8rem 0.75rem 1rem !important; /* เว้นที่ด้านขวาให้พอดีกับไอคอน */
+}
+
+.toggle-password-btn {
+  position: absolute;
+  right: 10px;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 0.4rem;
+  font-size: 0.95rem;
+  transition: color 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.toggle-password-btn:hover {
+  color: var(--accent);
+}
+
   </style>
 </head>
 <body>
@@ -680,7 +735,7 @@
 
       <div class="card-body">
 
-        <div class="section-label">เข้าสู่ระบบด้วยบัญชีสังคม</div>
+        <div class="section-label">เข้าสู่ระบบด้วยบัญชีโซเชียล</div>
 
         <!-- Status Messages -->
         <div id="loginStatus"></div>
@@ -715,66 +770,95 @@
           </div>
         </div>
 <div class="divider">ทางเลือกอื่น</div>
-        <!-- Toggle Button -->
-<div class="toggle-code-btn" id="toggleCodeLogin" >
+
+<!-- Toggle Button -->
+<div class="toggle-code-btn" id="toggleCodeLogin">
   <div class="toggle-icon">
-    <i class="fas fa-key"></i>
+    <i class="fas fa-id-card"></i>
   </div>
-
   <div class="toggle-text">
-    <strong>เข้าสู่ระบบด้วยรหัส</strong>
-    <span>ใช้เลขบัตรประชาชนและรหัส 6 หลัก</span>
+    <strong>เข้าสู่ระบบด้วยเลขบัตรประชาชน</strong>
+    <span>ใช้รหัส 6 หลัก หรือ รหัสผ่าน</span>
   </div>
-
   <i class="fas fa-chevron-down toggle-arrow"></i>
 </div>
 
 <!-- Hidden Form -->
 <div class="code-login-wrapper" id="codeLoginWrapper">
-<form id="codeLoginForm" class="code-login-form" onsubmit="loginWithCode(event)">
+  <form id="idLoginForm" class="code-login-form" onsubmit="handleIdLogin(event)">
+    
+    <!-- Tabs Switcher -->
+    <div class="login-method-tabs">
+      <button type="button" class="tab-btn active" data-tab="code" onclick="switchLoginMethod('code')">
+        <i class="fas fa-hashtag"></i> รหัส 6 หลัก
+      </button>
+      <button type="button" class="tab-btn" data-tab="password" onclick="switchLoginMethod('password')">
+        <i class="fas fa-lock"></i> รหัสผ่าน
+      </button>
+    </div>
+
+    <div class="input-group">
+      <label for="nationalId">
+        <i class="fas fa-id-card"></i>
+        เลขประจำตัวประชาชน 13 หลัก
+      </label>
+      <input
+        type="text"
+        id="nationalId"
+        inputmode="numeric"
+        maxlength="13"
+        required
+        placeholder="กรอกเลขประจำตัวประชาชน 13 หลัก"
+        autocomplete="off"
+      >
+    </div>
+
+    <!-- ช่องกรอกรหัส 6 หลัก -->
+    <div id="codeMethod">
+      <div class="input-group">
+        <label for="otpCode">
+          <i class="fas fa-shield-halved"></i>
+          รหัสยืนยันการเข้าสู่ระบบ 6 หลัก
+        </label>
+        <input
+          type="text"
+          id="otpCode"
+          inputmode="numeric"
+          maxlength="6"
+          placeholder="กรอกรหัสยืนยัน 6 หลัก"
+          autocomplete="off"
+        >
+      </div>
+    </div>
+
+    <!-- ช่องกรอกรหัสผ่าน (ซ่อนไว้ตอนแรก) -->
+<!-- ช่องกรอกรหัสผ่าน (ซ่อนไว้ตอนแรก) -->
+<div id="passwordMethod" style="display: none;">
   <div class="input-group">
-    <label for="nationalId">
-      <i class="fas fa-id-card"></i>
-      เลขประจำตัวประชาชน 13 หลัก
+    <label for="passwordInput">
+      <i class="fas fa-lock"></i>
+      รหัสผ่าน
     </label>
-    <input
-      type="text"
-      id="nationalId"
-      inputmode="numeric"
-      maxlength="13"
-      required
-      placeholder="กรอกเลขประจำตัวประชาชน 13 หลัก"
-      autocomplete="off"
-    >
+    <div class="password-wrapper">
+      <input
+        type="password"
+        id="passwordInput"
+        minlength="6"
+        placeholder="กรอกรหัสผ่าน"
+        autocomplete="current-password"
+      >
+      <button type="button" class="toggle-password-btn" onclick="togglePasswordVisibility()" aria-label="แสดงรหัสผ่าน">
+        <i class="fas fa-eye" id="togglePasswordIcon"></i>
+      </button>
+    </div>
   </div>
+</div>
 
-  <div class="input-group">
-    <label for="otpCode">
-      <i class="fas fa-shield-halved"></i>
-      รหัสยืนยันการเข้าสู่ระบบ 6 หลัก
-    </label>
-    <small class="input-description">
-      บนอุปกรณ์ที่ได้เข้าสู่ระบบไว้ก่อนหน้า กรุณาเลือกเมนู
-      <i class="fas fa-mobile-screen-button"></i>
-      การจัดการอุปกรณ์ของฉัน เลือกเมนู <i class="fas fa-key"></i> สร้างรหัสสำหรับเข้าสู่ระบบ
-    </small>
-
-    <input
-      type="text"
-      id="otpCode"
-      inputmode="numeric"
-      maxlength="6"
-      required
-      placeholder="กรอกรหัสยืนยัน 6 หลัก"
-      autocomplete="off"
-    >
-  </div>
-
-  <button type="submit" class="code-login-btn" id="codeLoginBtn">
-    <i class="fas fa-right-to-bracket"></i>
-    เข้าสู่ระบบ
-  </button>
-</form>
+    <button type="submit" class="code-login-btn" id="idLoginBtn">
+      <i class="fas fa-right-to-bracket"></i>
+      เข้าสู่ระบบด้วยรหัส 6 หลัก
+    </button>
+  </form>
 </div>
 
         <!-- Security Note -->
@@ -998,81 +1082,85 @@
     }
 
     // ==================== Code Login (NEW) ====================
-    async function loginWithCode(e) {
-      e.preventDefault();
-      if (isProcessing) return;
+async function loginWithCode(e) {
+  e.preventDefault();
+  if (isProcessing) return;
 
-      const nationalId = document.getElementById('nationalId').value.trim();
-      const code = document.getElementById('otpCode').value.trim();
+  const nationalId = document.getElementById('nationalId').value.trim();
+  const code = document.getElementById('otpCode').value.trim();
 
-      // Validation
-      if (!/^\d{13}$/.test(nationalId)) {
-        showStatus('error', 'เลขบัตรประชาชนต้องเป็นตัวเลข 13 หลัก');
-        document.getElementById('nationalId').focus();
-        return;
+  // Validation
+  if (!/^\d{13}$/.test(nationalId)) {
+    showStatus('error', 'เลขบัตรประชาชนต้องเป็นตัวเลข 13 หลัก');
+    document.getElementById('nationalId').focus();
+    return;
+  }
+  if (!/^\d{6}$/.test(code)) {
+    showStatus('error', 'รหัสเข้าสู่ระบบต้องเป็นตัวเลข 6 หลัก');
+    document.getElementById('otpCode').focus();
+    return;
+  }
+
+  isProcessing = true;
+  disableButtons(true);
+  document.getElementById('idLoginBtn').disabled = true; // ✅ เปลี่ยนเป็น idLoginBtn
+  showLoading(true, 'กำลังยืนยันรหัสเข้าสู่ระบบ...');
+  showStatus('info', '<i class="fas fa-spinner fa-pulse"></i> กำลังตรวจสอบข้อมูล...', false);
+
+  try {
+    const deviceInfo = {
+      deviceName: /Mobi|Android/i.test(navigator.userAgent) ? 'Mobile Device' : 'Desktop Device',
+      os: navigator.platform,
+      browser: navigator.userAgent.split(') ')[0].split(' ').pop()
+    };
+
+    const res = await fetch(`${CONFIG.API_BASE_URL}/auth/code-verify`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ nationalId, code, deviceInfo })
+    });
+
+    const data = await res.json();
+
+    if (data.success && data.token) {
+      localStorage.setItem('auth_token', data.token);
+      
+      // ✅ จุดปรับปรุง: เช็คว่า API ตอบกลับมาพร้อม user มั้ย ถ้ามีให้ใช้เลย ไม่ต้องยิง verify ซ้ำ
+      if (data.user) {
+        localStorage.setItem('user_data', JSON.stringify(flattenUserData(data.user)));
+      } else {
+        // ถ้า API ไม่ได้ส่ง user มา ค่อยยิง verify ตามดึง (สำรอง)
+        try {
+          const verifyRes = await fetch(`${CONFIG.API_BASE_URL}/user/verify`, {
+            headers: { 'Authorization': `Bearer ${data.token}` }
+          });
+          const verifyData = await verifyRes.json();
+          if (verifyData.success && verifyData.user) {
+            localStorage.setItem('user_data', JSON.stringify(flattenUserData(verifyData.user)));
+          }
+        } catch (e) { console.warn('Auto fetch user data failed', e); }
       }
-      if (!/^\d{6}$/.test(code)) {
-        showStatus('error', 'รหัสเข้าสู่ระบบต้องเป็นตัวเลข 6 หลัก');
-        document.getElementById('otpCode').focus();
-        return;
-      }
 
-      isProcessing = true;
-      disableButtons(true);
-      document.getElementById('codeLoginBtn').disabled = true;
-      showLoading(true, 'กำลังยืนยันรหัสเข้าสู่ระบบ...');
-      showStatus('info', '<i class="fas fa-spinner fa-pulse"></i> กำลังตรวจสอบข้อมูล...', false);
-
-      try {
-        const deviceInfo = {
-          deviceName: /Mobi|Android/i.test(navigator.userAgent) ? 'Mobile Device' : 'Desktop Device',
-          os: navigator.platform,
-          browser: navigator.userAgent.split(') ')[0].split(' ').pop()
-        };
-
-        const res = await fetch(`${CONFIG.API_BASE_URL}/auth/code-verify`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ nationalId, code, deviceInfo })
-        });
-
-        const data = await res.json();
-
-        if (data.success && data.token) {
-          localStorage.setItem('auth_token', data.token);
-          
-          // Fetch user data after getting token (optional, if verify endpoint doesn't return user data)
-          try {
-            const verifyRes = await fetch(`${CONFIG.API_BASE_URL}/user/verify`, {
-              headers: { 'Authorization': `Bearer ${data.token}` }
-            });
-            const verifyData = await verifyRes.json();
-            if (verifyData.success && verifyData.user) {
-              localStorage.setItem('user_data', JSON.stringify(flattenUserData(verifyData.user)));
-            }
-          } catch (e) { console.warn('Auto fetch user data failed', e); }
-
-          showStatus('success', 'เข้าสู่ระบบสำเร็จ กำลังเปลี่ยนเส้นทาง...');
-          setTimeout(() => { window.location.href = 'index.html'; }, 1000);
-          
-        } else {
-          throw new Error(data.message || 'รหัสไม่ถูกต้อง หมดอายุ หรือเลขบัตรไม่ตรงกัน');
-        }
-
-      } catch (error) {
-        console.error('[Code Login Error]', error);
-        showLoading(false);
-        showStatus('error', error.message);
-        isProcessing = false;
-        document.getElementById('codeLoginBtn').disabled = false;
-        document.getElementById('otpCode').value = '';
-        document.getElementById('otpCode').focus();
-      } finally {
-        setTimeout(() => showLoading(false), 500);
-        disableButtons(false);
-      }
+      showStatus('success', 'เข้าสู่ระบบสำเร็จ กำลังเปลี่ยนเส้นทาง...');
+      setTimeout(() => { window.location.href = 'index.html'; }, 1000);
+      
+    } else {
+      throw new Error(data.message || 'รหัสไม่ถูกต้อง หมดอายุ หรือเลขบัตรไม่ตรงกัน');
     }
 
+  } catch (error) {
+    console.error('[Code Login Error]', error);
+    showLoading(false);
+    showStatus('error', error.message);
+    isProcessing = false;
+    document.getElementById('idLoginBtn').disabled = false; // ✅ เปลี่ยนเป็น idLoginBtn
+    document.getElementById('otpCode').value = '';
+    document.getElementById('otpCode').focus();
+  } finally {
+    setTimeout(() => showLoading(false), 500);
+    disableButtons(false);
+  }
+}
     // Force numeric input only
     function forceNumericInput(inputId) {
       const el = document.getElementById(inputId);
@@ -1427,6 +1515,130 @@ if (toggleBtn && codeWrapper) {
   });
 }
 
+let currentLoginMethod = 'code'; // สถานะปัจจุบัน (code หรือ password)
+
+// ฟังก์ชันสำหรับสลับ Tab ระหว่าง รหัส 6 หลัก กับ รหัสผ่าน
+function switchLoginMethod(method) {
+  currentLoginMethod = method;
+  
+  // สลับ Class Active ของปุ่ม Tab
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.tab === method);
+  });
+
+  // สลับการแสดงผลฟอร์ม
+  document.getElementById('codeMethod').style.display = method === 'code' ? 'block' : 'none';
+  document.getElementById('passwordMethod').style.display = method === 'password' ? 'block' : 'none';
+
+  // เปลี่ยนข้อความปุ่ม Submit
+  const submitBtn = document.getElementById('idLoginBtn');
+  if (method === 'code') {
+    submitBtn.innerHTML = '<i class="fas fa-right-to-bracket"></i> เข้าสู่ระบบด้วยรหัส 6 หลัก';
+  } else {
+    submitBtn.innerHTML = '<i class="fas fa-right-to-bracket"></i> เข้าสู่ระบบด้วยรหัสผ่าน';
+  }
+}
+
+// ฟังก์ชันหลักที่จะทำงานเมื่อกดปุ่มเข้าสู่ระบบ
+function handleIdLogin(e) {
+  e.preventDefault();
+  if (currentLoginMethod === 'code') {
+    loginWithCode(e);
+  } else {
+    loginWithPassword();
+  }
+}
+
+// ฟังก์ชันสำหรับล็อกอินด้วยรหัสผ่าน
+// ฟังก์ชันสำหรับล็อกอินด้วยรหัสผ่าน
+async function loginWithPassword() {
+  if (isProcessing) return;
+
+  const nationalId = document.getElementById('nationalId').value.trim();
+  const password = document.getElementById('passwordInput').value.trim();
+
+  // Validation
+  if (!/^\d{13}$/.test(nationalId)) {
+    showStatus('error', 'เลขบัตรประชาชนต้องเป็นตัวเลข 13 หลัก');
+    document.getElementById('nationalId').focus();
+    return;
+  }
+  if (!password || password.length < 8) {
+    showStatus('error', 'กรุณากรอกรหัสผ่านอย่างน้อย 8 ตัวอักษร');
+    document.getElementById('passwordInput').focus();
+    return;
+  }
+
+  isProcessing = true;
+  disableButtons(true);
+  document.getElementById('idLoginBtn').disabled = true;
+  showLoading(true, 'กำลังเข้าสู่ระบบด้วยรหัสผ่าน...');
+  showStatus('info', '<i class="fas fa-spinner fa-pulse"></i> กำลังตรวจสอบข้อมูล...', false);
+
+  try {
+    const res = await fetch(`${CONFIG.API_BASE_URL}/auth/password-login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ nationalId, password })
+    });
+
+    const data = await res.json();
+
+    if (data.success && data.token) {
+      localStorage.setItem('auth_token', data.token);
+      
+      // ── จุดปรับปรุง: เช็คว่า API ตอบกลับมาพร้อม user มั้ย ถ้ามีให้ใช้เลย ไม่ต้องยิง verify ซ้ำ ──
+      if (data.user) {
+        localStorage.setItem('user_data', JSON.stringify(flattenUserData(data.user)));
+      } else {
+        // ถ้า API ไม่ได้ส่ง user มา (กรณีโค้ดเก่าๆ) ค่อยยิง verify ตามดึง
+        try {
+          const verifyRes = await fetch(`${CONFIG.API_BASE_URL}/user/verify`, {
+            headers: { 'Authorization': `Bearer ${data.token}` }
+          });
+          const verifyData = await verifyRes.json();
+          if (verifyData.success && verifyData.user) {
+            localStorage.setItem('user_data', JSON.stringify(flattenUserData(verifyData.user)));
+          }
+        } catch (e) { console.warn('Auto fetch user data failed', e); }
+      }
+
+      showStatus('success', 'เข้าสู่ระบบสำเร็จ กำลังเปลี่ยนเส้นทาง...');
+      setTimeout(() => { window.location.href = 'index.html'; }, 1000);
+      
+    } else {
+      throw new Error(data.message || 'เลขบัตรหรือรหัสผ่านไม่ถูกต้อง');
+    }
+
+  } catch (error) {
+    console.error('[Password Login Error]', error);
+    showLoading(false);
+    showStatus('error', error.message);
+    isProcessing = false;
+    document.getElementById('idLoginBtn').disabled = false;
+    document.getElementById('passwordInput').value = '';
+    document.getElementById('passwordInput').focus();
+  } finally {
+    setTimeout(() => showLoading(false), 500);
+    disableButtons(false);
+  }
+}
+
+// ฟังก์ชันสำหรับสลับการแสดง/ซ่อนรหัสผ่าน
+function togglePasswordVisibility() {
+  const passwordInput = document.getElementById('passwordInput');
+  const toggleIcon = document.getElementById('togglePasswordIcon');
+  
+  if (passwordInput.type === 'password') {
+    passwordInput.type = 'text';
+    toggleIcon.classList.remove('fa-eye');
+    toggleIcon.classList.add('fa-eye-slash'); // เปลี่ยนเป็นไอคอนตาขีด
+  } else {
+    passwordInput.type = 'password';
+    toggleIcon.classList.remove('fa-eye-slash');
+    toggleIcon.classList.add('fa-eye'); // เปลี่ยนกลับเป็นไอคอนตาปกติ
+  }
+}
 
     // ==================== Theme Toggle ====================
     (function() {
