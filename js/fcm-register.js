@@ -17,7 +17,6 @@ const fcmToken = await messaging.getToken({
   serviceWorkerRegistration: registration
 });
 
-    console.log('FCM Token:', fcmToken);
 
     if (!fcmToken) return;
 

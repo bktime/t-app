@@ -570,31 +570,31 @@ function gotoSupervisor(ref) {
     });
 
     /* ═══════════ PWA ═══════════ */
-    let deferredPrompt;
-    window.addEventListener('beforeinstallprompt', (e) => {
-      e.preventDefault();
-      deferredPrompt = e;
-      if (window.matchMedia('(display-mode: standalone)').matches) return;
-      const banner = document.createElement('div');
-      banner.className = 'pwa-banner';
-      banner.innerHTML = `
-        <div style="flex:1;min-width:0">
-          <div style="font-family:'Outfit',sans-serif;font-size:0.88rem;font-weight:700;color:var(--t1)">ติดตั้งแอปพลิเคชัน</div>
-          <div style="font-size:0.72rem;color:var(--t3);margin-top:2px">เพิ่มเข้าหน้าจอหลักเพื่อประสบการณ์ที่ดีกว่า</div>
-        </div>
-        <button id="installBtn" class="btn btn-primary" style="padding:0.65rem 1.1rem;font-size:0.8rem;flex-shrink:0">ติดตั้ง</button>
-        <button id="dismissBanner" style="background:none;border:none;color:var(--t3);cursor:pointer;padding:4px 8px;font-size:1rem" aria-label="ปิด">✕</button>
-      `;
-      document.body.appendChild(banner);
-      document.getElementById('installBtn').onclick = async () => {
-        if (!deferredPrompt) return;
-        deferredPrompt.prompt();
-        await deferredPrompt.userChoice;
-        deferredPrompt = null;
-        banner.remove();
-      };
-      document.getElementById('dismissBanner').onclick = () => banner.remove();
-    });
+    // let deferredPrompt;
+    // window.addEventListener('beforeinstallprompt', (e) => {
+    //   e.preventDefault();
+    //   deferredPrompt = e;
+    //   if (window.matchMedia('(display-mode: standalone)').matches) return;
+    //   const banner = document.createElement('div');
+    //   banner.className = 'pwa-banner';
+    //   banner.innerHTML = `
+    //     <div style="flex:1;min-width:0">
+    //       <div style="font-family:'Outfit',sans-serif;font-size:0.88rem;font-weight:700;color:var(--t1)">ติดตั้งแอปพลิเคชัน</div>
+    //       <div style="font-size:0.72rem;color:var(--t3);margin-top:2px">เพิ่มเข้าหน้าจอหลักเพื่อประสบการณ์ที่ดีกว่า</div>
+    //     </div>
+    //     <button id="installBtn" class="btn btn-primary" style="padding:0.65rem 1.1rem;font-size:0.8rem;flex-shrink:0">ติดตั้ง</button>
+    //     <button id="dismissBanner" style="background:none;border:none;color:var(--t3);cursor:pointer;padding:4px 8px;font-size:1rem" aria-label="ปิด">✕</button>
+    //   `;
+    //   document.body.appendChild(banner);
+    //   document.getElementById('installBtn').onclick = async () => {
+    //     if (!deferredPrompt) return;
+    //     deferredPrompt.prompt();
+    //     await deferredPrompt.userChoice;
+    //     deferredPrompt = null;
+    //     banner.remove();
+    //   };
+    //   document.getElementById('dismissBanner').onclick = () => banner.remove();
+    // });
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
