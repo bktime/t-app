@@ -32,9 +32,9 @@
       --danger-bg: rgba(239, 68, 68, 0.06);
       --danger-border: rgba(239, 68, 68, 0.15);
       --success-border: rgba(16, 185, 129, 0.4);
-      --indigo: #818cf8;
-      --indigo-bg: rgba(129, 140, 248, 0.08);
-      --indigo-border: rgba(129, 140, 248, 0.2);
+      --indigo: #6366f1;
+      --indigo-bg: rgba(99, 102, 241, 0.12);
+      --indigo-border: rgba(99, 102, 241, 0.3);
       --amber: #fbbf24;
       --amber-bg: rgba(251, 191, 36, 0.08);
       --amber-border: rgba(251, 191, 36, 0.2);
@@ -59,7 +59,7 @@
       --transition: 0.25s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
-    [data-theme="light"] {
+         [data-theme="light"] {
       --bg-primary: #f0f4f8;
       --bg-secondary: #e2e8f0;
       --bg-card: rgba(255, 255, 255, 0.92);
@@ -69,7 +69,7 @@
       --border-color: rgba(0,0,0,0.06);
       --border-subtle: rgba(0,0,0,0.03);
       --border-hover: rgba(0,0,0,0.1);
-      --border-accent: rgba(5, 150, 105, 0.25);
+      --border-accent: rgba(5, 150, 105, 0.35);
       --text-primary: #0f172a;
       --text-secondary: #475569;
       --text-muted: #41454b;
@@ -81,10 +81,20 @@
       --danger-bg: rgba(220, 38, 38, 0.05);
       --danger-border: rgba(220, 38, 38, 0.12);
       --success-border: rgba(5, 150, 105, 0.3);
-      --indigo-bg: rgba(99, 102, 241, 0.06);
-      --indigo-border: rgba(99, 102, 241, 0.15);
-      --amber-bg: rgba(217, 119, 6, 0.06);
-      --amber-border: rgba(217, 119, 6, 0.15);
+      
+      --indigo: #4338ca;
+      --indigo-bg: rgba(67, 56, 202, 0.08);
+      --indigo-border: rgba(67, 56, 202, 0.3);
+      
+      --amber: #b45309;
+      --amber-bg: rgba(180, 83, 9, 0.08);
+      --amber-border: rgba(180, 83, 9, 0.3);
+      
+      /* ✅ เพิ่มสี Code สำหรับ Light Mode (เปลี่ยนจากชมพูเรือนตา เป็นม่วงเข้ม) */
+      --code: #a21caf;
+      --code-bg: rgba(162, 28, 175, 0.08);
+      --code-border: rgba(162, 28, 175, 0.3);
+      
       --google-bg: rgba(234, 67, 53, 0.05);
       --google-border: rgba(234, 67, 53, 0.15);
       --line-bg: rgba(6, 199, 85, 0.05);
@@ -109,424 +119,120 @@
       -webkit-font-smoothing: antialiased;
     }
 
-    /* ═══════════════════════════════════
-       Background
-    ═══════════════════════════════════ */
-    .bg-layer {
-      position: fixed; inset: 0; z-index: 0;
-      overflow: hidden; pointer-events: none;
-    }
-    .orb {
-      position: absolute; border-radius: 50%;
-      filter: blur(90px); opacity: 0.25;
-      animation: orbFloat 20s infinite cubic-bezier(0.45, 0, 0.55, 1);
-    }
+    .bg-layer { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
+    .orb { position: absolute; border-radius: 50%; filter: blur(90px); opacity: 0.25; animation: orbFloat 20s infinite cubic-bezier(0.45, 0, 0.55, 1); }
     .orb-1 { width: 450px; height: 450px; background: #059669; top: -12%; left: -8%; animation-duration: 22s; }
     .orb-2 { width: 350px; height: 350px; background: #1d4ed8; bottom: -8%; right: -5%; animation-duration: 26s; animation-delay: -5s; }
     .orb-3 { width: 280px; height: 280px; background: #9333ea; top: 45%; left: 55%; opacity: 0.12; animation-duration: 30s; animation-delay: -10s; }
-    @keyframes orbFloat {
-      0%, 100% { transform: translate(0, 0) scale(1); }
-      25% { transform: translate(35px, -25px) scale(1.06); }
-      50% { transform: translate(-15px, 35px) scale(0.96); }
-      75% { transform: translate(25px, 15px) scale(1.02); }
-    }
+    @keyframes orbFloat { 0%, 100% { transform: translate(0, 0) scale(1); } 25% { transform: translate(35px, -25px) scale(1.06); } 50% { transform: translate(-15px, 35px) scale(0.96); } 75% { transform: translate(25px, 15px) scale(1.02); } }
 
-    /* ═══════════════════════════════════
-       Theme Toggle
-    ═══════════════════════════════════ */
-    #themeBtn {
-      position: fixed; top: 1rem; right: 1rem; z-index: 999;
-      background: var(--bg-card); border: 1px solid var(--border-color);
-      color: var(--text-secondary); cursor: pointer;
-      border-radius: var(--radius-sm); padding: 8px 12px;
-      font-size: 0.85rem; transition: all var(--transition);
-      backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-      display: flex; align-items: center; gap: 6px;
-    }
+    #themeBtn { position: fixed; top: 1rem; right: 1rem; z-index: 999; background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-secondary); cursor: pointer; border-radius: var(--radius-sm); padding: 8px 12px; font-size: 0.85rem; transition: all var(--transition); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); display: flex; align-items: center; gap: 6px; }
     #themeBtn:hover { color: var(--text-primary); border-color: var(--border-accent); }
 
-    /* ═══════════════════════════════════
-       Header
-    ═══════════════════════════════════ */
-    .header {
-      position: relative; z-index: 10;
-      max-width: 640px; margin: 0 auto;
-      padding: 1.25rem 1.25rem 0;
-      animation: fadeDown 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
-    }
-    @keyframes fadeDown {
-      from { opacity: 0; transform: translateY(-12px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .header-top {
-      display: flex; align-items: center; justify-content: space-between;
-      margin-bottom: 1rem;
-    }
-
-    .back-btn {
-      display: inline-flex; align-items: center; gap: 8px;
-      color: var(--text-secondary); font-size: 0.82rem;
-      font-family: 'Kanit', sans-serif; font-weight: 500;
-      text-decoration: none; border: 1px solid var(--border-color);
-      background: var(--bg-surface); cursor: pointer;
-      padding: 0.45rem 0.85rem; border-radius: var(--radius-sm);
-      transition: all var(--transition);
-      backdrop-filter: blur(12px);
-    }
+    .header { position: relative; z-index: 10; max-width: 640px; margin: 0 auto; padding: 1.25rem 1.25rem 0; animation: fadeDown 0.5s cubic-bezier(0.16, 1, 0.3, 1) both; }
+    @keyframes fadeDown { from { opacity: 0; transform: translateY(-12px); } to { opacity: 1; transform: translateY(0); } }
+    .header-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
+    .back-btn { display: inline-flex; align-items: center; gap: 8px; color: var(--text-secondary); font-size: 0.82rem; font-family: 'Kanit', sans-serif; font-weight: 500; text-decoration: none; border: 1px solid var(--border-color); background: var(--bg-surface); cursor: pointer; padding: 0.45rem 0.85rem; border-radius: var(--radius-sm); transition: all var(--transition); backdrop-filter: blur(12px); }
     .back-btn:hover { color: var(--text-primary); border-color: var(--border-hover); background: var(--bg-surface2); }
     .back-btn:active { transform: scale(0.97); }
-
-    /* Mini Clock */
-    .mini-clock {
-      font-family: 'Inter', sans-serif;
-      font-size: 0.82rem; font-weight: 600;
-      color: var(--text-secondary);
-      font-variant-numeric: tabular-nums;
-      letter-spacing: -0.01em;
-      display: flex; align-items: center; gap: 6px;
-    }
+    .mini-clock { font-family: 'Inter', sans-serif; font-size: 0.82rem; font-weight: 600; color: var(--text-secondary); font-variant-numeric: tabular-nums; letter-spacing: -0.01em; display: flex; align-items: center; gap: 6px; }
     .mini-clock i { color: var(--accent); font-size: 0.72rem; }
     .mini-clock .mc-colon { animation: colonBlink 2s step-end infinite; }
     @keyframes colonBlink { 50% { opacity: 0.3; } }
+    .page-title { font-family: 'Kanit', sans-serif; font-size: 1.5rem; font-weight: 700; color: var(--text-primary); letter-spacing: -0.01em; line-height: 1.2; }
+    .page-sub { font-size: 0.82rem; color: var(--text-secondary); margin-top: 0.3rem; }
 
-    .page-title {
-      font-family: 'Kanit', sans-serif;
-      font-size: 1.5rem; font-weight: 700;
-      color: var(--text-primary); letter-spacing: -0.01em;
-      line-height: 1.2;
-    }
-    .page-sub {
-      font-size: 0.82rem; color: var(--text-secondary);
-      margin-top: 0.3rem;
-    }
+    .content { position: relative; z-index: 10; max-width: 640px; margin: 1.5rem auto 0; padding: 0 1.25rem; }
 
-    /* ═══════════════════════════════════
-       Content
-    ═══════════════════════════════════ */
-    .content {
-      position: relative; z-index: 10;
-      max-width: 640px; margin: 1.5rem auto 0;
-      padding: 0 1.25rem;
-    }
-
-    /* ═══════════════════════════════════
-       Summary Bar
-    ═══════════════════════════════════ */
-    .summary {
-      display: flex; align-items: center; justify-content: space-between;
-      background: var(--bg-card); border: 1px solid var(--border-color);
-      border-radius: var(--radius-md); padding: 1rem 1.25rem;
-      margin-bottom: 1.25rem;
-      backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-      animation: fadeUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both;
-    }
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(16px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
+    .summary { display: flex; align-items: center; justify-content: space-between; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1rem 1.25rem; margin-bottom: 1.25rem; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); animation: fadeUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both; }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
     .summary-left { display: flex; align-items: center; gap: 12px; }
-    .summary-icon {
-      width: 40px; height: 40px; border-radius: var(--radius-sm);
-      background: var(--accent-bg); border: 1px solid var(--border-accent);
-      display: flex; align-items: center; justify-content: center;
-      color: var(--accent); font-size: 0.9rem;
-    }
+    .summary-icon { width: 40px; height: 40px; border-radius: var(--radius-sm); background: var(--accent-bg); border: 1px solid var(--border-accent); display: flex; align-items: center; justify-content: center; color: var(--accent); font-size: 0.9rem; }
     .summary-label { font-size: 0.78rem; color: var(--text-secondary); }
-    .summary-count {
-      font-family: 'Kanit', sans-serif;
-      font-size: 1.05rem; font-weight: 700;
-      color: var(--text-primary); line-height: 1.2;
-    }
-
-    .btn-revoke-all {
-      display: flex; align-items: center; gap: 6px;
-      background: var(--danger-bg); border: 1px solid var(--danger-border);
-      color: var(--danger); border-radius: var(--radius-sm);
-      padding: 0.5rem 0.9rem;
-      font-family: 'Kanit', sans-serif; font-size: 0.76rem;
-      font-weight: 600; cursor: pointer;
-      transition: all var(--transition);
-    }
+    .summary-count { font-family: 'Kanit', sans-serif; font-size: 1.05rem; font-weight: 700; color: var(--text-primary); line-height: 1.2; }
+    .btn-revoke-all { display: flex; align-items: center; gap: 6px; background: var(--danger-bg); border: 1px solid var(--danger-border); color: var(--danger); border-radius: var(--radius-sm); padding: 0.5rem 0.9rem; font-family: 'Kanit', sans-serif; font-size: 0.76rem; font-weight: 600; cursor: pointer; transition: all var(--transition); }
     .btn-revoke-all:hover { background: rgba(239, 68, 68, 0.12); border-color: var(--danger); }
     .btn-revoke-all:disabled { opacity: 0.4; cursor: not-allowed; }
     .btn-revoke-all:active:not(:disabled) { transform: scale(0.97); }
 
-    /* ═══════════════════════════════════
-       Section Label
-    ═══════════════════════════════════ */
-    .section-label {
-      font-family: 'Kanit', sans-serif;
-      font-size: 0.62rem; font-weight: 500;
-      letter-spacing: 0.2em; text-transform: uppercase;
-      color: var(--text-muted);
-      margin-bottom: 0.75rem; margin-top: 1.5rem;
-      display: flex; align-items: center; gap: 0.6rem;
-    }
-    .section-label::after {
-      content: ''; flex: 1; height: 1px;
-      background: linear-gradient(90deg, var(--border-color), transparent);
-    }
+    .section-label { font-family: 'Kanit', sans-serif; font-size: 0.62rem; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.75rem; margin-top: 1.5rem; display: flex; align-items: center; gap: 0.6rem; }
+    .section-label::after { content: ''; flex: 1; height: 1px; background: linear-gradient(90deg, var(--border-color), transparent); }
     .section-label:first-child { margin-top: 0; }
 
-    /* ═══════════════════════════════════
-       Device Card
-    ═══════════════════════════════════ */
-    .device-card {
-      background: var(--bg-card); border: 1px solid var(--border-color);
-      border-radius: var(--radius-md); padding: 1rem 1.15rem;
-      margin-bottom: 0.6rem;
-      backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-      transition: border-color var(--transition);
-      animation: cardIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
-    }
-    @keyframes cardIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
+    .device-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1rem 1.15rem; margin-bottom: 0.6rem; backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); transition: border-color var(--transition); animation: cardIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) both; }
+    @keyframes cardIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     .device-card:hover { border-color: var(--border-hover); }
-    .device-card.current {
-      border-color: var(--border-accent);
-      background: linear-gradient(135deg, rgba(16, 185, 129, 0.04), var(--bg-card));
-    }
-
+    .device-card.current { border-color: var(--border-accent); background: linear-gradient(135deg, rgba(16, 185, 129, 0.04), var(--bg-card)); }
     .dc-top { display: flex; align-items: flex-start; gap: 12px; }
-
-    .dc-icon {
-      width: 44px; height: 44px; flex-shrink: 0;
-      border-radius: var(--radius-sm);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1.1rem; transition: transform var(--transition);
-    }
+    .dc-icon { width: 44px; height: 44px; flex-shrink: 0; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; font-size: 1.1rem; transition: transform var(--transition); }
     .device-card:hover .dc-icon { transform: scale(1.05); }
-
-    .dc-icon.mobile {
-      background: var(--indigo-bg); border: 1px solid var(--indigo-border);
-      color: var(--indigo);
-    }
-    .dc-icon.desktop {
-      background: var(--accent-bg); border: 1px solid var(--border-accent);
-      color: var(--accent);
-    }
-    .dc-icon.tablet {
-      background: var(--amber-bg); border: 1px solid var(--amber-border);
-      color: var(--amber);
-    }
-    .dc-icon.unknown {
-      background: var(--bg-surface); border: 1px solid var(--border-color);
-      color: var(--text-muted);
-    }
-
+    .dc-icon.mobile { background: var(--indigo-bg); border: 1px solid var(--indigo-border); color: var(--indigo); }
+    .dc-icon.desktop { background: var(--accent-bg); border: 1px solid var(--border-accent); color: var(--accent); }
+    .dc-icon.tablet { background: var(--amber-bg); border: 1px solid var(--amber-border); color: var(--amber); }
+    .dc-icon.unknown { background: var(--bg-surface); border: 1px solid var(--border-color); color: var(--text-muted); }
     .dc-info { flex: 1; min-width: 0; }
     .dc-name-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-    .dc-name {
-      font-family: 'Kanit', sans-serif;
-      font-size: 0.9rem; font-weight: 600;
-      color: var(--text-primary);
-    }
-
-    /* Badges */
-    .badge-current {
-      font-family: 'Kanit', sans-serif;
-      font-size: 0.6rem; font-weight: 600;
-      letter-spacing: 0.06em; text-transform: uppercase;
-      padding: 2px 7px; border-radius: 99px;
-      background: var(--accent-bg); border: 1px solid var(--border-accent);
-      color: var(--accent); flex-shrink: 0;
-      display: inline-flex; align-items: center; gap: 3px;
-    }
-    .badge-current::before {
-      content: ''; width: 5px; height: 5px; border-radius: 50%;
-      background: var(--accent); animation: statusPulse 2s ease-in-out infinite;
-    }
-    @keyframes statusPulse {
-      0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
-      50% { box-shadow: 0 0 0 4px rgba(16, 185, 129, 0); }
-    }
-
-    .badge-social {
-      font-family: 'Kanit', sans-serif;
-      font-size: 0.6rem; font-weight: 600;
-      padding: 2px 7px; border-radius: 99px;
-      flex-shrink: 0;
-    }
-    .badge-google {
-      background: var(--google-bg); border: 1px solid var(--google-border);
-      color: var(--google);
-    }
-    .badge-line {
-      background: var(--line-bg); border: 1px solid var(--line-border);
-      color: var(--line);
-    }
-    .badge-telegram {
-      background: var(--telegram-bg); border: 1px solid var(--telegram-border);
-      color: var(--telegram);
-    }
-    .badge-code {
-      background: var(--code-bg); border: 1px solid var(--code-border);
-      color: var(--code);
-    }
-
-    .dc-meta {
-      font-size: 0.72rem; color: var(--text-secondary);
-      margin-top: 0.3rem;
-      display: flex; flex-wrap: wrap; gap: 3px 12px;
-    }
+    .dc-name { font-family: 'Kanit', sans-serif; font-size: 0.9rem; font-weight: 600; color: var(--text-primary); }
+    .badge-current { font-family: 'Kanit', sans-serif; font-size: 0.6rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; padding: 2px 7px; border-radius: 99px; background: var(--accent-bg); border: 1px solid var(--border-accent); color: var(--accent); flex-shrink: 0; display: inline-flex; align-items: center; gap: 3px; }
+    .badge-current::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: var(--accent); animation: statusPulse 2s ease-in-out infinite; }
+    @keyframes statusPulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); } 50% { box-shadow: 0 0 0 4px rgba(16, 185, 129, 0); } }
+    .badge-social { font-family: 'Kanit', sans-serif; font-size: 0.6rem; font-weight: 600; padding: 2px 7px; border-radius: 99px; flex-shrink: 0; }
+    .badge-google { background: var(--google-bg); border: 1px solid var(--google-border); color: var(--google); }
+    .badge-line { background: var(--line-bg); border: 1px solid var(--line-border); color: var(--line); }
+    .badge-telegram { background: var(--telegram-bg); border: 1px solid var(--telegram-border); color: var(--telegram); }
+    .badge-code { background: var(--code-bg); border: 1px solid var(--code-border); color: var(--code); }
+    .badge-kiosk { background: var(--amber-bg); border: 1px solid var(--amber-border); color: var(--amber); }
+    .badge-password { background: var(--indigo-bg); border: 1px solid var(--indigo-border); color: var(--indigo); }
+    .dc-meta { font-size: 0.72rem; color: var(--text-secondary); margin-top: 0.3rem; display: flex; flex-wrap: wrap; gap: 3px 12px; }
     .dc-meta span { display: flex; align-items: center; gap: 4px; }
     .dc-meta i { font-size: 0.62rem; opacity: 0.5; }
-
-    .dc-bottom {
-      display: flex; align-items: center; justify-content: space-between;
-      margin-top: 0.8rem; padding-top: 0.7rem;
-      border-top: 1px solid var(--border-subtle);
-    }
-    .dc-active {
-      font-size: 0.7rem; color: var(--text-muted);
-      display: flex; align-items: center; gap: 4px; flex-wrap: wrap;
-    }
-    .dc-active .dot-live {
-      display: inline-block; width: 6px; height: 6px;
-      border-radius: 50%; background: var(--accent);
-      box-shadow: 0 0 6px var(--accent-glow);
-      animation: statusPulse 2s ease-in-out infinite;
-    }
+    .dc-bottom { display: flex; align-items: center; justify-content: space-between; margin-top: 0.8rem; padding-top: 0.7rem; border-top: 1px solid var(--border-subtle); }
+    .dc-active { font-size: 0.7rem; color: var(--text-muted); display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+    .dc-active .dot-live { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 6px var(--accent-glow); animation: statusPulse 2s ease-in-out infinite; }
     .dc-active .login-time { opacity: 0.6; margin-left: 4px; }
-
-    /* Kick Button */
-    .btn-kick {
-      display: flex; align-items: center; gap: 5px;
-      background: none; border: 1px solid var(--border-color);
-      color: var(--text-secondary); border-radius: var(--radius-xs);
-      padding: 0.4rem 0.7rem;
-      font-family: 'Kanit', sans-serif; font-size: 0.72rem;
-      font-weight: 500; cursor: pointer;
-      transition: all var(--transition);
-    }
-    .btn-kick:hover {
-      background: var(--danger-bg); border-color: var(--danger-border);
-      color: var(--danger);
-    }
+    .btn-kick { display: flex; align-items: center; gap: 5px; background: none; border: 1px solid var(--border-color); color: var(--text-secondary); border-radius: var(--radius-xs); padding: 0.4rem 0.7rem; font-family: 'Kanit', sans-serif; font-size: 0.72rem; font-weight: 500; cursor: pointer; transition: all var(--transition); }
+    .btn-kick:hover { background: var(--danger-bg); border-color: var(--danger-border); color: var(--danger); }
     .btn-kick:active:not(:disabled) { transform: scale(0.97); }
     .btn-kick:disabled { opacity: 0.4; cursor: not-allowed; }
 
-    /* ═══════════════════════════════════
-       Empty & Loading States
-    ═══════════════════════════════════ */
-    .skeleton {
-      background: linear-gradient(90deg, var(--bg-surface), var(--bg-surface2), var(--bg-surface));
-      background-size: 200%; border-radius: var(--radius-md);
-      height: 110px; margin-bottom: 0.6rem;
-      border: 1px solid var(--border-subtle);
-      animation: shimmer 1.4s infinite;
-    }
+    .skeleton { background: linear-gradient(90deg, var(--bg-surface), var(--bg-surface2), var(--bg-surface)); background-size: 200%; border-radius: var(--radius-md); height: 110px; margin-bottom: 0.6rem; border: 1px solid var(--border-subtle); animation: shimmer 1.4s infinite; }
     @keyframes shimmer { 0%{background-position:200%} 100%{background-position:-200%} }
-
-    .empty-state {
-      text-align: center; padding: 3rem 1rem;
-      color: var(--text-muted); font-size: 0.85rem;
-    }
+    .empty-state { text-align: center; padding: 3rem 1rem; color: var(--text-muted); font-size: 0.85rem; }
     .empty-state i { font-size: 2rem; margin-bottom: 1rem; display: block; opacity: 0.5; }
 
-    /* ═══════════════════════════════════
-       Toast
-    ═══════════════════════════════════ */
-    .toast {
-      position: fixed; bottom: 1.5rem; left: 50%;
-      transform: translateX(-50%);
-      background: var(--bg-card-solid); border: 1px solid var(--border-color);
-      color: var(--text-primary); font-size: 0.82rem;
-      padding: 0.75rem 1.25rem; border-radius: var(--radius-sm);
-      z-index: 999; white-space: nowrap;
-      box-shadow: var(--shadow-card);
-      animation: toastIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
-      font-family: 'Kanit', sans-serif; font-weight: 500;
-      display: flex; align-items: center; gap: 8px;
-    }
-    @keyframes toastIn {
-      from { opacity: 0; transform: translateX(-50%) translateY(10px); }
-      to { opacity: 1; transform: translateX(-50%) translateY(0); }
-    }
+    .toast { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%); background: var(--bg-card-solid); border: 1px solid var(--border-color); color: var(--text-primary); font-size: 0.82rem; padding: 0.75rem 1.25rem; border-radius: var(--radius-sm); z-index: 999; white-space: nowrap; box-shadow: var(--shadow-card); animation: toastIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) both; font-family: 'Kanit', sans-serif; font-weight: 500; display: flex; align-items: center; gap: 8px; }
+    @keyframes toastIn { from { opacity: 0; transform: translateX(-50%) translateY(10px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
 
-    /* ═══════════════════════════════════
-       SweetAlert Custom
-    ═══════════════════════════════════ */
-    .swal2-popup {
-      background: var(--bg-card-solid) !important;
-      color: var(--text-primary) !important;
-      border: 1px solid var(--border-color) !important;
-      border-radius: var(--radius-lg) !important;
-      box-shadow: var(--shadow-card) !important;
-      font-family: 'Noto Sans Thai', sans-serif !important;
-    }
-    .swal2-title {
-      font-family: 'Kanit', sans-serif !important;
-      color: var(--text-primary) !important;
-    }
+    .swal2-popup { background: var(--bg-card-solid) !important; color: var(--text-primary) !important; border: 1px solid var(--border-color) !important; border-radius: var(--radius-lg) !important; box-shadow: var(--shadow-card) !important; font-family: 'Noto Sans Thai', sans-serif !important; }
+    .swal2-title { font-family: 'Kanit', sans-serif !important; color: var(--text-primary) !important; }
     .swal2-html-container { color: var(--text-secondary) !important; }
-    .swal2-confirm {
-      background: linear-gradient(135deg, var(--accent-deep), var(--accent)) !important;
-      border-radius: var(--radius-sm) !important;
-      font-family: 'Kanit', sans-serif !important;
-      box-shadow: 0 4px 15px var(--accent-glow) !important;
-    }
-    .swal2-cancel {
-      background: var(--bg-surface) !important;
-      border: 1px solid var(--border-color) !important;
-      color: var(--text-secondary) !important;
-      border-radius: var(--radius-sm) !important;
-      font-family: 'Kanit', sans-serif !important;
-    }
+    .swal2-confirm { background: linear-gradient(135deg, var(--accent-deep), var(--accent)) !important; border-radius: var(--radius-sm) !important; font-family: 'Kanit', sans-serif !important; box-shadow: 0 4px 15px var(--accent-glow) !important; }
+    .swal2-cancel { background: var(--bg-surface) !important; border: 1px solid var(--border-color) !important; color: var(--text-secondary) !important; border-radius: var(--radius-sm) !important; font-family: 'Kanit', sans-serif !important; }
     .swal2-icon { border-color: var(--border-color) !important; }
 
-    .btn-qr-login {
-  width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px;
-  background: var(--accent-bg); border: 1px dashed var(--border-accent);
-  color: var(--accent); border-radius: var(--radius-md);
-  padding: 0.85rem; font-family: 'Kanit', sans-serif; font-size: 0.82rem;
-  font-weight: 600; cursor: pointer; transition: all var(--transition);
-}
-.btn-qr-login:hover { background: rgba(16, 185, 129, 0.15); border-style: solid; }
+    .btn-action { width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; background: var(--accent-bg); border: 1px dashed var(--border-accent); color: var(--accent); border-radius: var(--radius-md); padding: 0.85rem; font-family: 'Kanit', sans-serif; font-size: 0.82rem; font-weight: 600; cursor: pointer; transition: all var(--transition); }
+    .btn-action:hover { border-style: solid; }
 
-.qr-modal {
-  position: fixed; inset: 0; z-index: 1000;
-  background: rgba(0,0,0,0.7); backdrop-filter: blur(8px);
-  display: flex; align-items: center; justify-content: center;
-  padding: 1.5rem; animation: fadeIn 0.2s ease;
-}
-.qr-modal-content {
-  background: var(--bg-card-solid); border: 1px solid var(--border-color);
-  border-radius: var(--radius-lg); width: 100%; max-width: 340px;
-  box-shadow: var(--shadow-card); overflow: hidden;
-}
-.qr-modal-header {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 1rem 1.25rem; border-bottom: 1px solid var(--border-color);
-}
-.qr-modal-header h2 { font-family: 'Kanit', sans-serif; font-size: 1.05rem; font-weight: 700; color: var(--text-primary); }
-.qr-modal-close { background: none; border: none; color: var(--text-secondary); cursor: pointer; font-size: 1rem; padding: 4px; }
-.qr-modal-body { padding: 1.5rem 1.25rem; text-align: center; }
+    .qr-modal { position: fixed; inset: 0; z-index: 1000; background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; padding: 1.5rem; animation: fadeIn 0.2s ease; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    .qr-modal-content { background: var(--bg-card-solid); border: 1px solid var(--border-color); border-radius: var(--radius-lg); width: 100%; max-width: 340px; box-shadow: var(--shadow-card); overflow: hidden; }
+    .qr-modal-header { display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.25rem; border-bottom: 1px solid var(--border-color); }
+    .qr-modal-header h2 { font-family: 'Kanit', sans-serif; font-size: 1.05rem; font-weight: 700; color: var(--text-primary); }
+    .qr-modal-close { background: none; border: none; color: var(--text-secondary); cursor: pointer; font-size: 1rem; padding: 4px; }
+    .qr-modal-body { padding: 1.5rem 1.25rem; text-align: center; }
+    .code-info { font-size: 0.78rem; color: var(--text-secondary); margin-bottom: 1.25rem; line-height: 1.5; }
+    .otp-box { font-family: 'Inter', sans-serif; font-size: 2.2rem; font-weight: 700; letter-spacing: 0.35em; color: var(--accent); background: var(--accent-bg); border: 1px solid var(--border-accent); padding: 0.9rem 1rem; border-radius: var(--radius-sm); margin-bottom: 1.25rem; user-select: all; }
+    .qr-timer { font-family: 'Kanit', sans-serif; font-size: 0.75rem; color: var(--accent); background: var(--accent-bg); display: inline-flex; align-items: center; gap: 5px; padding: 5px 10px; border-radius: 99px; border: 1px solid var(--border-accent); }
 
-.code-info { font-size: 0.78rem; color: var(--text-secondary); margin-bottom: 1.25rem; line-height: 1.5; }
+    .password-wrapper { position: relative; display: flex; align-items: center; }
+    .password-wrapper input { width: 100%; padding: 0.75rem 2.8rem 0.75rem 1rem !important; }
+    .toggle-password-btn { position: absolute; right: 10px; background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 0.4rem; font-size: 0.95rem; transition: color 0.2s ease; display: flex; align-items: center; justify-content: center; }
+    .toggle-password-btn:hover { color: var(--accent); }
 
-/* OTP Box Style */
-.otp-box {
-  font-family: 'Inter', sans-serif; font-size: 2.2rem; font-weight: 700;
-  letter-spacing: 0.35em; color: var(--accent); 
-  background: var(--accent-bg); border: 1px solid var(--border-accent);
-  padding: 0.9rem 1rem; border-radius: var(--radius-sm);
-  margin-bottom: 1.25rem; user-select: all;
-}
+    #btnCopyKioskPin { display: inline-flex; align-items: center; gap: 6px; background: var(--amber-bg); border: 1px solid var(--amber-border); color: var(--amber); border-radius: var(--radius-xs); padding: 0.5rem 1rem; font-family: 'Kanit', sans-serif; font-size: 0.78rem; font-weight: 600; cursor: pointer; margin-bottom: 1.25rem; transition: all var(--transition); }
+    #btnCopyKioskPin:hover { background: rgba(251, 191, 36, 0.2); border-color: var(--amber); }
+    #btnCopyKioskPin:active { transform: scale(0.97); }
 
-.qr-timer {
-  font-family: 'Kanit', sans-serif; font-size: 0.75rem; color: var(--accent);
-  background: var(--accent-bg); display: inline-flex; align-items: center; gap: 5px;
-  padding: 5px 10px; border-radius: 99px; border: 1px solid var(--border-accent);
-}
-
-    /* ═══════════════════════════════════
-       Responsive
-    ═══════════════════════════════════ */
     @media (max-width: 480px) {
       .content { padding: 0 0.85rem; }
       .header { padding: 1rem 0.85rem 0; }
@@ -539,31 +245,21 @@
       .btn-kick { align-self: flex-end; }
     }
 
-    /* ═══════════════════════════════════
-       Accessibility
-    ═══════════════════════════════════ */
     @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-      }
+      *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
     }
   </style>
 </head>
 <body>
 
-  <!-- Background -->
   <div class="bg-layer" aria-hidden="true">
     <div class="orb orb-1"></div>
     <div class="orb orb-2"></div>
     <div class="orb orb-3"></div>
   </div>
 
-  <!-- Theme Toggle -->
   <button id="themeBtn" title="เปลี่ยนธีม" aria-label="เปลี่ยนธีม"><i class="fas fa-sun"></i></button>
 
-  <!-- Header -->
   <header class="header">
     <div class="header-top">
       <a href="index.html" class="back-btn">
@@ -575,37 +271,103 @@
       </div>
     </div>
     <h1 class="page-title">อุปกรณ์ที่เข้าสู่ระบบ</h1>
-    <p class="page-sub">จัดการเซสชันทั้งหมดของคุณ</p>
+    <p class="page-sub">จัดการเซสชันและรหัสผ่านทั้งหมดของคุณ</p>
   </header>
 
-  <!-- Content -->
   <main class="content">
 
-    <!-- Login Code Button -->
-<div style="margin-bottom: 1.25rem; animation: fadeUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.15s both;">
-  <button class="btn-qr-login" id="btnCodeLogin" onclick="openCodeModal()">
-    <i class="fas fa-key"></i> สร้างรหัสสำหรับเข้าสู่ระบบบนอุปกรณ์อื่น
-  </button>
-</div>
+    <!-- Login Code Button (8 หลัก) -->
+    <div style="margin-bottom: 0.75rem; animation: fadeUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.15s both;">
+      <button class="btn-action" onclick="openCodeModal()">
+        <i class="fas fa-key"></i> สร้างรหัสเข้าระบบอุปกรณ์อื่น
+      </button>
+    </div>
 
-<!-- Code Modal -->
-<div class="qr-modal" id="codeModal" style="display:none">
-  <div class="qr-modal-content">
-    <div class="qr-modal-header">
-      <h2>รหัสเข้าสู่ระบบ</h2>
-      <button class="qr-modal-close" onclick="closeCodeModal()"><i class="fas fa-times"></i></button>
+    <!-- Set Password Button -->
+    <div style="margin-bottom: 0.75rem; animation: fadeUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both;">
+      <button class="btn-action" onclick="openPasswordModal()" style="background: var(--indigo-bg); border-color: var(--indigo-border); color: var(--indigo);">
+        <i class="fas fa-lock"></i> ตั้งค่ารหัสผ่าน
+      </button>
     </div>
-    <div class="qr-modal-body">
-      <p class="code-info">ใช้รหัสนี้บนอุปกรณ์อื่นเพื่อเข้าสู่ระบบ<br>พร้อมยืนยันเลขบัตรประชาชน 13 หลัก<br>ในหน้าเข้าสู่ระบบ</p>
-      <div id="otpCodeContainer" class="otp-box">
-        <!-- รหัส 6 หลักจะแสดงที่นี่ -->
-      </div>
-      <div class="qr-timer">
-        <i class="fas fa-clock"></i> หมดอายุใน <span id="codeCountdown">180</span> วินาที
+
+    <!-- Kiosk Password Button (6 หลัก) -->
+    <div style="margin-bottom: 1.25rem; animation: fadeUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.25s both;">
+      <button class="btn-action" onclick="openKioskPasswordModal()" style="background: var(--amber-bg); border-color: var(--amber-border); color: var(--amber);">
+        <i class="fas fa-hashtag"></i> สร้างรหัสผ่านสำหรับ Kiosk (ยังไม่พร้อมใช้งาน)
+      </button>
+    </div>
+
+    <!-- Code Modal (8 หลัก) -->
+    <div class="qr-modal" id="codeModal" style="display:none">
+      <div class="qr-modal-content">
+        <div class="qr-modal-header">
+          <h2>รหัสเข้าสู่ระบบ</h2>
+          <button class="qr-modal-close" onclick="closeCodeModal()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="qr-modal-body">
+          <p class="code-info">ใช้รหัสนี้บนอุปกรณ์อื่นเพื่อเข้าสู่ระบบ<br>พร้อมยืนยันเลขบัตรประชาชน 13 หลัก</p>
+          <div id="otpCodeContainer" class="otp-box"></div>
+          <div class="qr-timer">
+            <i class="fas fa-clock"></i> หมดอายุใน <span id="codeCountdown">180</span> วินาที
+          </div>
+        </div>
       </div>
     </div>
-  </div>
-</div>
+
+    <!-- Password Modal (ปกติ) -->
+    <div class="qr-modal" id="passwordModal" style="display:none">
+      <div class="qr-modal-content">
+        <div class="qr-modal-header">
+          <h2>ตั้งค่ารหัสผ่าน</h2>
+          <button class="qr-modal-close" onclick="closePasswordModal()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="qr-modal-body" style="text-align: left;">
+               
+          <label style="font-size: 0.78rem; color: var(--text-secondary); display: block; margin-bottom: 5px;">รหัสผ่านใหม่ (อย่างน้อย 8 ตัวอักษร)</label>
+          <div class="password-wrapper" style="margin-bottom:1rem;">
+            <input type="password" id="newPassword" placeholder="กรอกรหัสผ่านใหม่" style="width: 100%; padding: 0.7rem 1rem; border-radius: var(--radius-sm); background: var(--bg-surface); border: 1px solid var(--border-color); color: var(--text-primary); font-family: 'Kanit', sans-serif; font-size: 0.85rem; outline: none;">
+            <button type="button" class="toggle-password-btn" onclick="togglePasswordVisibility('newPassword', this)"><i class="fas fa-eye"></i></button>
+          </div>
+
+          <label style="font-size: 0.78rem; color: var(--text-secondary); display: block; margin-bottom: 5px;">ยืนยันรหัสผ่านใหม่</label>
+          <div class="password-wrapper" style="margin-bottom:1.5rem;">
+            <input type="password" id="confirmPassword" placeholder="กรอกรหัสผ่านอีกครั้ง" style="width: 100%; padding: 0.7rem 1rem; border-radius: var(--radius-sm); background: var(--bg-surface); border: 1px solid var(--border-color); color: var(--text-primary); font-family: 'Kanit', sans-serif; font-size: 0.85rem; outline: none;">
+            <button type="button" class="toggle-password-btn" onclick="togglePasswordVisibility('confirmPassword', this)"><i class="fas fa-eye"></i></button>
+          </div>
+
+          <button onclick="submitSetPassword()" style="width: 100%; padding: 0.75rem; border: none; border-radius: var(--radius-sm); background: linear-gradient(135deg, var(--accent-deep), var(--accent)); color: #fff; font-family: 'Kanit', sans-serif; font-weight: 600; font-size: 0.85rem; cursor: pointer; box-shadow: 0 4px 15px var(--accent-glow);">
+            <i class="fas fa-check"></i> บันทึกรหัสผ่าน
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Kiosk Password Modal (6 หลัก) -->
+    <div class="qr-modal" id="kioskPasswordModal" style="display:none">
+      <div class="qr-modal-content">
+        <div class="qr-modal-header">
+          <h2>รหัสผ่าน Kiosk</h2>
+          <button class="qr-modal-close" onclick="closeKioskPasswordModal()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="qr-modal-body">
+          <p class="code-info">
+            รหัสผ่าน 6 หลักสำหรับเข้าสู่ระบบที่จอ Kiosk
+          </p>
+          <div id="kioskPinContainer" class="otp-box" style="color: var(--amber); background: var(--amber-bg); border-color: var(--amber-border);">
+            <!-- รหัสจะแสดงที่นี่ -->
+          </div>
+          <button onclick="copyKioskPin()" id="btnCopyKioskPin">
+            <i class="fas fa-copy"></i> คัดลอกรหัส
+          </button>
+          <p style="font-size: 0.72rem; color: var(--text-muted); line-height: 1.6;">
+            <i class="fas fa-circle-info"></i>
+            ใช้รหัสผ่านนี้เข้าสู่ระบบที่หน้าจอ Kiosk ได้ทันที<br>
+            ถ้าลืมรหัสผ่าน Kiosk หรือไม่ต้องการใช้แล้ว สามารถสร้างใหม่ได้ที่หน้านี้ รหัสเดิมจะถูกยกเลิกทันที
+            (บางทีเครื่อง Kiosk ตั้งค่าไม่ต้องใส่รหัส สามารถใช้งานได้เลย)
+          </p>
+        </div>
+      </div>
+    </div>
 
     <!-- Summary -->
     <div class="summary" id="summaryBar" style="display:none">
@@ -662,10 +424,12 @@
     function socialBadge(type) {
       if (!type) return '';
       const map = {
-        google:   ['Google',   'badge-google'],
-        line:     ['LINE',     'badge-line'],
-        telegram: ['Telegram', 'badge-telegram'],
-        code:     ['Code',     'badge-code'],
+        google:   ['Google',        'badge-google'],
+        line:     ['LINE',          'badge-line'],
+        telegram: ['Telegram',      'badge-telegram'],
+        code:     ['Code',   'badge-code'],     // ✅ ระบุให้ชัดว่าเป็นรหัส 8 หลัก
+        password: ['Password',       'badge-password'], // ✅ รหัสผ่านปกติ
+        kiosk:    ['Kiosk',  'badge-kiosk'],    // ✅ ระบุให้ชัดว่าเป็นรหัส Kiosk 6 หลัก
       };
       const [label, cls] = map[type] || [type, ''];
       return `<span class="badge-social ${cls}">${label}</span>`;
@@ -877,96 +641,6 @@
       }
     }
 
-    // ==================== Login Code System ====================
-let codeCountdownInterval = null;
-let codePollInterval = null; // เพิ่มตัวแปรสำหรับตั้งเวลาถามเซิร์ฟเวอร์
-let currentActiveCode = null; // เก็บรหัส 6 หลักที่กำลังแสดงอยู่
-
-async function openCodeModal() {
-  const modal = document.getElementById('codeModal');
-  const container = document.getElementById('otpCodeContainer');
-  const countdownEl = document.getElementById('codeCountdown');
-  
-  container.innerHTML = '<div style="letter-spacing:0; font-size:0.85rem; color:var(--text-muted);">กำลังสร้างรหัส...</div>';
-  modal.style.display = 'flex';
-  
-  try {
-    const res = await fetch(`${API}/code-generate`, {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${token}` }
-    });
-    const data = await res.json();
-    
-    if (!data.success) throw new Error(data.message);
-    
-    // แสดงรหัส 6 หลัก
-    container.textContent = data.code;
-    currentActiveCode = data.code; // เก็บรหัสไว้เพื่อเอาไปเช็คสถานะ
-    
-    // ตั้งเวลานับถอยหลัง
-    let timeLeft = data.expiresIn;
-    countdownEl.textContent = timeLeft;
-    
-    if (codeCountdownInterval) clearInterval(codeCountdownInterval);
-    if (codePollInterval) clearInterval(codePollInterval); // เคลียร์ Polling เก่า
-    
-    codeCountdownInterval = setInterval(() => {
-      timeLeft--;
-      countdownEl.textContent = timeLeft;
-      if (timeLeft <= 0) {
-        clearInterval(codeCountdownInterval);
-        clearInterval(codePollInterval); // หมดเวลาก็เลิก Poll ด้วย
-        closeCodeModal();
-        showToast('รหัสหมดอายุแล้ว');
-      }
-    }, 1000);
-
-    // เริ่ม Polling ถามเซิร์ฟเวอร์ทุกๆ 3 วินาที ว่ามีคนนำรหัสไปใช้หรือยัง
-    codePollInterval = setInterval(checkCodeStatus, 3000);
-
-  } catch (err) {
-    container.innerHTML = `<p style="color:var(--danger);font-size:0.82rem;letter-spacing:0">${err.message}</p>`;
-  }
-}
-
-// ฟังก์ชันสำหรับถามเซิร์ฟเวอร์ว่ารหัสถูกใช้แล้วหรือยัง
-async function checkCodeStatus() {
-  if (!currentActiveCode) return;
-
-  try {
-    const res = await fetch(`${API}/code-status?code=${currentActiveCode}`, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-    const data = await res.json();
-
-    if (data.success && data.used) {
-      // ถ้ารหัสถูกใช้แล้ว (ล็อกอินสำเร็จจากเครื่องอื่น)
-      clearInterval(codePollInterval);
-      clearInterval(codeCountdownInterval);
-      
-      closeCodeModal();
-      showToast('มีอุปกรณ์ใหม่เข้าสู่ระบบสำเร็จแล้ว', 3000);
-      
-      // รีเฟรชรายการอุปกรณ์ในหน้าจอ
-      loadDevices(); 
-    }
-  } catch (err) {
-    console.error('Polling error:', err);
-  }
-}
-
-function closeCodeModal() {
-  const modal = document.getElementById('codeModal');
-  modal.style.display = 'none';
-  
-  // เคลียร์ตัวตั้งเวลาทั้งหมดเมื่อปิด Modal
-  if (codeCountdownInterval) clearInterval(codeCountdownInterval);
-  if (codePollInterval) clearInterval(codePollInterval);
-  
-  currentActiveCode = null;
-}
-
-// ฟังก์ชันสำหรับนับจำนวนอุปกรณ์
     function recount() {
       const others = document.querySelectorAll('.device-card:not(.current)');
       const total  = document.querySelectorAll('.device-card').length;
@@ -975,7 +649,6 @@ function closeCodeModal() {
       const revBtn = document.getElementById('btnRevokeAll');
       if (revBtn) revBtn.style.display = others.length ? 'flex' : 'none';
 
-      // ซ่อน section label "อุปกรณ์อื่น" ถ้าไม่มี card เหลือ
       const labels = document.querySelectorAll('.section-label');
       labels.forEach(lbl => {
         let next = lbl.nextElementSibling;
@@ -986,6 +659,207 @@ function closeCodeModal() {
         }
         if (!hasCards) lbl.remove();
       });
+    }
+
+    // ==================== Login Code System (8 หลัก) ====================
+    let codeCountdownInterval = null;
+    let codePollInterval = null;
+    let currentActiveCode = null;
+
+    async function openCodeModal() {
+      const modal = document.getElementById('codeModal');
+      const container = document.getElementById('otpCodeContainer');
+      const countdownEl = document.getElementById('codeCountdown');
+      
+      container.innerHTML = '<div style="letter-spacing:0; font-size:0.85rem; color:var(--text-muted);">กำลังสร้างรหัส...</div>';
+      modal.style.display = 'flex';
+      
+      try {
+        const res = await fetch(`${API}/code-generate`, {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        const data = await res.json();
+        
+        if (!data.success) throw new Error(data.message);
+        
+        container.textContent = data.code;
+        currentActiveCode = data.code;
+        
+        let timeLeft = data.expiresIn;
+        countdownEl.textContent = timeLeft;
+        
+        if (codeCountdownInterval) clearInterval(codeCountdownInterval);
+        if (codePollInterval) clearInterval(codePollInterval);
+        
+        codeCountdownInterval = setInterval(() => {
+          timeLeft--;
+          countdownEl.textContent = timeLeft;
+          if (timeLeft <= 0) {
+            clearInterval(codeCountdownInterval);
+            clearInterval(codePollInterval);
+            closeCodeModal();
+            showToast('รหัสหมดอายุแล้ว');
+          }
+        }, 1000);
+
+        codePollInterval = setInterval(checkCodeStatus, 3000);
+
+      } catch (err) {
+        container.innerHTML = `<p style="color:var(--danger);font-size:0.82rem;letter-spacing:0">${err.message}</p>`;
+      }
+    }
+
+    async function checkCodeStatus() {
+      if (!currentActiveCode) return;
+      try {
+        const res = await fetch(`${API}/code-status?code=${currentActiveCode}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        const data = await res.json();
+        if (data.success && data.used) {
+          clearInterval(codePollInterval);
+          clearInterval(codeCountdownInterval);
+          closeCodeModal();
+          showToast('มีอุปกรณ์ใหม่เข้าสู่ระบบสำเร็จแล้ว', 3000);
+          loadDevices(); 
+        }
+      } catch (err) {
+        console.error('Polling error:', err);
+      }
+    }
+
+    function closeCodeModal() {
+      document.getElementById('codeModal').style.display = 'none';
+      if (codeCountdownInterval) clearInterval(codeCountdownInterval);
+      if (codePollInterval) clearInterval(codePollInterval);
+      currentActiveCode = null;
+    }
+
+    // ==================== Set Password System (ปกติ) ====================
+    function openPasswordModal() {
+      document.getElementById('passwordModal').style.display = 'flex';
+      document.getElementById('newPassword').value = '';
+      document.getElementById('confirmPassword').value = '';
+    }
+
+    function closePasswordModal() {
+      document.getElementById('passwordModal').style.display = 'none';
+    }
+
+    async function submitSetPassword() {
+      const newPass = document.getElementById('newPassword').value;
+      const confirmPass = document.getElementById('confirmPassword').value;
+
+      if (!newPass || newPass.length < 8) {
+        return Swal.fire('ผิดพลาด', 'รหัสผ่านต้องมีอย่างน้อย 8 ตัวอักษร', 'error');
+      }
+      if (newPass !== confirmPass) {
+        return Swal.fire('ผิดพลาด', 'รหัสผ่านทั้งสองช่องไม่ตรงกัน', 'error');
+      }
+
+      try {
+        const res = await fetch(`/api/auth/set-password`, {
+          method: 'POST',
+          headers: { 
+            'Authorization': `Bearer ${token}`, 
+            'Content-Type': 'application/json' 
+          },
+          body: JSON.stringify({ newPassword: newPass })
+        });
+        const data = await res.json();
+
+        if (!data.success) throw new Error(data.message);
+
+        closePasswordModal();
+        Swal.fire('สำเร็จ!', 'ตั้งรหัสผ่านปกติเรียบร้อยแล้ว', 'success');
+
+      } catch (err) {
+        Swal.fire('ผิดพลาด', err.message, 'error');
+      }
+    }
+
+    function togglePasswordVisibility(inputId, btn) {
+      const input = document.getElementById(inputId);
+      const icon = btn.querySelector('i');
+
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.remove('fa-eye');
+        icon.classList.add('fa-eye-slash');
+      } else {
+        input.type = 'password';
+        icon.classList.remove('fa-eye-slash');
+        icon.classList.add('fa-eye');
+      }
+    }
+
+    // ==================== Kiosk Password System (6 หลัก) ====================
+    let currentKioskPin = null;
+
+    async function openKioskPasswordModal() {
+      const modal = document.getElementById('kioskPasswordModal');
+      const container = document.getElementById('kioskPinContainer');
+
+      // แสดง loading
+      container.innerHTML = '<div style="letter-spacing:0; font-size:0.85rem; color:var(--text-muted);">กำลังสร้างรหัส...</div>';
+      modal.style.display = 'flex';
+
+      try {
+        const res = await fetch('/api/auth/generate-kiosk-password', {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        const data = await res.json();
+
+        if (!data.success) throw new Error(data.message);
+
+        // แสดงรหัส 6 หลัก
+        currentKioskPin = data.pin;
+        container.textContent = data.pin;
+
+        // เปลี่ยนไอคอนปุ่มคัดลอกกลับเป็น copy
+        const copyBtn = document.getElementById('btnCopyKioskPin');
+        if (copyBtn) {
+          copyBtn.innerHTML = '<i class="fas fa-copy"></i> คัดลอกรหัส';
+        }
+
+      } catch (err) {
+        container.innerHTML = `<p style="color:var(--danger);font-size:0.82rem;letter-spacing:0">${err.message}</p>`;
+      }
+    }
+
+    function closeKioskPasswordModal() {
+      document.getElementById('kioskPasswordModal').style.display = 'none';
+      currentKioskPin = null;
+    }
+
+    async function copyKioskPin() {
+      if (!currentKioskPin) {
+        return showToast('ไม่มีรหัสให้คัดลอก');
+      }
+
+      try {
+        await navigator.clipboard.writeText(currentKioskPin);
+        const copyBtn = document.getElementById('btnCopyKioskPin');
+        if (copyBtn) {
+          copyBtn.innerHTML = '<i class="fas fa-check"></i> คัดลอกแล้ว!';
+          setTimeout(() => {
+            copyBtn.innerHTML = '<i class="fas fa-copy"></i> คัดลอกรหัส';
+          }, 2000);
+        }
+        showToast('คัดลอกรหัสผ่านแล้ว');
+      } catch (err) {
+        const textarea = document.createElement('textarea');
+        textarea.value = currentKioskPin;
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+        showToast('คัดลอกรหัสผ่านแล้ว');
+      }
     }
 
     // ==================== Init ====================
