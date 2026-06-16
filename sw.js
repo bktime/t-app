@@ -69,9 +69,9 @@ self.addEventListener('notificationclick', (event) => {
     targetUrl = '/attendance.html?action=checkin';
   } else if (tag === 'reminder-afternoon') {
     targetUrl = '/attendance.html?action=checkout';
-  } else if (tag === 'reminder-pending') {
-    // ✅ เปิดหน้า index แล้วให้ user กดเปิด notif panel เอง
-    // หรือจะชี้ตรงไปที่ requests.html ก็ได้
+  } else if (tag === 'reminder-pending-sup') {
+    targetUrl = '/supervisor.html';
+  } else if (tag === 'reminder-pending-req') {
     targetUrl = '/requests.html';
   } else if (tag?.startsWith('fcm-')) {
     targetUrl = '/attendance.html';
