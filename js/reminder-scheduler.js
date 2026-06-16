@@ -135,7 +135,7 @@ class ReminderScheduler {
       if (!this._hasNotifiedToday('afternoon')) {
         const checkedOut = await this._hasCheckedOutToday();
         if (!checkedOut) {
-          this.sendReminder('afternoon', 'ใกล้ออกงาน', 'อย่าลืมลงเวลาออกงานก่อนกลับบ้านนะครับ', 'reminder-afternoon');
+          this.sendReminder('afternoon', 'ใกล้เลิกงาน', 'อย่าลืมลงเวลาออกงานก่อนกลับบ้านนะครับ', 'reminder-afternoon');
         }
         this._markNotifiedToday('afternoon');
       }
@@ -277,15 +277,25 @@ class ReminderScheduler {
         return;
       }
 
-      // ─── สร้างข้อความแจ้งเตือน ───
-      const parts = [];
-      if (pendCount > 0) parts.push(`${pendCount} รายการรออนุมัติ`);
-      if (supCount  > 0) parts.push(`${supCount} รายการรอรับรอง`);
+      // ─── แยก tag ตามประเภท → SW เปิดหน้าถูกต้อง ───
+      // reminder-pending-sup → supervisor.html
+      // reminder-pending-req → requests.html
+      if (supCount > 0) {
+        const supTitle = supCount === total
+          ? `รอรับรอง ${supCount} รายการ`
+          : `รอดำเนินการ ${total} รายการ`;
+        const supBody = supCount === total
+          ? 'กรุณาตรวจสอบและรับรองเวลาลงงาน'
+          : `${supCount} รอรับรอง · ${pendCount} รออนุมัติ`;
+        this.sendReminder('pending-sup', supTitle, supBody, 'reminder-pending-sup');
+      }
 
-      const title = `รอดำเนินการ ${total} รายการ`;
-      const body  = parts.join(' · ');
+      if (pendCount > 0) {
+        const reqTitle = `คำขอรออนุมัติ ${pendCount} รายการ`;
+        const reqBody  = 'กรุณาตรวจสอบและอนุมัติคำขอ';
+        this.sendReminder('pending-req', reqTitle, reqBody, 'reminder-pending-req');
+      }
 
-      this.sendReminder('pending', title, body, 'reminder-pending');
       console.log(`✅ Pending reminder sent: pend=${pendCount} sup=${supCount}`);
 
     } catch (err) {
