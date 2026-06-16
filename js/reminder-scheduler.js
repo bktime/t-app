@@ -5,6 +5,9 @@ class ReminderScheduler {
     this.morningMinute = 10;
     this.afternoonHour = 16;
     this.afternoonMinute = 32;
+    // ⏰ เวลาแจ้งเตือน pending (ครั้งเดียวต่อวัน เช่น 08:30)
+    this.pendingHour = 8;
+    this.pendingMinute = 30;
     this.checkInterval = null;
     this._attendanceCache = null;
     this._attendanceCacheDate = null;
@@ -84,6 +87,7 @@ class ReminderScheduler {
     const now = new Date();
     const currentMinutes = now.getHours() * 60 + now.getMinutes();
 
+    // ─── เตือนลงเวลาเข้างาน ───
     const morningStart = this.morningHour * 60 + (this.morningMinute - 5);
     const morningEnd   = this.morningHour * 60 + (this.morningMinute + 30);
 
@@ -97,6 +101,7 @@ class ReminderScheduler {
       }
     }
 
+    // ─── เตือนลงเวลาออกงาน ───
     const afternoonStart = this.afternoonHour * 60 + (this.afternoonMinute - 1);
     const afternoonEnd   = this.afternoonHour * 60 + (this.afternoonMinute + 30);
 
@@ -107,6 +112,17 @@ class ReminderScheduler {
           this.sendReminder('afternoon', '🕒 ใกล้ถึงเวลาออกงานแล้ว', 'อย่าลืมลงเวลาออกงานก่อนกลับบ้านนะครับ', 'reminder-afternoon');
         }
         this._markNotifiedToday('afternoon');
+      }
+    }
+
+    // ─── เตือน pending รออนุมัติ / รอรับรอง ───
+    const pendingStart = this.pendingHour * 60 + (this.pendingMinute - 1);
+    const pendingEnd   = this.pendingHour * 60 + (this.pendingMinute + 30);
+
+    if (currentMinutes >= pendingStart && currentMinutes <= pendingEnd) {
+      if (!this._hasNotifiedToday('pending')) {
+        await this._checkPendingAndNotify();
+        this._markNotifiedToday('pending');
       }
     }
   }
@@ -193,6 +209,61 @@ class ReminderScheduler {
     const data = await this._fetchTodayAttendance();
     if (!data) return false;
     return data.has_checkout === true;
+  }
+
+  // ============================================================
+  // 🔔 ตรวจสอบ pending และส่ง notification
+  // ============================================================
+  async _checkPendingAndNotify() {
+    try {
+      const token = localStorage.getItem('auth_token');
+      if (!token) return;
+
+      // ─── 1. คำขอรออนุมัติ (reviewer) ───
+      let pendCount = 0;
+      try {
+        const res = await fetch('/api/attendance/request-manage?status=pending&limit=50', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (res.ok) {
+          const d = await res.json();
+          if (d.success) pendCount = (d.data || []).length;
+        }
+      } catch (_) {}
+
+      // ─── 2. รอรับรอง (supervisor) ───
+      let supCount = 0;
+      try {
+        const res = await fetch('/api/attendance/supervisor-pending?status=pending&limit=50', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (res.ok) {
+          const text = await res.text();
+          const d = JSON.parse(text);
+          if (d.success) supCount = (d.data || []).length;
+        }
+      } catch (_) {}
+
+      const total = pendCount + supCount;
+      if (total === 0) {
+        console.log('✅ Pending check: ไม่มีรายการรอดำเนินการ');
+        return;
+      }
+
+      // ─── สร้างข้อความแจ้งเตือน ───
+      const parts = [];
+      if (pendCount > 0) parts.push(`${pendCount} รายการรออนุมัติ`);
+      if (supCount  > 0) parts.push(`${supCount} รายการรอรับรอง`);
+
+      const title = `📋 มีงานรอดำเนินการ ${total} รายการ`;
+      const body  = parts.join(' · ');
+
+      this.sendReminder('pending', title, body, 'reminder-pending');
+      console.log(`✅ Pending reminder sent: pend=${pendCount} sup=${supCount}`);
+
+    } catch (err) {
+      console.error('❌ _checkPendingAndNotify error:', err);
+    }
   }
 
   async sendReminder(type, title, body, tag) {

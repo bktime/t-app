@@ -569,6 +569,8 @@ function gotoSupervisor(ref) {
       }
     });
 
+    
+
     /* ═══════════ PWA ═══════════ */
     // let deferredPrompt;
     // window.addEventListener('beforeinstallprompt', (e) => {
@@ -603,6 +605,16 @@ function gotoSupervisor(ref) {
           .catch(e => console.warn('⚠️ SW:', e));
       });
     }
+
+
+    // รับ CHECK_PENDING_REMINDER จาก SW (periodic sync)
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.addEventListener('message', (e) => {
+    if (e.data?.type === 'CHECK_PENDING_REMINDER') {
+      window.__reminderScheduler?._checkPendingAndNotify();
+    }
+  });
+}
 
     /* ═══════════ AUTH STATE ═══════════ */
     async function checkAuth() {

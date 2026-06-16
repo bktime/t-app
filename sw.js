@@ -69,6 +69,10 @@ self.addEventListener('notificationclick', (event) => {
     targetUrl = '/attendance.html?action=checkin';
   } else if (tag === 'reminder-afternoon') {
     targetUrl = '/attendance.html?action=checkout';
+  } else if (tag === 'reminder-pending') {
+    // ✅ เปิดหน้า index แล้วให้ user กดเปิด notif panel เอง
+    // หรือจะชี้ตรงไปที่ requests.html ก็ได้
+    targetUrl = '/requests.html';
   } else if (tag?.startsWith('fcm-')) {
     targetUrl = '/attendance.html';
   }
@@ -112,19 +116,44 @@ async function checkAndSendReminder() {
   const minute = now.getMinutes();
   const timeStr = `${hour}:${String(minute).padStart(2, '0')}`;
 
+  // ─── เตือนลงเวลาเข้า ───
   if (timeStr >= '7:00' && timeStr <= '8:00') {
     showLocalNotification(
       '🕒 ถึงเวลาลงเวลาเข้างานแล้ว',
       'กรุณากดลงเวลาเข้างานวันนี้ครับ',
       'reminder-morning'
     );
-  } else if (timeStr >= '16:30' && timeStr <= '17:00') {
+    return;
+  }
+
+  // ─── เตือนลงเวลาออก ───
+  if (timeStr >= '16:30' && timeStr <= '17:00') {
     showLocalNotification(
       '🕒 ใกล้ถึงเวลาออกงานแล้ว',
       'อย่าลืมลงเวลาออกงานก่อนกลับบ้านนะครับ',
       'reminder-afternoon'
     );
+    return;
   }
+
+  // ─── เตือน pending (ช่วง 08:30–09:00) ───
+  // SW ไม่มี localStorage จึงแจ้งเตือนแบบ best-effort ไม่มี dedup
+  // dedup จริงทำที่ client (ReminderScheduler._hasNotifiedToday)
+  if (timeStr >= '8:30' && timeStr <= '9:00') {
+    await checkAndSendPendingReminder();
+  }
+}
+
+// ─── ดึง pending count จาก API แล้วแจ้งเตือน (ใช้ใน periodic sync) ───
+async function checkAndSendPendingReminder() {
+  // SW ไม่มี localStorage → ไม่รู้ auth_token → ใช้ได้เฉพาะเมื่อ SW controller active
+  // ทางนี้จึง postMessage กลับไปให้ client จัดการแทน
+  const clients = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
+  if (clients.length > 0) {
+    clients[0].postMessage({ type: 'CHECK_PENDING_REMINDER' });
+    console.log('[SW] ส่ง CHECK_PENDING_REMINDER ไปยัง client');
+  }
+  // ถ้าไม่มี client เปิดอยู่ → ข้ามไป รอรอบถัดไป
 }
 
 // ─────────────────────────────────────
