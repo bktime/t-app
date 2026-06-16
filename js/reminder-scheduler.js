@@ -317,7 +317,7 @@ class ReminderScheduler {
         new Notification(title, {
           body: body,
           icon: '/icons/icon-192.png',
-          badge: '/icons/icon-72.png',
+          badge: '/icons/badge-72.png',
           tag: tag,
           requireInteraction: true,
           vibrate: [200, 100, 200]
