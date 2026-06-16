@@ -383,7 +383,7 @@ textarea::-webkit-scrollbar-thumb:hover{
 'use strict';
 const API='/api/attendance';
 const AH=()=>{const t=localStorage.getItem('auth_token');return t?{'Authorization':'Bearer '+t}:{}};
-let curSt='all',curPg=0,LIMIT=20,total=0,stTimer=null,sel=new Set();
+let curSt='pending',curPg=0,LIMIT=20,total=0,stTimer=null,sel=new Set();
 
 function gUD(){try{return JSON.parse(localStorage.getItem('user_data')||'null')}catch{return null}}
 function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
@@ -667,6 +667,10 @@ function stickSearchToTop(){
 
 document.addEventListener('DOMContentLoaded', async () => {
   initUser();
+
+   // แสดงแทปรอดำเนินการเป็นค่าเริ่มต้น
+  document.querySelectorAll('.sc').forEach(c => c.classList.remove('active'));
+  document.getElementById('sc-pending')?.classList.add('active');
 
   const params = new URLSearchParams(location.search);
   const ref = params.get('ref');
