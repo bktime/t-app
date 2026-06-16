@@ -5,9 +5,9 @@ class ReminderScheduler {
     this.morningMinute = 10;
     this.afternoonHour = 16;
     this.afternoonMinute = 32;
-    // ⏰ เวลาแจ้งเตือน pending (ครั้งเดียวต่อวัน เช่น 08:30)
-    this.pendingHour = 8;
-    this.pendingMinute = 30;
+    // ⏰ ช่วงเวลาแจ้งเตือน pending (ทุก 30 นาที ในช่วงนี้)
+    this.pendingStartHour = 9;   // เริ่ม 09:00
+    this.pendingEndHour   = 12;  // จบ 12:00 (ไม่รวม 12:00 เป็นต้นไป)
     this.checkInterval = null;
     this._attendanceCache = null;
     this._attendanceCacheDate = null;
@@ -16,6 +16,32 @@ class ReminderScheduler {
   _getTodayKey(type) {
     const today = new Date().toISOString().slice(0, 10);
     return `reminded_${type}_${today}`;
+  }
+
+  // ─── key รายครึ่งชั่วโมง เช่น reminded_pending_slot_2025-01-15_09:00 ───
+  _getPendingSlotKey() {
+    const now = new Date();
+    const date = now.toISOString().slice(0, 10);
+    const h    = now.getHours();
+    const slot = now.getMinutes() < 30 ? '00' : '30';
+    return `reminded_pending_slot_${date}_${String(h).padStart(2,'0')}:${slot}`;
+  }
+
+  _hasNotifiedThisSlot() {
+    try {
+      return localStorage.getItem(this._getPendingSlotKey()) === '1';
+    } catch {
+      return false;
+    }
+  }
+
+  _markNotifiedThisSlot() {
+    try {
+      localStorage.setItem(this._getPendingSlotKey(), '1');
+      this._cleanOldKeys();
+    } catch {
+      // ignore
+    }
   }
 
   _hasNotifiedToday(type) {
@@ -41,7 +67,7 @@ class ReminderScheduler {
       cutoff.setDate(cutoff.getDate() - 3);
       const cutoffStr = cutoff.toISOString().slice(0, 10);
       Object.keys(localStorage)
-        .filter(k => k.startsWith('reminded_') && k < `reminded_z_${cutoffStr}`)
+        .filter(k => (k.startsWith('reminded_')) && k < `reminded_z_${cutoffStr}`)
         .forEach(k => localStorage.removeItem(k));
     } catch {
       // ignore
@@ -115,14 +141,15 @@ class ReminderScheduler {
       }
     }
 
-    // ─── เตือน pending รออนุมัติ / รอรับรอง ───
-    const pendingStart = this.pendingHour * 60 + (this.pendingMinute - 1);
-    const pendingEnd   = this.pendingHour * 60 + (this.pendingMinute + 30);
+    // ─── เตือน pending ทุก 30 นาที ในช่วง 09:00–12:00 ───
+    // slot = ครึ่งชั่วโมงปัจจุบัน (00 หรือ 30) → เตือนได้ครั้งละ 1 ครั้งต่อ slot
+    const pendingStartMin = this.pendingStartHour * 60;  // 09:00 = 540
+    const pendingEndMin   = this.pendingEndHour   * 60;  // 12:00 = 720
 
-    if (currentMinutes >= pendingStart && currentMinutes <= pendingEnd) {
-      if (!this._hasNotifiedToday('pending')) {
+    if (currentMinutes >= pendingStartMin && currentMinutes < pendingEndMin) {
+      if (!this._hasNotifiedThisSlot()) {
         await this._checkPendingAndNotify();
-        this._markNotifiedToday('pending');
+        this._markNotifiedThisSlot();
       }
     }
   }
