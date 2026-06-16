@@ -27,7 +27,7 @@ messaging.onBackgroundMessage((payload) => {
   const notificationOptions = {
     body: payload.notification?.body || 'คุณมีแจ้งเตือนใหม่',
     icon: '/icons/icon-192.png',
-    badge: '/icons/icon-72.png',
+    badge: '/icons/badge-72.png',
     tag: 'fcm-' + Date.now(),
     requireInteraction: false
   };
@@ -94,7 +94,7 @@ function showLocalNotification(title, body, tag) {
   self.registration.showNotification(title, {
     body: body,
     icon: '/icons/icon-192.png',
-    badge: '/icons/icon-72.png',
+    badge: '/icons/badge-72.png',
     tag: tag || 'local-' + Date.now(),
     requireInteraction: true,
     vibrate: [200, 100, 200]
@@ -165,7 +165,7 @@ const appShellFiles = [
   '/', '/index.html', '/login.html', '/register.html', '/overtime.html',
   '/attendance.html', '/devices.html', '/request.html', '/profile.html',
   '/supervisor.html', '/404.html', '/manifest.json',
-  '/icons/icon-192.png', '/icons/icon-512.png'
+  '/icons/icon-192.png', '/icons/icon-512.png', '/icons/badge-72.png'
 ];
 
 const cdnPatterns = [
