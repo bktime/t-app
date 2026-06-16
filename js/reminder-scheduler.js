@@ -121,7 +121,7 @@ class ReminderScheduler {
       if (!this._hasNotifiedToday('morning')) {
         const checkedIn = await this._hasCheckedInToday();
         if (!checkedIn) {
-          this.sendReminder('morning', '🕒 ถึงเวลาลงเวลาเข้างานแล้ว', 'กรุณากดลงเวลาเข้างานวันนี้ครับ', 'reminder-morning');
+          this.sendReminder('morning', 'เข้างาน', 'กรุณากดลงเวลาเข้างานวันนี้ครับ', 'reminder-morning');
         }
         this._markNotifiedToday('morning');
       }
@@ -135,7 +135,7 @@ class ReminderScheduler {
       if (!this._hasNotifiedToday('afternoon')) {
         const checkedOut = await this._hasCheckedOutToday();
         if (!checkedOut) {
-          this.sendReminder('afternoon', '🕒 ใกล้ถึงเวลาออกงานแล้ว', 'อย่าลืมลงเวลาออกงานก่อนกลับบ้านนะครับ', 'reminder-afternoon');
+          this.sendReminder('afternoon', 'ใกล้ออกงาน', 'อย่าลืมลงเวลาออกงานก่อนกลับบ้านนะครับ', 'reminder-afternoon');
         }
         this._markNotifiedToday('afternoon');
       }
@@ -282,7 +282,7 @@ class ReminderScheduler {
       if (pendCount > 0) parts.push(`${pendCount} รายการรออนุมัติ`);
       if (supCount  > 0) parts.push(`${supCount} รายการรอรับรอง`);
 
-      const title = `📋 มีงานรอดำเนินการ ${total} รายการ`;
+      const title = `รอดำเนินการ ${total} รายการ`;
       const body  = parts.join(' · ');
 
       this.sendReminder('pending', title, body, 'reminder-pending');
