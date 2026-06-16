@@ -136,10 +136,9 @@ async function checkAndSendReminder() {
     return;
   }
 
-  // ─── เตือน pending (ช่วง 08:30–09:00) ───
-  // SW ไม่มี localStorage จึงแจ้งเตือนแบบ best-effort ไม่มี dedup
-  // dedup จริงทำที่ client (ReminderScheduler._hasNotifiedToday)
-  if (timeStr >= '8:30' && timeStr <= '9:00') {
+  // ─── เตือน pending ทุก 30 นาที ในช่วง 09:00–12:00 ───
+  // dedup จริงทำที่ client (_hasNotifiedThisSlot) SW แค่ trigger เท่านั้น
+  if (timeStr >= '9:00' && timeStr < '12:00') {
     await checkAndSendPendingReminder();
   }
 }
