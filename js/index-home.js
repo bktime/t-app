@@ -727,6 +727,7 @@ if ('serviceWorker' in navigator) {
       loadNotifications();
 
       bindLogout();
+      registerFCMToken();
     }
 
     function renderLoggedOut() {
@@ -802,6 +803,8 @@ async function logout(logoutAll = false) {
         text.textContent = 'กำลังออกจากระบบ...';
       }
     }
+
+        await unregisterFCMToken();
 
     const res = await fetch(`${API_BASE}/user/logout`, {
       method: 'POST',

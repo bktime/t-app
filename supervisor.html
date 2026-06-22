@@ -395,7 +395,7 @@ function distFmt(m, inRange) {
 function initUser() {
   const ud = gUD();
   if (!ud?.uuid) { location.href = 'login.html'; return; }
-  const name = ud.name || ((ud.prefix||'')+(ud.firstName||'')+' '+(ud.lastName||'')).trim() || '—';
+  const name =  ((ud.prefix||'')+(ud.firstName||'')+' '+(ud.lastName||'')).trim() || ud.name || '—';
   const role = ud.role || 'user';
   document.getElementById('navRole').textContent = { admin:'ผู้ดูแลระบบ', supervisor:'ผู้บังคับบัญชา', approver:'ผู้รับรอง' }[role] || role;
   const pic = ud.profileImage || ud.picture || 'https://ui-avatars.com/api/?background=1d4ed8&color=fff&size=68&bold=true&name=' + encodeURIComponent(name.charAt(0));
@@ -467,7 +467,7 @@ function renderList(items) {
           ${sel.has(it.id) ? 'checked' : ''} onchange="togSel(${it.id},'${esc(it.uuid)}','${esc(it.date)}',this.checked)">` : ''}
         <img class="rav" src="${esc(avSrc(it))}" alt="" onerror="this.src='https://ui-avatars.com/api/?background=1d4ed8&color=fff&size=84&bold=true&name=U'">
         <div class="rm">
-          <div class="rn">${esc(it.name || (it.firstName ? (it.prefix||'')+(it.firstName||'')+' '+(it.lastName||'') : '—'))}</div>
+          <div class="rn">${esc((it.firstName ? (it.prefix||'')+(it.firstName||'')+' '+(it.lastName||'') : it.name || '—'))}</div>
           <div class="rd">${esc(it.position||'')}${it.department?' · '+esc(it.department):''}</div>
         </div>
         <div class="rr">

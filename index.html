@@ -316,27 +316,27 @@
 
   </div>
 
+  <!-- 1. ไลบรารีพื้นฐาน -->
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <script src="/js/workforce.js"></script>
-  <script src="/js/index-home.js"></script>
   
+  <!-- 2. Firebase (ต้องอยู่บนสุดของส่วน Firebase) -->
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-messaging-compat.js"></script>
 
-  <!-- โหลด Firebase ก่อน (มีอยู่แล้ว) -->
-<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-messaging-compat.js"></script>
+  <!-- 3. Firebase init (ตั้งค่า Firebase) -->
+  <script src="/js/firebase-init.js"></script>
 
-<!-- Firebase init (มีอยู่แล้ว) -->
-<script src="/js/firebase-init.js"></script>
+  <!-- 4. ฟังก์ชัน FCM (ต้องโหลดหลัง Firebase init) -->
+  <script src="/js/fcm-register.js"></script>
 
-<!-- เพิ่มใหม่ — ต้องโหลดหลัง Firebase init -->
-<script src="/js/fcm-register.js"></script>
-<script src="/js/reminder-scheduler.js"></script>
+  <!-- 5. ไฟล์หลักของระบบ / ฟังก์ชันอื่นๆ -->
+  <script src="/js/workforce.js"></script>
+  <script src="/js/index-home.js"></script> <!-- index-home.js ต้องอยู่หลัง fcm-register.js เสมอ -->
 
-<!-- Android install (ต้องโหลดก่อน DOMContentLoaded) -->
-<script src="/js/android-install-banner.js"></script>
-
-<!-- iOS install (แยกไฟล์) -->
-<script src="/js/ios-install-banner.js"></script>
+  <!-- 6. ระบบเตือนความจำ / ตัวติดตั้งแอป -->
+  <script src="/js/reminder-scheduler.js"></script>
+  <script src="/js/android-install-banner.js"></script>
+  <script src="/js/ios-install-banner.js"></script>
 
 </body>
 </html>
