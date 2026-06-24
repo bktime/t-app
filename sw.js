@@ -117,10 +117,10 @@ async function checkAndSendReminder() {
   const timeStr = `${hour}:${String(minute).padStart(2, '0')}`;
 
   // ─── เตือนลงเวลาเข้า ───
-  if (timeStr >= '7:00' && timeStr <= '8:00') {
+  if (timeStr >= '6:30' && timeStr <= '8:29') {
     showLocalNotification(
       '🕒 ถึงเวลาลงเวลาเข้างานแล้ว',
-      'กรุณากดลงเวลาเข้างานวันนี้ครับ',
+      'กรุณากดลงเวลาเข้างานวันนี้ครับ / ขออภัยหากท่านดำเนินการแล้ว',
       'reminder-morning'
     );
     return;
@@ -130,7 +130,7 @@ async function checkAndSendReminder() {
   if (timeStr >= '16:30' && timeStr <= '17:00') {
     showLocalNotification(
       '🕒 ใกล้ถึงเวลาออกงานแล้ว',
-      'อย่าลืมลงเวลาออกงานก่อนกลับบ้านนะครับ',
+      'อย่าลืมลงเวลาออกงานก่อนกลับบ้านนะครับ / ขออภัยหากท่านดำเนินการแล้ว',
       'reminder-afternoon'
     );
     return;
@@ -158,8 +158,8 @@ async function checkAndSendPendingReminder() {
 // ─────────────────────────────────────
 // Cache Strategy
 // ─────────────────────────────────────
-const CACHE_NAME = 'time-attendance-v2.1';
-const STATIC_CACHE_NAME = 'time-attendance-static-v2.1';
+const CACHE_NAME = 'time-attendance-v2.0';
+const STATIC_CACHE_NAME = 'time-attendance-static-v2.0';
 
 const appShellFiles = [
   '/', '/index.html', '/login.html', '/register.html', '/overtime.html',
