@@ -888,9 +888,9 @@
     <i class="fa-solid fa-paper-plane"></i>
     <span>ส่งคำขอ</span>
   </button>
-    <!-- <button class="btn-action btn-request" id="testBtn" onclick="checkIn()" >
+    <!-- <button class="btn-action btn-request" id="testBtn" onclick="takeAttendancePhoto()" >
     <i class="fa-solid fa-paper-plane"></i>
-    <span>ทดสอบ</span>
+    <span>ทดสอบถ่ายภาพ</span>
   </button> -->
 </div>
 
@@ -914,6 +914,8 @@
 
 <!-- iOS install (แยกไฟล์) -->
 <script src="/js/ios-install-banner.js"></script>
+
+<script src="/js/takePhoto.js"></script>
 
 <script>
 // ===================== CONFIG =====================
@@ -2030,11 +2032,24 @@ if (holidayShift?.claim_ot) {
        }
         <br><span style="font-size:0.78rem;color:#888">เวลาออกอัตโนมัติ 16:30</span>
       </div>`,
-            timer: 3500,
-            showConfirmButton: false,
-          }).then(() => {
-            toggleButtonsByTime();
-            renderHistory();
+            showCancelButton: true,
+          confirmButtonText: 'ถ่ายภาพ',
+          allowOutsideClick: false,
+              }).then((r) => {
+
+          if (r.isConfirmed) {
+            takeAttendancePhoto({
+              ref: ref,
+              checkType: "checkin",
+              work_type: selectedType || typea,
+              latitude: userLat,
+              longitude: userLon,
+              address: result?.data?.location_detail?.displayName || ''
+            });
+          }
+
+          toggleButtonsByTime();
+          renderHistory();
           });
         } catch (err) {
           Swal.fire({
@@ -2156,8 +2171,19 @@ async function checkOut() {
 
     if (!result.success) throw new Error(result.message || 'บันทึกไม่สำเร็จ');
 
+    const attHistory = JSON.parse(localStorage.getItem('attHistory') || '[]');
+
+    const todayRecord = attHistory.find(
+      item => item.date === todayStr && item.ref
+    );
+
+    const ref = todayRecord?.ref || '';
+
+    console.log(ref);
+ 
     localStorage.setItem('datecheckout', todayStr);
     localStorage.setItem('timecheckout', timeStr);
+
 
     addHistoryEntry({ type: 'out', time: timeStr, typea, nte: note, checkout_type: 'manual' });
 
@@ -2167,8 +2193,25 @@ async function checkOut() {
         <b>${timeStr}</b><br>${todayStr}
         <br><span style="font-size:0.78rem;color:#666">ประเภท: Manual</span>
       </div>`,
-      position: 'center', timer: 2000, showConfirmButton: false
-    }).then(() => { toggleButtonsByTime(); renderHistory(); });
+      showCancelButton: true,
+          confirmButtonText: 'ถ่ายภาพ',
+          cancelButtonText: 'ปิด',
+              }).then((r) => {
+
+          if (r.isConfirmed) {
+            takeAttendancePhoto({
+              ref: ref,
+              checkType: "checkout",
+              work_type: selectedType || typea,
+              latitude: userLat,
+              longitude: userLon,
+              address: result?.data?.location_detail?.displayName || ''
+            });
+          }
+
+          toggleButtonsByTime();
+          renderHistory();
+          });
 
   } catch (err) {
     Swal.fire({ position: 'center', icon: 'error', title: 'เกิดข้อผิดพลาด', text: err.message });
@@ -2384,7 +2427,7 @@ async function cancelAttendance() {
 
 
 function buildSupBadge(status, supervisorName) {
-  console.log(status, supervisorName);
+  // console.log(status, supervisorName);
 
   const cfg = {
      none:  { color:'#b45309', bg:'#fffbeb', border:'#f59e0b40', icon:'fa-hourglass-half', label:'ไม่มีการลงเวลา' },
@@ -2456,7 +2499,7 @@ async function checktoday() {
         <div class="att-row">
           <div class="att-icon icon-sup"><i class="fa-solid fa-user-shield"></i></div>
           <div style="flex:1">
-            <p class="att-label">Supervisor</p>
+            <p class="att-label">หัวหน้า</p>
             <div style="margin-top:3px">
               <span class="badge ${sc.cls}">
                 <i class="fa-solid ${sc.icon} fa-tag-inline"></i>${sc.label}
@@ -2867,7 +2910,7 @@ try {
 
   const d = await res.json();
 
-  console.log('supervisor-pending:', d);
+  // console.log('supervisor-pending:', d);
 
   if (!d.success) {
     throw new Error(d.message || 'โหลดข้อมูลไม่สำเร็จ');
@@ -3262,24 +3305,37 @@ document.getElementById('notifBtn').addEventListener('click', (e) => {
 function checkNotif() { loadNotifications(); }
 
       // ===================== SEND REQUEST =====================
-      const REQUEST_TYPES = [
-        { value: "ลืมลงเวลาเข้า", label: "ลืมลงเวลาเข้า", icon: "fa-clock" },
-        {
-          value: "ลืมลงเวลาออก",
-          label: "ลืมลงเวลาออก",
-          icon: "fa-clock-rotate-left",
-        },
-        {
-          value: "แก้ไขเวลาเข้า",
-          label: "แก้ไขเวลาเข้า",
-          icon: "fa-pen-to-square",
-        },
-        {
-          value: "แก้ไขเวลาออก",
-          label: "แก้ไขเวลาออก",
-          icon: "fa-pen-to-square",
-        },
-      ];
+const REQUEST_TYPES = [
+  {
+    value: "ลืมลงเวลาเข้า",
+    label: "ลืมลงเวลาเข้า",
+    icon: "fa-clock",
+    color: "#2e7d32", // เขียว
+    bg: "#e8f5e9",
+  },
+  {
+    value: "ลืมลงเวลาออก",
+    label: "ลืมลงเวลาออก",
+    icon: "fa-clock-rotate-left",
+    color: "#ef6c00", // ส้ม
+    bg: "#fff3e0",
+  },
+  {
+    value: "แก้ไขเวลาเข้า",
+    label: "แก้ไขเวลาเข้า",
+    icon: "fa-pen-to-square",
+    color: "#1565c0", // น้ำเงิน
+    bg: "#e3f2fd",
+  },
+  {
+    value: "แก้ไขเวลาออก",
+    label: "แก้ไขเวลาออก",
+    icon: "fa-pen-to-square",
+    color: "#8e24aa", // ม่วง
+    bg: "#f3e5f5",
+  },
+];
+
       async function sendRequest() {
         window.scrollTo({ top: 0, behavior: "smooth" });
         const ud = getUserData();
@@ -3311,14 +3367,89 @@ function checkNotif() { loadNotifications(); }
           });
           return;
         }
-        const typeGrid = REQUEST_TYPES.map(
-          (t) =>
-            `<button type="button" onclick="document.querySelectorAll('.req-type-btn').forEach(b=>b.classList.remove('req-sel'));this.classList.add('req-sel');document.getElementById('req-type-val').value='${t.value}';" class="req-type-btn" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:12px 8px;border:1.5px solid #ddd;border-radius:12px;background:#f9f9f9;cursor:pointer;font-size:0.78rem;font-family:Sarabun,sans-serif;color:#333;transition:all 0.15s;min-height:72px;width:100%;"><i class="fa-solid ${t.icon}" style="font-size:1.3rem;color:#388e3c"></i>${t.label}</button>`,
-        ).join("");
+    const typeGrid = REQUEST_TYPES.map(
+  (t) => `
+    <button
+      type="button"
+onclick="
+document.querySelectorAll('.req-type-btn').forEach(b=>{
+  b.classList.remove('req-sel');
+  b.style.boxShadow='';
+});
+
+this.classList.add('req-sel');
+document.getElementById('req-type-val').value='${t.value}';
+"
+      class="req-type-btn"
+      data-color="${t.color}"
+      data-bg="${t.bg}"
+      style="
+        display:flex;
+        flex-direction:column;
+        align-items:center;
+        justify-content:center;
+        gap:6px;
+        padding:12px 8px;
+        border:2px solid ${t.color};
+        border-radius:12px;
+        background:${t.bg};
+        cursor:pointer;
+        font-size:0.78rem;
+        font-family:Sarabun,sans-serif;
+        color:${t.color};
+        transition:all .2s;
+        min-height:72px;
+        width:100%;
+      "
+    >
+      <i class="fa-solid ${t.icon}"
+         style="font-size:1.4rem;color:${t.color}">
+      </i>
+      ${t.label}
+    </button>
+  `
+).join("");
         const step1 = await Swal.fire({
           title:
             '<i class="fa-solid fa-paper-plane" style="color:#388e3c"></i> ส่งคำขอ',
-          html: `<p style="font-size:0.85rem;color:#666;margin-bottom:12px;">เลือกประเภทคำขอที่ต้องการ</p><div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:4px;">${typeGrid}</div><input type="hidden" id="req-type-val" value=""><style>.swal2-popup.swal-request{width:min(96vw440px) !important;}.req-sel{border-color:#388e3c !important;background:#e8f5e9 !important;color:#2e7d32 !important;}.req-sel i{color:#2e7d32 !important;}.req-type-btn:hover{border-color:#a5d6a7 !important;background:#f1f8e9 !important;}@media(max-width:420px){.swal-request-grid{grid-template-columns:repeat(2,1fr) !important;}}</style>`,
+         html: `
+<p style="font-size:0.85rem;color:#666;margin-bottom:12px;">
+  เลือกประเภทคำขอที่ต้องการ
+</p>
+
+<div style="
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:8px;
+  margin-bottom:4px;
+">
+  ${typeGrid}
+</div>
+
+<input type="hidden" id="req-type-val" value="">
+
+<style>
+.swal2-popup.swal-request{
+  width:min(96vw, 440px)!important;
+}
+
+.req-sel{
+  transform:translateY(-2px);
+  box-shadow:0 4px 12px rgba(0,0,0,.15);
+}
+
+.req-type-btn:hover{
+  transform:translateY(-2px);
+  filter:brightness(1.03);
+}
+
+@media(max-width:420px){
+  .swal-request-grid{
+    grid-template-columns:repeat(2,1fr)!important;
+  }
+}
+</style>
+`,
           customClass: { popup: "swal-request", container: "swal-on-top" },
           confirmButtonText: 'ถัดไป <i class="fa-solid fa-arrow-right"></i>',
           cancelButtonText: "ยกเลิก",
@@ -3459,6 +3590,106 @@ function checkNotif() { loadNotifications(); }
         <label style="font-size:0.82rem;color:#666;display:block;margin-bottom:4px;">
           <i class="fa-solid fa-pen-line" style="color:#388e3c"></i> เหตุผล / รายละเอียด
         </label>
+
+<div id="reason-chips"
+  style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;">
+
+  <button type="button" class="reason-chip"
+    data-text="ลืมบันทึกเวลาปฏิบัติราชการ">
+    ลืมบันทึกเวลา
+  </button>
+
+  <button type="button" class="reason-chip"
+    data-text="อยู่ระหว่างปฏิบัติราชการนอกสถานที่ จึงไม่สามารถบันทึกเวลาได้">
+    ปฏิบัติราชการนอกสถานที่
+  </button>
+
+  <button type="button" class="reason-chip"
+    data-text="เข้าร่วมประชุมตามภารกิจราชการ จึงไม่สามารถบันทึกเวลาได้">
+    ประชุม
+  </button>
+
+  <button type="button" class="reason-chip"
+    data-text="เข้ารับการฝึกอบรม/สัมมนาตามคำสั่งราชการ จึงไม่สามารถบันทึกเวลาได้">
+    อบรม / สัมมนา
+  </button>
+
+  <button type="button" class="reason-chip"
+    data-text="อยู่ระหว่างเดินทางไปราชการ จึงไม่สามารถบันทึกเวลาได้">
+    ไปราชการ
+  </button>
+
+  <button type="button" class="reason-chip"
+    data-text="ระบบบันทึกเวลาไม่สามารถใช้งานได้ในช่วงเวลาดังกล่าว">
+    ระบบขัดข้อง
+  </button>
+
+  <button type="button" class="reason-chip"
+    data-text="ปฏิบัติงานเร่งด่วนตามภารกิจที่ได้รับมอบหมาย จึงไม่สามารถบันทึกเวลาได้">
+    ภารกิจเร่งด่วน
+  </button>
+
+  <button type="button" class="reason-chip"
+    data-text="อยู่ระหว่างให้บริการประชาชนต่อเนื่อง จึงไม่สามารถบันทึกเวลาได้">
+    ให้บริการประชาชน
+  </button>
+
+  <button type="button" class="reason-chip"
+  data-text="ออกปฏิบัติงานเชิงรุกในพื้นที่ จึงไม่สามารถบันทึกเวลาได้">
+  ออกพื้นที่
+</button>
+
+<button type="button" class="reason-chip"
+  data-text="ออกเยี่ยมบ้านผู้ป่วยตามแผนงาน จึงไม่สามารถบันทึกเวลาได้">
+  เยี่ยมบ้าน
+</button>
+
+<button type="button" class="reason-chip"
+  data-text="ปฏิบัติงานคลินิก/บริการผู้ป่วยต่อเนื่อง จึงไม่สามารถบันทึกเวลาได้">
+  บริการผู้ป่วย
+</button>
+
+<button type="button" class="reason-chip"
+  data-text="ปฏิบัติงานตามภารกิจที่ได้รับมอบหมายจากผู้บังคับบัญชา">
+  งานที่ได้รับมอบหมาย
+</button>
+
+<button type="button" class="reason-chip"
+  data-text="พื้นที่ปฏิบัติงานไม่สามารถเชื่อมต่อเครือข่ายสื่อสารได้ จึงไม่สามารถบันทึกเวลาได้">
+  ไม่มีสัญญาณ
+</button>
+
+<button type="button" class="reason-chip"
+  data-text="อยู่ระหว่างติดต่อราชการและประสานงานกับหน่วยงานที่เกี่ยวข้อง จึงไม่สามารถบันทึกเวลาได้">
+  ติดต่อหน่วยงานอื่น
+</button>
+
+</div>
+
+<style>
+.reason-chip{
+  border:none;
+  background:#f1f5f9;
+  color:#334155;
+  padding:6px 12px;
+  border-radius:999px;
+  cursor:pointer;
+  font-size:.82rem;
+  font-family:Sarabun,sans-serif;
+  transition:.15s;
+}
+
+.reason-chip:hover{
+  background:#e8f5e9;
+  color:#2e7d32;
+}
+
+.reason-chip.active{
+  background:#388e3c;
+  color:#fff;
+}
+</style>
+
         <textarea id="req-reason" rows="3" placeholder="ระบุเหตุผลหรือรายละเอียดเพิ่มเติม..."
           style="width:100%;padding:9px 12px;border:1px solid #ddd;border-radius:10px;
           font-size:0.9rem;resize:vertical;font-family:Sarabun,sans-serif;"></textarea>
@@ -3512,6 +3743,20 @@ function checkNotif() { loadNotifications(); }
             document
               .getElementById("req-worktype")
               .addEventListener("change", checkHoliday);
+
+              document.querySelectorAll(".reason-chip").forEach(btn => {
+  btn.addEventListener("click", () => {
+
+    document.querySelectorAll(".reason-chip")
+      .forEach(x => x.classList.remove("active"));
+
+    btn.classList.add("active");
+
+    document.getElementById("req-reason").value =
+      btn.dataset.text || "";
+  });
+});
+
           },
 preConfirm: () => {
   const date = document.getElementById("req-date").value;
@@ -4177,12 +4422,26 @@ const confirmRows = [
         <b style="color:#388e3c">${requestType}</b><br>
         <span style="color:#666">เลขอ้างอิง: </span><code style="font-size:0.85rem">${ref}</code><br>
         ${phRef ? `<span style="font-size:.78rem;color:#8e24aa"><i class="fa-solid fa-calendar-check"></i> บันทึกเวรวันหยุด <code>${phRef}</code> แล้ว</span><br>` : ""}
-        <span style="color:#666">ระบบจะแจ้งผลผ่าน Line / Telegram</span>
+        <span style="color:#666">ระบบจะ Push Notification ไปยังหัวหน้า</span>
       </div>`,
-            confirmButtonColor: "#388e3c",
-            timer: 4000,
-            timerProgressBar: true,
-          }).then(() => renderRequestHistory());
+          showCancelButton: true,
+          confirmButtonText: 'ถ่ายภาพ',
+          cancelButtonText: 'ปิด',
+                }).then((r) => {
+
+          if (r.isConfirmed) {
+            takeAttendancePhoto({
+              ref: ref,
+              checkType: reqcheckin,
+              work_type: selectedType || typea,
+              latitude: userLat,
+              longitude: userLon,
+              address: result?.data?.location_detail?.displayName || ''
+            });
+          }
+
+         renderRequestHistory();
+          });
         } catch (err) {
           Swal.fire({
             icon: "error",
