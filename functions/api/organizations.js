@@ -56,7 +56,7 @@ export async function onRequest(context) {
           district,
           doc_no
         FROM organizations 
-        WHERE affiliation IS NOT NULL AND department IS NOT NULL
+        WHERE affiliation IS NOT NULL AND department IS NOT NULL AND active = 1
         ORDER BY affiliation, department
       `).all();
       
