@@ -482,6 +482,7 @@
             <option value="พนักงานราชการ">พนักงานราชการ</option>
             <option value="พนักงานกระทรวงสาธารณสุข">พนักงานกระทรวงสาธารณสุข</option>
             <option value="ลูกจ้างชั่วคราว">ลูกจ้างชั่วคราว</option>
+            <option value="จ้างเหมา">จ้างเหมา</option>
             <option value="พนักงานส่วนท้องถิ่น">พนักงานส่วนท้องถิ่น</option>
             <option value="อาสาสมัคร">อาสาสมัคร</option>
             <option value="อื่นๆ">อื่นๆ</option>
@@ -1462,7 +1463,9 @@ async function loadStaffOptions(aff_code, def_code) {
   let staff = [];
   try {
     let url = '/api/user/staff-list';
-    const params = new URLSearchParams();
+    const params = new URLSearchParams({
+  type: 'public'
+});
     if (aff_code && aff_code.trim() !== '') params.set('aff_code', aff_code);
     if (def_code && def_code.trim() !== '') params.set('def_code', def_code);
     if (params.toString()) url += '?' + params.toString();
