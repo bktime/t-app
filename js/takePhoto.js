@@ -93,16 +93,25 @@ function loadMapImage(lat, lon, outputSize) {
     const imgs = {};
     let done = 0;
 
-    for (let dy = 0; dy < 2; dy++) {
-      for (let dx = 0; dx < 2; dx++) {
-        const key = dx + '_' + dy;
-        const img = new Image();
-        img.crossOrigin = "Anonymous";
-        img.onload = () => { imgs[key] = img; if (++done === 4) compose(); };
-        img.onerror = () => { if (++done === 4) compose(); };
-        img.src = `https://tile.openstreetmap.org/${zoom}/${baseX + dx}/${baseY + dy}.png`;
-      }
-    }
+for (let dy = 0; dy < 2; dy++) {
+  for (let dx = 0; dx < 2; dx++) {
+    const key = dx + '_' + dy;
+    const img = new Image();
+    img.crossOrigin = "Anonymous";
+
+    img.onload = () => {
+      imgs[key] = img;
+      if (++done === 4) compose();
+    };
+
+    img.onerror = () => {
+      if (++done === 4) compose();
+    };
+
+    // 🔥 Google Maps tile
+    img.src = `https://mt1.google.com/vt/lyrs=m&x=${baseX + dx}&y=${baseY + dy}&z=${zoom}`;
+  }
+}
 
     function compose() {
       if (Object.keys(imgs).length === 0) { resolve(null); return; }
@@ -393,8 +402,8 @@ async function takeAttendancePhoto(data = {}) {
         ctx.restore();
 
         // label OSM
-        wText('OSM', mapX + Math.round(6 * S), mapY + mapSize - Math.round(6 * S),
-          `bold ${Math.round(10 * S)}px Arial`, 'rgba(255,255,255,0.65)');
+        wText('Google Maps', mapX + Math.round(6 * S), mapY + mapSize - Math.round(6 * S),
+          `bold ${Math.round(8 * S)}px Arial`, 'rgba(255,255,255,0.65)');
       }
 
       // ── "📷 GPS Map Camera" มุมขวาบน ──
