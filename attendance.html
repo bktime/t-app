@@ -731,7 +731,7 @@
       </div>
     </div>
     <button class="nav-btn" id="themeBtn" title="เปลี่ยนธีม"><i class="fa-solid fa-moon"></i></button>
-    <img src="https://lh5.googleusercontent.com/d/15oBJkXkg-WVElsZb6a-BlRx8CyPP0_Q5" alt="Avatar" class="avatar" id="navAvatar" onclick="openDrawer()">
+    <img src="/icons/icon-512.png" alt="Avatar" class="avatar" id="navAvatar" onclick="openDrawer()">
     <button class="nav-btn" id="menuBtn" onclick="openDrawer()" title="เมนู"><i class="fa-solid fa-bars"></i></button>
   </div>
 </nav>
@@ -742,7 +742,7 @@
 <!-- Side Drawer -->
 <div class="drawer" id="drawer">
   <div class="drawer-header">
-    <img src="https://lh5.googleusercontent.com/d/15oBJkXkg-WVElsZb6a-BlRx8CyPP0_Q5" alt="Avatar" id="drawerAvatar">
+    <img src="/icons/icon-512.png" alt="Avatar" id="drawerAvatar">
     <div>
       <div class="drawer-name" id="drawerName">—</div>
       <div class="drawer-job" id="drawerJob"></div>
@@ -775,7 +775,7 @@
 
   <!-- User Card -->
   <div class="user-card" id="userCard" style="display:none">
-    <img src="https://lh5.googleusercontent.com/d/15oBJkXkg-WVElsZb6a-BlRx8CyPP0_Q5" alt="Avatar" class="user-avatar-lg" id="userAvatar">
+    <img src="/icons/icon-512.png" alt="Avatar" class="user-avatar-lg" id="userAvatar">
     <div>
       <div class="user-info-name" id="userName">กำลังโหลด...</div>
       <div class="user-info-job" id="userJob"></div>
@@ -975,13 +975,13 @@ function getUserData() {
 
 function loadUserInfo() {
   const ud    = getUserData();
-  const defImg = 'https://lh5.googleusercontent.com/d/15oBJkXkg-WVElsZb6a-BlRx8CyPP0_Q5';
+  const defImg = '/icons/icon-512.png';
 
   // รองรับทั้ง user_data (ใหม่) และ key แยก (เก่า)
   const name    = (ud ? `${ud.prefix||''}${ud.firstName||''} ${ud.lastName||''}`.trim() : '') || ud?.name   || '';
   const job     = ud?.position || localStorage.getItem('job')    || '';
   const office  = ud?.department || localStorage.getItem('office') || '';
-  const picture = ud?.picture  || localStorage.getItem('upic')   || localStorage.getItem('yourpic') || defImg;
+  const picture = ud?.picture  ||  `https://ui-avatars.com/api/?background=1565c0&color=fff&size=64&bold=true&name=${encodeURIComponent((item.name||'U').charAt(0))}` || defImg;
 
   if (name) {
     document.getElementById('userCard').style.display = 'flex';
@@ -1089,9 +1089,9 @@ function initMap() {
   const satellite  = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { attribution: '© Esri' });
   const cartoLight = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { attribution: '© CartoDB' });
 
-  const saved = localStorage.getItem('selectedMap') || 'ค่าเริ่มต้น';
-  const baseMaps = { 'ค่าเริ่มต้น': osm, 'Google Maps': googleMaps, 'ดาวเทียม': satellite, 'สว่าง': cartoLight };
-  (baseMaps[saved] || osm).addTo(_map);
+  const saved = localStorage.getItem('selectedMap') || 'Google Maps';
+  const baseMaps = { 'Google Maps': googleMaps, 'osm': osm,  'ดาวเทียม': satellite, 'สว่าง': cartoLight };
+  (baseMaps[saved] || googleMaps).addTo(_map);
   L.control.layers(baseMaps, {}, { position: 'topright' }).addTo(_map);
   _map.on('baselayerchange', e => localStorage.setItem('selectedMap', e.name));
 
@@ -2725,7 +2725,8 @@ function aboutme() {
   const office = ud?.department || localStorage.getItem('office') || '-';
   const aff    = ud?.affiliation || localStorage.getItem('mainsub') || '-';
   const refid  = ud?.uuid   || localStorage.getItem('refid')  || '-';
-  const picture= ud?.picture || localStorage.getItem('upic') || '';
+  const picture = ud?.picture ||
+  `https://ui-avatars.com/api/?background=1565c0&color=fff&size=64&bold=true&name=${encodeURIComponent((item.name || 'U').charAt(0))}`;
   const type   = ud?.personnelType || '-';
 
   Swal.fire({
@@ -4432,8 +4433,8 @@ const confirmRows = [
           if (r.isConfirmed) {
             takeAttendancePhoto({
               ref: ref,
-              checkType: reqcheckin,
-              work_type: selectedType || typea,
+              checkType: "reqcheckin",
+              work_type: reqWorkType || "ปกติ",
               latitude: userLat,
               longitude: userLon,
               address: result?.data?.location_detail?.displayName || ''
