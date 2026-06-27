@@ -137,12 +137,16 @@ function loadMapImage(lat, lon, outputSize) {
       oc.imageSmoothingEnabled = true;
       oc.imageSmoothingQuality = 'high';
 
-      const scale = outputSize / T;
+      // FIX MAP CROP: ใช้ source-rect crop แทน destination-offset
+      // จุดพิกัดอยู่ที่ (fx*T, fy*T) บน grid 512×512
+      // crop ขนาด outputSize×outputSize (pixel ใน grid) จากตำแหน่งนั้น
+      // โดยให้จุดพิกัดอยู่ตรงกลาง output
+      const half = outputSize / 2;          // ครึ่งนึงของ output (px ใน grid ด้วย)
+      const srcX = fx * T - half;
+      const srcY = fy * T - half;
       oc.drawImage(grid,
-        0, 0, gridPx, gridPx,
-        outputSize / 2 - fx * T * scale,
-        outputSize / 2 - fy * T * scale,
-        gridPx * scale, gridPx * scale
+        srcX, srcY, outputSize, outputSize, // source: crop ขนาด output จาก grid
+        0,    0,    outputSize, outputSize  // destination: เต็ม canvas
       );
 
       const mr = Math.max(5, Math.round(outputSize / 15));
