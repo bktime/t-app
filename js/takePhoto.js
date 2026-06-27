@@ -378,23 +378,57 @@ async function takeAttendancePhoto(data = {}) {
         ctx.restore();
       }
 
-      // ── แผนที่ (FIX P2: drawImage จาก canvas โดยตรง) ──
+      // ── แผนที่ ──
+      // วิธี: สร้าง offscreen canvas ขนาด mapSize แล้ว clip rounded corner ใน context นั้น
+      // จากนั้น drawImage offscreen → main canvas พร้อม shadow (shadow ไม่รบกวน clip)
       if (mapCanvas) {
         const r = Math.round(8 * S);
+
+        // 1) สร้าง offscreen canvas พร้อม rounded clip
+        const off = document.createElement('canvas');
+        off.width  = mapSize;
+        off.height = mapSize;
+        const oc2 = off.getContext('2d');
+
+        // clip rounded rect ด้วย arc path (รองรับทุก browser ไม่ต้องใช้ roundRect)
+        oc2.beginPath();
+        oc2.moveTo(r, 0);
+        oc2.lineTo(mapSize - r, 0);
+        oc2.arcTo(mapSize, 0,       mapSize, r,           r);
+        oc2.lineTo(mapSize, mapSize - r);
+        oc2.arcTo(mapSize, mapSize,  mapSize - r, mapSize, r);
+        oc2.lineTo(r, mapSize);
+        oc2.arcTo(0, mapSize,        0, mapSize - r,       r);
+        oc2.lineTo(0, r);
+        oc2.arcTo(0, 0,              r, 0,                 r);
+        oc2.closePath();
+        oc2.clip();
+        oc2.drawImage(mapCanvas, 0, 0, mapSize, mapSize);
+
+        // 2) วาด offscreen → main canvas พร้อม drop shadow (shadow อยู่นอก clip)
         ctx.save();
-        ctx.shadowColor = 'rgba(0,0,0,0.6)';
-        ctx.shadowBlur  = Math.round(10 * S);
-        ctx.beginPath();
-        ctx.roundRect(mapX, mapY, mapSize, mapSize, r);
-        ctx.clip();
-        ctx.drawImage(mapCanvas, mapX, mapY, mapSize, mapSize);
+        ctx.shadowColor   = 'rgba(0,0,0,0.55)';
+        ctx.shadowBlur    = Math.round(10 * S);
+        ctx.shadowOffsetX = Math.round(2 * S);
+        ctx.shadowOffsetY = Math.round(2 * S);
+        ctx.drawImage(off, mapX, mapY);
         ctx.restore();
 
+        // 3) วาดขอบ
         ctx.save();
-        ctx.strokeStyle = 'rgba(255,255,255,0.5)';
+        ctx.strokeStyle = 'rgba(255,255,255,0.55)';
         ctx.lineWidth   = Math.max(1.5, S * 1.5);
         ctx.beginPath();
-        ctx.roundRect(mapX, mapY, mapSize, mapSize, r);
+        ctx.moveTo(mapX + r, mapY);
+        ctx.lineTo(mapX + mapSize - r, mapY);
+        ctx.arcTo(mapX + mapSize, mapY,           mapX + mapSize, mapY + r,           r);
+        ctx.lineTo(mapX + mapSize, mapY + mapSize - r);
+        ctx.arcTo(mapX + mapSize, mapY + mapSize,  mapX + mapSize - r, mapY + mapSize, r);
+        ctx.lineTo(mapX + r, mapY + mapSize);
+        ctx.arcTo(mapX,           mapY + mapSize,  mapX, mapY + mapSize - r,           r);
+        ctx.lineTo(mapX, mapY + r);
+        ctx.arcTo(mapX,           mapY,             mapX + r, mapY,                    r);
+        ctx.closePath();
         ctx.stroke();
         ctx.restore();
 
