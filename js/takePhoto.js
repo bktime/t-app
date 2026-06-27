@@ -24,17 +24,17 @@ function convertLatLngToUtm(lat, lon) {
   const zone = Math.floor((lon + 180) / 6) + 1;
 
   let letter = '';
-  if (lat >= 72) letter = 'X';
-  else if (lat >= 64) letter = 'W';
-  else if (lat >= 56) letter = 'V';
-  else if (lat >= 48) letter = 'U';
-  else if (lat >= 40) letter = 'T';
-  else if (lat >= 32) letter = 'S';
-  else if (lat >= 24) letter = 'R';
-  else if (lat >= 16) letter = 'Q';
-  else if (lat >= 8) letter = 'P';
-  else if (lat >= 0) letter = 'N';
-  else if (lat >= -8) letter = 'M';
+  if      (lat >= 72)  letter = 'X';
+  else if (lat >= 64)  letter = 'W';
+  else if (lat >= 56)  letter = 'V';
+  else if (lat >= 48)  letter = 'U';
+  else if (lat >= 40)  letter = 'T';
+  else if (lat >= 32)  letter = 'S';
+  else if (lat >= 24)  letter = 'R';
+  else if (lat >= 16)  letter = 'Q';
+  else if (lat >= 8)   letter = 'P';
+  else if (lat >= 0)   letter = 'N';
+  else if (lat >= -8)  letter = 'M';
   else if (lat >= -16) letter = 'L';
   else if (lat >= -24) letter = 'K';
   else if (lat >= -32) letter = 'J';
@@ -54,25 +54,29 @@ function convertLatLngToUtm(lat, lon) {
   const T = Math.tan(latRad) * Math.tan(latRad);
   const C = eSquared / (1 - eSquared) * Math.cos(latRad) * Math.cos(latRad);
   const A = Math.cos(latRad) * (lonRad - lonOriginRad);
-  const M = a * ((1 - eSquared / 4 - 3 * eSquared * eSquared / 64 - 5 * eSquared * eSquared * eSquared / 256) * latRad
+  const M = a * (
+    (1 - eSquared / 4 - 3 * eSquared * eSquared / 64 - 5 * eSquared * eSquared * eSquared / 256) * latRad
     - (3 * eSquared / 8 + 3 * eSquared * eSquared / 32 + 45 * eSquared * eSquared * eSquared / 1024) * Math.sin(2 * latRad)
     + (15 * eSquared * eSquared / 256 + 45 * eSquared * eSquared * eSquared / 1024) * Math.sin(4 * latRad)
-    - (35 * eSquared * eSquared * eSquared / 3072) * Math.sin(6 * latRad));
+    - (35 * eSquared * eSquared * eSquared / 3072) * Math.sin(6 * latRad)
+  );
 
-  let x = k0 * N * (A + (1 - T + C) * A * A * A / 6 + (5 - 18 * T + T * T + 72 * C - 58 * eSquared) * Math.pow(A, 5) / 120) + 500000.0;
-  let y = k0 * (M + N * Math.tan(latRad) * (A * A / 2 + (5 - T + 9 * C + 4 * C * C) * Math.pow(A, 4) / 24 + (61 - 58 * T + T * T + 600 * C - 330 * eSquared) * Math.pow(A, 6) / 720));
+  let x = k0 * N * (A + (1 - T + C) * A * A * A / 6
+    + (5 - 18 * T + T * T + 72 * C - 58 * eSquared) * Math.pow(A, 5) / 120) + 500000.0;
+  let y = k0 * (M + N * Math.tan(latRad) * (
+    A * A / 2
+    + (5 - T + 9 * C + 4 * C * C) * Math.pow(A, 4) / 24
+    + (61 - 58 * T + T * T + 600 * C - 330 * eSquared) * Math.pow(A, 6) / 720
+  ));
 
   if (lat < 0) y += 10000000.0;
-
-  return {
-    zone: zone + letter,
-    x: Math.round(x),
-    y: Math.round(y)
-  };
+  return { zone: zone + letter, x: Math.round(x), y: Math.round(y) };
 }
 
 // ==========================================
-// 3. ฟังก์ชันโหลดแผนที่ 2×2 Tiles (ความละเอียดสูงรองรับ 4K)
+// 3. ฟังก์ชันโหลดแผนที่ 2×2 Tiles
+// FIX: resolve canvas โดยตรง (ไม่ toDataURL → new Image วนซ้ำ)
+// FIX: guard compose ให้ตรวจ done === 4 ก่อนเสมอ แล้วค่อย build
 // ==========================================
 function loadMapImage(lat, lon, outputSize) {
   return new Promise((resolve) => {
@@ -85,38 +89,36 @@ function loadMapImage(lat, lon, outputSize) {
 
     const baseX = Math.floor(xtileF);
     const baseY = Math.floor(ytileF);
-    const fx = xtileF - baseX;   // ตำแหน่งเศษส่วนใน tile (0–1)
+    const fx = xtileF - baseX;
     const fy = ytileF - baseY;
 
-    const T = 256;               // ขนาด tile เดิม
-    const gridPx = T * 2;        // 512 px
+    const T = 256;
+    const gridPx = T * 2;
     const imgs = {};
     let done = 0;
 
-for (let dy = 0; dy < 2; dy++) {
-  for (let dx = 0; dx < 2; dx++) {
-    const key = dx + '_' + dy;
-    const img = new Image();
-    img.crossOrigin = "Anonymous";
+    for (let dy = 0; dy < 2; dy++) {
+      for (let dx = 0; dx < 2; dx++) {
+        const key = `${dx}_${dy}`;
+        const img = new Image();
+        img.crossOrigin = 'Anonymous';
 
-    img.onload = () => {
-      imgs[key] = img;
-      if (++done === 4) compose();
-    };
+        img.onload = () => {
+          imgs[key] = img;
+          if (++done === 4) compose();
+        };
+        img.onerror = () => {
+          if (++done === 4) compose();
+        };
 
-    img.onerror = () => {
-      if (++done === 4) compose();
-    };
-
-    // 🔥 Google Maps tile
-    img.src = `https://mt1.google.com/vt/lyrs=m&x=${baseX + dx}&y=${baseY + dy}&z=${zoom}`;
-  }
-}
+        img.src = `https://mt1.google.com/vt/lyrs=m&x=${baseX + dx}&y=${baseY + dy}&z=${zoom}`;
+      }
+    }
 
     function compose() {
+      // FIX P1: ไม่สร้าง canvas เมื่อไม่มีภาพเลย
       if (Object.keys(imgs).length === 0) { resolve(null); return; }
 
-      // รวม 4 tiles เป็นภาพเดียว 512×512
       const grid = document.createElement('canvas');
       grid.width = gridPx;
       grid.height = gridPx;
@@ -125,10 +127,9 @@ for (let dy = 0; dy < 2; dy++) {
       gc.fillRect(0, 0, gridPx, gridPx);
       for (let dy = 0; dy < 2; dy++)
         for (let dx = 0; dx < 2; dx++)
-          if (imgs[dx + '_' + dy])
-            gc.drawImage(imgs[dx + '_' + dy], dx * T, dy * T);
+          if (imgs[`${dx}_${dy}`])
+            gc.drawImage(imgs[`${dx}_${dy}`], dx * T, dy * T);
 
-      // crop ให้จุดพิกัดอยู่ตรงกลาง output
       const out = document.createElement('canvas');
       out.width = outputSize;
       out.height = outputSize;
@@ -144,7 +145,6 @@ for (let dy = 0; dy < 2; dy++) {
         gridPx * scale, gridPx * scale
       );
 
-      // วาด Marker ตรงกลาง
       const mr = Math.max(5, Math.round(outputSize / 15));
       oc.fillStyle = '#ff0000';
       oc.strokeStyle = '#ffffff';
@@ -154,23 +154,31 @@ for (let dy = 0; dy < 2; dy++) {
       oc.fill();
       oc.stroke();
 
-      const finalImg = new Image();
-      finalImg.onload = () => resolve(finalImg);
-      finalImg.src = out.toDataURL('image/png');
+      // FIX P2: resolve canvas โดยตรง ไม่ต้องแปลง toDataURL → new Image อีกรอบ
+      resolve(out);
     }
   });
 }
 
 // ==========================================
 // 4. ฟังก์ชันดึงชื่อสถานที่จากพิกัด (Reverse Geocoding)
+// FIX P3: เพิ่ม AbortController + timeout 8 วินาที
 // ==========================================
 async function fetchAddressFromCoords(lat, lon) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 8000);
   try {
-    const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=18&addressdetails=1`);
+    const response = await fetch(
+      `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=18&addressdetails=1`,
+      { signal: controller.signal }
+    );
     const data = await response.json();
-    return data.display_name || "ไม่พบชื่อสถานที่";
+    return data.display_name || 'ไม่พบชื่อสถานที่';
   } catch (err) {
-    return "ไม่สามารถระบุที่อยู่ได้";
+    if (err.name === 'AbortError') return 'ระบุที่อยู่ใช้เวลานานเกินไป';
+    return 'ไม่สามารถระบุที่อยู่ได้';
+  } finally {
+    clearTimeout(timer);
   }
 }
 
@@ -178,41 +186,47 @@ async function fetchAddressFromCoords(lat, lon) {
 // 5. ฟังก์ชันหลัก: เปิดกล้อง ถ่ายภาพ พร้อม Watermark คมชัด รองรับ 4K → PNG
 // ==========================================
 async function takeAttendancePhoto(data = {}) {
-  const ref = data.ref || "TEST-001";
-  const checkType = data.checkType || "checkin";
-  const workType = data.work_type || "ปกติ";
-  let address = data.address || "กำลังระบุตำแหน่ง...";
+  const ref       = data.ref       || 'TEST-001';
+  const checkType = data.checkType || 'checkin';
+  const workType  = data.work_type || 'ปกติ';
+  let address     = data.address   || 'กำลังระบุตำแหน่ง...';
 
   let videoStream = null;
-  let gpsData = null;
+  let gpsData     = null;
+  // FIX BUG1: ใช้ stopStream() แทนการกระจาย getTracks ซ้ำๆ
+  function stopStream() {
+    if (videoStream) {
+      videoStream.getTracks().forEach(t => t.stop());
+      videoStream = null;
+    }
+  }
 
   const checkTypeMap = {
-    checkin:     { label: "ลงเวลาเข้า",       color: "#3dba5c" },
-    checkout:    { label: "ลงเวลาออก",       color: "#e53935" },
-    reqcheckin:  { label: "ขอแก้ไขเวลา",     color: "#ff9800" },
-    reqcheckout: { label: "ขอแก้ไขเวลาออก",  color: "#9c27b0" }
+    checkin:     { label: 'ลงเวลาเข้า',       color: '#3dba5c' },
+    checkout:    { label: 'ลงเวลาออก',       color: '#e53935' },
+    reqcheckin:  { label: 'ขอแก้ไขเวลา',     color: '#ff9800' },
+    reqcheckout: { label: 'ขอแก้ไขเวลาออก',  color: '#9c27b0' }
   };
   const cfg = checkTypeMap[checkType] || checkTypeMap.checkin;
 
   Swal.fire({
-    title: "ถ่ายภาพ",
+    title: 'ถ่ายภาพ',
     html: `
-      <div style="position: relative; width: 100%; max-width: 400px; margin: auto;">
-        <p style="font-size: 0.8rem; color: #666; text-align: center;">
+      <div style="position:relative;width:100%;max-width:400px;margin:auto;">
+        <p style="font-size:0.8rem;color:#666;text-align:center;">
           ถ่ายภาพนี้จะไม่ส่งไปยังเซิร์ฟเวอร์ (สำหรับจัดเก็บในอุปกรณ์และแชร์เท่านั้น)
         </p>
         <video id="cameraVideo" autoplay playsinline
-               style="width: 100%; border-radius: 8px; background: #000;
-                      transform: scaleX(-1); -webkit-transform: scaleX(-1);"></video>
+               style="width:100%;border-radius:8px;background:#000;
+                      transform:scaleX(-1);-webkit-transform:scaleX(-1);"></video>
         <div id="liveOverlay"
-             style="position: absolute; bottom: 10px; left: 10px; right: 10px;
-                    text-align: left; background: rgba(0,0,0,0.6); color: #fff;
-                    padding: 8px; font-size: 0.8rem; border-radius: 5px;
-                    pointer-events: none;">
-          <div style="color: #4caf50; font-weight: bold;">
+             style="position:absolute;bottom:10px;left:10px;right:10px;
+                    text-align:left;background:rgba(0,0,0,0.6);color:#fff;
+                    padding:8px;font-size:0.8rem;border-radius:5px;pointer-events:none;">
+          <div style="color:${cfg.color};font-weight:bold;">
             ${cfg.label}${workType ? ` — ${workType}` : ''}
           </div>
-          <div style="font-size: 0.7rem; color: #ccc;">GPS Map Camera</div>
+          <div style="font-size:0.7rem;color:#ccc;">GPS Map Camera</div>
           <div id="liveAddress">${address}</div>
           <div id="gpsLiveText">
             <i class="fa-solid fa-satellite-dish"></i> กำลังค้นหาพิกัด GPS...
@@ -224,15 +238,11 @@ async function takeAttendancePhoto(data = {}) {
     confirmButtonText: 'ถ่ายภาพ',
     cancelButtonText: 'ยกเลิก',
     allowOutsideClick: false,
+
     willOpen: async () => {
-      // ── เปิดกล้อง (ขอ 4K สูงสุด เบราว์เซอร์จะปรับลดให้อัตโนมัติ) ──
       try {
         videoStream = await navigator.mediaDevices.getUserMedia({
-          video: {
-            facingMode: "user",
-            width:  { ideal: 3840 },
-            height: { ideal: 2160 }
-          }
+          video: { facingMode: 'user', width: { ideal: 3840 }, height: { ideal: 2160 } }
         });
         const video = document.getElementById('cameraVideo');
         video.srcObject = videoStream;
@@ -240,13 +250,12 @@ async function takeAttendancePhoto(data = {}) {
         Swal.showValidationMessage('ไม่สามารถเปิดกล้องได้ กรุณาอนุญาตการเข้าถึงกล้องในเบราว์เซอร์');
       }
 
-      // ── ดึง GPS ──
       try {
         navigator.geolocation.getCurrentPosition(async (position) => {
           const lat  = position.coords.latitude;
           const lon  = position.coords.longitude;
           const elev = position.coords.altitude  != null ? position.coords.altitude.toFixed(1)  : '-';
-          const acc  = position.coords.accuracy != null ? Math.round(position.coords.accuracy) : '-';
+          const acc  = position.coords.accuracy  != null ? Math.round(position.coords.accuracy) : '-';
           const utm  = convertLatLngToUtm(lat, lon);
 
           const realAddress = await fetchAddressFromCoords(lat, lon);
@@ -259,7 +268,6 @@ async function takeAttendancePhoto(data = {}) {
             if (shortAddr.length > 45) shortAddr = shortAddr.substring(0, 45) + '...';
             addrDiv.innerText = shortAddr;
           }
-
           const liveText = document.getElementById('gpsLiveText');
           if (liveText) {
             liveText.innerHTML = `
@@ -269,13 +277,16 @@ async function takeAttendancePhoto(data = {}) {
               ${new Date().toLocaleString('en-GB')}
             `;
           }
-        }, (err) => {
+        }, () => {
           Swal.showValidationMessage('ไม่สามารถเข้าถึง GPS ได้ กรุณาอนุญาต Location/GPS ในเบราว์เซอร์');
         }, { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 });
       } catch (err) {
-        console.error("Geolocation error", err);
+        console.error('Geolocation error', err);
       }
     },
+
+    // FIX BUG1: ปิด stream ใน willClose เสมอ ไม่ว่าผู้ใช้จะกดอะไร
+    willClose: () => { stopStream(); },
 
     preConfirm: async () => {
       if (!gpsData) {
@@ -289,12 +300,6 @@ async function takeAttendancePhoto(data = {}) {
         return false;
       }
 
-      // ── หยุดสตรีมกล้อง ──
-      if (videoStream) {
-        videoStream.getTracks().forEach(track => track.stop());
-      }
-
-      // ── สร้าง Canvas ขนาดเท่าวิดีโอจริง (รองรับสูงสุด 4K) ──
       const canvas = document.createElement('canvas');
       const w = video.videoWidth;
       const h = video.videoHeight;
@@ -302,29 +307,25 @@ async function takeAttendancePhoto(data = {}) {
       canvas.height = h;
       const ctx = canvas.getContext('2d');
 
-      // ตั้งค่าความคมชัดตัวอักษร
       ctx.textRendering = 'geometricPrecision';
       ctx.imageSmoothingEnabled = true;
       ctx.imageSmoothingQuality = 'high';
 
-      // วาดเฟรมวิดีโอ
       ctx.drawImage(video, 0, 0, w, h);
 
       // ════════════════════════════════════════
-      //  WATERMARK — ข้อความคมชัด รองรับ 4K
+      //  WATERMARK
       // ════════════════════════════════════════
-
-      const S     = w / 640;                        // scale factor
+      const S     = w / 640;
       const pad   = Math.round(16 * S);
       const lh    = Math.round(22 * S);
-      const fsz   = Math.round(13 * S);             // ขนาดตัวอักษรปกติ
-      const fszB  = Math.round(14 * S);             // ขนาดตัวอักษรหนา
-      const fszS  = Math.round(12 * S);             // ขนาดเล็ก (ตำแหน่ง/หน่วยงาน)
-      const fszT  = Math.round(11 * S);             // ขนาดเล็กสุด (label)
+      const fsz   = Math.round(13 * S);
+      const fszB  = Math.round(14 * S);
+      const fszS  = Math.round(12 * S);
+      const fszT  = Math.round(11 * S);
       const btnH  = Math.round(26 * S);
-      const mapSize = Math.round(140 * S); // ขนาดแผนที่
+      const mapSize = Math.round(140 * S);
 
-      // อ่านข้อมูลบุคคล
       let ud = {};
       try { ud = JSON.parse(localStorage.getItem('user_data') || '{}'); } catch (e) {}
       const fullName    = `${ud.prefix || ''}${ud.firstName || ''} ${ud.lastName || ''}`.trim();
@@ -332,10 +333,9 @@ async function takeAttendancePhoto(data = {}) {
       const department  = ud.department  || '';
       const affiliation = ud.affiliation || '';
 
-      // โหลดแผนที่ 2×2 tiles
-      const mapImg = await loadMapImage(gpsData.lat, gpsData.lon, mapSize);
+      // FIX P2: รับ canvas โดยตรง (ไม่ผ่าน toDataURL → Image อีกรอบ)
+      const mapCanvas = await loadMapImage(gpsData.lat, gpsData.lon, mapSize);
 
-      // คำนวณตำแหน่ง layout
       const personH = (fullName ? fszB + Math.round(3 * S) : 0)
                     + (position || department || affiliation ? fszS + Math.round(8 * S) : 0);
       const blockH  = personH + btnH + Math.round(8 * S) + fszB + lh * 4 + Math.round(6 * S);
@@ -343,45 +343,39 @@ async function takeAttendancePhoto(data = {}) {
       const mapY    = h - pad - mapSize;
       const mapX    = pad;
 
-      // ── gradient พื้นหลัง overlay ──
       const gradTop = Math.min(blockY, mapY) - Math.round(40 * S);
       const grad = ctx.createLinearGradient(0, gradTop, 0, h);
-      grad.addColorStop(0,    'rgba(0,0,0,0)');
-      grad.addColorStop(0.2,  'rgba(0,0,0,0.45)');
-      grad.addColorStop(0.5,  'rgba(0,0,0,0.70)');
-      grad.addColorStop(1,    'rgba(0,0,0,0.85)');
+      grad.addColorStop(0,   'rgba(0,0,0,0)');
+      grad.addColorStop(0.2, 'rgba(0,0,0,0.45)');
+      grad.addColorStop(0.5, 'rgba(0,0,0,0.70)');
+      grad.addColorStop(1,   'rgba(0,0,0,0.85)');
       ctx.fillStyle = grad;
       ctx.fillRect(0, gradTop, w, h - gradTop);
 
-      // ── helper: วาดข้อความคมชัด ──
-      function wText(text, x, y, font, color, maxW, outline) {
+      // FIX BUG4: maxW default = 0, guard ด้วย maxW > 0
+      function wText(text, x, y, font, color, maxW = 0, outline = false) {
         ctx.save();
-        ctx.font      = font;
-        ctx.textAlign  = 'left';
+        ctx.font        = font;
+        ctx.textAlign   = 'left';
         ctx.textBaseline = 'alphabetic';
-
-        // outline สำหรับข้อความเล็ก เพื่อความคมชัดบนพื้นหลังซับซ้อน
         if (outline) {
-          ctx.lineJoin  = 'round';
-          ctx.miterLimit = 2;
+          ctx.lineJoin   = 'round';
+          ctx.miterLimit  = 2;
           ctx.strokeStyle = 'rgba(0,0,0,0.65)';
           ctx.lineWidth   = Math.round(3 * S);
-          ctx.strokeText(text, x, y, maxW);
+          maxW > 0 ? ctx.strokeText(text, x, y, maxW) : ctx.strokeText(text, x, y);
         }
-
-        // shadow เล็กน้อยเพื่อความโดด
-        ctx.shadowColor = 'rgba(0,0,0,0.95)';
-        ctx.shadowBlur  = Math.round(3 * S);
+        ctx.shadowColor   = 'rgba(0,0,0,0.95)';
+        ctx.shadowBlur    = Math.round(3 * S);
         ctx.shadowOffsetX = 0;
         ctx.shadowOffsetY = 0;
         ctx.fillStyle = color;
-        if (maxW) ctx.fillText(text, x, y, maxW);
-        else      ctx.fillText(text, x, y);
+        maxW > 0 ? ctx.fillText(text, x, y, maxW) : ctx.fillText(text, x, y);
         ctx.restore();
       }
 
-      // ── แผนที่ มุมซ้ายล่าง ──
-      if (mapImg) {
+      // ── แผนที่ (FIX P2: drawImage จาก canvas โดยตรง) ──
+      if (mapCanvas) {
         const r = Math.round(8 * S);
         ctx.save();
         ctx.shadowColor = 'rgba(0,0,0,0.6)';
@@ -389,10 +383,9 @@ async function takeAttendancePhoto(data = {}) {
         ctx.beginPath();
         ctx.roundRect(mapX, mapY, mapSize, mapSize, r);
         ctx.clip();
-        ctx.drawImage(mapImg, mapX, mapY, mapSize, mapSize);
+        ctx.drawImage(mapCanvas, mapX, mapY, mapSize, mapSize);
         ctx.restore();
 
-        // ขอบแผนที่
         ctx.save();
         ctx.strokeStyle = 'rgba(255,255,255,0.5)';
         ctx.lineWidth   = Math.max(1.5, S * 1.5);
@@ -401,28 +394,23 @@ async function takeAttendancePhoto(data = {}) {
         ctx.stroke();
         ctx.restore();
 
-        // label OSM
         wText('Google Maps', mapX + Math.round(6 * S), mapY + mapSize - Math.round(6 * S),
           `bold ${Math.round(8 * S)}px Arial`, 'rgba(255,255,255,0.65)');
       }
 
-      // ── "📷 GPS Map Camera" มุมขวาบน ──
       ctx.save();
-      ctx.font        = `bold ${fszT}px Arial`;
-      ctx.fillStyle   = 'rgba(255,255,255,0.65)';
-      ctx.textAlign   = 'right';
+      ctx.font      = `bold ${fszT}px Arial`;
+      ctx.fillStyle = 'rgba(255,255,255,0.65)';
+      ctx.textAlign = 'right';
       ctx.shadowColor = 'rgba(0,0,0,0.9)';
       ctx.shadowBlur  = Math.round(4 * S);
       ctx.fillText('📷 GPS Map Camera Check-In/Out', w - pad, gradTop + Math.round(20 * S));
       ctx.restore();
 
-      // ── คอลัมน์ขวา ──
       const tx    = mapX + mapSize + pad;
       const maxTW = w - tx - pad;
       let   ty    = blockY;
 
-      // ข้อมูลบุคคล
-            // ── ข้อมูลบุคคล (ด้านบนสุด) ──
       if (fullName) {
         wText(fullName, tx, ty + fszB * 0.85, `bold ${fszB}px Tahoma, sans-serif`, '#ffffff', maxTW);
         ty += fszB + Math.round(3 * S);
@@ -430,11 +418,10 @@ async function takeAttendancePhoto(data = {}) {
       const orgLine = [position, department, affiliation].filter(Boolean).join('  •  ');
       if (orgLine) {
         wText(orgLine, tx, ty + fszS * 0.85, `${fszS}px Tahoma, sans-serif`,
-          'rgba(245, 244, 243, 0.9)', maxTW);
+          'rgba(245,244,243,0.9)', maxTW);
         ty += fszS + Math.round(10 * S);
       }
 
-      // ── วันที่-เวลา ภาษาไทย พ.ศ. (ย้ายมาเป็นแถวที่ 3) ──
       const now   = new Date();
       const dayTH = ['วันอาทิตย์','วันจันทร์','วันอังคาร','วันพุธ',
                      'วันพฤหัสบดี','วันศุกร์','วันเสาร์'][now.getDay()];
@@ -444,17 +431,16 @@ async function takeAttendancePhoto(data = {}) {
       const gmtStr = `GMT ${offH >= 0 ? '+' : ''}${offH}:00`;
       const timeTH = now.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
 
-      // ใช้ fszB (ตัวหนาขนาดใหญ่) เพื่อให้โดดแถวที่ 3
       wText(
         `${dayTH}, ${now.getDate()} ${monTH} ${now.getFullYear() + 543}  ${timeTH} น.  ${gmtStr}`,
-        tx, ty + fszB * 0.85, `bold ${fszB}px Tahoma, sans-serif`, 'rgba(255,220,150,0.90)', maxTW, true
+        tx, ty + fszB * 0.85,
+        `bold ${fszB}px Tahoma, sans-serif`, 'rgba(255,220,150,0.90)', maxTW, true
       );
-      ty += fszB + Math.round(10 * S); // ระยะห่างลงมาถึงปุ่ม
+      ty += fszB + Math.round(10 * S);
 
-      // ── ปุ่ม Check In/Out ──
       const btnLabel = cfg.label;
       const btnColor = cfg.color;
-      const btnW     = Math.round(90 * S);    // (ปรับขนาดปุ่มตามที่คุณต้องการ)
+      const btnW     = Math.round(90 * S);
       const btnR     = Math.round(6 * S);
       const btnFsz   = Math.round(14 * S);
 
@@ -468,14 +454,13 @@ async function takeAttendancePhoto(data = {}) {
       ctx.restore();
 
       ctx.save();
-      ctx.fillStyle   = '#ffffff';
-      ctx.font        = `bold ${btnFsz}px Tahoma, sans-serif`;
-      ctx.textAlign   = 'center';
+      ctx.fillStyle    = '#ffffff';
+      ctx.font         = `bold ${btnFsz}px Tahoma, sans-serif`;
+      ctx.textAlign    = 'center';
       ctx.textBaseline = 'middle';
       ctx.fillText(btnLabel, tx + btnW / 2, ty + btnH / 2);
       ctx.restore();
 
-      // workType + Ref ขวาของปุ่ม
       const workRefText = [workType, ref ? `Ref: ${ref}` : ''].filter(Boolean).join('   |   ');
       if (workRefText) {
         wText(workRefText, tx + btnW + Math.round(12 * S), ty + btnH * 0.55,
@@ -483,9 +468,11 @@ async function takeAttendancePhoto(data = {}) {
       }
       ty += btnH + Math.round(10 * S);
 
-      // ── ที่อยู่ (wrap 2 บรรทัด) ──
+      // ── ที่อยู่ wrap 2 บรรทัด ──
+      // FIX P4: set font ก่อน measureText เสมอ
+      const addrFont = `bold ${fszB}px Tahoma, sans-serif`;
+      ctx.font = addrFont;
       const fullAddr = gpsData.address || 'ไม่พบที่อยู่';
-      ctx.font = `bold ${fszB}px Tahoma, sans-serif`;
       const addrWords = fullAddr.split(', ');
       let addrLine1 = '', addrLine2 = '';
       for (const word of addrWords) {
@@ -497,7 +484,7 @@ async function takeAttendancePhoto(data = {}) {
         }
       }
 
-      wText(addrLine1, tx, ty + fszB * 0.85, `bold ${fszB}px Tahoma, sans-serif`, '#ffffff', maxTW);
+      wText(addrLine1, tx, ty + fszB * 0.85, addrFont, '#ffffff', maxTW);
       ty += fszB + Math.round(3 * S);
       if (addrLine2) {
         wText(addrLine2, tx, ty + fsz * 0.85, `${fsz}px Tahoma, sans-serif`,
@@ -507,34 +494,29 @@ async function takeAttendancePhoto(data = {}) {
         ty += Math.round(4 * S);
       }
 
-      // ── พิกัด GPS (outline เพิ่มความคมชัด) ──
       wText(
         `Lat: ${gpsData.lat.toFixed(6)}\u00B0   Long: ${gpsData.lon.toFixed(6)}\u00B0`,
-        tx, ty + fsz * 0.85, `${fsz}px "Courier New", monospace`, '#80d8ff', maxTW, true
+        tx, ty + fsz * 0.85,
+        `${fsz}px "Courier New", monospace`, '#80d8ff', maxTW, true
       );
       ty += lh;
 
       wText(
         `Zone ${gpsData.utm.zone}   X: ${gpsData.utm.x}   Y: ${gpsData.utm.y}`,
-        tx, ty + fsz * 0.85, `${fsz}px "Courier New", monospace`, '#80d8ff', maxTW, true
+        tx, ty + fsz * 0.85,
+        `${fsz}px "Courier New", monospace`, '#80d8ff', maxTW, true
       );
       ty += lh;
 
       wText(
         `elev: ${gpsData.elev} m   acc: ${gpsData.acc} m`,
-        tx, ty + fsz * 0.85, `${fsz}px "Courier New", monospace`,
-        'rgba(255,255,255,0.85)', maxTW, true
+        tx, ty + fsz * 0.85,
+        `${fsz}px "Courier New", monospace`, 'rgba(255,255,255,0.85)', maxTW, true
       );
-      // ── จบ Watermark ──
 
       // ════════════════════════════════════════
-      //  ส่งออกเป็น PNG (ใช้ toBlob ประหยัดหน่วยความจำ)
-      // ════════════════════════════════════════
-
-
-
-      // ════════════════════════════════════════
-      //  ส่งออกเป็น PNG (ใช้ toBlob ประหยัดหน่วยความจำ)
+      //  ส่งออกเป็น PNG (ใช้ toBlob — ชุดเดียว ไม่ซ้ำ)
+      //  FIX BUG3: ลบ block ซ้ำออก
       // ════════════════════════════════════════
       return new Promise((resolve) => {
         canvas.toBlob((blob) => {
@@ -544,41 +526,38 @@ async function takeAttendancePhoto(data = {}) {
         }, 'image/png');
       });
     }
+
   }).then((result) => {
-    if (videoStream) {
-      videoStream.getTracks().forEach(track => track.stop());
-    }
+    // FIX BUG1: stopStream ใน willClose แล้ว ตรงนี้ไม่ต้องซ้ำ
 
     if (result.isConfirmed && result.value) {
       const { blob, file } = result.value;
       const previewUrl = URL.createObjectURL(blob);
 
       Swal.fire({
-        title: "แสดงภาพถ่าย",
+        title: 'แสดงภาพถ่าย',
         html: `
           <img src="${previewUrl}"
-               style="width:100%; border-radius: 8px; border: 1px solid #ccc; margin-bottom: 15px;" />
-
-          <div style="display: flex; gap: 10px; justify-content: center; margin-bottom: 15px;">
+               style="width:100%;border-radius:8px;border:1px solid #ccc;margin-bottom:15px;" />
+          <div style="display:flex;gap:10px;justify-content:center;margin-bottom:15px;">
             <a href="${previewUrl}" download="Attendance_${ref}.png"
-               style="flex:1; text-decoration: none; background: #6c757d; color: white;
-                      padding: 10px; border-radius: 5px; display: flex; align-items: center;
-                      justify-content: center; gap: 8px; font-weight: bold;">
+               style="flex:1;text-decoration:none;background:#6c757d;color:white;
+                      padding:10px;border-radius:5px;display:flex;align-items:center;
+                      justify-content:center;gap:8px;font-weight:bold;">
               <i class="fa-solid fa-download"></i> บันทึกภาพ
             </a>
-
             <button id="btnShareImg"
-               style="flex:1; background: #0d6efd; color: white; border: none;
-                      padding: 10px; border-radius: 5px; cursor: pointer;
-                      display: flex; align-items: center; justify-content: center;
-                      gap: 8px; font-weight: bold;">
+               style="flex:1;background:#0d6efd;color:white;border:none;
+                      padding:10px;border-radius:5px;cursor:pointer;
+                      display:flex;align-items:center;justify-content:center;
+                      gap:8px;font-weight:bold;">
               <i class="fa-solid fa-share-nodes"></i> แชร์ภาพ
             </button>
           </div>
-<p style="font-size:0.8rem;color:#cf1d1d;">
-  ภาพนี้ไม่ถูกส่งไปยังเซิร์ฟเวอร์ ใช้สำหรับบันทึกลงเครื่องหรือแชร์เท่านั้น
-</p>
-          <p style="font-size: 0.8rem; color: #666;">Ref: ${ref}</p>
+          <p style="font-size:0.8rem;color:#cf1d1d;">
+            ภาพนี้ไม่ถูกส่งไปยังเซิร์ฟเวอร์ ใช้สำหรับบันทึกลงเครื่องหรือแชร์เท่านั้น
+          </p>
+          <p style="font-size:0.8rem;color:#666;">Ref: ${ref}</p>
         `,
         showCancelButton: true,
         confirmButtonText: 'ปิด',
@@ -596,9 +575,7 @@ async function takeAttendancePhoto(data = {}) {
                     text: `ภาพ Check-in ของฉัน (Ref: ${ref})`
                   });
                 } catch (err) {
-                  if (err.name !== 'AbortError') {
-                    console.error('แชร์ไม่สำเร็จ:', err);
-                  }
+                  if (err.name !== 'AbortError') console.error('แชร์ไม่สำเร็จ:', err);
                 }
               } else {
                 Swal.fire({
@@ -612,7 +589,7 @@ async function takeAttendancePhoto(data = {}) {
           }
         }
       }).then((finalRes) => {
-        // คืนหน่วยความจำ Object URL
+        // FIX BUG2: revoke ทุก branch เสมอ (ทั้ง ปิด และ ถ่ายใหม่)
         URL.revokeObjectURL(previewUrl);
 
         if (finalRes.dismiss === Swal.DismissReason.cancel) {
