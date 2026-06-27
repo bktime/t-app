@@ -87,82 +87,85 @@ function loadMapImage(lat, lon, outputSize) {
     const xtileF = (lon + 180) / 360 * n;
     const ytileF = (1 - Math.log(Math.tan(latRad) + 1 / Math.cos(latRad)) / Math.PI) / 2 * n;
 
-    const baseX = Math.floor(xtileF);
-    const baseY = Math.floor(ytileF);
-    const fx = xtileF - baseX;
-    const fy = ytileF - baseY;
+    // tile กลางที่พิกัดอยู่ใน และ fraction ภายใน tile นั้น
+    const centerTileX = Math.floor(xtileF);
+    const centerTileY = Math.floor(ytileF);
+    const fx = xtileF - centerTileX;  // 0–1: ตำแหน่งแนวนอนใน tile กลาง
+    const fy = ytileF - centerTileY;  // 0–1: ตำแหน่งแนวตั้งใน tile กลาง
 
-    const T = 256;
-    const gridPx = T * 2;
+    const T = 256;           // ขนาด 1 tile px
+    const GRID = 3;          // โหลด 3×3 tiles → grid 768×768 px
+    const gridPx = T * GRID;
+    const total = GRID * GRID;
+
     const imgs = {};
     let done = 0;
 
-    for (let dy = 0; dy < 2; dy++) {
-      for (let dx = 0; dx < 2; dx++) {
+    for (let dy = 0; dy < GRID; dy++) {
+      for (let dx = 0; dx < GRID; dx++) {
         const key = `${dx}_${dy}`;
         const img = new Image();
         img.crossOrigin = 'Anonymous';
-
-        img.onload = () => {
-          imgs[key] = img;
-          if (++done === 4) compose();
-        };
-        img.onerror = () => {
-          if (++done === 4) compose();
-        };
-
-        img.src = `https://mt1.google.com/vt/lyrs=m&x=${baseX + dx}&y=${baseY + dy}&z=${zoom}`;
+        img.onload  = () => { imgs[key] = img; if (++done === total) compose(); };
+        img.onerror = () => {                  if (++done === total) compose(); };
+        // tile กลาง (dx=1,dy=1) = centerTile; offset dx-1, dy-1
+        img.src = `https://mt1.google.com/vt/lyrs=m&x=${centerTileX + dx - 1}&y=${centerTileY + dy - 1}&z=${zoom}`;
       }
     }
 
     function compose() {
-      // FIX P1: ไม่สร้าง canvas เมื่อไม่มีภาพเลย
       if (Object.keys(imgs).length === 0) { resolve(null); return; }
 
+      // รวม 3×3 tiles เป็น grid 768×768
       const grid = document.createElement('canvas');
-      grid.width = gridPx;
+      grid.width  = gridPx;
       grid.height = gridPx;
       const gc = grid.getContext('2d');
       gc.fillStyle = '#e0e0e0';
       gc.fillRect(0, 0, gridPx, gridPx);
-      for (let dy = 0; dy < 2; dy++)
-        for (let dx = 0; dx < 2; dx++)
+      for (let dy = 0; dy < GRID; dy++)
+        for (let dx = 0; dx < GRID; dx++)
           if (imgs[`${dx}_${dy}`])
             gc.drawImage(imgs[`${dx}_${dy}`], dx * T, dy * T);
 
+      // จุดพิกัดอยู่ที่ pixel (T + fx*T, T + fy*T) บน grid
+      // tile กลาง (index 1,1) เริ่มที่ pixel T,T
+      const centerPxX = T + fx * T;
+      const centerPxY = T + fy * T;
+
+      // crop outputSize×outputSize โดยให้ centerPx อยู่กลาง output
+      // srcX อยู่ใน [T-half, 2T-half] ≈ [186, 442] → ไม่ติดลบ ไม่เกิน 768 แน่นอน
+      const half = outputSize / 2;
+      const srcX = centerPxX - half;
+      const srcY = centerPxY - half;
+
       const out = document.createElement('canvas');
-      out.width = outputSize;
+      out.width  = outputSize;
       out.height = outputSize;
       const oc = out.getContext('2d');
       oc.imageSmoothingEnabled = true;
       oc.imageSmoothingQuality = 'high';
 
-      // FIX MAP CROP: ใช้ source-rect crop แทน destination-offset
-      // จุดพิกัดอยู่ที่ (fx*T, fy*T) บน grid 512×512
-      // crop ขนาด outputSize×outputSize (pixel ใน grid) จากตำแหน่งนั้น
-      // โดยให้จุดพิกัดอยู่ตรงกลาง output
-      const half = outputSize / 2;          // ครึ่งนึงของ output (px ใน grid ด้วย)
-      const srcX = fx * T - half;
-      const srcY = fy * T - half;
       oc.drawImage(grid,
-        srcX, srcY, outputSize, outputSize, // source: crop ขนาด output จาก grid
-        0,    0,    outputSize, outputSize  // destination: เต็ม canvas
+        srcX, srcY, outputSize, outputSize,
+        0,    0,    outputSize, outputSize
       );
 
+      // วาด marker จุดแดงตรงกลาง
       const mr = Math.max(5, Math.round(outputSize / 15));
-      oc.fillStyle = '#ff0000';
+      oc.fillStyle   = '#e53935';
       oc.strokeStyle = '#ffffff';
-      oc.lineWidth = Math.max(2, Math.round(outputSize / 40));
+      oc.lineWidth   = Math.max(2, Math.round(outputSize / 40));
       oc.beginPath();
       oc.arc(outputSize / 2, outputSize / 2, mr, 0, Math.PI * 2);
       oc.fill();
       oc.stroke();
 
-      // FIX P2: resolve canvas โดยตรง ไม่ต้องแปลง toDataURL → new Image อีกรอบ
       resolve(out);
     }
   });
 }
+
 
 // ==========================================
 // 4. ฟังก์ชันดึงชื่อสถานที่จากพิกัด (Reverse Geocoding)
