@@ -45,6 +45,39 @@ await env.DB.prepare(`
   }
 }
 
+// export async function onRequestDelete(context) {
+//   const { request, env } = context;
+
+//   const token = extractToken(request);
+//   const session = await authUser(env, token);
+//   if (!session) return unauthorized();
+
+//   let body = {};
+//   try {
+//     body = await request.json();
+//   } catch {
+//     // body ว่างก็ได้ — ถือว่าลบทุก token ของ user
+//   }
+
+//   const { fcm_token } = body;
+
+//   if (fcm_token) {
+//     // ลบเฉพาะ device นี้
+// // DELETE เฉพาะ token นี้
+// await env.DB.prepare(`
+//   DELETE FROM fcm_tokens
+//   WHERE token = ?1 AND uuid = ?2
+// `).bind(fcm_token, session.uuid).run();
+
+// // DELETE ทุก token (logout)
+// await env.DB.prepare(`
+//   DELETE FROM fcm_tokens WHERE uuid = ?1
+// `).bind(session.uuid).run();
+//   }
+
+//   return Response.json({ success: true }, { headers: CORS });
+// }
+
 export async function onRequestDelete(context) {
   const { request, env } = context;
 
@@ -63,16 +96,15 @@ export async function onRequestDelete(context) {
 
   if (fcm_token) {
     // ลบเฉพาะ device นี้
-// DELETE เฉพาะ token นี้
-await env.DB.prepare(`
-  DELETE FROM fcm_tokens
-  WHERE token = ?1 AND uuid = ?2
-`).bind(fcm_token, session.uuid).run();
-
-// DELETE ทุก token (logout)
-await env.DB.prepare(`
-  DELETE FROM fcm_tokens WHERE uuid = ?1
-`).bind(session.uuid).run();
+    await env.DB.prepare(`
+      DELETE FROM fcm_tokens
+      WHERE token = ?1 AND uuid = ?2
+    `).bind(fcm_token, session.uuid).run();
+  } else {
+    // ไม่ระบุ token → ลบทุก token ของ user (logout ทุกเครื่อง)
+    await env.DB.prepare(`
+      DELETE FROM fcm_tokens WHERE uuid = ?1
+    `).bind(session.uuid).run();
   }
 
   return Response.json({ success: true }, { headers: CORS });
