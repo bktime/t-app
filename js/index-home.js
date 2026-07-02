@@ -727,7 +727,13 @@ if ('serviceWorker' in navigator) {
       loadNotifications();
 
       bindLogout();
-      registerFCMToken();
+      bindLogout();
+      try {
+        const p = registerFCMToken();
+        if (p?.catch) p.catch(e => console.warn('[registerFCM]', e));
+      } catch (e) {
+        console.warn('[registerFCM]', e);
+      }
     }
 
     function renderLoggedOut() {
@@ -804,7 +810,7 @@ async function logout(logoutAll = false) {
       }
     }
 
-        await unregisterFCMToken();
+      try { await unregisterFCMToken(); } catch (e) { console.warn('[unregisterFCM]', e); }
 
     const res = await fetch(`${API_BASE}/user/logout`, {
       method: 'POST',
