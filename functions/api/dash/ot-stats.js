@@ -69,7 +69,7 @@ export async function onRequestGet({ request, env }) {
           COUNT(*)                                         AS count,
           COALESCE(SUM(o.ot_hours), 0)                    AS total_hours,
           COALESCE(SUM(o.ot_days), 0)                     AS total_days,
-          COALESCE(SUM(o.amount_hour + COALESCE(o.amount_day, 0)), 0) AS total_amount
+          SUM(COALESCE(o.amount_hour, 0) + COALESCE(o.amount_day, 0)) AS total_amount
         FROM attendance_overtime o
         WHERE o.ot_date BETWEEN ? AND ? AND o.supervisor_status <> 'cancelled'
           AND o.uuid IN (${inUUIDs})
