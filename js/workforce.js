@@ -17,6 +17,13 @@ class WorkforceDashboard {
       return;
     }
 
+      // ตรวจสอบ Token ก่อนเริ่มทำงาน
+  this.token = localStorage.getItem('auth_token');
+  if (!this.token) {
+    console.log('[WorkforceDashboard] auth_token not found. Skip initialization.');
+    return;
+  }
+
     this.current = 0;
     this.interval = null;
     this.slides = [];

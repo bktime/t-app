@@ -24,8 +24,10 @@
                         
     const isDismissed = localStorage.getItem('apple_banner_dismissed') === '1';
 
+    const token = localStorage.getItem('auth_token');
+
     // เงื่อนไข: ไม่แสดงถ้าไม่ใช่อุปกรณ์ Apple, ไม่ใช่ Safari, ติดตั้งแล้ว หรือเคยกดปิดถาวร
-    if (!isAppleDevice || !isSafari || isInstalled || isDismissed) return;
+    if (!isAppleDevice || !isSafari || isInstalled || isDismissed || !token) return;
 
     // ลบ banner เก่าถ้ามี
     document.getElementById('apple-install-banner')?.remove();

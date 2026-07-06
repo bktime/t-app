@@ -18,8 +18,9 @@
     const isInstalled =
       window.matchMedia('(display-mode: standalone)').matches;
     const dismissedAt = localStorage.getItem('android_banner_dismissed');
+    const token = localStorage.getItem('auth_token');
 
-    if (isInstalled) return;
+    if (isInstalled || !token) return;
     if (dismissedAt) {
       const daysSince =
         (Date.now() - parseInt(dismissedAt)) / (1000 * 60 * 60 * 24);

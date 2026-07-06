@@ -1,30 +1,48 @@
 // reminder-scheduler.js
 class ReminderScheduler {
   constructor() {
-    this.morningHour = 7;
+    this.morningHour = 6;
     this.morningMinute = 10;
     this.afternoonHour = 16;
     this.afternoonMinute = 32;
+
+    // ⏰ ช่วงเวลาแจ้งเตือนเข้างาน / ออกงาน (configurable)
+    this.morningWindowStartOffset = -1;   // เริ่มก่อน 1 นาที = 06:09
+    this.morningEndHour = 8;
+    this.morningEndMinute = 29;           // สิ้นสุด 08:29
+
+    this.afternoonWindowStartOffset = -1; // เริ่มก่อน 1 นาที = 16:31
+    this.afternoonEndHour = 17;
+    this.afternoonEndMinute = 50;         // สิ้นสุด 17:50
+
     // ⏰ ช่วงเวลาแจ้งเตือน pending (ทุก 30 นาที ในช่วงนี้)
     this.pendingStartHour = 9;   // เริ่ม 09:00
-    this.pendingEndHour   = 12;  // จบ 12:00 (ไม่รวม 12:00 เป็นต้นไป)
+    this.pendingEndHour   = 12;  // จบ 12:00 (ไม่รวม 12:00)
+
     this.checkInterval = null;
+    this._visibilityHandler = null;
     this._attendanceCache = null;
     this._attendanceCacheDate = null;
   }
 
-  _getTodayKey(type) {
-    const today = new Date().toISOString().slice(0, 10);
-    return `reminded_${type}_${today}`;
+  // ─── ใช้ local date (ไม่ใช่ UTC) ทุกที่ ───
+  _getLocalDateStr(date = new Date()) {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const d = String(date.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
   }
 
-  // ─── key รายครึ่งชั่วโมง เช่น reminded_pending_slot_2025-01-15_09:00 ───
+  _getTodayKey(type) {
+    return `reminded_${type}_${this._getLocalDateStr()}`;
+  }
+
   _getPendingSlotKey() {
     const now = new Date();
-    const date = now.toISOString().slice(0, 10);
-    const h    = now.getHours();
+    const date = this._getLocalDateStr(now);
+    const h = now.getHours();
     const slot = now.getMinutes() < 30 ? '00' : '30';
-    return `reminded_pending_slot_${date}_${String(h).padStart(2,'0')}:${slot}`;
+    return `reminded_pending_slot_${date}_${String(h).padStart(2, '0')}:${slot}`;
   }
 
   _hasNotifiedThisSlot() {
@@ -61,14 +79,23 @@ class ReminderScheduler {
     }
   }
 
+  // ─── FIX #1: แยกวันที่ออกจาก key แล้วเปรียบเทียบ date จริงๆ ───
   _cleanOldKeys() {
     try {
       const cutoff = new Date();
       cutoff.setDate(cutoff.getDate() - 3);
-      const cutoffStr = cutoff.toISOString().slice(0, 10);
+      const cutoffStr = this._getLocalDateStr(cutoff);
+
       Object.keys(localStorage)
-        .filter(k => (k.startsWith('reminded_')) && k < `reminded_z_${cutoffStr}`)
-        .forEach(k => localStorage.removeItem(k));
+        .filter(k => k.startsWith('reminded_'))
+        .forEach(k => {
+          // ดึง date string ออกจาก key
+          // pattern: reminded_{type}_{YYYY-MM-DD} หรือ reminded_pending_slot_{YYYY-MM-DD}_{HH:MM}
+          const match = k.match(/(\d{4}-\d{2}-\d{2})/);
+          if (match && match[1] < cutoffStr) {
+            localStorage.removeItem(k);
+          }
+        });
     } catch {
       // ignore
     }
@@ -98,15 +125,22 @@ class ReminderScheduler {
   }
 
   startChecking() {
+    // ป้องกัน double-interval
+    if (this.checkInterval) {
+      clearInterval(this.checkInterval);
+    }
+
     this.checkInterval = setInterval(() => {
       this.checkAndNotify();
     }, 30 * 1000);
 
-    document.addEventListener('visibilitychange', () => {
+    // FIX #5: เก็บ reference เพื่อลบได้ภายหลัง
+    this._visibilityHandler = () => {
       if (!document.hidden) {
         this.checkAndNotify();
       }
-    });
+    };
+    document.addEventListener('visibilitychange', this._visibilityHandler);
   }
 
   async checkAndNotify() {
@@ -114,37 +148,45 @@ class ReminderScheduler {
     const currentMinutes = now.getHours() * 60 + now.getMinutes();
 
     // ─── เตือนลงเวลาเข้างาน ───
-    const morningStart = this.morningHour * 60 + (this.morningMinute - 5);
-    const morningEnd   = this.morningHour * 60 + (this.morningMinute + 30);
+    const morningStart = this.morningHour * 60 + this.morningMinute + this.morningWindowStartOffset;
+    const morningEnd   = this.morningEndHour * 60 + this.morningEndMinute;
 
     if (currentMinutes >= morningStart && currentMinutes <= morningEnd) {
       if (!this._hasNotifiedToday('morning')) {
-        const checkedIn = await this._hasCheckedInToday();
-        if (!checkedIn) {
-          this.sendReminder('morning', 'เข้างาน', 'กรุณากดลงเวลาเข้างานวันนี้ครับ', 'reminder-morning');
+        // FIX #3: แยกสามกรณี — ลงเวลาแล้ว / ยังไม่ลง / ไม่ทราบ (API error)
+        const checkResult = await this._hasCheckedInToday();
+        if (checkResult === true) {
+          // ลงเวลาแล้ว — ไม่ต้องเตือน แต่ mark เพื่อไม่เช็คซ้ำ
+          this._markNotifiedToday('morning');
+        } else if (checkResult === false) {
+          // ยังไม่ลงเวลา — เตือน
+          await this.sendReminder('morning', 'เข้างาน', 'กรุณากดลงเวลาเข้างานวันนี้ครับ', 'reminder-morning');
+          this._markNotifiedToday('morning');
         }
-        this._markNotifiedToday('morning');
+        // checkResult === null (API error) → ไม่ mark จะได้ลองใหม่รอบถัดไป
       }
     }
 
     // ─── เตือนลงเวลาออกงาน ───
-    const afternoonStart = this.afternoonHour * 60 + (this.afternoonMinute - 1);
-    const afternoonEnd   = this.afternoonHour * 60 + (this.afternoonMinute + 30);
+    const afternoonStart = this.afternoonHour * 60 + this.afternoonMinute + this.afternoonWindowStartOffset;
+    const afternoonEnd   = this.afternoonEndHour * 60 + this.afternoonEndMinute;
 
     if (currentMinutes >= afternoonStart && currentMinutes <= afternoonEnd) {
       if (!this._hasNotifiedToday('afternoon')) {
-        const checkedOut = await this._hasCheckedOutToday();
-        if (!checkedOut) {
-          this.sendReminder('afternoon', 'ใกล้เลิกงาน', 'อย่าลืมลงเวลาออกงานก่อนกลับบ้านนะครับ', 'reminder-afternoon');
+        const checkResult = await this._hasCheckedOutToday();
+        if (checkResult === true) {
+          this._markNotifiedToday('afternoon');
+        } else if (checkResult === false) {
+          await this.sendReminder('afternoon', 'ใกล้เลิกงาน', 'อย่าลืมลงเวลาออกงานก่อนกลับบ้านนะครับ', 'reminder-afternoon');
+          this._markNotifiedToday('afternoon');
         }
-        this._markNotifiedToday('afternoon');
+        // null → ลองใหม่รอบถัดไป
       }
     }
 
     // ─── เตือน pending ทุก 30 นาที ในช่วง 09:00–12:00 ───
-    // slot = ครึ่งชั่วโมงปัจจุบัน (00 หรือ 30) → เตือนได้ครั้งละ 1 ครั้งต่อ slot
-    const pendingStartMin = this.pendingStartHour * 60;  // 09:00 = 540
-    const pendingEndMin   = this.pendingEndHour   * 60;  // 12:00 = 720
+    const pendingStartMin = this.pendingStartHour * 60;
+    const pendingEndMin   = this.pendingEndHour * 60;
 
     if (currentMinutes >= pendingStartMin && currentMinutes < pendingEndMin) {
       if (!this._hasNotifiedThisSlot()) {
@@ -155,10 +197,10 @@ class ReminderScheduler {
   }
 
   // ============================================================
-  // ✅ ดึงข้อมูลจาก API (1 ครั้ง + cache)
+  // ✅ ดึงข้อมูลจาก API (1 ครั้ง + cache รายวัน)
   // ============================================================
   async _fetchTodayAttendance() {
-    const today = new Date().toISOString().slice(0, 10);
+    const today = this._getLocalDateStr(); // FIX #2: local date
 
     if (this._attendanceCache && this._attendanceCacheDate === today) {
       return this._attendanceCache;
@@ -226,15 +268,16 @@ class ReminderScheduler {
     }
   }
 
+  // FIX #3: คืน true / false / null (null = ไม่ทราบผล)
   async _hasCheckedInToday() {
     const data = await this._fetchTodayAttendance();
-    if (!data) return false;
+    if (!data) return null;
     return data.has_checkin === true;
   }
 
   async _hasCheckedOutToday() {
     const data = await this._fetchTodayAttendance();
-    if (!data) return false;
+    if (!data) return null;
     return data.has_checkout === true;
   }
 
@@ -248,18 +291,23 @@ class ReminderScheduler {
 
       // ─── 1. คำขอรออนุมัติ (reviewer) ───
       let pendCount = 0;
+      let pendOk = false;
       try {
         const res = await fetch('/api/attendance/request-manage?status=pending&limit=50', {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         if (res.ok) {
           const d = await res.json();
-          if (d.success) pendCount = (d.data || []).length;
+          if (d.success) {
+            pendCount = (d.data || []).length;
+            pendOk = true;
+          }
         }
       } catch (_) {}
 
       // ─── 2. รอรับรอง (supervisor) ───
       let supCount = 0;
+      let supOk = false;
       try {
         const res = await fetch('/api/attendance/supervisor-pending?status=pending&limit=50', {
           headers: { 'Authorization': `Bearer ${token}` }
@@ -267,9 +315,22 @@ class ReminderScheduler {
         if (res.ok) {
           const text = await res.text();
           const d = JSON.parse(text);
-          if (d.success) supCount = (d.data || []).length;
+          if (d.success) {
+            supCount = (d.data || []).length;
+            supOk = true;
+          }
         }
       } catch (_) {}
+
+      // FIX: ถ้า API ทั้งคู่ล้มเหลว ไม่ควร mark slot ว่าแจ้งแล้ว
+      if (!pendOk && !supOk) {
+        console.warn('⚠️ Pending check: API ทั้งสองล้มเหลว จะลองใหม่รอบถัดไป');
+        // ยกเลิก mark ของ slot นี้เพื่อลองใหม่
+        try {
+          localStorage.removeItem(this._getPendingSlotKey());
+        } catch {}
+        return;
+      }
 
       const total = pendCount + supCount;
       if (total === 0) {
@@ -277,9 +338,6 @@ class ReminderScheduler {
         return;
       }
 
-      // ─── แยก tag ตามประเภท → SW เปิดหน้าถูกต้อง ───
-      // reminder-pending-sup → supervisor.html
-      // reminder-pending-req → requests.html
       if (supCount > 0) {
         const supTitle = supCount === total
           ? `รอรับรอง ${supCount} รายการ`
@@ -287,19 +345,23 @@ class ReminderScheduler {
         const supBody = supCount === total
           ? 'กรุณาตรวจสอบและรับรองเวลาลงงาน'
           : `${supCount} รอรับรอง · ${pendCount} รออนุมัติ`;
-        this.sendReminder('pending-sup', supTitle, supBody, 'reminder-pending-sup');
+        await this.sendReminder('pending-sup', supTitle, supBody, 'reminder-pending-sup');
       }
 
       if (pendCount > 0) {
         const reqTitle = `คำขอรออนุมัติ ${pendCount} รายการ`;
         const reqBody  = 'กรุณาตรวจสอบและอนุมัติคำขอ';
-        this.sendReminder('pending-req', reqTitle, reqBody, 'reminder-pending-req');
+        await this.sendReminder('pending-req', reqTitle, reqBody, 'reminder-pending-req');
       }
 
       console.log(`✅ Pending reminder sent: pend=${pendCount} sup=${supCount}`);
 
     } catch (err) {
       console.error('❌ _checkPendingAndNotify error:', err);
+      // ยกเลิก mark slot เพื่อลองใหม่
+      try {
+        localStorage.removeItem(this._getPendingSlotKey());
+      } catch {}
     }
   }
 
@@ -331,7 +393,13 @@ class ReminderScheduler {
 
   async registerPeriodicSync() {
     try {
-      const registration = await navigator.serviceWorker.ready;
+      // FIX #6: เพิ่ม timeout ป้องกันค้างถ้าไม่มี SW
+      const registration = await Promise.race([
+        navigator.serviceWorker.ready,
+        new Promise((_, reject) =>
+          setTimeout(() => reject(new Error('SW ready timeout')), 5000)
+        )
+      ]);
 
       if ('periodicSync' in registration) {
         const status = await navigator.permissions.query({
@@ -350,13 +418,19 @@ class ReminderScheduler {
         console.warn('⚠️ Periodic Background Sync not supported');
       }
     } catch (err) {
-      console.warn('⚠️ Periodic Sync registration failed:', err);
+      console.warn('⚠️ Periodic Sync registration failed:', err.message);
     }
   }
 
   destroy() {
     if (this.checkInterval) {
       clearInterval(this.checkInterval);
+      this.checkInterval = null;
+    }
+    // FIX #5: ลบ visibility listener
+    if (this._visibilityHandler) {
+      document.removeEventListener('visibilitychange', this._visibilityHandler);
+      this._visibilityHandler = null;
     }
   }
 }
