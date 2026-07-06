@@ -263,9 +263,9 @@ td.mono{font-family:'JetBrains Mono',monospace;font-size:.7rem;}
   .mt td { color: #000 !important; border: 1px solid #ccc !important; padding: 5px 8px !important; }
   .mt tr:hover td { background: transparent !important; }
   .pill { display: none !important; }
-  .th-col-sig1::after { content: 'ลายเซ็น(มา)'; }
+  .th-col-sig1::after { content: 'ลายเซ็น'; }
   .th-col-sig1 { font-size: 0 !important; }
-  .th-col-sig2::after { content: 'ลายเซ็น(กลับ)'; }
+  .th-col-sig2::after { content: 'ลายเซ็น'; }
   .th-col-sig2 { font-size: 0 !important; }
   .sig-col .pill { display: none !important; }
   td img.sig-img { display: block !important; max-width: 72px !important; max-height: 36px !important; object-fit: contain !important; margin: auto !important; }
@@ -699,6 +699,24 @@ function canFinanceEdit() {
   return role === 'admin' || role === 'finance';
 }
 
+/* ══════ ฟังก์ชันแปลงชื่อย่อหน่วยงานเป็นชื่อเต็ม ══════ */
+function expandAffName(shortName) {
+  if (!shortName) return shortName;
+  const prefixes = [
+    ['สสจ.', 'สำนักงานสาธารณสุขจังหวัด'],
+    ['สสอ.', 'สำนักงานสาธารณสุขอำเภอ'],
+    ['รพ.สต.', 'โรงพยาบาลส่งเสริมสุขภาพตำบล'],
+    ['รพ.', 'โรงพยาบาล']
+  ];
+  for (const [prefix, full] of prefixes) {
+    if (shortName.startsWith(prefix)) {
+      return full + shortName.slice(prefix.length);
+    }
+  }
+  return shortName;
+}
+
+
 async function loadAll() {
   const month = $('monthIn').value || thisMonthISO();
   $('monthIn').value = month;
@@ -750,10 +768,10 @@ function getAffLabel() {
   const sel = $('selAff');
   const val = sel?.value;
   if(val) {
-    const opt = sel.querySelector(`option[value="${val}"]`);
+    const opt = sel.options[sel.selectedIndex]; // <--- เปลี่ยนมาใช้ selectedIndex แทน querySelector
     if(opt) return opt.textContent.trim();
   }
-  return metaInfo.affiliation || '';
+  return expandAffName(metaInfo.affiliation) || ''; // <--- เพิ่ม expandAffName ครอบ
 }
 
 function populateFilters(data) {
@@ -766,12 +784,26 @@ function populateFilters(data) {
   allDepartments = data?.departments || [];
   if(canAff) {
     affSel.innerHTML = '<option value="">— ทุกหน่วยงาน —</option>';
+    let foundPrev = false;
     (data?.affiliations || []).forEach(a => {
       const o = document.createElement('option');
-      o.value = a.aff_code; o.textContent = a.affiliation || a.aff_code;
-      if(a.aff_code === prevAff) o.selected = true;
+      o.value = a.aff_code; 
+      o.textContent = expandAffName(a.affiliation || a.aff_code); // <--- เพิ่ม expandAffName ครอบ
+      if(a.aff_code === prevAff) { 
+        o.selected = true; 
+        foundPrev = true; 
+      }
       affSel.appendChild(o);
-    });
+    }); 
+    
+    // ป้องกันตัวเลือกหายเมื่อ API ไม่ส่งรายการนั้นกลับมา
+    if (prevAff && !foundPrev) {
+      const o = document.createElement('option');
+      o.value = prevAff;
+      o.textContent = expandAffName(metaInfo.affiliation || prevAff); // <--- เพิ่ม expandAffName ครอบ
+      o.selected = true;
+      affSel.appendChild(o);
+    }
   }
   if(canDep) renderDepOptions(prevDep);
 }
@@ -792,6 +824,14 @@ function renderDepOptions(keepVal='') {
 function filterByAff() {
   $('selDep').value = '';
   renderDepOptions();
+  
+  // === เพิ่มส่วนนี้เพื่ออัปเดตชื่อหน่วยงานตามที่เลือกจาก Dropdown ===
+  const monthLabel = fmtThaiMonth($('monthIn').value || thisMonthISO());
+  const currentAffLabel = getAffLabel(); 
+  $('tbSub').textContent = `${monthLabel} · ${currentAffLabel || '—'}`;
+  $('phAff').textContent = currentAffLabel || 'ทุกหน่วยงาน';
+  // ========================================================
+
   applyFilter();
 }
 

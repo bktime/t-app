@@ -164,73 +164,134 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--tx);min-h
 .empty-state p{font-size:.8rem;}
 
 /* ══════════════════════════════
-   ตาราง OT Grid (แก้ Bug การแสดงผล)
+   ตาราง OT Grid
    ══════════════════════════════ */
-.tbl-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+
+/* tbl-scroll: เหมือน .tbl-wrap ของ attendance-monthly */
+.tbl-scroll{
+  overflow:auto;
+  max-height:calc(100vh - 360px);
+  -webkit-overflow-scrolling:touch;
+}
 
 .ot-grid{
   width:100%;
-  border-collapse:separate; /* แก้บั๊กเส้นขอบหายเวลา scroll */
-  border-spacing:0; 
+  border-collapse:collapse;
   font-family:'Sarabun',sans-serif;
   font-size:.72rem;
-  table-layout:fixed; /* บังคับให้ช่องมีขนาดตายตัวตามที่เรากำหนด */
+  table-layout:fixed;
 }
-.ot-grid th, .ot-grid td{
-  padding:.35rem .4rem;
-  border-bottom:1px solid var(--bd);
-  border-right:1px solid var(--bd);
-  color:var(--tx2);vertical-align:middle;
-  background:var(--card-s);
-}
-.ot-grid thead th{
+
+.ot-grid th{
   font-family:'Kanit',sans-serif;font-size:.58rem;font-weight:600;
   letter-spacing:.06em;text-transform:uppercase;
-  color:var(--tx3);background:var(--sur);
-  text-align:center;white-space:nowrap;
-  position:sticky;top:0;z-index:3;
+  color:var(--tx3);
+  text-align:center;padding:.4rem .3rem;
+  border-bottom:1px solid var(--bd);
+  white-space:nowrap;
+  position:sticky;top:0;z-index:5;
+  background:var(--card-s);
 }
 
-/* Left Sticky Columns */
-.ot-grid .col-no{position:sticky;left:0;width:40px;min-width:40px;z-index:2;text-align:center;color:var(--tx3);font-family:'JetBrains Mono',monospace;font-size:.68rem;}
-.ot-grid .col-name{position:sticky;left:40px;width:160px;min-width:160px;z-index:2;font-weight:600;color:var(--tx);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.ot-grid .col-pos{position:sticky;left:200px;width:140px;min-width:140px;z-index:2;font-size:.68rem;color:var(--tx3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-
-/* ทำให้หัวตารางฝั่งซ้ายติด layer บนสุด */
-.ot-grid thead .col-no,.ot-grid thead .col-name,.ot-grid thead .col-pos{z-index:4;}
-
-/* Day Columns */
-.ot-grid .col-day{
-  text-align:center;font-size:.65rem;padding:.2rem .1rem;
-  width:30px;min-width:30px;max-width:36px;cursor:default;overflow:hidden;
+.ot-grid td{
+  font-size:.72rem;color:var(--tx2);
+  padding:.35rem .3rem;
+  border-bottom:1px solid rgba(255,255,255,.025);
+  border-right:1px solid rgba(255,255,255,.04);
+  text-align:center;
+  vertical-align:middle;
+  transition:background var(--T);
 }
-.ot-grid .col-day.has-ot{background:var(--embg);cursor:pointer;}
-.ot-grid .col-day.has-ot:hover{background:var(--emg);}
-.ot-grid .col-day.is-holiday-col{background:var(--ambg);}
-.ot-grid .col-day.has-ot.is-holiday-col{background:var(--ambg);}
-.ot-grid .col-day.has-ot.is-holiday-col:hover{background:var(--amb);}
-
-/* Right Sticky Columns (กำหนดค่าความกว้างและตำแหน่งแบบตายตัวเพื่อแก้บั๊กคอลัมน์เลื่อน) */
-.ot-grid .col-sum-normal{position:sticky;right:490px;width:70px;min-width:70px;z-index:2;text-align:center;font-family:'JetBrains Mono',monospace;color:var(--cy);}
-.ot-grid .col-sum-holiday{position:sticky;right:420px;width:70px;min-width:70px;z-index:2;text-align:center;font-family:'JetBrains Mono',monospace;color:var(--am);}
-.ot-grid .col-amount{position:sticky;right:320px;width:100px;min-width:100px;z-index:2;text-align:center;font-family:'JetBrains Mono',monospace;color:var(--em);}
-.ot-grid .col-date-recv{position:sticky;right:220px;width:100px;min-width:100px;z-index:2;text-align:center;}
-.ot-grid .col-sig{position:sticky;right:100px;width:120px;min-width:120px;z-index:2;text-align:center;}
-.ot-grid .col-note-fin{position:sticky;right:0;width:100px;min-width:100px;z-index:2;text-align:center;}
-
-/* ทำให้หัวตารางฝั่งขวาติด layer บนสุด */
-.ot-grid thead .col-sum-normal,.ot-grid thead .col-sum-holiday,.ot-grid thead .col-amount,
-.ot-grid thead .col-date-recv,.ot-grid thead .col-sig,.ot-grid thead .col-note-fin{z-index:4;}
-
-/* Hover Effect */
+[data-theme="light"] .ot-grid td{
+  border-bottom-color:rgba(0,0,0,.03);
+  border-right-color:rgba(0,0,0,.04);
+}
+.ot-grid tr:last-child td{border-bottom:none;}
 .ot-grid tbody tr:hover td{background:var(--sur);}
-.ot-grid tbody tr:hover .col-fix,.ot-grid tbody tr:hover .col-sum-normal,
-.ot-grid tbody tr:hover .col-sum-holiday,.ot-grid tbody tr:hover .col-amount,
-.ot-grid tbody tr:hover .col-date-recv,.ot-grid tbody tr:hover .col-sig,
-.ot-grid tbody tr:hover .col-note-fin{background:var(--sur2)!important;}
 
-/* Row Total */
-.ot-grid tr.row-total td{background:var(--sur2)!important;font-family:'Kanit',sans-serif;font-weight:700;color:var(--tx)!important;border-top:2px solid var(--bd2);}
+/* ── Sticky Left/Right pattern (เหมือน .sticky-left / .sticky-right ของ attendance-monthly) ── */
+.ot-grid th.sticky-left, .ot-grid td.sticky-left,
+.ot-grid th.sticky-right, .ot-grid td.sticky-right{
+  position:sticky;
+}
+.ot-grid th.sticky-left, .ot-grid th.sticky-right{
+  top:0;
+  z-index:15;
+  background:var(--card-s);
+}
+.ot-grid td.sticky-left, .ot-grid td.sticky-right{
+  z-index:2;
+  background:var(--card-s);
+}
+.ot-grid tr:hover td.sticky-left,
+.ot-grid tr:hover td.sticky-right{
+  background:var(--bg3);
+}
+[data-theme="light"] .ot-grid td.sticky-left,
+[data-theme="light"] .ot-grid td.sticky-right{
+  background:var(--card-s);
+}
+[data-theme="light"] .ot-grid tr:hover td.sticky-left,
+[data-theme="light"] .ot-grid tr:hover td.sticky-right{
+  background:var(--bg3);
+}
+
+/* ── Left Sticky Column widths ── */
+.ot-grid .col-no   {width:40px;min-width:40px;text-align:center;color:var(--tx3);font-family:'JetBrains Mono',monospace;font-size:.68rem;}
+.ot-grid .col-name {width:160px;min-width:160px;font-weight:600;color:var(--tx);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ot-grid .col-pos  {width:140px;min-width:140px;font-size:.68rem;color:var(--tx3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+
+/* ── Day Columns ── */
+.ot-grid .col-day{
+  text-align:center;padding:.2rem .1rem;
+  width:30px;min-width:30px;max-width:36px;
+  cursor:default;overflow:hidden;
+}
+.ot-grid .col-day div{font-size:.62rem;font-weight:700;}
+.ot-grid .col-day small{display:block;margin-top:1px;font-size:.55rem;font-weight:400;color:var(--tx3);}
+.ot-grid thead th.col-day{color:var(--tx3);}
+.ot-grid thead th.col-day.is-holiday-col{color:var(--am);}
+.ot-grid td.col-day.is-holiday-col{background:rgba(251,191,36,.04);}
+.ot-grid tbody tr:hover td.col-day.is-holiday-col{background:rgba(251,191,36,.07);}
+.ot-grid td.col-day.has-ot{background:var(--embg);cursor:pointer;}
+.ot-grid td.col-day.has-ot:hover{background:var(--emg);}
+.ot-grid td.col-day.has-ot.is-holiday-col{background:var(--ambg);}
+.ot-grid td.col-day.has-ot.is-holiday-col:hover{background:var(--amb);}
+
+/* ── Right Sticky Column widths ── */
+.ot-grid .col-sum-normal  {width:50px;min-width:50px;text-align:center;font-family:'JetBrains Mono',monospace;color:var(--cy);}
+.ot-grid .col-sum-holiday {width:50px;min-width:50px;text-align:center;font-family:'JetBrains Mono',monospace;color:var(--am);}
+.ot-grid .col-amount      {width:80px;min-width:80px;text-align:center;font-family:'JetBrains Mono',monospace;color:var(--em);}
+.ot-grid .col-date-recv   {width:90px;min-width:90px;text-align:center;}
+.ot-grid .col-sig         {width:120px;min-width:120px;text-align:center;}
+.ot-grid .col-note-fin    {width:70px;min-width:70px;text-align:center;}
+
+/* ── Sum separator เส้นแบ่งฝั่งขวา (เหมือน .sum-sep) ── */
+.ot-grid th.sum-sep,
+.ot-grid td.sum-sep{border-left:2px solid var(--bd2)!important;}
+
+/* ── Row Total ── */
+.ot-grid tr.row-total td{
+  background:var(--sur2)!important;
+  font-family:'Kanit',sans-serif;font-weight:700;
+  color:var(--tx)!important;
+  border-top:2px solid var(--bd2);
+}
+.ot-grid tr.row-total td.sticky-left,
+.ot-grid tr.row-total td.sticky-right{
+  background:var(--sur2)!important;
+}
+
+/* ── Mobile: ปิด sticky (เหมือน attendance-monthly) ── */
+@media(max-width:768px){
+  .ot-grid th.sticky-left,.ot-grid td.sticky-left,
+  .ot-grid th.sticky-right,.ot-grid td.sticky-right{
+    position:static!important;
+    box-shadow:none!important;
+    z-index:auto!important;
+  }
+  .tbl-scroll{max-height:none;}
+}
 
 .day-time{
   font-family:'JetBrains Mono',monospace;font-size:.58rem;
@@ -259,6 +320,15 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--tx);min-h
 .dpo-lbl{color:var(--tx3);}
 .dpo-val{font-weight:600;color:var(--tx);font-family:'JetBrains Mono',monospace;}
 
+.sign-certify {
+  grid-column: 1 / -1;
+  text-align: left;
+  font-size: .72rem;
+  color: var(--tx2);
+  margin-bottom: .25rem;
+}
+
+
 /* ══════════════════
    PRINT STYLES
    ══════════════════ */
@@ -273,6 +343,12 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--tx);min-h
   .panel{border:none!important;background:transparent!important;box-shadow:none!important;overflow:visible!important;}
   .ph{padding:.5rem 0!important;}
   .print-header{display:block!important;}
+    .sign-certify {
+    color: #000 !important;
+    font-size: 10pt !important;
+    margin-bottom: .5rem !important;
+     padding-left: 2cm !important;
+  }
 
   @page{size:landscape;margin:6mm 8mm;}
 
@@ -287,11 +363,17 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--tx);min-h
     font-family: 'Kanit', sans-serif; color: #000; text-align: center;
   }
 
-  .tbl-scroll{overflow:visible!important;height:auto!important;}
+  .tbl-scroll{overflow:visible!important;max-height:none!important;}
   .ot-grid{
     min-width:0!important;width:100%!important;table-layout:auto!important;
     font-family:'Sarabun',sans-serif!important;font-size:9pt!important;
     border-collapse:collapse!important;
+  }
+  .ot-grid th.sticky-left,.ot-grid td.sticky-left,
+  .ot-grid th.sticky-right,.ot-grid td.sticky-right{
+    position:static!important;
+    box-shadow:none!important;
+    z-index:auto!important;
   }
   .ot-grid th{
     font-size:7pt!important;background:#f5f5f5!important;
@@ -413,10 +495,12 @@ body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--tx);min-h
         รวมเงินจ่ายทั้งสิ้น (อักษร) <span id="printTotalTxt">—</span>
       </div>
 
-      <div class="sign-section" id="signSection">
-        <div class="sign-box"><div class="sign-role">ผู้รับรองการปฏิบัติงาน</div><div style="margin-bottom:2.5rem"></div><div class="sign-line">ลงชื่อ .................................................</div></div>
-        <div class="sign-box"><div class="sign-role">ผู้จ่ายเงิน</div><div style="margin-bottom:2.5rem"></div><div class="sign-line">ลงชื่อ .................................................</div></div>
-      </div>
+<div class="sign-section" id="signSection">
+  <div class="sign-certify" style="grid-column:1/-1;text-align:left;font-size:.72rem;color:var(--tx2);margin-bottom:.25rem;">ขอรับรองว่า ผู้มีรายชื่อข้างต้นปฏิบัติงานนอกเวลาราชการจริง</div>
+  <div class="sign-box"><div class="sign-role">ผู้รับรองการปฏิบัติงาน</div><div style="margin-bottom:2.5rem"></div><div class="sign-line">ลงชื่อ .................................................</div></div>
+  <div class="sign-box"><div class="sign-role">ผู้จ่ายเงิน</div><div style="margin-bottom:2.5rem"></div><div class="sign-line">ลงชื่อ .................................................</div></div>
+</div>
+
     </div>
   </div>
 </main>
@@ -488,8 +572,30 @@ let _data = null; let _meta = null; let _month = ''; let _allDepts = [];
 function populateFilters(data) {
   const canAff = _meta.canFilter?.aff !== false; const affSel = $('selAff'), depSel = $('selDep');
   const prevAff = affSel.value, prevDep = depSel.value; affSel.style.display = canAff ? '' : 'none'; _allDepts = data?.departments || [];
-  if (canAff) { affSel.innerHTML = '<option value="">— ทุกหน่วยงาน —</option>'; (data?.affiliations || []).forEach(a => { const o = document.createElement('option'); o.value = a.aff_code; o.textContent = a.affiliation || a.aff_code; if (a.aff_code === prevAff) o.selected = true; affSel.appendChild(o); }); }
-  renderDepOptions(prevDep);
+  
+  if (canAff) { 
+    affSel.innerHTML = '<option value="">— ทุกหน่วยงาน —</option>'; 
+    let foundPrev = false;
+    (data?.affiliations || []).forEach(a => { 
+      const o = document.createElement('option'); 
+      o.value = a.aff_code; 
+      o.textContent = expandAffName(a.affiliation || a.aff_code); // <--- เพิ่ม expandAffName ครอบ
+      if (a.aff_code === prevAff) { 
+        o.selected = true; 
+        foundPrev = true; 
+      }
+      affSel.appendChild(o); 
+    }); 
+    
+    if (prevAff && !foundPrev) {
+      const o = document.createElement('option');
+      o.value = prevAff;
+      o.textContent = expandAffName(_meta.affiliation || prevAff); // <--- เพิ่ม expandAffName ครอบ
+      o.selected = true;
+      affSel.appendChild(o);
+    }
+  } 
+  renderDepOptions(prevDep); 
 }
 function renderDepOptions(keepVal='') { const af = $('selAff').value, depSel = $('selDep'); const filtered = af ? _allDepts.filter(d => d.aff_code === af) : _allDepts; depSel.innerHTML = '<option value="">— ทุกกอง/แผนก —</option>'; filtered.forEach(d => { const o = document.createElement('option'); o.value = d.dep_code; o.textContent = d.department || d.dep_code; if (d.dep_code === keepVal) o.selected = true; depSel.appendChild(o); }); }
 function filterByAff() { $('selDep').value = ''; renderDepOptions(); loadAll(); }
@@ -499,9 +605,28 @@ function isAllApproved() {
   if (!_data || !_data.persons || _data.persons.length === 0) return false;
   return _data.persons.every(p => {
     return Object.values(p.days).every(entries => {
-      return entries.every(entry => entry.fin_status === 'approved');
+      return entries.every(entry => entry.sup_status === 'approved');
     });
   });
+}
+
+/* ══════ ฟังก์ชันแปลงชื่อย่อหน่วยงานเป็นชื่อเต็ม ══════ */
+function expandAffName(shortName) {
+  if (!shortName) return shortName;
+  // ใส่คำย่อที่ต้องการแปลง (ตัวพิมพ์เล็ก/ใหญ่มีผล ให้ใส่ให้ครบ)
+  // **สำคัญ:** ต้องวาง 'รพ.สต.' ไว้ก่อน 'รพ.' เพื่อไม่ให้ตัดคำผิด
+  const prefixes = [
+    ['สสจ.', 'สำนักงานสาธารณสุขจังหวัด'],
+    ['สสอ.', 'สำนักงานสาธารณสุขอำเภอ'],
+    ['รพ.สต.', 'โรงพยาบาลส่งเสริมสุขภาพตำบล'],
+    ['รพ.', 'โรงพยาบาล']
+  ];
+  for (const [prefix, full] of prefixes) {
+    if (shortName.startsWith(prefix)) {
+      return full + shortName.slice(prefix.length);
+    }
+  }
+  return shortName; // ถ้าไม่เจอในรายการ ให้แสดงชื่อเดิม
 }
 
 async function loadAll() {
@@ -518,7 +643,17 @@ async function loadAll() {
 
     _data = j.data; _meta = j.meta; populateFilters(j.data);
     const monthLabel = fmtThaiMonth(month);
-    const affLabel = (() => { const sel = $('selAff'), val = sel?.value; if (val) { const opt = sel.querySelector(`option[value="${val}"]`); if (opt) return opt.textContent.trim(); } return _meta.affiliation || 'ทุกหน่วยงาน'; })();
+      const affLabel = (() => { 
+    const sel = $('selAff'); 
+    const val = sel?.value; 
+    if (val) { 
+      const opt = sel.options[sel.selectedIndex];
+      // เนื่องจากใส่ expandAffName ตอน Render Dropdown ไปแล้ว ตรงนี้จึงแค่ดึงชื่อเต็มมาแสดงได้เลย
+      if (opt) return opt.textContent.trim(); 
+    } 
+    // กรณีเลือก "ทุกหน่วยงาน" หรือค่า Default ให้แปลงจาก meta ที่ API ส่งมา
+    return expandAffName(_meta.affiliation) || 'ทุกหน่วยงาน'; 
+  })();
     $('panelTitle').textContent = monthLabel; $('tbSub').textContent = `${monthLabel} · ${affLabel}`; $('phAff').textContent = affLabel; $('phMonth2').textContent = monthLabel;
     renderKPI(j.data.summary, j.data.persons.length); renderGrid(j.data, month);
     $('filterCount').textContent = `${j.data.persons.length} คน · ${allOTCount(j.data.persons)} รายการ OT`;
@@ -552,14 +687,23 @@ function renderGrid(data, monthISO) {
   const [year, mon] = monthISO.split('-').map(Number);
 
   let headDayHTML = ''; const dayDOW = {};
-  for (let d = 1; d <= lastDay; d++) { const dow = new Date(year, mon-1, d).getDay(); dayDOW[d] = dow; const isWknd = dow === 0 || dow === 6; headDayHTML += `<th class="col-day" style="${isWknd?'color:var(--am);background:var(--ambg);':''}" title="${d} - ${DOW_TH[dow]}"><div>${d}</div><div style="font-size:.5rem;margin-top:1px">${DOW_TH[dow]}</div></th>`; }
+  for (let d = 1; d <= lastDay; d++) {
+    const dow = new Date(year, mon-1, d).getDay(); dayDOW[d] = dow;
+    const isWknd = dow === 0 || dow === 6;
+    headDayHTML += `<th class="col-day${isWknd?' is-holiday-col':''}" title="${d} - ${DOW_TH[dow]}"><div>${d}</div><small>${DOW_TH[dow]}</small></th>`;
+  }
+
+  // right offset: col-note-fin(100) | col-sig(120) | col-date-recv(100) | col-amount(100) | col-sum-holiday(70) | col-sum-normal(70)
+  // const R = { noteFin:0, sig:100, dateRecv:220, amount:320, sumHol:420, sumNormal:490 };
 
   let html = `<table class="ot-grid"><thead><tr>
-    <th class="col-no">ลำดับ</th><th class="col-name">ชื่อ - สกุล</th><th class="col-pos">ตำแหน่ง</th>
+    <th class="col-no sticky-left" style="left:0">ลำดับ</th>
+    <th class="col-name sticky-left" style="left:40px">ชื่อ - สกุล</th>
+    <th class="col-pos sticky-left" style="left:200px;box-shadow:4px 0 10px rgba(0,0,0,.3)">ตำแหน่ง</th>
     ${headDayHTML}
-    <th class="col-sum-normal"><div>วันปกติ</div><div style="font-size:.5rem">(ชม.)</div></th>
-    <th class="col-sum-holiday"><div>วันหยุด</div><div style="font-size:.5rem">(ชม.)</div></th>
-    <th class="col-amount"><div>จำนวนเงิน</div><div style="font-size:.5rem">(บาท)</div></th>
+    <th class="col-sum-normal sum-sep"><div>วันปกติ</div><small>(ชม.)</small></th>
+    <th class="col-sum-holiday"><div>วันหยุด</div><small>(ชม.)</small></th>
+    <th class="col-amount"><div>จำนวนเงิน</div><small>(บาท)</small></th>
     <th class="col-date-recv">วันเดือนปี<br>ที่รับเงิน</th>
     <th class="col-sig">ลายมือชื่อ<br>ผู้รับเงิน</th>
     <th class="col-note-fin">หมายเหตุ</th>
@@ -579,20 +723,26 @@ function renderGrid(data, monthISO) {
       }
     }
     html += `<tr data-uuid="${p.uuid}">
-      <td class="col-no">${idx+1}</td><td class="col-name" title="${p.name}">${p.name}</td><td class="col-pos" title="${p.position||'—'}">${p.position||'—'}</td>
+      <td class="col-no sticky-left" style="left:0">${idx+1}</td>
+      <td class="col-name sticky-left" style="left:40px" title="${p.name}">${p.name}</td>
+      <td class="col-pos sticky-left" style="left:200px;box-shadow:4px 0 10px rgba(0,0,0,.3)" title="${p.position||'—'}">${p.position||'—'}</td>
       ${dayCells}
-      <td class="col-sum-normal">${Number(p.totalHoursNormal||0).toLocaleString('th-TH',{maximumFractionDigits:1})}</td>
+      <td class="col-sum-normal sum-sep">${Number(p.totalHoursNormal||0).toLocaleString('th-TH',{maximumFractionDigits:1})}</td>
       <td class="col-sum-holiday">${Number(p.totalHoursHoliday||0).toLocaleString('th-TH',{maximumFractionDigits:1})}</td>
       <td class="col-amount">${totalAmt ? Number(totalAmt).toLocaleString('th-TH',{minimumFractionDigits:2,maximumFractionDigits:2}) : '—'}</td>
-      <td class="col-date-recv"></td><td class="col-sig"></td><td class="col-note-fin"></td>
+      <td class="col-date-recv"></td>
+      <td class="col-sig"></td>
+      <td class="col-note-fin"></td>
     </tr>`;
   });
 
   const footerTotalAmt = (summary.totalAmountHour||0) + (summary.totalAmountDay||0);
   html += `<tr class="row-total">
-    <td class="col-no"></td><td class="col-name" style="text-align:center;">รวมทั้งสิ้น</td><td class="col-pos"></td>
+    <td class="col-no sticky-left" style="left:0"></td>
+    <td class="col-name sticky-left" style="left:40px;text-align:center;">รวมทั้งสิ้น</td>
+    <td class="col-pos sticky-left" style="left:200px;box-shadow:4px 0 10px rgba(0,0,0,.3)"></td>
     ${Array.from({length: lastDay}, () => '<td></td>').join('')}
-    <td class="col-sum-normal">${Number(summary.totalHoursNormal||0).toLocaleString('th-TH',{maximumFractionDigits:1})}</td>
+    <td class="col-sum-normal sum-sep">${Number(summary.totalHoursNormal||0).toLocaleString('th-TH',{maximumFractionDigits:1})}</td>
     <td class="col-sum-holiday">${Number(summary.totalHoursHoliday||0).toLocaleString('th-TH',{maximumFractionDigits:1})}</td>
     <td class="col-amount">${footerTotalAmt ? Number(footerTotalAmt).toLocaleString('th-TH',{minimumFractionDigits:2,maximumFractionDigits:2}) : '—'}</td>
     <td class="col-date-recv" colspan="3"></td>
