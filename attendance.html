@@ -1116,7 +1116,7 @@ function initMap() {
       })
     }).addTo(_map)
      .bindPopup(`<b><i class="fa-solid fa-building-shield" style="color:#2e7d32"></i> ${depName}</b><br>
-       <span style="color:#666;font-size:0.8rem">${affName}</span>`);
+       <span style="color:var(--secondary-text-color);font-size:0.8rem">${affName}</span>`);
   }
 
   return _map;
@@ -1175,7 +1175,7 @@ function updateMapUserPosition(lat, lon) {
   const userPopup = `
     <div style="font-family:Sarabun,sans-serif;min-width:160px">
       <b><i class="fa-solid fa-person-walking" style="color:#1e88e5"></i> ${name}</b><br>
-      <span style="color:#666;font-size:0.78rem">${lat.toFixed(5)}, ${lon.toFixed(5)}</span>
+      <span style="color:var(--secondary-text-color);font-size:0.78rem">${lat.toFixed(5)}, ${lon.toFixed(5)}</span>
       ${dist !== null ? `<br><hr style="margin:4px 0">
       <span style="font-size:0.82rem">ห่างจาก <b>${depName}</b><br>
       <b style="font-size:1rem;color:${lineColor}">${distStr}</b> ${statusTxt}</span>` : ''}
@@ -1459,7 +1459,7 @@ async function toggleButtonsByTime() {
 
           <label style="
             font-size:.82rem;
-            color:#666;
+            color:var(--secondary-text-color);
             display:block;
             margin-bottom:4px
           ">
@@ -1490,7 +1490,7 @@ async function toggleButtonsByTime() {
 
               <label style="
                 font-size:.82rem;
-                color:#666;
+                color:var(--secondary-text-color);
                 display:block;
                 margin-bottom:4px
               ">
@@ -1519,7 +1519,7 @@ async function toggleButtonsByTime() {
 
               <label style="
                 font-size:.82rem;
-                color:#666;
+                color:var(--secondary-text-color);
                 display:block;
                 margin-bottom:4px
               ">
@@ -1661,7 +1661,7 @@ async function toggleButtonsByTime() {
   </label>
 </div>
 
-        <label style="font-size:.82rem;color:#666;display:block;margin-bottom:4px">
+        <label style="font-size:.82rem;color:var(--secondary-text-color);display:block;margin-bottom:4px">
           <i class="fa-solid fa-user-shield" style="color:#8e24aa"></i> ผู้รับรองการปฏิบัติงานในวันหยุด
         </label>
         <div style="position:relative;margin-bottom:12px">
@@ -1674,7 +1674,7 @@ async function toggleButtonsByTime() {
 
           <label style="
             font-size:.82rem;
-            color:#666;
+            color:var(--secondary-text-color);
             display:block;
             margin-bottom:4px
           ">
@@ -2287,7 +2287,7 @@ function renderHistory() {
 
     const refEntry = dayEntries.find(e => e.type === 'in' && e.ref);
     const refHeader = refEntry
-      ? `<code style="font-size:.72rem;color:#666;background:#f5f5f5;padding:2px 7px;border-radius:6px">${refEntry.ref}</code>`
+      ? `<code style="font-size:.72rem;color:var(--secondary-text-color);background:#f5f5f5;padding:2px 7px;border-radius:6px">${refEntry.ref}</code>`
       : '';
 
     const supEntry = dayEntries.find(e => e.type === 'in' && e.supervisor_status);
@@ -3414,7 +3414,7 @@ document.getElementById('req-type-val').value='${t.value}';
           title:
             '<i class="fa-solid fa-paper-plane" style="color:#388e3c"></i> ส่งคำขอ',
          html: `
-<p style="font-size:0.85rem;color:#666;margin-bottom:12px;">
+<p style="font-size:0.85rem;color:var(--secondary-text-color);margin-bottom:12px;">
   เลือกประเภทคำขอที่ต้องการ
 </p>
 
@@ -3493,7 +3493,7 @@ document.getElementById('req-type-val').value='${t.value}';
 
         const workTypeField = needWorkType
           ? `
-    <label style="font-size:0.82rem;color:#666;display:block;margin-bottom:4px;">
+    <label style="font-size:0.82rem;color:var(--secondary-text-color);display:block;margin-bottom:4px;">
       <i class="fas fa-clipboard-list" style="color:#388e3c"></i> ประเภทการปฏิบัติงาน
     </label>
     <select id="req-worktype"
@@ -3518,7 +3518,7 @@ document.getElementById('req-type-val').value='${t.value}';
 
         const timeField = isTimeRequest
           ? `
-    <label style="font-size:0.82rem;color:#666;display:block;margin-bottom:4px;text-align:left;">
+    <label style="font-size:0.82rem;color:var(--secondary-text-color);display:block;margin-bottom:4px;text-align:left;">
       <i class="fa-solid fa-clock" style="color:#388e3c"></i> ระบุเวลาที่ถูกต้อง
     </label>
     <input type="time" id="req-time" value="${defaultTime}"
@@ -3577,7 +3577,7 @@ document.getElementById('req-type-val').value='${t.value}';
           title: `<span style="font-size:1rem">📋 ${requestType}</span>`,
           html: `
       <div style="text-align:left">
-        <label style="font-size:0.82rem;color:#666;display:block;margin-bottom:4px;">
+        <label style="font-size:0.82rem;color:var(--secondary-text-color);display:block;margin-bottom:4px;">
           <i class="fa-solid fa-calendar" style="color:#388e3c"></i> วันที่
         </label>
         <input type="date" id="req-date" value="${todayISO}"
@@ -3588,7 +3588,7 @@ document.getElementById('req-type-val').value='${t.value}';
           ${workTypeField}
           ${holidayClaimField}
 
-        <label style="font-size:0.82rem;color:#666;display:block;margin-bottom:4px;">
+        <label style="font-size:0.82rem;color:var(--secondary-text-color);display:block;margin-bottom:4px;">
           <i class="fa-solid fa-pen-line" style="color:#388e3c"></i> เหตุผล / รายละเอียด
         </label>
 
@@ -3974,7 +3974,7 @@ preConfirm: () => {
 
             <label style="
               font-size:.82rem;
-              color:#666;
+              color:var(--secondary-text-color);
               display:block;
               margin-bottom:4px
             ">
@@ -3999,7 +3999,7 @@ preConfirm: () => {
 
             <label style="
               font-size:.82rem;
-              color:#666;
+              color:var(--secondary-text-color);
               display:block;
               margin-bottom:4px
             ">
@@ -4063,7 +4063,7 @@ preConfirm: () => {
 
         <div style="margin-top:12px">
 
-                  <label style="font-size:.82rem;color:#666;display:block;margin-bottom:4px">
+                  <label style="font-size:.82rem;color:var(--secondary-text-color);display:block;margin-bottom:4px">
           <i class="fa-solid fa-user-shield" style="color:#8e24aa"></i> ผู้รับรองการปฏิบัติงานนอกเวลาราชการ
         </label>
         <div style="position:relative;margin-bottom:12px">
@@ -4076,7 +4076,7 @@ preConfirm: () => {
 
           <label style="
             font-size:.82rem;
-            color:#666;
+            color:var(--secondary-text-color);
             display:block;
             margin-bottom:4px
           ">
