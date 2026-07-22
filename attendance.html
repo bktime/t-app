@@ -675,37 +675,6 @@
   border: 1px solid #444 !important;
 }
 
-/* form ทั่วไปที่ฝังมากับ html: ของ swal แต่ไม่มี class swal2-* (select/textarea/input ที่เขียน inline style เอง) */
-[data-theme="dark"] .swal2-popup select,
-[data-theme="dark"] .swal2-popup textarea,
-[data-theme="dark"] .swal2-popup input:not([type="radio"]):not([type="checkbox"]) {
-  background: #1e1e2e !important;
-  color: #f9f9f9 !important;
-  border-color: #444 !important;
-}
-
-/* ปุ่มปิด (X), footer, ข้อความ validation ของ swal2 */
-[data-theme="dark"] .swal2-close { color: #cfcfe0 !important; }
-[data-theme="dark"] .swal2-footer {
-  color: #cfcfe0 !important;
-  border-top-color: #444 !important;
-}
-[data-theme="dark"] .swal2-validation-message {
-  background: #3a2a2a !important;
-  color: #ff8a80 !important;
-}
-
-/* เนื้อหา html: ที่ hardcode สีพื้นหลังขาว/เทาอ่อน และตัวอักษรเทาเข้ม/ดำไว้เอง
-   (จับจาก inline style ที่พบบ่อยในหน้านี้ เพื่อไม่ให้ทับสีของ badge/ปุ่มที่ตั้งใจให้เป็นสีเฉพาะ) */
-[data-theme="dark"] .swal2-popup [style*="background:#fff"],
-[data-theme="dark"] .swal2-popup [style*="background: #fff"],
-[data-theme="dark"] .swal2-popup [style*="background:#f5f5f5"] {
-  background: #1e1e2e !important;
-}
-[data-theme="dark"] .swal2-popup [style*="color:#1a1d23"] { color: #f9f9f9 !important; }
-[data-theme="dark"] .swal2-popup [style*="color:#666"] { color: #b3b3c6 !important; }
-[data-theme="dark"] .swal2-popup [style*="border:1px solid #ddd"] { border-color: #444 !important; }
-
 
   </style>
 
