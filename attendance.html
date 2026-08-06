@@ -2034,6 +2034,9 @@ if (holidayShift?.claim_ot) {
       </div>`,
             showCancelButton: true,
           confirmButtonText: 'ถ่ายภาพ',
+          cancelButtonText: 'ปิด',
+          confirmButtonColor: '#0d6efd',
+          cancelButtonColor: '#198754',
           allowOutsideClick: false,
               }).then((r) => {
 
@@ -2196,6 +2199,8 @@ async function checkOut() {
       showCancelButton: true,
           confirmButtonText: 'ถ่ายภาพ',
           cancelButtonText: 'ปิด',
+          confirmButtonColor: '#0d6efd',
+          cancelButtonColor: '#198754',
               }).then((r) => {
 
           if (r.isConfirmed) {
@@ -4428,6 +4433,8 @@ const confirmRows = [
           showCancelButton: true,
           confirmButtonText: 'ถ่ายภาพ',
           cancelButtonText: 'ปิด',
+          confirmButtonColor: '#0d6efd',
+          cancelButtonColor: '#198754',
                 }).then((r) => {
 
           if (r.isConfirmed) {
