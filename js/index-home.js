@@ -240,16 +240,26 @@ try {
   console.error('load supervisor pending error:', err);
 }
 
+      // const prevRead   = new Set(JSON.parse(localStorage.getItem('notifRead') || '[]'));
+      // const unreadMine = _mineItems.filter(i => ['approved','rejected'].includes(i.status) && !prevRead.has(i.reference)).length;
+      // const unreadPend = _pendItems.filter(i => !prevRead.has(i.reference)).length;
+      // const unreadSup  = _supItems.filter(i => !prevRead.has('sup-' + i.id)).length;
+      // const total      = unreadMine + unreadPend + unreadSup;
+      recalcNotifBadge();
+      // updateNotifBadge(total, unreadPend, unreadSup);
+
+      _notifLoaded = true;
+      if (document.getElementById('notifPanel').classList.contains('open')) renderNotifBody();
+    }
+
+        // คำนวณ badge จากข้อมูลที่โหลดไว้แล้ว (ไม่ยิง API)
+    function recalcNotifBadge() {
       const prevRead   = new Set(JSON.parse(localStorage.getItem('notifRead') || '[]'));
       const unreadMine = _mineItems.filter(i => ['approved','rejected'].includes(i.status) && !prevRead.has(i.reference)).length;
       const unreadPend = _pendItems.filter(i => !prevRead.has(i.reference)).length;
       const unreadSup  = _supItems.filter(i => !prevRead.has('sup-' + i.id)).length;
       const total      = unreadMine + unreadPend + unreadSup;
-
       updateNotifBadge(total, unreadPend, unreadSup);
-
-      _notifLoaded = true;
-      if (document.getElementById('notifPanel').classList.contains('open')) renderNotifBody();
     }
 
     function updateNotifBadge(total, unreadPend, unreadSup) {
@@ -295,7 +305,8 @@ try {
       else if (_notifTab === 'pending')    _pendItems.forEach(i => read.add(i.reference));
       else if (_notifTab === 'supervisor') _supItems.forEach(i => read.add('sup-' + i.id));
       localStorage.setItem('notifRead', JSON.stringify([...read].slice(-300)));
-      loadNotifications();
+      // loadNotifications();
+      recalcNotifBadge()
     }
 
     function renderNotifBody() {
