@@ -721,10 +721,18 @@ if ('serviceWorker' in navigator) {
       };
       av.src = u.profileImage || u.picture || `https://ui-avatars.com/api/?background=00f5b0&color=020c18&bold=true&size=128&name=${encodeURIComponent(fullName)}`;
 
-      const tok = localStorage.getItem('auth_token');
-      if (tok) fetchStats(tok);
+      // const tok = localStorage.getItem('auth_token');
+      // if (tok) fetchStats(tok);
 
-      loadNotifications();
+      // loadNotifications();
+
+      // ✅ ใหม่: โหลดครั้งเดียวต่อการเปิดหน้า
+      if (!window._homeDataLoaded) {
+        window._homeDataLoaded = true;
+        const tok = localStorage.getItem('auth_token');
+        if (tok) fetchStats(tok);
+        loadNotifications();
+      }
 
       bindLogout();
       bindLogout();
