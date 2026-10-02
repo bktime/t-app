@@ -689,7 +689,10 @@
 </div>
   <div class="nav-actions">
     <div class="notif-wrap">
-      <button class="nav-btn" id="notifBtn" title="การแจ้งเตือน">
+     <button class="nav-btn" id="notifBtn" title="การแจ้งเตือน" style="display:none">
+        <i class="fa-solid fa-bell"></i>
+      </button>
+<button class="nav-btn" id="notifRedirectBtn" title="การแจ้งเตือน" onclick="showNotifMoved()">
         <i class="fa-solid fa-bell"></i>
       </button>
       <span class="notif-dot" id="notifDot" style="display:none"></span>
@@ -3308,7 +3311,7 @@ document.getElementById('notifBtn').addEventListener('click', (e) => {
   else { if (!_notifLoaded) loadNotifications(); openNotifPanel(); }
 });
 
-function checkNotif() { loadNotifications(); }
+function checkNotif() { return loadNotifications(); }
 
       // ===================== SEND REQUEST =====================
 const REQUEST_TYPES = [
@@ -4761,6 +4764,21 @@ async function verifyToken() {
   }
 }
 
+// ===================== แจ้งผู้ใช้: การแจ้งเตือนย้ายไปหน้าแรก =====================
+function showNotifMoved() {
+  Swal.fire({
+    icon: 'info',
+    title: 'การแจ้งเตือนย้ายไปที่หน้าแรก',
+    html: 'เพื่อให้ระบบลงเวลาทำงานได้เร็วและเสถียรขึ้น<br>' +
+          'กรุณากดไอคอน <i class="fa-solid fa-bell"></i> ที่ <b>หน้าแรก</b> เพื่อดูการแจ้งเตือน',
+    showCancelButton: true,
+    confirmButtonText: '<i class="fas fa-home"></i> ไปหน้าแรก',
+    cancelButtonText: 'ปิด',
+    confirmButtonColor: '#388e3c',
+  }).then((r) => {
+    if (r.isConfirmed) location.href = 'index.html';
+  });
+}
 
 
 // ===================== INIT =====================
@@ -4786,12 +4804,17 @@ document.addEventListener('DOMContentLoaded', async () => {
   toggleButtonsByTime();
   setInterval(toggleButtonsByTime, 60000);
   renderHistory();
-  renderRequestHistory();
-  checkNotif();          // โหลด notif + badge
+  // renderRequestHistory();
+  // checkNotif();          // โหลด notif + badge
+  // ✅ ใหม่: ใช้ข้อมูลที่ loadNotifications ดึงมาแล้ว ไม่ยิงซ้ำ
+  // checkNotif().then(() => {
+  //   const c = document.getElementById('requestHistoryList');
+  //   if (c) renderRequestList(c, _mineItems);   // รองรับกรณีไม่มีคำขอ (แสดง empty-state เอง)
+  // });
   // sync สถานะจริงจาก D1
   syncTodayState();
-  // refresh notif ทุก 60 วินาที
-  setInterval(loadNotifications, 60000);
+// ✅ ใหม่: ทุก 5 นาที และเฉพาะตอนแท็บเปิดอยู่
+  setInterval(() => { if (!document.hidden) loadNotifications(); }, 300000);
 });
 
 /* ═══════════ AUTO ACTION FROM URL PARAM ═══════════ */
