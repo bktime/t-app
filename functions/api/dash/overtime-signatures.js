@@ -32,7 +32,8 @@ export async function onRequestGet({ request, env }) {
   if (
     (!session.role_level || Number(session.role_level) <= 1) &&
     session.role !== 'admin' &&
-    session.role !== 'hr'
+    session.role !== 'hr' &&
+    session.role !== 'finance'
   ) {
     return Response.json(
       { success: false, message: 'ไม่มีสิทธิ์เข้าถึงข้อมูลลายเซ็น' },
